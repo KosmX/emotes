@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "emotes",
+  "version": "${version}",
+  "name": "Emotes",
+  "description": "asd",
+  "authors": [
+    "KosmX"
+  ],
+  "contributors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/emotes/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.kosmx.emotes.Main"
+    ],
+    "client": [],
+    "server": []
+  },
+  "mixins": [
+    "emotes.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  }
+}
