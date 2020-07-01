@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "emotes",
+  "id": "emotecraft",
   "version": "${version}",
   "name": "Emotes",
   "description": "asd",
@@ -10,17 +10,17 @@
   "contributors": [],
   "contact": {},
   "license": "MIT",
-  "icon": "assets/emotes/icon.png",
+  "icon": "assets/emotecraft/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.kosmx.emotes.Main"
+      "com.kosmx.emotecraft.Main"
     ],
     "client": [],
     "server": []
   },
   "mixins": [
-    "emotes.mixins.json"
+    "emotecraft.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.4.0",

@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "Main.mixin",
+  "package": "com.kosmx.emotecraft.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [],
   "client": [],
