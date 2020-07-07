@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
 
 public class Main implements ModInitializer {
 

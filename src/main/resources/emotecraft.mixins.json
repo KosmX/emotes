@@ -3,7 +3,11 @@
   "package": "com.kosmx.emotecraft.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [],
-  "client": [],
+  "client": [
+    "ClientPlayerMixin",
+    "PlayerRendererMixin",
+    "PlayerModelMixin"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

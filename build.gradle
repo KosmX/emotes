@@ -83,4 +83,8 @@ publishing {
 		// uncomment to publish to the local maven
 		// mavenLocal()
 	}
+	dependencies {
+		//@Nullable essential for mc modding
+		compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
+	}
 }
