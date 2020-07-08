@@ -17,12 +17,13 @@ public class Emote {
     private int beginTick;
     private int endTick;
     private int resetTick;  //Tick after the emote ends, reset the pose to the normal minecraft pose...
-    public Part head;
+    public BodyPart head;
     public Torso torso;
-    public Part rightArm;
-    public Part leftArm;
-    public Part leftLeg;
-    public Part rightLeg;
+    public BodyPart rightArm;
+    public BodyPart leftArm;
+    public BodyPart leftLeg;
+    public BodyPart rightLeg;
+    private float tickDelta = 0;
 
     public Emote(int a, int b, int c){
         beginTick = a;
@@ -56,7 +57,7 @@ public class Emote {
         if (resetTick < endTick) resetTick = endTick;
     }
 
-    private class BodyPart {
+    public class BodyPart {
         public Part x;
         public Part y;
         public Part z;
@@ -64,7 +65,7 @@ public class Emote {
         public RotationPart yaw;
         public RotationPart roll;
 
-        public void setBodyPart(ModelPart modelPart, float tickDelta){
+        public void setBodyPart(ModelPart modelPart){
             modelPart.pivotX = x.getCurrentValue(modelPart.pivotX, tickDelta);
             modelPart.pivotY = y.getCurrentValue(modelPart.pivotY, tickDelta);
             modelPart.pivotZ = z.getCurrentValue(modelPart.pivotZ, tickDelta);
@@ -73,7 +74,7 @@ public class Emote {
             modelPart.roll = roll.getCurrentValue(modelPart.roll, tickDelta);
         }
     }
-    private class Torso extends BodyPart {
+    public class Torso extends BodyPart {
         public Vector3f getBodyOffshet(float tickDelta){
             float x = this.x.getCurrentValue(0, tickDelta);
             float y = this.y.getCurrentValue(0, tickDelta);

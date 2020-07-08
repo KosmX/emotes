@@ -17,7 +17,10 @@
       "com.kosmx.emotecraft.Main"
     ],
     "client": [],
-    "server": []
+    "server": [],
+    "modmenu": [
+      "com.kosmx.emotecraft.config.Menu"
+    ]
   },
   "mixins": [
     "emotecraft.mixins.json"
