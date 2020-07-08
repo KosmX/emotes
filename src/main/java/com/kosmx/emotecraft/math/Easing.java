@@ -11,4 +11,10 @@ public class Easing {
      * except
      */
     //TODO whole class
+    public static float easingFromEnum(Ease type, float f){
+        switch (type){
+            default:
+                return f;
+        }
+    }
 }

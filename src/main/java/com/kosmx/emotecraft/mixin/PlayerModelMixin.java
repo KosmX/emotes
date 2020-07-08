@@ -19,7 +19,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         super(scale);
     }
 
-    private void setPivot(){
+    private void setDefaultPivot(){
         this.rightArm.pivotZ = 0.0F;
         this.rightArm.pivotX = -5.0F;
         this.leftArm.pivotZ = 0.0F;
@@ -39,12 +39,11 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
             value = "INVOKE",
             target = "Lnet/minecraft/client/render/entity/model/BipedEntityModel;setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V"))
     private void setEmote(BipedEntityModel idk,T livingEntity, float f, float g, float h, float i, float j){
+        setDefaultPivot();
+        super.setAngles(livingEntity, f, g, h, i, j);
         if(((ClientPlayerEmotes)livingEntity).isPlayingEmote()){
             Emote emote = ((ClientPlayerEmotes) livingEntity).getEmote();
             //TODO
-        }
-        else {
-            super.setAngles(livingEntity, f, g, h, i, j);
         }
     }
 }
