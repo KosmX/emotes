@@ -84,8 +84,16 @@ public class Easing {
         }
     }
 
+    /**
+     *
+     * @param string
+     * @return ease
+     */
     public static Ease easeFromString(String string){
         try {
+            if(string.substring(0, 4).toUpperCase().equals("EASE")){
+                string = string.substring(4);
+            }
             return Ease.valueOf(string.toUpperCase());
         }
         catch (Exception exception){
