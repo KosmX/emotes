@@ -27,16 +27,12 @@ public abstract class ClientPlayerMixin extends PlayerEntity implements ClientPl
     }
 
     @Override
-    public boolean isPlayingEmote() {
-        return this.emote != null;
-    }
-
-    @Override
     public void playEmote(Emote emote) {
         this.emote = emote;
     }
 
     @Override
+    @Nullable
     public Emote getEmote(){
         return this.emote;
     }

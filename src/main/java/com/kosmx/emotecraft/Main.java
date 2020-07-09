@@ -28,7 +28,6 @@ public class Main implements ModInitializer {
         config = AutoConfig.getConfigHolder(Config.class).getConfig();
 
         log(Level.INFO, "Initializing");
-        //TODO: Initializer
     }
 
     public static void log(Level level, String message){

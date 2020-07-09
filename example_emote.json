@@ -1,0 +1,43 @@
+{
+	"name": "Waving",
+	"author": "KosmX",
+	"description": "this is an example emote",
+	"you can add": "comment like this",
+	"emote":{
+		"beginTick":3,
+		"endTick":70,
+		"resetTick":75,
+		"degrees":true,
+		"moves":[
+			{
+				"tick":12,
+				"easing": "InOutSine",
+				"head":{
+					"yaw":23,
+					"pitch":115
+				}
+			},
+			{
+				"tick":45,
+				"easing": "OutBounce",
+				"head":{
+					"yaw":27,
+					"pitch":165
+				},
+				"rightArm": {
+					"pitch": 63
+				}
+			},
+			{
+				"tick": 45,
+				"easing": "linear",
+				"turn": -1,
+				"comment": "after tick 45 the right arm's yaw will set back with a full turn",
+				"rightArm": {
+					"yaw": 360,
+					"comment": "you cannot define a value for the same tick twice (in this case pitch)"
+				}
+			}
+		]
+	}
+}

@@ -41,7 +41,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
     private void setEmote(BipedEntityModel idk,T livingEntity, float f, float g, float h, float i, float j){
         setDefaultPivot();
         super.setAngles(livingEntity, f, g, h, i, j);
-        if(((ClientPlayerEmotes)livingEntity).isPlayingEmote()){
+        if(Emote.isRunningEmote(((ClientPlayerEmotes)livingEntity).getEmote())){
             Emote emote = ((ClientPlayerEmotes) livingEntity).getEmote();
             emote.head.setBodyPart(this.head);
             emote.leftArm.setBodyPart(this.leftArm);

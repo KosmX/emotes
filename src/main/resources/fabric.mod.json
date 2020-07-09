@@ -16,7 +16,9 @@
     "main": [
       "com.kosmx.emotecraft.Main"
     ],
-    "client": [],
+    "client": [
+      "com.kosmx.emotecraft.Client"
+    ],
     "server": [],
     "modmenu": [
       "com.kosmx.emotecraft.config.Menu"

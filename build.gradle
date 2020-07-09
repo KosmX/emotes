@@ -27,6 +27,9 @@ dependencies {
 	modApi "me.shedaniel.cloth:config-2:${project.cloth_version}"
 	include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
+	//implementation 'com.google.code.gson:gson:2.8.5' //GSon serializer
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+
 }
 
 processResources {

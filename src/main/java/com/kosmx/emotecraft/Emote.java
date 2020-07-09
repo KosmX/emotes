@@ -5,6 +5,7 @@ import com.kosmx.emotecraft.math.Easing;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.apache.logging.log4j.Level;
 
@@ -29,6 +30,10 @@ public class Emote {
         beginTick = a;
         endTick = b;
         resetTick = c;
+    }
+
+    public void setTickDelta(float f){
+        this.tickDelta = f;
     }
 
     private int lastPlayTick(){
@@ -57,6 +62,10 @@ public class Emote {
         if (resetTick < endTick) resetTick = endTick;
     }
 
+    public void addMove(Part part, int tick, float value, String easing){
+        part.add(new Move(tick, value, easing));
+    }
+
     public class BodyPart {
         public Part x;
         public Part y;
@@ -75,21 +84,21 @@ public class Emote {
         }
     }
     public class Torso extends BodyPart {
-        public Vector3f getBodyOffshet(float tickDelta){
+        public Vec3d getBodyOffshet(){
             float x = this.x.getCurrentValue(0, tickDelta);
             float y = this.y.getCurrentValue(0, tickDelta);
             float z = this.z.getCurrentValue(0, tickDelta);
-            return new Vector3f(x, y, z);
+            return new Vec3d(x, y, z);
         }
-        public Vector3f getBodyRotation(float tickDelta){
-            float x = this.pitch.getCurrentValue(0, tickDelta);
-            float y = this.yaw.getCurrentValue(0, tickDelta);
+        public Vector3f getBodyRotation(){
+            float y = this.pitch.getCurrentValue(0, tickDelta);
+            float x = this.yaw.getCurrentValue(0, tickDelta);
             float z = this.roll.getCurrentValue(0, tickDelta);
-            return new Vector3f(x, y, z); //TODO check the order!
+            return new Vector3f(x, y, z);
         }
     }
 
-    private class Part{
+    public class Part{
         private List<Move> list;
 
         /*
@@ -104,6 +113,9 @@ public class Emote {
         }
         public boolean add(Move move){
             return this.add(move, false);
+        }
+        public boolean add(Move move, int rotate){
+            return this.add(move);
         }
         protected boolean add(Move move, boolean sameTickException){
             int i = findTick(move.tick);
@@ -135,7 +147,7 @@ public class Emote {
         }
 
     }
-    private class RotationPart extends Part{
+    public class RotationPart extends Part{
         public boolean add(Move move, int rotate) {
             if( this.add(move)){
                 this.add(new Move(move.tick,move.value + 6.28318530718f * rotate, move.ease),true);
@@ -145,7 +157,7 @@ public class Emote {
         }
     }
 
-    private class Move{
+    public class Move{
         public int tick;
         public Float value;
         private Ease ease;
@@ -154,6 +166,9 @@ public class Emote {
             this.tick = tick;
             this.value = value;
             this.ease = ease;
+        }
+        public Move(int tick, float value, String ease){
+            this(tick, value, Easing.easeFromString(ease));
         }
 
         public float getPos(Move nextMove, float tickDelta){
