@@ -28,7 +28,7 @@ public class EmoteSerializer extends StdDeserializer<EmoteHolder> {
             description = node.get("description").asText();
         }
         Emote emote = emoteDeserializer(node.get("emote"));
-        return new EmoteHolder(emote, name, description, author);
+        return new EmoteHolder(emote, name, description, author, node.hashCode());
     }
 
     private Emote emoteDeserializer(JsonNode node){

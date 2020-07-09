@@ -11,6 +11,7 @@ public class EmoteHolder {
     public final String name;
     public final String description;
     public final String author;
+    public final int hash;
 
     /**
      *
@@ -19,11 +20,12 @@ public class EmoteHolder {
      * @param description Emote decription
      * @param author Name of the Author
      */
-    EmoteHolder(Emote emote, String name, String description, String author){
+    EmoteHolder(Emote emote, String name, String description, String author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;
         this.description = description;
+        this.hash = hash;
     }
 
     public static EmoteHolder deserializeJson(String json) throws JsonProcessingException {     //throws BowlingBall XD
