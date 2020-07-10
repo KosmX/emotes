@@ -1,0 +1,145 @@
+{
+	"name": "Waving",
+	"author": "KosmX",
+	"description": "Like say Hi!",
+	"you can add": "comment like this",
+	"emote":{
+		"beginTick":12,
+		"endTick":45,
+		"stopTick":50,
+		"degrees":true,
+		"moves":[
+			{
+				"tick":0,
+				"easing": "inQuad",
+				"torso":{
+					"roll":0
+				},
+				"rightLeg":{
+					"roll":0,
+					"x": -1.9,
+					"y": 12
+				},
+				"leftLeg":{
+					"roll":0,
+					"x": 1.9,
+					"y": 12
+				}
+			},
+			{
+				"tick":8,
+				"easing": "InOutSine",
+				"rightArm":{
+					"yaw":90
+				}
+			},
+			{
+				"tick":10,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":185
+				},
+				"leftArm":{
+					"roll": -5
+				}
+			},
+			{
+				"tick":10,
+				"easing": "outExpo",
+				"torso":{
+					"roll":8
+				},
+				"rightLeg":{
+					"roll":-8,
+					"x": -1.9,
+					"y": 12.25
+				},
+				"leftLeg":{
+					"roll":-8,
+					"x": 1.9,
+					"y": 11.75
+				}
+			},
+			{
+				"tick": 15,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":95
+				}
+			},
+			{
+				"tick": 20,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":185
+				}
+			},
+			{
+				"tick": 25,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":95
+				}
+			},
+			{
+				"tick": 30,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":185
+				}
+			},
+			{
+				"tick": 35,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":95
+				}
+			},
+			{
+				"tick": 40,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":185
+				}
+			},
+			{
+				"tick": 45,
+				"easing": "InOutSine",
+				"rightArm":{
+					"roll":95
+				}
+			},
+			{
+				"tick":46,
+				"easing": "InOutSine",
+				"torso":{
+					"roll":11
+				},
+				"rightLeg":{
+					"roll":-11,
+					"x": -1.9,
+					"y": 12.3
+				},
+				"leftLeg":{
+					"roll":-11,
+					"x": 1.9,
+					"y": 11.7
+				}
+			},
+			{
+				"tick": 48,
+				"easing": "inoutcirc",
+				"leftArm":{
+					"roll":-17
+				}
+			},
+			{
+				"tick":48,
+				"easing": "InOutSine",
+				"rightArm":{
+					"yaw":90
+				}
+			}
+		]
+	}
+}

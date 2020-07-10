@@ -40,7 +40,7 @@ public class EmoteSerializer extends StdDeserializer<EmoteHolder> {
             beginTick = node.get("beginTick").asInt();
         }
         int endTick = node.get("endTick").asInt();
-        int resetTick = node.has("resetTick") ? node.get("resetTick").asInt() : endTick;
+        int resetTick = node.has("stopTick") ? node.get("stopTick").asInt() : endTick;
         boolean degrees = !node.has("degrees") || node.get("degrees").asBoolean();
         Emote emote = new Emote(beginTick, endTick, resetTick);
         moveDeserializer(emote, node.get("moves"), degrees);
@@ -73,9 +73,7 @@ public class EmoteSerializer extends StdDeserializer<EmoteHolder> {
     }
     private void addPartIfExists(Emote emote, Emote.Part part, String name, JsonNode node, boolean degrees, int tick, String easing, int turn){
         if(node.has(name)){
-            float value = (float) node.get(name).asDouble();
-            if (degrees) value *= 0.01745329251f;
-            emote.addMove(part, tick, value , easing, turn);
+            emote.addMove(part, tick, (float) node.get(name).asDouble(), easing, turn, degrees);
         }
     }
 }

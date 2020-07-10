@@ -1,12 +1,10 @@
 package com.kosmx.emotecraft;
 
-import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -22,6 +20,7 @@ import java.nio.file.Path;
 public class Client implements ClientModInitializer {
 
     private static KeyBinding emoteKeyBinding;
+    private static KeyBinding debugEmote;
     @Override
     public void onInitializeClient() {
         //There will be something only client stuff
@@ -30,10 +29,17 @@ public class Client implements ClientModInitializer {
         emoteKeyBinding = new KeyBinding(
                 "key.emotecraft.fastchoose",
                 InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_B,        //because bedrock edition has the same key
+                "category.emotecraft.keybinding"
+        );
+        debugEmote = new KeyBinding(
+                "key.emotecraft.debug",
+                InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_O,
                 "category.emotecraft.keybinding"
         );
         KeyBindingHelper.registerKeyBinding(emoteKeyBinding);
+        KeyBindingHelper.registerKeyBinding(debugEmote);
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
             if (emoteKeyBinding.wasPressed()){
@@ -42,6 +48,11 @@ public class Client implements ClientModInitializer {
                     entity.playEmote(EmoteHolder.list.get(0).getEmote());
                     entity.getEmote().start();
                 }
+            }
+        });
+        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
+            if (debugEmote.wasPressed()){
+                playDebugEmote();
             }
         });
 
@@ -59,8 +70,24 @@ public class Client implements ClientModInitializer {
             catch (Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
                 Main.log(Level.ERROR, e.getMessage());
-                e.printStackTrace();
             }
+        }
+    }
+
+    private static void playDebugEmote(){
+        Main.log(Level.INFO, "Playing debug emote");
+        File location = FabricLoader.getInstance().getGameDirectory().toPath().resolve("emote.json").toFile();
+        try {
+            EmoteHolder emoteHolder = EmoteHolder.deserializeJson(FileUtils.readFileToString(location, "UTF-8"));
+            if(MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
+                ClientPlayerEmotes entity = (ClientPlayerEmotes) MinecraftClient.getInstance().getCameraEntity();
+                entity.playEmote(emoteHolder.getEmote());
+                entity.getEmote().start();
+            }
+        }
+        catch (Exception e){
+            Main.log(Level.ERROR, "Error while importing debug emote.", true);
+            Main.log(Level.ERROR, e.getMessage());
         }
     }
 }

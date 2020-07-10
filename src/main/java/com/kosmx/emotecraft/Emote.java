@@ -63,11 +63,11 @@ public class Emote {
         this.isRunning = true;
         if (beginTick < 0)beginTick = 0;
         if (endTick < beginTick) endTick = beginTick;
-        if (stopTick < endTick) stopTick = endTick;
+        if (stopTick <= endTick) stopTick = endTick + 1;
     }
 
-    public void addMove(Part part, int tick, float value, String easing, int turn){
-        part.add(new Move(tick, value, easing), turn);
+    public void addMove(Part part, int tick, float value, String easing, int turn, boolean degrees){
+        part.add(tick, value, Easing.easeFromString(easing), turn, degrees);
     }
 
     public class BodyPart {
@@ -142,13 +142,11 @@ public class Emote {
             }
             return i;
         }
-        public boolean add(Move move){
-            return this.add(move, false);
-        }
-        public boolean add(Move move, int rotate){
-            return this.add(move);
+        public boolean add(int tick, float value, Ease ease, int rotate, boolean degrees){
+            return this.add(new Move(tick, value, ease), false);
         }
         protected boolean add(Move move, boolean sameTickException){
+            //TODO add value limit
             int i = findTick(move.tick) + 1;
             if (this.list.size() != 0 && !sameTickException && this.list.get(i - 1).tick == move.tick || move.tick > lastPlayTick()){
                 Main.log(Level.ERROR, "two moving at the same tick error", true);
@@ -184,9 +182,11 @@ public class Emote {
             super(x);
         }
 
-        public boolean add(Move move, int rotate) {
-            if( this.add(move) && rotate != 0){
-                this.add(new Move(move.tick, move.value + 6.28318530718f * rotate, move.ease), true);
+        @Override
+        public boolean add(int tick, float value, Ease ease, int rotate, boolean degrees) {
+            if(degrees)value *= 0.01745329251f;
+            if( this.add(new Move(tick, value, ease), false) && rotate != 0){
+                this.add(new Move(tick, value + 6.28318530718f * rotate, ease), true);
                 return true;
             }
             else return false;
