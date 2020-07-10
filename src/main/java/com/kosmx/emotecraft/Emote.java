@@ -6,10 +6,10 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Emote {
@@ -17,19 +17,19 @@ public class Emote {
     private int currentTick;
     private int beginTick;
     private int endTick;
-    private int resetTick;  //Tick after the emote ends, reset the pose to the normal minecraft pose...
-    public BodyPart head;
-    public Torso torso;
-    public BodyPart rightArm;
-    public BodyPart leftArm;
-    public BodyPart leftLeg;
-    public BodyPart rightLeg;
+    private int stopTick;  //Tick after the emote ends, reset the pose to the normal minecraft pose...
+    public BodyPart head = new BodyPart(0,0,0,0,0,0);
+    public Torso torso = new Torso(0,0,0,0,0,0);
+    public BodyPart rightArm = new BodyPart(-5,2,0,0,0,0.09f);
+    public BodyPart leftArm = new BodyPart(5,2,0,0,0,-0.09f);
+    public BodyPart leftLeg = new BodyPart(1.9f,12,0.1f,0,0,0);
+    public BodyPart rightLeg = new BodyPart(-1.9f,12,0.1f,0,0,0);
     private float tickDelta = 0;
 
     public Emote(int a, int b, int c){
         beginTick = a;
         endTick = b;
-        resetTick = c;
+        stopTick = c;
     }
 
     public void setTickDelta(float f){
@@ -37,16 +37,20 @@ public class Emote {
     }
 
     private int lastPlayTick(){
-        return endTick;
+        return stopTick;
     }
 
-    private int getCurrentTick(){
+    private int getCurrentTickDelta(){
         return currentTick;
+    }
+
+    private float getCurrentTick(){
+        return this.currentTick + this.tickDelta;
     }
 
     public void tick(){
         if(this.isRunning)this.currentTick++;
-        if (currentTick > resetTick){
+        if (currentTick > stopTick){
             this.isRunning = false;
         }
     }
@@ -59,11 +63,11 @@ public class Emote {
         this.isRunning = true;
         if (beginTick < 0)beginTick = 0;
         if (endTick < beginTick) endTick = beginTick;
-        if (resetTick < endTick) resetTick = endTick;
+        if (stopTick < endTick) stopTick = endTick;
     }
 
-    public void addMove(Part part, int tick, float value, String easing){
-        part.add(new Move(tick, value, easing));
+    public void addMove(Part part, int tick, float value, String easing, int turn){
+        part.add(new Move(tick, value, easing), turn);
     }
 
     public class BodyPart {
@@ -73,6 +77,16 @@ public class Emote {
         public RotationPart pitch;
         public RotationPart yaw;
         public RotationPart roll;
+
+        private BodyPart(float x, float y, float z, float yaw, float pitch, float roll){
+            this.x = new Part(x);
+            this.y = new Part(y);
+            this.z = new Part(z);
+            this.yaw = new RotationPart(yaw);
+            this.pitch = new RotationPart(pitch);
+            this.roll = new RotationPart(roll);
+        }
+
 
         public void setBodyPart(ModelPart modelPart){
             modelPart.pivotX = x.getCurrentValue(modelPart.pivotX, tickDelta);
@@ -84,6 +98,10 @@ public class Emote {
         }
     }
     public class Torso extends BodyPart {
+        private Torso(float x, float y, float z, float yaw, float pitch, float roll) {
+            super(x, y, z, yaw, pitch, roll);
+        }
+
         public Vec3d getBodyOffshet(){
             float x = this.x.getCurrentValue(0, tickDelta);
             float y = this.y.getCurrentValue(0, tickDelta);
@@ -99,14 +117,27 @@ public class Emote {
     }
 
     public class Part{
-        private List<Move> list;
+        private final List<Move> list = new ArrayList<Move>();
+        /*{
+            @Override
+            public Move get(int index){
+                float tick = getCurrentTick() + tickDelta < beginTick ? beginTick : (tickDelta + getCurrentTick()) > endTick ? endTick : tickDelta + getCurrentTick();
+                return (this.list.size() > index) ? super.get(index) : new Move(getCurrentTick(), defaultValue, Ease.INOUTSINE);
+            }
+        }
+         */
+        private final float defaultValue;
+
+        private Part(float defaultValue){
+            this.defaultValue = defaultValue;
+        }
 
         /*
          *finds where is the current move
          */
         private int findTick(int tick) {
-            int i = 0;
-            while (this.list.size() > i+1 && this.list.get(i + 1).tick > tick) {
+            int i = -1;
+            while (this.list.size() > i+1 && this.list.get(i + 1).tick <= tick) {
                 i++;
             }
             return i;
@@ -118,8 +149,8 @@ public class Emote {
             return this.add(move);
         }
         protected boolean add(Move move, boolean sameTickException){
-            int i = findTick(move.tick);
-            if (!sameTickException && list.get(i).tick == move.tick || move.tick > lastPlayTick()){
+            int i = findTick(move.tick) + 1;
+            if (this.list.size() != 0 && !sameTickException && this.list.get(i - 1).tick == move.tick || move.tick > lastPlayTick()){
                 Main.log(Level.ERROR, "two moving at the same tick error", true);
                 return false;
             }
@@ -127,40 +158,45 @@ public class Emote {
             return true;
         }
         public float getCurrentValue(float currentState, float tickDelta){
-            if(getCurrentTick()<beginTick) {    //if it is before playing the emote
-                Move moveBefore = new Move(0, currentState, Ease.INOUTSINE);
-                Move moveNext = list.get(0);
-                return moveBefore.getPos(moveNext, tickDelta + currentTick);
+            int pos = findTick(currentTick);
+            Move moveBefore;
+            Move moveAfter;
+            if(pos == -1){
+                moveBefore = (currentTick < beginTick || this.list.size() != 0) ? new Move(0, currentState, Ease.INOUTSINE)
+                        : (currentTick < endTick) ? new Move(beginTick, defaultValue, Ease.INOUTSINE)
+                        : new Move(endTick, defaultValue, Ease.INOUTSINE);
             }
-            else{
-                Move nextMove;
-                if (list.size() == 0) return currentState;
-                int i = findTick(getCurrentTick());
-                if (list.size() > i + 1) {
-                    nextMove = list.get(i + 1);
-                }
-                else {
-                    nextMove = new Move(resetTick, currentState, Ease.INOUTSINE);
-                }
-                return list.get(i).getPos(nextMove, tickDelta + getCurrentTick());
+            else {
+                moveBefore = this.list.get(pos);
             }
+            if(!(this.list.size() > pos +1)){
+                    moveAfter = (currentTick >= endTick || this.list.size() != 0) ? new Move(stopTick, currentState, Ease.INOUTSINE)
+                            : (currentTick >= beginTick) ? new Move(endTick, defaultValue, Ease.INOUTSINE)
+                            : new Move(beginTick, defaultValue, Ease.INOUTSINE);
+            }
+            else moveAfter = this.list.get(pos + 1);
+            return moveBefore.getPos(moveAfter, getCurrentTick());
         }
 
     }
     public class RotationPart extends Part{
+        public RotationPart(float x) {
+            super(x);
+        }
+
         public boolean add(Move move, int rotate) {
-            if( this.add(move)){
-                this.add(new Move(move.tick,move.value + 6.28318530718f * rotate, move.ease),true);
+            if( this.add(move) && rotate != 0){
+                this.add(new Move(move.tick, move.value + 6.28318530718f * rotate, move.ease), true);
                 return true;
             }
             else return false;
         }
     }
 
-    public class Move{
+    private static class Move{
         public int tick;
         public Float value;
-        private Ease ease;
+        private final Ease ease;
 
         public Move(int tick, float value, Ease ease){
             this.tick = tick;

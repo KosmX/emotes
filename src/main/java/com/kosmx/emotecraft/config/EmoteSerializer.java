@@ -7,14 +7,17 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.kosmx.emotecraft.Emote;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 public class EmoteSerializer extends StdDeserializer<EmoteHolder> {
 
-    protected EmoteSerializer(Class<?> vc) {
-        super(vc);
+    public EmoteSerializer(){
+        this(null);
     }
 
+    public EmoteSerializer(Class<?> vc) {
+        super(vc);
+    }
+    //Todo create error feedback about missing items (names)
     @Override
     public EmoteHolder deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
@@ -49,30 +52,30 @@ public class EmoteSerializer extends StdDeserializer<EmoteHolder> {
             int tick = n.get("tick").asInt();
             String easing = n.has("easing") ? n.get("easing").asText() : "linear";
             int turn = n.has("turn") ? n.get("turn").asInt() : 0;
-            addBodyPartIfExists(emote, emote.head, "head", n, degrees, tick, easing);
-            addBodyPartIfExists(emote, emote.torso, "torso", n, degrees, tick, easing);
-            addBodyPartIfExists(emote, emote.rightArm, "rightArm", n, degrees, tick, easing);
-            addBodyPartIfExists(emote, emote.leftArm, "leftArm", n, degrees, tick, easing);
-            addBodyPartIfExists(emote, emote.rightLeg, "rightLeg", n, degrees, tick, easing);
-            addBodyPartIfExists(emote, emote.leftLeg, "leftLeg", n, degrees, tick, easing);
+            addBodyPartIfExists(emote, emote.head, "head", n, degrees, tick, easing, turn);
+            addBodyPartIfExists(emote, emote.torso, "torso", n, degrees, tick, easing, turn);
+            addBodyPartIfExists(emote, emote.rightArm, "rightArm", n, degrees, tick, easing, turn);
+            addBodyPartIfExists(emote, emote.leftArm, "leftArm", n, degrees, tick, easing, turn);
+            addBodyPartIfExists(emote, emote.rightLeg, "rightLeg", n, degrees, tick, easing, turn);
+            addBodyPartIfExists(emote, emote.leftLeg, "leftLeg", n, degrees, tick, easing, turn);
         }
     }
-    private void addBodyPartIfExists(Emote emote, Emote.BodyPart part, String name, JsonNode node, boolean degrees, int tick, String easing){
+    private void addBodyPartIfExists(Emote emote, Emote.BodyPart part, String name, JsonNode node, boolean degrees, int tick, String easing, int turn){
         if(node.has(name)){
             JsonNode partNode = node.get(name);
-            addPartIfExists(emote, part.x, "x", partNode, degrees, tick, easing);
-            addPartIfExists(emote, part.y, "y", partNode, degrees, tick, easing);
-            addPartIfExists(emote, part.z, "z", partNode, degrees, tick, easing);
-            addPartIfExists(emote, part.pitch, "pitch", partNode, degrees, tick, easing);
-            addPartIfExists(emote, part.yaw, "yaw", partNode, degrees, tick, easing);
-            addPartIfExists(emote, part.roll, "roll", partNode, degrees, tick, easing);
+            addPartIfExists(emote, part.x, "x", partNode, degrees, tick, easing, turn);
+            addPartIfExists(emote, part.y, "y", partNode, degrees, tick, easing, turn);
+            addPartIfExists(emote, part.z, "z", partNode, degrees, tick, easing, turn);
+            addPartIfExists(emote, part.pitch, "pitch", partNode, degrees, tick, easing, turn);
+            addPartIfExists(emote, part.yaw, "yaw", partNode, degrees, tick, easing, turn);
+            addPartIfExists(emote, part.roll, "roll", partNode, degrees, tick, easing, turn);
         }
     }
-    private void addPartIfExists(Emote emote, Emote.Part part, String name, JsonNode node, boolean degrees, int tick, String easing){
+    private void addPartIfExists(Emote emote, Emote.Part part, String name, JsonNode node, boolean degrees, int tick, String easing, int turn){
         if(node.has(name)){
             float value = (float) node.get(name).asDouble();
             if (degrees) value *= 0.01745329251f;
-            emote.addMove(part, tick, value , easing);
+            emote.addMove(part, tick, value , easing, turn);
         }
     }
 }
