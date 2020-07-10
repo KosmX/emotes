@@ -1,15 +1,12 @@
 package com.kosmx.emotecraft.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.io.JsonEOFException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Emote;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonDeserialize(using = EmoteSerializer.class)
 public class EmoteHolder {
     public final Emote emote;
     public final String name;
@@ -33,14 +30,16 @@ public class EmoteHolder {
         this.hash = hash;
     }
 
+
+
     public Emote getEmote(){
         return emote;
     }
 
-    public static EmoteHolder deserializeJson(String json) throws JsonProcessingException {     //throws BowlingBall XD
-        return new ObjectMapper().readValue(json, EmoteHolder.class);
+    public static EmoteHolder deserializeJson(String json) throws JsonParseException {     //throws BowlingBall XD
+        return EmoteSerializer.deserializer.fromJson(json, EmoteHolder.class);
     }
-    public static void addEmoteToList(String json) throws JsonProcessingException{
+    public static void addEmoteToList(String json) throws JsonParseException{
         list.add(deserializeJson(json));
     }
 

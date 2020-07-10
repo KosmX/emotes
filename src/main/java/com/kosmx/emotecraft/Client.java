@@ -1,6 +1,7 @@
 package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
+import com.kosmx.emotecraft.config.EmoteSerializer;
 import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -25,6 +26,7 @@ public class Client implements ClientModInitializer {
     public void onInitializeClient() {
         //There will be something only client stuff
         //like get emote list, or add emote player key
+        EmoteSerializer.initilaizeDeserializer();
 
         emoteKeyBinding = new KeyBinding(
                 "key.emotecraft.fastchoose",
@@ -88,6 +90,7 @@ public class Client implements ClientModInitializer {
         catch (Exception e){
             Main.log(Level.ERROR, "Error while importing debug emote.", true);
             Main.log(Level.ERROR, e.getMessage());
+            e.printStackTrace();
         }
     }
 }
