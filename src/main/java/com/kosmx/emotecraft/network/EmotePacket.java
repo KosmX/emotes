@@ -1,0 +1,84 @@
+package com.kosmx.emotecraft.network;
+
+import com.kosmx.emotecraft.Emote;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.UUID;
+
+public class EmotePacket{
+    protected Emote emote;
+    protected UUID player;
+
+    public EmotePacket(Emote emote, PlayerEntity playerEntity){
+        this.emote = emote;
+        player = playerEntity.getGameProfile().getId();
+    }
+    public EmotePacket(){}
+
+    public void read(PacketByteBuf buf) throws IOException {
+        player = buf.readUuid();    //we need to know WHO playings this emote
+        emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt());
+        getBodyPartInfo(buf, emote.head);
+        getBodyPartInfo(buf, emote.torso);
+        getBodyPartInfo(buf, emote.rightArm);
+        getBodyPartInfo(buf, emote.leftArm);
+        getBodyPartInfo(buf, emote.rightLeg);
+        getBodyPartInfo(buf, emote.leftLeg);
+    }
+    public UUID getPlayer(){
+        return this.player;
+    }
+    public Emote getEmote(){
+        return emote;
+    }
+
+    public void write(PacketByteBuf buf) throws IOException {
+        buf.writeUuid(player);
+        buf.writeInt(emote.getBeginTick());
+        buf.writeInt(emote.getEndTick());
+        buf.writeInt(emote.getStopTick());
+        writeBodyPartInfo(buf, emote.head);
+        writeBodyPartInfo(buf, emote.torso);
+        writeBodyPartInfo(buf, emote.rightArm);
+        writeBodyPartInfo(buf, emote.leftArm);
+        writeBodyPartInfo(buf, emote.rightLeg);
+        writeBodyPartInfo(buf, emote.leftLeg);
+    }
+    private void writeBodyPartInfo(PacketByteBuf buf, Emote.BodyPart part){
+        writePartInfo(buf, part.x);
+        writePartInfo(buf, part.y);
+        writePartInfo(buf, part.z);
+        writePartInfo(buf, part.pitch);
+        writePartInfo(buf, part.yaw);
+        writePartInfo(buf, part.roll);
+    }
+    private void writePartInfo(PacketByteBuf buf, Emote.Part part){
+        List<Emote.Move> list = part.getList();
+        buf.writeInt(list.size());
+        for (ListIterator<Emote.Move> it = list.listIterator(); it.hasNext(); ) {
+            Emote.Move move = it.next();
+            buf.writeInt(move.tick);
+            buf.writeFloat(move.value);
+            buf.writeString(move.getEase());
+        }
+    }
+
+    private void getBodyPartInfo(PacketByteBuf buf, Emote.BodyPart part) throws IOException{
+        getPartInfo(buf, part.x);
+        getPartInfo(buf, part.y);
+        getPartInfo(buf, part.z);
+        getPartInfo(buf, part.pitch);
+        getPartInfo(buf, part.yaw);
+        getPartInfo(buf, part.roll);
+    }
+    private void getPartInfo(PacketByteBuf buf, Emote.Part part) {
+        int len = buf.readInt();
+        for(int i = 0; i<len; i++){
+            Emote.addMove(part, buf.readInt(), buf.readFloat(), buf.readString());
+        }
+    }
+}

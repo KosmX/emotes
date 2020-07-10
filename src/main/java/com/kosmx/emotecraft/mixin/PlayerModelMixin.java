@@ -44,6 +44,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         if(Emote.isRunningEmote(((ClientPlayerEmotes)livingEntity).getEmote())){
             Emote emote = ((ClientPlayerEmotes) livingEntity).getEmote();
             emote.head.setBodyPart(this.head);
+            this.helmet.copyPositionAndRotation(this.head);
             emote.leftArm.setBodyPart(this.leftArm);
             emote.rightArm.setBodyPart(this.rightArm);
             emote.leftLeg.setBodyPart(this.leftLeg);

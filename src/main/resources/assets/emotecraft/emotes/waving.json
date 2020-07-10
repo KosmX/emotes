@@ -103,13 +103,6 @@
 				}
 			},
 			{
-				"tick": 45,
-				"easing": "InOutSine",
-				"rightArm":{
-					"roll":95
-				}
-			},
-			{
 				"tick":46,
 				"easing": "InOutSine",
 				"torso":{

@@ -31,6 +31,15 @@ public class Emote {
         endTick = b;
         stopTick = c;
     }
+    public int getBeginTick(){
+        return beginTick;
+    }
+    public int getEndTick(){
+        return endTick;
+    }
+    public int getStopTick(){
+        return stopTick;
+    }
 
     public void setTickDelta(float f){
         this.tickDelta = f;
@@ -66,8 +75,11 @@ public class Emote {
         if (stopTick <= endTick) stopTick = endTick + 1;
     }
 
-    public void addMove(Part part, int tick, float value, String easing, int turn, boolean degrees){
+    public static void addMove(Part part, int tick, float value, String easing, int turn, boolean degrees){
         part.add(tick, value, Easing.easeFromString(easing), turn, degrees);
+    }
+    public static void addMove(Part part, int tick, float value, String ease){
+        part.add(tick, value, Easing.easeFromString(ease));
     }
 
     public class BodyPart {
@@ -132,6 +144,9 @@ public class Emote {
             this.defaultValue = defaultValue;
         }
 
+        public List<Move> getList(){
+            return list;
+        }
         /*
          *finds where is the current move
          */
@@ -144,6 +159,9 @@ public class Emote {
         }
         public boolean add(int tick, float value, Ease ease, int rotate, boolean degrees){
             return this.add(new Move(tick, value, ease), false);
+        }
+        public boolean add(int tick, float value, Ease ease){
+            return this.add(new Move(tick, value, ease), true);
         }
         protected boolean add(Move move, boolean sameTickException){
             //TODO add value limit
@@ -193,10 +211,14 @@ public class Emote {
         }
     }
 
-    private static class Move{
+    public static class Move{
         public int tick;
         public Float value;
         private final Ease ease;
+
+        public String getEase(){
+            return ease.toString();
+        }
 
         public Move(int tick, float value, Ease ease){
             this.tick = tick;
