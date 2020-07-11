@@ -45,6 +45,7 @@ public class Client implements ClientModInitializer {
         initEmotes();       //Import the emotes, including both the default and the external.
         //TODO do it after the resourceManager is ready...
 
+
     }
 
     private void initNetworkClient(){
