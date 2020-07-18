@@ -28,7 +28,7 @@
     "emotecraft.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.4.0",
-    "fabric": "*"
+    "fabricloader": ">=0.9.0",
+    "fabric": ">=0.15.0"
   }
 }

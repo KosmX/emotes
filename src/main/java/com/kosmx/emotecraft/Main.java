@@ -56,7 +56,7 @@ public class Main implements ModInitializer {
         ServerSidePacketRegistry.INSTANCE.register(EMOTE_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {EmotePacket packet = new EmotePacket();
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             try {
-                packet.read(packetByteBuf);
+                packet.read(packetByteBuf); //TODO check exploiting
                 packet.write(buf);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -65,7 +65,6 @@ public class Main implements ModInitializer {
             Stream<PlayerEntity> players = PlayerStream.watching(packetContext.getPlayer());
             players.forEach(playerEntity -> { //TODO check correct emote and kick if not
                 if (playerEntity == packetContext.getPlayer()) return;
-
                 ServerSidePacketRegistry.INSTANCE.sendToPlayer(playerEntity, EMOTE_NETWORK_PACKET_ID, buf);
             });
         }));

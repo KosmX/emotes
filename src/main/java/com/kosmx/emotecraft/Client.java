@@ -8,17 +8,18 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.impl.resource.loader.ModResourcePackUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.datafixer.fix.PlayerUuidFix;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.Resource;
-import net.minecraft.server.ServerConfigHandler;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
@@ -26,9 +27,11 @@ import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 
 public class Client implements ClientModInitializer {
 
+    private static final ResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES);
     private static KeyBinding emoteKeyBinding;
     private static KeyBinding debugEmote;
     @Override
@@ -43,7 +46,6 @@ public class Client implements ClientModInitializer {
         initNetworkClient();        //Init the Client-ide network manager. The Main'll have a server-side
 
         initEmotes();       //Import the emotes, including both the default and the external.
-        //TODO do it after the resourceManager is ready...
 
 
     }
@@ -75,25 +77,20 @@ public class Client implements ClientModInitializer {
     private void initEmotes(){
         //Serialize emotes
 
-        Identifier internalEmotes = new Identifier(Main.MOD_ID, "emotes");
 
-        serializeInternalEmotes(internalEmotes);
+        serializeInternalEmotes("waving");
+        //TODO add internal emotes to the list
 
-        File externalEmotes = FabricLoader.getInstance().getGameDirectory().toPath().resolve("emotes").toFile();
+        File externalEmotes = FabricLoader.getInstance().getGameDir().resolve("emotes").toFile();
         if(!externalEmotes.isDirectory())externalEmotes.mkdirs();
         serializeExternalEmotes(externalEmotes);
     }
 
-    private static void serializeInternalEmotes(Identifier identifier){
-        try {
-            for(Resource resource : MinecraftClient.getInstance().getResourceManager().getAllResources(identifier)){
-                InputStream stream = resource.getInputStream();
-                Reader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-                EmoteHolder.addEmoteToList(EmoteSerializer.deserializer.fromJson(reader, EmoteHolder.class));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private static void serializeInternalEmotes(String name){
+        InputStream stream = Client.class.getResourceAsStream("/assets/" + Main.MOD_ID + "/emotes/" + name + ".json");
+        InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+        Reader reader = new BufferedReader(streamReader);
+        EmoteHolder.addEmoteToList(EmoteSerializer.deserializer.fromJson(reader, EmoteHolder.class));
     }
 
     private static void serializeExternalEmotes(File path){
@@ -110,7 +107,7 @@ public class Client implements ClientModInitializer {
 
     private static void playDebugEmote(){
         Main.log(Level.INFO, "Playing debug emote");
-        File location = FabricLoader.getInstance().getGameDirectory().toPath().resolve("emote.json").toFile();
+        File location = FabricLoader.getInstance().getGameDir().resolve("emote.json").toFile();
         try {
             EmoteHolder emoteHolder = EmoteHolder.deserializeJson(FileUtils.readFileToString(location, "UTF-8"));
             if(MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
