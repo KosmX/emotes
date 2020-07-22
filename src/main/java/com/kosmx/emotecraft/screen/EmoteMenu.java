@@ -2,6 +2,7 @@ package com.kosmx.emotecraft.screen;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.screen.widget.AbstractEmoteListWidget;
+import com.kosmx.emotecraft.screen.widget.AbstractFastChooseWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -59,6 +60,33 @@ public class EmoteMenu extends Screen {
 
             protected void onPressed() {        //setup screen -> select pack, play screen -> play
                 EmoteListWidget.this.setSelected(this);
+            }
+        }
+    }
+
+    private class FastChooseWidget extends AbstractFastChooseWidget{
+
+        public FastChooseWidget(int x, int y, int size) {
+            super(x, y, size);
+        }
+
+        @Override
+        protected boolean isValidClickButton(int button) {
+            return button == 0 || button == 1;
+        }
+
+        @Override
+        protected boolean onClick(FastChooseElement element, int button) {
+            if(button == 1){
+                element.clearEmote();
+                return true;
+            }
+            else if (emoteList.getSelected() != null){
+                element.setEmote(emoteList.getSelected().emote);
+                return true;
+            }
+            else {
+                return false;
             }
         }
     }

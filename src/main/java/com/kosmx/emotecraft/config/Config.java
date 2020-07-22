@@ -10,4 +10,7 @@ public class Config implements ConfigData {
 
     @ConfigEntry.Gui.Tooltip
     public boolean showDebug = false;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean dark = false;
 }

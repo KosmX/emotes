@@ -8,9 +8,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +35,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     public void filter(String string){
         this.clearEntries();
         for(E emote : this.emotes){
-            if(emote.name.getString().toLowerCase().contains(string) || emote.description.getString().toLowerCase().contains(string) || emote.author.getString().toLowerCase().equals(string)){
+            if(emote.emote.name.getString().toLowerCase().contains(string) || emote.emote.description.getString().toLowerCase().contains(string) || emote.emote.author.getString().toLowerCase().equals(string)){
                 this.addEntry(emote);
             }
         }
@@ -55,15 +53,11 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
 
     public static abstract class AbstractEmoteEntry<T extends AbstractEmoteEntry<T>> extends AlwaysSelectedEntryListWidget.Entry<T> {
         protected final MinecraftClient client;
-        public final StringRenderable name;
-        public final StringRenderable description;
-        public final StringRenderable author;
+        public final EmoteHolder emote;
 
         public AbstractEmoteEntry(MinecraftClient client, EmoteHolder emote){
             this.client = client;
-            this.name = emote.name;
-            this.description = emote.description;
-            this.author = emote.author;
+            this.emote = emote;
         }
 
         @Override
@@ -73,9 +67,9 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
                 RenderSystem.color4f(1, 1, 1, 1);
                 DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, Helper.colorHelper(66, 66, 66, 128));
             }
-            this.client.textRenderer.drawWithShadow(matrices, this.name, x + 2, y + 1, 16777215);
-            this.client.textRenderer.drawWithShadow(matrices, this.description, x + 2, y + 12, 8421504);
-            this.client.textRenderer.drawWithShadow(matrices, this.author, x + 2, y + 23, 8421504);
+            this.client.textRenderer.drawWithShadow(matrices, this.emote.name, x + 2, y + 1, 16777215);
+            this.client.textRenderer.drawWithShadow(matrices, this.emote.description, x + 2, y + 12, 8421504);
+            this.client.textRenderer.drawWithShadow(matrices, this.emote.author, x + 2, y + 23, 8421504);
         }
 
         @Override
