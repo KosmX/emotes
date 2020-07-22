@@ -9,6 +9,8 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
@@ -16,9 +18,9 @@ import java.util.List;
 
 public class EmoteHolder {
     public final Emote emote;
-    public final String name;
-    public final String description;
-    public final String author;
+    public final StringRenderable name;
+    public final StringRenderable description;
+    public final StringRenderable author;
     public final int hash;
     public static List<EmoteHolder> list = new ArrayList<EmoteHolder>();
 
@@ -29,7 +31,7 @@ public class EmoteHolder {
      * @param description Emote decription
      * @param author Name of the Author
      */
-    EmoteHolder(Emote emote, String name, String description, String author, int hash){
+    EmoteHolder(Emote emote, StringRenderable name, StringRenderable description, StringRenderable author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;
