@@ -6,7 +6,8 @@
   "client": [
     "ClientPlayerMixin",
     "PlayerRendererMixin",
-    "PlayerModelMixin"
+    "PlayerModelMixin",
+    "KeyEventMixin"
   ],
   "server": [],
   "injectors": {

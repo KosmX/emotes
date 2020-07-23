@@ -7,6 +7,8 @@ import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.StringRenderable;
@@ -23,6 +25,7 @@ public class EmoteHolder {
     public final StringRenderable author;
     public final int hash;
     public static List<EmoteHolder> list = new ArrayList<EmoteHolder>();
+    public InputUtil.Key keyBinding = InputUtil.UNKNOWN_KEY;
 
     /**
      *

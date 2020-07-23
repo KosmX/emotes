@@ -4,6 +4,7 @@ import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.EmoteSerializer;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
+import com.kosmx.emotecraft.screen.EmoteMenu;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -20,6 +21,7 @@ import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
@@ -130,14 +132,16 @@ public class Client implements ClientModInitializer {
                 GLFW.GLFW_KEY_B,        //because bedrock edition has the same key
                 "category.emotecraft.keybinding"
         );
-        debugEmote = new KeyBinding(
-                "key.emotecraft.debug",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_O,
-                "category.emotecraft.keybinding"
-        );
+        if(FabricLoader.getInstance().getGameDir().resolve("emote.json").toFile().isFile()) { //Secret feature//
+            debugEmote = new KeyBinding(
+                    "key.emotecraft.debug",
+                    InputUtil.Type.KEYSYM,
+                    GLFW.GLFW_KEY_O,       //I don't know why... just
+                    "category.emotecraft.keybinding"
+            );
+            KeyBindingHelper.registerKeyBinding(debugEmote);
+        }
         KeyBindingHelper.registerKeyBinding(emoteKeyBinding);
-        KeyBindingHelper.registerKeyBinding(debugEmote);
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
             if (emoteKeyBinding.wasPressed()){

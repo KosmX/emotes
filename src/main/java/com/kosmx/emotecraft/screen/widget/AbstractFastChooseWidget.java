@@ -46,11 +46,12 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
     }
 
     public void drawCenteredText(MatrixStack matrixStack, TextRenderer textRenderer, StringRenderable stringRenderable, float deg){
-        drawCenteredText(matrixStack, textRenderer, stringRenderable, (float) (((float)(this.x + this.size/2))*Math.sin(deg * 0.0174533)), (float) (((float)(this.y + this.size/2))*Math.cos(deg * 0.0174533)));
+        drawCenteredText(matrixStack, textRenderer, stringRenderable, (float) (((float)(this.x + this.size/2)) + size*0.4*Math.sin(deg * 0.0174533)), (float) (((float)(this.y + this.size/2)) + size*0.4*Math.cos(deg * 0.0174533)));
     }
 
     public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, StringRenderable stringRenderable, float x, float y){
-        textRenderer.drawWithShadow(matrices, stringRenderable, x - (float)textRenderer.getWidth(stringRenderable) / 2, y - 2, Helper.colorHelper(1, 1, 1, 1));
+        int c = Main.config.dark ? 255 : 0; //:D
+        textRenderer.draw(matrices, stringRenderable, x - (float)textRenderer.getWidth(stringRenderable) / 2, y - 2, Helper.colorHelper(c, c, c, 1));
     }
 
     @Nullable
@@ -91,17 +92,19 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        this.drawTexture(matrices, 0, 0, 0, 0, 256);
-        for(FastChooseElement f:elements){
-            if(f.hasEmote()) f.renderText(matrices, textRenderer);
-        }
+        this.drawTexture(matrices, 0, 0, 0, 0, 2);
         if(this.hovered){
             FastChooseElement part = getActivePart(mouseX, mouseY);
-            if(part != null && part.hasEmote()){
+            if(part != null && doHoverPart(part)){
                 part.renderHover(matrices);
             }
         }
+        for(FastChooseElement f:elements){
+            if(f.hasEmote()) f.renderText(matrices, textRenderer);
+        }
     }
+
+    protected abstract boolean doHoverPart(FastChooseElement part);
 
     /**
      * @param matrices MatrixStack ...
@@ -112,7 +115,7 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
      * @param s used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
     private void drawTexture(MatrixStack matrices, int x, int y, int u, int v, int s){
-        drawTexture(matrices, this.x + x, this.y + y, this.size, this.size, u, v, s, s, 512, 512);
+        drawTexture(matrices, this.x + x*this.size/256, this.y + y*this.size/256, s * this.size/2, s*this.size/2, u, v, s*128, s*128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
@@ -122,7 +125,7 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         checkHovered((int)mouseX, (int)mouseY);
-        if(this.isValidClickButton(button)){
+        if(this.hovered && this.isValidClickButton(button)){
             FastChooseElement element = this.getActivePart((int)mouseX, (int)mouseY);
             if(element != null){
                 return onClick(element, button);
@@ -182,20 +185,20 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
             int y = 0;
 
             if((id & 1) == 0){
-                textX = 256;
-            }
-            else {
                 textY = 256;
             }
+            else {
+                textX = 256;
+            }
 
-            if((id & 2) == 2){
+            if((id & 2) == 0){
                 y = 128;
             }
 
-            if((id & 4) == 4){
+            if((id & 4) == 0){
                 x = 128;
             }
-            drawTexture(matrices, x, y, textX + x, textY + y, 128);
+            drawTexture(matrices, x, y, textX + x, textY + y, 1);
         }
     }
 }
