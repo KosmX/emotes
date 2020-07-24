@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
@@ -70,10 +71,6 @@ public class EmoteHolder {
 
     public InputUtil.Key getKeyBinding(){
         return keyBinding;
-    }
-
-    public void setKeyBinding(InputUtil.Key keyBinding){
-        this.keyBinding = keyBinding;
     }
 
     //public void setKeyBinding(InputUtil.Key key, )

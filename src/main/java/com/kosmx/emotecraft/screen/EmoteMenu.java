@@ -1,28 +1,33 @@
 package com.kosmx.emotecraft.screen;
 
 import com.kosmx.emotecraft.Main;
-import com.kosmx.emotecraft.config.ConfigSerializer;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
+import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraft.screen.widget.AbstractEmoteListWidget;
 import com.kosmx.emotecraft.screen.widget.AbstractFastChooseWidget;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmoteMenu extends Screen {
@@ -33,7 +38,10 @@ public class EmoteMenu extends Screen {
     //protected List<buttons> buttons is already exists
     private static final Text unboundText = InputUtil.UNKNOWN_KEY.getLocalizedText();
     private ButtonWidget setKeyButton;
-    private boolean save = false;
+    public boolean save = false;
+    private TextFieldWidget searchBox;
+    private final List<PositionedText> texts = new ArrayList<>();
+
 
 
     public EmoteMenu(Screen parent){
@@ -43,15 +51,21 @@ public class EmoteMenu extends Screen {
 
     @Override
     protected void init() {
-        //TODO search box
-        this.emoteList = new EmoteListWidget(this.client, (int)(this.width/2.2-16), this.height, this);
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.width/2-(int)(this.width/2.2-16)-12, 12, (int)(this.width/2.2-16), 20, this.searchBox, new TranslatableText("emotecraft.search"));
+
+        this.searchBox.setChangedListener((string)-> {
+            this.emoteList.filter(string::toLowerCase);
+        });
+        this.children.add(searchBox);
+
+        this.emoteList = new EmoteListWidget(this.client, (int) (this.width / 2.2 - 16), this.height, this);
         this.emoteList.setLeftPos(this.width/2-(int)(this.width/2.2-16)-12);
         this.children.add(this.emoteList);
         int x = Math.min(this.width/4, this.height/2);
         this.fastMenu = new FastChooseWidget(this.width/2 + 2, this.height/2 - 8, x-7);
         this.children.add(fastMenu);
         this.buttons.add(new ButtonWidget(this.width - 100, 4, 96, 20, new TranslatableText("emotecraft.options.options"), (button -> {
-            this.client.openScreen(this.parent);
+            this.client.openScreen(ClothConfigScreen.getConfigScreen(this));
         })));
         this.buttons.add(new ButtonWidget(this.width/2 + 10, this.height - 30, 96, 20, ScreenTexts.DONE, (button -> {
             this.client.openScreen(this.parent);
@@ -66,6 +80,9 @@ public class EmoteMenu extends Screen {
         emoteList.setEmotes(EmoteHolder.list);
         this.children.addAll(buttons);
         super.init();
+        this.setInitialFocus(this.searchBox);
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.keybind"), this.width/2 +115, 40));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu"), this.width/2 + 2 + x/2, height/2 - 26));
     }
 
     private void activateKey(){
@@ -102,7 +119,11 @@ public class EmoteMenu extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
+        for(PositionedText str:texts){
+            str.render(matrices, textRenderer);
+        }
         this.emoteList.render(matrices, mouseX, mouseY, delta);
+        this.searchBox.render(matrices, mouseX, mouseY, delta);
         this.fastMenu.render(matrices, mouseX, mouseY, delta);
         updateKeyText();
         super.render(matrices, mouseX, mouseY, delta);
@@ -111,10 +132,33 @@ public class EmoteMenu extends Screen {
         boolean bl = false;
         if(emoteList.getSelected()!= null){
             bl = true;
-            emoteList.getSelected().emote.keyBinding = key;
-            activeKeyTime = 0;
-            save = true;
+            if(!applyKey(false, emoteList.getSelected().emote, key)){
+                this.client.openScreen(new ConfirmScreen((bool)-> confirmReturn(bool, emoteList.getSelected().emote, key), new TranslatableText("emotecraft.sure"), new TranslatableText("emotecraft.sure2")));
+            }
         }
+        return bl;
+    }
+    private void confirmReturn(boolean choice, EmoteHolder emoteHolder, InputUtil.Key key){
+        if(choice){
+            applyKey(true, emoteHolder, key);
+        }
+        this.client.openScreen(this);
+    }
+
+    private boolean applyKey(boolean force, EmoteHolder emote, InputUtil.Key key){
+        boolean bl = true;
+        for (EmoteHolder emoteHolder:EmoteHolder.list){
+            if(!key.equals(InputUtil.UNKNOWN_KEY) && emoteHolder.keyBinding.equals(key)){
+                bl = false;
+                if(force){
+                    emoteHolder.keyBinding = InputUtil.UNKNOWN_KEY;
+                }
+            }
+        }
+        if (bl || force){
+            emote.keyBinding = key;
+        }
+        this.activeKeyTime = 0;
         return bl;
     }
 
@@ -164,9 +208,9 @@ public class EmoteMenu extends Screen {
 
 
 
-    public class EmoteListWidget extends AbstractEmoteListWidget<EmoteListWidget.EmoteListEntry> {
+    public static class EmoteListWidget extends AbstractEmoteListWidget<EmoteListWidget.EmoteListEntry> {
         public EmoteListWidget(MinecraftClient minecraftClient, int width, int height, Screen screen) {
-            super(minecraftClient, width, height, 51, height-32, 36, screen);
+            super(minecraftClient, width, height - 51 - 32, 51, height-32, 36, screen);
         }
 
         @Override
@@ -174,7 +218,7 @@ public class EmoteMenu extends Screen {
             for(EmoteHolder emote : list){
                 this.emotes.add(new EmoteListEntry(this.client, emote));
             }
-            filter("");
+            filter(() -> {return "";});
         }
 
         public  class EmoteListEntry extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntry> {
@@ -220,6 +264,21 @@ public class EmoteMenu extends Screen {
         @Override
         protected boolean doHoverPart(FastChooseElement part) {
             return activeKeyTime == 0;
+        }
+    }
+    private class PositionedText {
+        private final Text str;
+        private int x;
+        private int y;
+
+        private PositionedText(Text str, int x, int y){
+            this.str = str;
+            this.x = x;
+            this.y = y;
+        }
+        private void render(MatrixStack matrixStack, TextRenderer textRenderer){
+            drawCenteredText(matrixStack, textRenderer, this.str, this.x, this.y, Helper.colorHelper(255,255,255,255));
+            textRenderer.getClass();
         }
     }
 }

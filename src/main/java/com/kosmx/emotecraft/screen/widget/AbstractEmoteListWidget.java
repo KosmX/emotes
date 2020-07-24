@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.AbstractEmoteEntry<E>> extends AlwaysSelectedEntryListWidget<E> {
 
@@ -32,10 +33,10 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
 
     public abstract void setEmotes(List<EmoteHolder> list);
 
-    public void filter(String string){
+    public void filter(Supplier<String> string){
         this.clearEntries();
         for(E emote : this.emotes){
-            if(emote.emote.name.getString().toLowerCase().contains(string) || emote.emote.description.getString().toLowerCase().contains(string) || emote.emote.author.getString().toLowerCase().equals(string)){
+            if(emote.emote.name.getString().toLowerCase().contains(string.get()) || emote.emote.description.getString().toLowerCase().contains(string.get()) || emote.emote.author.getString().toLowerCase().equals(string.get())){
                 this.addEntry(emote);
             }
         }
