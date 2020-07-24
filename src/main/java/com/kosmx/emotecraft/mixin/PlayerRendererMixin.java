@@ -18,7 +18,7 @@ public class PlayerRendererMixin {
 
     @Inject(method = "setupTransforms", at = @At("RETURN"))
     private void setRotation(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float a, float bodyYaw, float tickDelta, CallbackInfo info){
-        if(Emote.isRunningEmote(((ClientPlayerEmotes)abstractClientPlayerEntity).getEmote()))
+        if( Emote.isRunningEmote(((ClientPlayerEmotes)abstractClientPlayerEntity).getEmote()))
         {
             Emote emote = ((ClientPlayerEmotes)abstractClientPlayerEntity).getEmote();
             emote.setTickDelta(tickDelta);

@@ -98,23 +98,28 @@ public class EmoteHolder {
         list.add(hold);
     }
 
-    public static void playEmote(Emote emote, PlayerEntity player){
-        try {
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            EmotePacket emotePacket = new EmotePacket(emote, player);
-            emotePacket.write(buf);
-            ClientSidePacketRegistry.INSTANCE.sendToServer(Main.EMOTE_NETWORK_PACKET_ID, buf);
-            ClientPlayerEmotes target = (ClientPlayerEmotes) player;
-            target.playEmote(emote);
-            emote.start();
+    public static boolean playEmote(Emote emote, PlayerEntity player){
+        if(player == MinecraftClient.getInstance().getCameraEntity()) {
+            try {
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                EmotePacket emotePacket = new EmotePacket(emote, player);
+                emotePacket.write(buf);
+                ClientSidePacketRegistry.INSTANCE.sendToServer(Main.EMOTE_NETWORK_PACKET_ID, buf);
+                ClientPlayerEmotes target = (ClientPlayerEmotes) player;
+                target.playEmote(emote);
+                emote.start();
+            } catch (Exception e) {
+                Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
+                if (Main.config.showDebug) e.printStackTrace();
+            }
+            return true;
         }
-        catch (Exception e){
-            Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
-            if(Main.config.showDebug)e.printStackTrace();
+        else {
+            return false;
         }
     }
-    public void playEmote(PlayerEntity playerEntity){
-        playEmote(this.getEmote(), playerEntity);
+    public boolean playEmote(PlayerEntity playerEntity){
+        return playEmote(this.getEmote(), playerEntity);
     }
 
 }
