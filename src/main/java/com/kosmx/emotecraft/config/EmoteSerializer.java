@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Type;
-
+import java.util.stream.Stream;
 
 
 public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
@@ -28,9 +28,10 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
         if(node.has("description")){
             description = Text.Serializer.fromJson(node.get("description"));
         }
-        node.keySet().forEach((string)->{
+        node.entrySet().forEach((entry)->{
+            String string = entry.getKey();
             if(string.equals("author") || string.equals("comment") || string.equals("name") || string.equals("description") || string.equals("emote"))return;
-            Main.log(Level.WARN, "Can't understadt: " + string);
+            Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
             Main.log(Level.WARN, "If it is a comment, ignore the warning");
         });
         Emote emote = emoteDeserializer(node.getAsJsonObject("emote"));
@@ -43,9 +44,10 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
             beginTick = node.get("beginTick").getAsInt();
         }
         int endTick = node.get("endTick").getAsInt();
-        node.keySet().forEach((string)->{
+        node.entrySet().forEach((entry)->{
+            String string = entry.getKey();
             if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves"))return;
-            Main.log(Level.WARN, "Can't understadt: " + string);
+            Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
             Main.log(Level.WARN, "If it is a comment, ignore the warning");
         });
         int resetTick = node.has("stopTick") ? node.get("stopTick").getAsInt() : endTick;
@@ -60,9 +62,10 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
             JsonObject obj = n.getAsJsonObject();
             int tick = obj.get("tick").getAsInt();
             String easing = obj.has("easing") ? obj.get("easing").getAsString() : "linear";
-            obj.keySet().forEach((string)->{
+            obj.entrySet().forEach((entry)->{
+                String string = entry.getKey();
                 if(string.equals("tick") || string.equals("comment") || string.equals("easing") || string.equals("turn") || string.equals("head") || string.equals("torso") || string.equals("rightArm") || string.equals("leftArm") || string.equals("rightLeg") || string.equals("leftLeg"))return;
-                Main.log(Level.WARN, "Can't understadt: " + string);
+                Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
                 Main.log(Level.WARN, "If it is a comment, ignore the warning");
             });
             int turn = obj.has("turn") ? obj.get("turn").getAsInt() : 0;
@@ -77,9 +80,10 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
     private void addBodyPartIfExists(Emote emote, Emote.BodyPart part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){
         if(node.has(name)){
             JsonObject partNode = node.get(name).getAsJsonObject();
-            partNode.keySet().forEach((string)->{
+            partNode.entrySet().forEach((entry)->{
+                String string = entry.getKey();
                 if(string.equals("x") || string.equals("y") || string.equals("z") || string.equals("pitch") || string.equals("yaw") || string.equals("roll") || string.equals("comment"))return;
-                Main.log(Level.WARN, "Can't understadt: " + string);
+                Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
                 Main.log(Level.WARN, "If it is a comment, ignore the warning");
             });
             addPartIfExists(emote, part.x, "x", partNode, degrees, tick, easing, turn);
