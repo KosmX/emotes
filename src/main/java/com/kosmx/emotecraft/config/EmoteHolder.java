@@ -6,15 +6,19 @@ import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.StringRenderable;
-import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import org.apache.logging.log4j.Level;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,16 +46,55 @@ public class EmoteHolder {
         this.hash = hash;
     }
 
+    public static void bindKeys(SerializableConfig config) {
+        config.emotesWithKey.removeAll(config.emotesWithKey);
+        for(EmoteHolder emote:list){
+            if(!emote.keyBinding.equals(InputUtil.UNKNOWN_KEY)){
+                config.emotesWithKey.add(emote);
+            }
+        }
+    }
 
+    @Environment(EnvType.CLIENT)
+    public static ActionResult playEmote(InputUtil.Key key){
+        if(MinecraftClient.getInstance() != null && MinecraftClient.getInstance().getCameraEntity() != null && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
+            for(EmoteHolder emote : Main.config.emotesWithKey){
+                if(emote.keyBinding.equals(key)){
+                    emote.playEmote((PlayerEntity) MinecraftClient.getInstance().getCameraEntity());
+                    return ActionResult.SUCCESS;
+                }
+            }
+        }
+        return ActionResult.PASS;
+    }
+
+    public InputUtil.Key getKeyBinding(){
+        return keyBinding;
+    }
+
+    public void setKeyBinding(InputUtil.Key keyBinding){
+        this.keyBinding = keyBinding;
+    }
+
+    //public void setKeyBinding(InputUtil.Key key, )
 
     public Emote getEmote(){
         return emote;
     }
 
-    public static EmoteHolder deserializeJson(String json) throws JsonParseException {     //throws BowlingBall XD
-        return EmoteSerializer.deserializer.fromJson(json, EmoteHolder.class);
+    public static EmoteHolder getEmoteFromHash(int hash){
+        for(EmoteHolder emote:list){
+            if (emote.hash == hash){
+                return emote;
+            }
+        }
+        return null;
     }
-    public static void addEmoteToList(String json) throws JsonParseException{
+
+    public static EmoteHolder deserializeJson(BufferedReader json) throws JsonParseException {     //throws BowlingBall XD
+        return Serializer.serializer.fromJson(json, EmoteHolder.class);
+    }
+    public static void addEmoteToList(BufferedReader json) throws JsonParseException{
         list.add(deserializeJson(json));
     }
     public static void addEmoteToList(EmoteHolder hold){

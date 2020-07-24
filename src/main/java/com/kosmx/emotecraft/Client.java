@@ -2,14 +2,13 @@ package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.EmoteSerializer;
+import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
-import com.kosmx.emotecraft.screen.EmoteMenu;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.fabricmc.fabric.impl.resource.loader.ModResourcePackUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -18,18 +17,16 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Client implements ClientModInitializer {
 
@@ -40,14 +37,14 @@ public class Client implements ClientModInitializer {
     public void onInitializeClient() {
         //There will be something only client stuff
         //like get emote list, or add emote player key
-        EmoteSerializer.initilaizeDeserializer();
+        //EmoteSerializer.initilaizeDeserializer();
         //Every type of initializing process has it's own method... It's easier to see through that
 
         initKeyBindings();      //Init keyBinding, including debug key
 
         initNetworkClient();        //Init the Client-ide network manager. The Main'll have a server-side
 
-        initEmotes();       //Import the emotes, including both the default and the external.
+        //initEmotes();       //Import the emotes, including both the default and the external.
 
 
     }
@@ -76,7 +73,7 @@ public class Client implements ClientModInitializer {
         }));
     }
 
-    private void initEmotes(){
+    public static void initEmotes(){
         //Serialize emotes
 
 
@@ -92,13 +89,15 @@ public class Client implements ClientModInitializer {
         InputStream stream = Client.class.getResourceAsStream("/assets/" + Main.MOD_ID + "/emotes/" + name + ".json");
         InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         Reader reader = new BufferedReader(streamReader);
-        EmoteHolder.addEmoteToList(EmoteSerializer.deserializer.fromJson(reader, EmoteHolder.class));
+        EmoteHolder.addEmoteToList(Serializer.serializer.fromJson(reader, EmoteHolder.class));
     }
 
     private static void serializeExternalEmotes(File path){
         for(File file:path.listFiles()){
             try{
-                EmoteHolder.addEmoteToList(FileUtils.readFileToString(file, "UTF-8"));
+                BufferedReader reader = Files.newBufferedReader(file.toPath());
+                EmoteHolder.addEmoteToList(reader);
+                reader.close();
             }
             catch (Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
@@ -109,9 +108,11 @@ public class Client implements ClientModInitializer {
 
     private static void playDebugEmote(){
         Main.log(Level.INFO, "Playing debug emote");
-        File location = FabricLoader.getInstance().getGameDir().resolve("emote.json").toFile();
+        Path location = FabricLoader.getInstance().getGameDir().resolve("emote.json");
         try {
-            EmoteHolder emoteHolder = EmoteHolder.deserializeJson(FileUtils.readFileToString(location, "UTF-8"));
+            BufferedReader reader = Files.newBufferedReader(location);
+            EmoteHolder emoteHolder = EmoteHolder.deserializeJson(reader);
+            reader.close();
             if(MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
                 PlayerEntity entity = (PlayerEntity) MinecraftClient.getInstance().getCameraEntity();
                 emoteHolder.playEmote(entity);
@@ -140,6 +141,11 @@ public class Client implements ClientModInitializer {
                     "category.emotecraft.keybinding"
             );
             KeyBindingHelper.registerKeyBinding(debugEmote);
+            ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
+                if (debugEmote.wasPressed()){
+                    playDebugEmote();
+                }
+            });
         }
         KeyBindingHelper.registerKeyBinding(emoteKeyBinding);
 
@@ -151,10 +157,8 @@ public class Client implements ClientModInitializer {
                 }
             }
         });
-        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
-            if (debugEmote.wasPressed()){
-                playDebugEmote();
-            }
-        });
+
+        KeyPressCallback.EVENT.register((EmoteHolder::playEmote));
+
     }
 }

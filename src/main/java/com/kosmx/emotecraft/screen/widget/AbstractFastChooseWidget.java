@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractFastChooseWidget extends DrawableHelper implements Drawable, Element {
 
-    public static final EmoteHolder[] emotes = new EmoteHolder[8];
 
     public int x;
     public int y;
@@ -154,16 +153,16 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
         }
 
         public boolean hasEmote(){
-            return AbstractFastChooseWidget.emotes[id] != null;
+            return Main.config.fastMenuEmotes[id] != null;
         }
 
         public void setEmote(@Nullable EmoteHolder emote){
-            emotes[id] = emote;
+            Main.config.fastMenuEmotes[id] = emote;
         }
 
         @Nullable
         public EmoteHolder getEmote(){
-            return emotes[id];
+            return Main.config.fastMenuEmotes[id];
         }
 
         public void clearEmote(){
@@ -171,8 +170,8 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
         }
 
         public void renderText(MatrixStack matrices, TextRenderer textRenderer) {
-            if (emotes[id] != null) {
-                drawCenteredText(matrices, textRenderer, emotes[id].name, this.angle);
+            if (Main.config.fastMenuEmotes[id] != null) {
+                drawCenteredText(matrices, textRenderer, Main.config.fastMenuEmotes[id].name, this.angle);
             }
             else {
                 Main.log(Level.ERROR, "Tried to render non-existing name", true);

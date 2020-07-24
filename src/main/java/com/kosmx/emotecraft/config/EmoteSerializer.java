@@ -2,7 +2,8 @@ package com.kosmx.emotecraft.config;
 
 import com.google.gson.*;
 import com.kosmx.emotecraft.Emote;
-import net.minecraft.text.StringRenderable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 
@@ -11,16 +12,6 @@ import java.lang.reflect.Type;
 
 
 public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
-    public static Gson deserializer;
-
-    public static void initilaizeDeserializer(){
-        GsonBuilder builder = new GsonBuilder();
-
-        JsonDeserializer<EmoteHolder> method = new EmoteSerializer();
-        builder.registerTypeAdapter(EmoteHolder.class, method);
-
-        deserializer = builder.create();
-    }
 
     //Todo create error feedback about missing items (names)
     @Override

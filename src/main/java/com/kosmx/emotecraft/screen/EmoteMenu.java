@@ -1,6 +1,9 @@
 package com.kosmx.emotecraft.screen;
 
+import com.kosmx.emotecraft.Main;
+import com.kosmx.emotecraft.config.ConfigSerializer;
 import com.kosmx.emotecraft.config.EmoteHolder;
+import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.screen.widget.AbstractEmoteListWidget;
 import com.kosmx.emotecraft.screen.widget.AbstractFastChooseWidget;
 import net.minecraft.client.MinecraftClient;
@@ -14,8 +17,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nullable;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 public class EmoteMenu extends Screen {
@@ -87,9 +94,7 @@ public class EmoteMenu extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if(this.activeKeyTime != 0 && emoteList.getSelected() != null){
-            emoteList.getSelected().emote.keyBinding = InputUtil.Type.MOUSE.createFromCode(button);
-            activeKeyTime = 0;
-            return true;
+            return setKey(InputUtil.Type.MOUSE.createFromCode(button));
         }
         else return super.mouseClicked(mouseX, mouseY, button);
     }
@@ -102,10 +107,36 @@ public class EmoteMenu extends Screen {
         updateKeyText();
         super.render(matrices, mouseX, mouseY, delta);
     }
+    private boolean setKey(InputUtil.Key key){
+        boolean bl = false;
+        if(emoteList.getSelected()!= null){
+            bl = true;
+            emoteList.getSelected().emote.keyBinding = key;
+            activeKeyTime = 0;
+            save = true;
+        }
+        return bl;
+    }
 
+    @Override
     public void onClose(){
-        //TODO
         this.client.openScreen(this.parent);
+    }
+
+    @Override
+    public void removed() {
+        if(save){
+            EmoteHolder.bindKeys(Main.config);
+            try {
+                BufferedWriter writer = Files.newBufferedWriter(Main.CONFIGPATH);
+                Serializer.serializer.toJson(Main.config, writer);
+                writer.close();
+                //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        super.removed();
     }
 
     private void updateKeyText(){
@@ -120,13 +151,11 @@ public class EmoteMenu extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int mod) {
         if(emoteList.getSelected() != null && activeKeyTime != 0){
             if(keyCode == 256){
-                emoteList.getSelected().emote.keyBinding = InputUtil.UNKNOWN_KEY;
+                return setKey(InputUtil.UNKNOWN_KEY);
             }
             else {
-                emoteList.getSelected().emote.keyBinding = InputUtil.fromKeyCode(keyCode, scanCode);
+                return setKey(InputUtil.fromKeyCode(keyCode, scanCode));
             }
-            activeKeyTime = 0;
-            return true;
         }
         else {
             return super.keyPressed(keyCode, scanCode, mod);
@@ -175,6 +204,7 @@ public class EmoteMenu extends Screen {
             if(activeKeyTime != 0)return false;
             if(button == 1){
                 element.clearEmote();
+                save = true;
                 return true;
             }
             else if (emoteList.getSelected() != null){

@@ -23,7 +23,7 @@ dependencies {
 	modCompile "io.github.prospector:modmenu:${project.modmenu_version}"
 	include "io.github.prospector:modmenu:${project.modmenu_version}"
 	modApi "me.sargunvohra.mcmods:autoconfig1u:${project.autoconfig_version}"
-	include "me.sargunvohra.mcmods:autoconfig1u:${project.autoconfig_version}"
+	//include "me.sargunvohra.mcmods:autoconfig1u:${project.autoconfig_version}"
 	modApi "me.shedaniel.cloth:config-2:${project.cloth_version}"
 	include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 

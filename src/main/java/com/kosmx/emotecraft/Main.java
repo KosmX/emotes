@@ -1,22 +1,30 @@
 package com.kosmx.emotecraft;
 
-import com.kosmx.emotecraft.config.Config;
+import com.google.gson.JsonParseException;
+import com.kosmx.emotecraft.config.ConfigSerializer;
+import com.kosmx.emotecraft.config.SerializableConfig;
+import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
 import io.netty.buffer.Unpooled;
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
-import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.server.PlayerStream;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 
@@ -28,16 +36,41 @@ public class Main implements ModInitializer {
 
     public static final String MOD_ID = "emotecraft";
     public static final String MOD_NAME = "Emotecraft";
+    public static final Path CONFIGPATH = FabricLoader.getInstance().getConfigDir().resolve("emotecraft.json");
 
-    public static Config config;
+    public static SerializableConfig config;
 
     public static final Identifier EMOTE_NETWORK_PACKET_ID = new Identifier(MOD_ID, "playemote");
 
     @Override
     public void onInitialize() {
-
-        AutoConfig.register(Config.class, GsonConfigSerializer::new);
-        config = AutoConfig.getConfigHolder(Config.class).getConfig();
+        Serializer.initializeSerializer();
+        if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT){ //I can't do it in the client initializer because I need it to serialize the config
+            Client.initEmotes();
+        }
+        if(CONFIGPATH.toFile().isFile()){
+            try {
+                BufferedReader reader = Files.newBufferedReader(CONFIGPATH);
+                config = Serializer.serializer.fromJson(reader, SerializableConfig.class);
+                reader.close();
+                //config = Serializer.serializer.fromJson(FileUtils.readFileToString(CONFIGPATH, "UTF-8"), SerializableConfig.class);
+            }
+            catch (Throwable e){
+                config = new SerializableConfig();
+                if(e instanceof IOException){
+                    Main.log(Level.ERROR, "Can't access to config file: " + e.getLocalizedMessage(), true);
+                }
+                else if(e instanceof JsonParseException){
+                    Main.log(Level.ERROR, "Config is invalid Json file: " + e.getLocalizedMessage(), true);
+                }
+                else {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            config = new SerializableConfig();
+        }
 
         log(Level.INFO, "Initializing");
 
