@@ -17,6 +17,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         JsonObject node = json.getAsJsonObject();
         SerializableConfig config = new SerializableConfig();
         if(node.has("showDebug"))config.showDebug = node.get("showDebug").getAsBoolean();
+        if(node.has("validate"))config.showDebug = node.get("validate").getAsBoolean();
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)clientDeserialize(node, config);
         return config;
     }
@@ -61,6 +62,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
     public JsonElement serialize(SerializableConfig config, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject node = new JsonObject();
         node.addProperty("showDebug", config.showDebug);
+        node.addProperty("validate", config.showDebug);
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) clientSerialize(config, node);
         return node;
     }

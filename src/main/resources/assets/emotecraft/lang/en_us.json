@@ -1,0 +1,14 @@
+{
+  "emotecraft.options.options": "Other options",
+  "emotecraft.options.keybind": "Set a custom key to play the selected emote",
+  "emotecraft.options.fastmenu": "Select an emote than click to add to the fast menu. Right click to clear",
+  "emotecraft.sure": "Overwriting keybind",
+  "emotecraft.sure2": "An other emote has this keybind.\nDo you want to reset that and set the key to this?",
+  "emotecraft.otherconfig": "Other options",
+  "emotecraft.otherconfig.debug": "Debug",
+  "emotecraft.otherconfig.validate": "Validate emote",
+  "emotecraft.otherconfig.validate.tooltip": "Only for PvP worlds, where somebody want to cheat. It creates a limitation, make impossible to play some emotes",
+  "emotecraft.otherconfig.dark": "Dark fast-menu",
+  "emotecraft.emotelist": "All emote"
+
+}

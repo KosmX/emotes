@@ -4,19 +4,22 @@ import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.network.EmotePacket;
-import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
+import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
@@ -99,13 +102,13 @@ public class EmoteHolder {
     }
 
     public static boolean playEmote(Emote emote, PlayerEntity player){
-        if(player == MinecraftClient.getInstance().getCameraEntity()) {
+        if(canPlayEmote(player)) {
             try {
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                 EmotePacket emotePacket = new EmotePacket(emote, player);
                 emotePacket.write(buf);
-                ClientSidePacketRegistry.INSTANCE.sendToServer(Main.EMOTE_NETWORK_PACKET_ID, buf);
-                ClientPlayerEmotes target = (ClientPlayerEmotes) player;
+                ClientSidePacketRegistry.INSTANCE.sendToServer(Main.EMOTE_PLAY_NETWORK_PACKET_ID, buf);
+                EmotePlayerInterface target = (EmotePlayerInterface) player;
                 target.playEmote(emote);
                 emote.start();
             } catch (Exception e) {
@@ -118,6 +121,22 @@ public class EmoteHolder {
             return false;
         }
     }
+
+    private static boolean canPlayEmote(PlayerEntity entity){
+        if(!canRunEmote(entity))return false;
+        if(entity != MinecraftClient.getInstance().getCameraEntity())return false;
+        EmotePlayerInterface target = (EmotePlayerInterface)entity;
+        return !Emote.isRunningEmote(target.getEmote());
+    }
+
+    public static boolean canRunEmote(Entity entity){
+        if(!(entity instanceof AbstractClientPlayerEntity))return false;
+        AbstractClientPlayerEntity player = (AbstractClientPlayerEntity) entity;
+        if(player.getPose() != EntityPose.STANDING)return false;
+        //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
+        return !(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)) > 0.04f);
+    }
+
     public boolean playEmote(PlayerEntity playerEntity){
         return playEmote(this.getEmote(), playerEntity);
     }

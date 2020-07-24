@@ -1,10 +1,10 @@
 package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
-import com.kosmx.emotecraft.config.EmoteSerializer;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
-import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
+import com.kosmx.emotecraft.network.StopPacket;
+import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.screen.ingame.FastMenuScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -20,8 +19,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.glfw.GLFW;
 
@@ -52,7 +51,7 @@ public class Client implements ClientModInitializer {
     }
 
     private void initNetworkClient(){
-        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {
+        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {
             EmotePacket emotePacket;
             Emote emote;
             try{
@@ -68,9 +67,24 @@ public class Client implements ClientModInitializer {
             packetContext.getTaskQueue().execute(() ->{
                 PlayerEntity playerEntity = MinecraftClient.getInstance().world.getPlayerByUuid(emotePacket.getPlayer());
                 if(playerEntity != null) {
-                    ((ClientPlayerEmotes) playerEntity).playEmote(emote);
-                    ((ClientPlayerEmotes) playerEntity).getEmote().start();
+                    ((EmotePlayerInterface) playerEntity).playEmote(emote);
+                    ((EmotePlayerInterface) playerEntity).getEmote().start();
                 }
+            });
+        }));
+
+        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByyeBuf) -> {
+            StopPacket packet = new StopPacket();
+            try{
+                packet.read(packetByyeBuf);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            packetContex.getTaskQueue().execute(()-> {
+                EmotePlayerInterface player = (EmotePlayerInterface) MinecraftClient.getInstance().world.getPlayerByUuid(packet.getPlayer());
+                if(player != null && Emote.isRunningEmote(player.getEmote()))player.getEmote().stop();
             });
         }));
     }

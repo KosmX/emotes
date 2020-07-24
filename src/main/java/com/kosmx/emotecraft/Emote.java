@@ -2,6 +2,7 @@ package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.math.Ease;
 import com.kosmx.emotecraft.math.Easing;
+import com.kosmx.emotecraft.math.Helper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
@@ -75,11 +76,15 @@ public class Emote {
         if (stopTick <= endTick) stopTick = endTick + 1;
     }
 
+    public void stop(){
+        this.isRunning = false;
+    }
+
     public static void addMove(Part part, int tick, float value, String easing, int turn, boolean degrees){
         part.add(tick, value, Easing.easeFromString(easing), turn, degrees);
     }
-    public static void addMove(Part part, int tick, float value, String ease){
-        part.add(tick, value, Easing.easeFromString(ease));
+    public static boolean addMove(Part part, int tick, float value, String ease){
+        return part.add(tick, value, Easing.easeFromString(ease));
     }
 
     public class BodyPart {
@@ -158,16 +163,20 @@ public class Emote {
             return i;
         }
         public boolean add(int tick, float value, Ease ease, int rotate, boolean degrees){
-            return this.add(new Move(tick, value, ease), false);
+            return this.add(new Move(tick, value, ease), false, true);
         }
         public boolean add(int tick, float value, Ease ease){
-            return this.add(new Move(tick, value, ease), true);
+            return this.add(new Move(tick, value, ease), true, true);
         }
-        protected boolean add(Move move, boolean sameTickException){
+        protected boolean add(Move move, boolean sameTickException, boolean limit){
             //TODO add value limit
             int i = findTick(move.tick) + 1;
             if (this.list.size() != 0 && !sameTickException && this.list.get(i - 1).tick == move.tick || move.tick > lastPlayTick()){
-                Main.log(Level.ERROR, "two moving at the same tick error", true);
+                Main.log(Level.ERROR, "two moving at the same tick error");
+                return false;
+            }
+            if(limit && Math.abs(move.value) >= 20){
+                Main.log(Level.WARN, "Invalid emote"); //TODO add weblink why...
                 return false;
             }
             this.list.add(i, move);
@@ -203,11 +212,21 @@ public class Emote {
         @Override
         public boolean add(int tick, float value, Ease ease, int rotate, boolean degrees) {
             if(degrees)value *= 0.01745329251f;
-            if( this.add(new Move(tick, value, ease), false) && rotate != 0){
-                this.add(new Move(tick, value + 6.28318530718f * rotate, ease), true);
+            if( this.add(new Move(tick, value, ease), false, false) && rotate != 0){
+                this.add(new Move(tick, value + 6.28318530718f * rotate, ease), true, false);
                 return true;
             }
             else return false;
+        }
+
+        @Override
+        public float getCurrentValue(float currentState, float tickDelta) {
+            return Helper.clamp(super.getCurrentValue(Helper.clamp(currentState), tickDelta));
+        }
+
+        @Override
+        public boolean add(int tick, float value, Ease ease) {
+            return this.add(new Move(tick, value, ease), true, false);
         }
     }
 

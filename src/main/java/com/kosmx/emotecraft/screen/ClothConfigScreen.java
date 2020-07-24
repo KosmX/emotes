@@ -9,7 +9,7 @@ import net.minecraft.text.TranslatableText;
 
 public class ClothConfigScreen {
     public static Screen getConfigScreen(Screen parent){
-        ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(new TranslatableText("emotecraft.othercongig"));
+        ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent).setTitle(new TranslatableText("emotecraft.otherconfig"));
         builder.setSavingRunnable(()->{
             if(parent instanceof EmoteMenu){
                 ((EmoteMenu)parent).save = true;    //It's parent is EmoteMenu, when you leave that and save == true -> it'll save
@@ -20,6 +20,10 @@ public class ClothConfigScreen {
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.debug"), Main.config.showDebug)
                                  .setDefaultValue(false)
                                  .setSaveConsumer(newValue -> Main.config.showDebug = newValue).build());
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.validate"), Main.config.dark)
+                                 .setTooltip(new TranslatableText("emotecraft.otherconfig.validate.tooltip"))
+                                 .setDefaultValue(false)
+                                 .setSaveConsumer(newValue -> Main.config.dark = newValue).build());
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.dark"), Main.config.dark)
                                  .setDefaultValue(false)
                                  .setSaveConsumer(newValue -> Main.config.dark = newValue).build());

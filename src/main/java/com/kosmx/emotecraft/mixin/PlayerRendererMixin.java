@@ -1,7 +1,7 @@
 package com.kosmx.emotecraft.mixin;
 
 import com.kosmx.emotecraft.Emote;
-import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
+import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -18,9 +18,9 @@ public class PlayerRendererMixin {
 
     @Inject(method = "setupTransforms", at = @At("RETURN"))
     private void setRotation(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float a, float bodyYaw, float tickDelta, CallbackInfo info){
-        if( Emote.isRunningEmote(((ClientPlayerEmotes)abstractClientPlayerEntity).getEmote()))
+        if( Emote.isRunningEmote(((EmotePlayerInterface)abstractClientPlayerEntity).getEmote()))
         {
-            Emote emote = ((ClientPlayerEmotes)abstractClientPlayerEntity).getEmote();
+            Emote emote = ((EmotePlayerInterface)abstractClientPlayerEntity).getEmote();
             emote.setTickDelta(tickDelta);
 
             Vec3d vec3d = emote.torso.getBodyOffshet();

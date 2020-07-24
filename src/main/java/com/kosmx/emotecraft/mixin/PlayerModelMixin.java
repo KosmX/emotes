@@ -2,7 +2,7 @@ package com.kosmx.emotecraft.mixin;
 
 
 import com.kosmx.emotecraft.Emote;
-import com.kosmx.emotecraft.playerInterface.ClientPlayerEmotes;
+import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -41,8 +41,8 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
     private void setEmote(BipedEntityModel idk,T livingEntity, float f, float g, float h, float i, float j){
         setDefaultPivot();
         super.setAngles(livingEntity, f, g, h, i, j);
-        if(livingEntity instanceof AbstractClientPlayerEntity && Emote.isRunningEmote(((ClientPlayerEmotes)livingEntity).getEmote())){
-            Emote emote = ((ClientPlayerEmotes) livingEntity).getEmote();
+        if(livingEntity instanceof AbstractClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface)livingEntity).getEmote())){
+            Emote emote = ((EmotePlayerInterface) livingEntity).getEmote();
             emote.head.setBodyPart(this.head);
             this.helmet.copyPositionAndRotation(this.head);
             emote.leftArm.setBodyPart(this.leftArm);

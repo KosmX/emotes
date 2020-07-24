@@ -12,6 +12,7 @@ import java.util.UUID;
 public class EmotePacket{
     protected Emote emote;
     protected UUID player;
+    protected boolean correct = true;
 
     public EmotePacket(Emote emote, PlayerEntity playerEntity){
         this.emote = emote;
@@ -19,7 +20,7 @@ public class EmotePacket{
     }
     public EmotePacket(){}
 
-    public void read(PacketByteBuf buf) throws IOException {
+    public boolean read(PacketByteBuf buf) throws IOException {
         player = buf.readUuid();    //we need to know WHO playings this emote
         emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt());
         getBodyPartInfo(buf, emote.head);
@@ -28,6 +29,7 @@ public class EmotePacket{
         getBodyPartInfo(buf, emote.leftArm);
         getBodyPartInfo(buf, emote.rightLeg);
         getBodyPartInfo(buf, emote.leftLeg);
+        return correct;
     }
     public UUID getPlayer(){
         return this.player;
@@ -78,7 +80,9 @@ public class EmotePacket{
     private void getPartInfo(PacketByteBuf buf, Emote.Part part) {
         int len = buf.readInt();
         for(int i = 0; i<len; i++){
-            Emote.addMove(part, buf.readInt(), buf.readFloat(), buf.readString());
+            if(!Emote.addMove(part, buf.readInt(), buf.readFloat(), buf.readString())){
+                this.correct = false;
+            }
         }
     }
 }

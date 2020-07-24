@@ -13,6 +13,7 @@ public class SerializableConfig {
     @Environment(EnvType.CLIENT)
     public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
 
+    public boolean validateEmote = false;
     public boolean showDebug = false;
     @Environment(EnvType.CLIENT)
     public boolean dark = false;

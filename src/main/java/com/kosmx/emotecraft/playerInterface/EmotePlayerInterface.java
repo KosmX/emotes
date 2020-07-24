@@ -4,7 +4,7 @@ import com.kosmx.emotecraft.Emote;
 
 import javax.annotation.Nullable;
 
-public interface ClientPlayerEmotes {
+public interface EmotePlayerInterface {
 
     void playEmote(Emote emote);
 
