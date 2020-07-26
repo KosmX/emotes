@@ -3,7 +3,7 @@ Just it's open source and free unlike that :D
 ## Minecraft emotes
 
 play emotes in Minecraft
-<a href="https://imgur.com/tWD40Fg"><img src="https://i.imgur.com/tWD40Fg.png" title="source: imgur.com" /></a>
+![](https://imgur.com/M3LBG6H)
 
 Easy-to-use menu
 <a href="https://imgur.com/etlReBO"><img src="https://i.imgur.com/etlReBO.png" title="source: imgur.com" /></a>
