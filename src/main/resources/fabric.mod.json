@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "emotecraft",
   "version": "${version}",
-  "name": "Emotes",
-  "description": "asd",
+  "name": "Emotecraft",
+  "description": "Play emotes in Minecraft",
   "authors": [
     "KosmX"
   ],

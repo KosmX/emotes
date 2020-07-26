@@ -26,9 +26,9 @@ public class PlayerRendererMixin {
             Vec3d vec3d = emote.torso.getBodyOffshet();
             matrixStack.translate(vec3d.getX(), vec3d.getY() + 0.7, vec3d.getZ());
             Vector3f vec3f = emote.torso.getBodyRotation();
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(vec3f.getX()));    //yaw
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(vec3f.getY()));    //pitch
             matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(vec3f.getZ()));    //roll
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(vec3f.getY()));    //pitch
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(vec3f.getX()));    //yaw
             matrixStack.translate(0, -0.7d, 0);
         }
     }

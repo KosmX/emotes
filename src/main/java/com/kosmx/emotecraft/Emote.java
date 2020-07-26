@@ -126,8 +126,8 @@ public class Emote {
             return new Vec3d(x, y, z);
         }
         public Vector3f getBodyRotation(){
-            float y = this.pitch.getCurrentValue(0, tickDelta);
-            float x = this.yaw.getCurrentValue(0, tickDelta);
+            float x = this.pitch.getCurrentValue(0, tickDelta);
+            float y = this.yaw.getCurrentValue(0, tickDelta);
             float z = this.roll.getCurrentValue(0, tickDelta);
             return new Vector3f(x, y, z);
         }
@@ -173,11 +173,10 @@ public class Emote {
             int i = findTick(move.tick) + 1;
             if (this.list.size() != 0 && !sameTickException && this.list.get(i - 1).tick == move.tick || move.tick > lastPlayTick()){
                 Main.log(Level.ERROR, "two moving at the same tick error");
-                return false;
             }
             if(limit && Math.abs(move.value) >= 20){
                 Main.log(Level.WARN, "Invalid emote"); //TODO add weblink why...
-                return false;
+                if(Main.config.validateEmote) return false;
             }
             this.list.add(i, move);
             return true;

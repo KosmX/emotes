@@ -31,5 +31,6 @@ public enum Ease {
     INOUTELASTIC,
     INBOUNCE,
     OUTBOUNCE,
-    INOUTBOUNCE
+    INOUTBOUNCE,
+    CONSTANT
 }

@@ -77,6 +77,8 @@ public class Easing {
                 return inOutBounce(f);
             case INOUTELASTIC:
                 return inOutElastic(f);
+            case CONSTANT:
+                return 0;
             default:
                 Main.log(Level.WARN, "easing function unknown: " + type);
                 return f;
