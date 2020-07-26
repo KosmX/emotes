@@ -1,7 +1,9 @@
 {
   "emotecraft.options.options": "Other options",
   "emotecraft.options.keybind": "Set a custom key to play the selected emote",
-  "emotecraft.options.fastmenu": "Select an emote than click to add to the fast menu. Right click to clear",
+  "emotecraft.options.fastmenu": "Select an emote than click to",
+  "emotecraft.options.fastmenu2": "to add to the fast menu.",
+  "emotecraft.options.fastmenu3": "Right click to clear",
   "emotecraft.sure": "Overwriting keybind",
   "emotecraft.sure2": "An other emote has this keybind.\nDo you want to reset that and set the key to this?",
   "emotecraft.otherconfig": "Other options",
@@ -11,5 +13,6 @@
   "emotecraft.otherconfig.dark": "Dark fast-menu",
   "emotecraft.emotelist": "All emote",
   "key.emotecraft.fastchoose":"Fastmenu",
-  "key.emotecraft.debug": "play 'debug' emote"
+  "key.emotecraft.debug": "play 'debug' emote",
+  "emotecraft.openFolder": "Open emotes folder"
 }

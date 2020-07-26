@@ -1,5 +1,6 @@
 package com.kosmx.emotecraft.screen;
 
+import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
@@ -21,6 +22,7 @@ import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
@@ -58,6 +60,10 @@ public class EmoteMenu extends Screen {
         });
         this.children.add(searchBox);
 
+        this.buttons.add(new ButtonWidget(this.width / 2 - 154, this.height - 30, 150, 20, new TranslatableText("emotecraft.openFolder"), (buttonWidget) -> {
+            Util.getOperatingSystem().open(Client.externalEmotes);
+        }));
+
         this.emoteList = new EmoteListWidget(this.client, (int) (this.width / 2.2 - 16), this.height, this);
         this.emoteList.setLeftPos(this.width/2-(int)(this.width/2.2-16)-12);
         this.children.add(this.emoteList);
@@ -82,7 +88,9 @@ public class EmoteMenu extends Screen {
         super.init();
         this.setInitialFocus(this.searchBox);
         this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.keybind"), this.width/2 +115, 40));
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu"), this.width/2 + 2 + x/2, height/2 - 26));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu"), this.width/2 + 2 + x/2, height/2 - 54));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu2"), this.width/2 + 2 + x/2, height/2 - 40));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu3"), this.width/2 + 2 + x/2, height/2 - 26));
     }
 
     private void activateKey(){

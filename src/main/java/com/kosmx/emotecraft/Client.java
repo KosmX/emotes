@@ -34,6 +34,7 @@ public class Client implements ClientModInitializer {
     private static final ResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES);
     private static KeyBinding emoteKeyBinding;
     private static KeyBinding debugEmote;
+    public static final File externalEmotes = FabricLoader.getInstance().getGameDir().resolve("emotes").toFile();
     @Override
     public void onInitializeClient() {
         //There will be something only client stuff
@@ -96,7 +97,7 @@ public class Client implements ClientModInitializer {
         serializeInternalEmotes("waving");
         //TODO add internal emotes to the list
 
-        File externalEmotes = FabricLoader.getInstance().getGameDir().resolve("emotes").toFile();
+
         if(!externalEmotes.isDirectory())externalEmotes.mkdirs();
         serializeExternalEmotes(externalEmotes);
     }
