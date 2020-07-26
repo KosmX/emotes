@@ -80,7 +80,7 @@ public class EmotePacket{
     private void getPartInfo(PacketByteBuf buf, Emote.Part part) {
         int len = buf.readInt();
         for(int i = 0; i<len; i++){
-            if(!Emote.addMove(part, buf.readInt(), buf.readFloat(), buf.readString())){
+            if(!Emote.addMove(part, buf.readInt(), buf.readFloat(), buf.readString(32767))){
                 this.correct = false;
             }
         }
