@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Pair;
 import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Type;
@@ -32,23 +33,30 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
     private void fastMenuDeserializer(JsonObject node, SerializableConfig config){
         for(int i = 0;i != 8; i++){
             if(node.has(Integer.toString(i))){
+                config.fastMenuHash[i] = node.get(Integer.toString(i)).getAsInt();
+                /*
                 EmoteHolder emote = EmoteHolder.getEmoteFromHash(node.get(Integer.toString(i)).getAsInt());
                 config.fastMenuEmotes[i] = emote;
                 if(emote == null){
                     Main.log(Level.ERROR, "Can't find emote from hash: " + node.get(Integer.toString(i)).getAsInt());
                 }
+
+                 *///TODO remove comment if stable
             }
         }
     }
     @Environment(EnvType.CLIENT)
     private void keyBindsDeserializer(JsonArray node, SerializableConfig config){
         for(JsonElement object:node){
-            keyBindDeserializer(object.getAsJsonObject());
+            JsonObject n = object.getAsJsonObject();
+            config.emotesWithHash.add(new Pair<Integer, String>(n.get("id").getAsInt(), n.get("key").getAsString()));
+            //keyBindDeserializer(object.getAsJsonObject());
         }
-        EmoteHolder.bindKeys(config);
     }
+    /*
     @Environment(EnvType.CLIENT)
     private void keyBindDeserializer(JsonObject node){
+
         EmoteHolder emote = EmoteHolder.getEmoteFromHash(node.get("id").getAsInt());
         if(emote != null){
             emote.keyBinding = InputUtil.fromTranslationKey(node.get("key").getAsString());
@@ -57,6 +65,8 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
             Main.log(Level.ERROR, "Can't find emote from hash: " + node.get("id").getAsInt());
         }
     }
+
+     */
 
     @Override
     public JsonElement serialize(SerializableConfig config, Type typeOfSrc, JsonSerializationContext context) {

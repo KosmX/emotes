@@ -22,7 +22,7 @@ public class EmotePacket{
 
     public boolean read(PacketByteBuf buf) throws IOException {
         player = buf.readUuid();    //we need to know WHO playings this emote
-        emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt());
+        emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
         getBodyPartInfo(buf, emote.head);
         getBodyPartInfo(buf, emote.torso);
         getBodyPartInfo(buf, emote.rightArm);
@@ -43,6 +43,8 @@ public class EmotePacket{
         buf.writeInt(emote.getBeginTick());
         buf.writeInt(emote.getEndTick());
         buf.writeInt(emote.getStopTick());
+        buf.writeBoolean(emote.isInfinite());
+        buf.writeInt(emote.getReturnTick());
         writeBodyPartInfo(buf, emote.head);
         writeBodyPartInfo(buf, emote.torso);
         writeBodyPartInfo(buf, emote.rightArm);

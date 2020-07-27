@@ -43,10 +43,11 @@ public class Main implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Serializer.initializeSerializer();
+        Serializer.initializeSerializer();/*
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT){ //I can't do it in the client initializer because I need it to serialize the config
             Client.initEmotes();
         }
+        */
         if(CONFIGPATH.toFile().isFile()){
             try {
                 BufferedReader reader = Files.newBufferedReader(CONFIGPATH);

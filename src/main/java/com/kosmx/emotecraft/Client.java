@@ -28,6 +28,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 public class Client implements ClientModInitializer {
 
@@ -46,7 +47,7 @@ public class Client implements ClientModInitializer {
 
         initNetworkClient();        //Init the Client-ide network manager. The Main'll have a server-side
 
-        //initEmotes();       //Import the emotes, including both the default and the external.
+        initEmotes();       //Import the emotes, including both the default and the external.
 
 
     }
@@ -92,7 +93,7 @@ public class Client implements ClientModInitializer {
 
     public static void initEmotes(){
         //Serialize emotes
-
+        EmoteHolder.list = new ArrayList<>();
 
         serializeInternalEmotes("waving");
         //TODO add internal emotes to the list
@@ -100,6 +101,8 @@ public class Client implements ClientModInitializer {
 
         if(!externalEmotes.isDirectory())externalEmotes.mkdirs();
         serializeExternalEmotes(externalEmotes);
+
+        Main.config.assignEmotes();
     }
 
     private static void serializeInternalEmotes(String name){

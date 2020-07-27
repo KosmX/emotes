@@ -53,6 +53,7 @@ public class EmoteMenu extends Screen {
 
     @Override
     protected void init() {
+        Client.initEmotes();
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width/2-(int)(this.width/2.2-16)-12, 12, (int)(this.width/2.2-16), 20, this.searchBox, new TranslatableText("emotecraft.search"));
 
         this.searchBox.setChangedListener((string)-> {
@@ -81,7 +82,10 @@ public class EmoteMenu extends Screen {
         });
         this.buttons.add(setKeyButton);
         this.buttons.add(new ButtonWidget(this.width/2 + 124, 60, 96, 20, new TranslatableText("controls.reset"), (button -> {
-            if(emoteList.getSelected() != null) emoteList.getSelected().emote.keyBinding = InputUtil.UNKNOWN_KEY;
+            if(emoteList.getSelected() != null){
+                emoteList.getSelected().emote.keyBinding = InputUtil.UNKNOWN_KEY;
+                this.save = true;
+            }
         })));
         emoteList.setEmotes(EmoteHolder.list);
         this.children.addAll(buttons);
@@ -165,6 +169,7 @@ public class EmoteMenu extends Screen {
         }
         if (bl || force){
             emote.keyBinding = key;
+            this.save = true;
         }
         this.activeKeyTime = 0;
         return bl;

@@ -44,15 +44,23 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
             beginTick = node.get("beginTick").getAsInt();
         }
         int endTick = node.get("endTick").getAsInt();
+
+        boolean isLoop = false;
+        int returnTick = 0;
+        if(node.has("isLoop") && node.has("returnTick")){
+            isLoop = node.get("isLoop").getAsBoolean();
+            returnTick = node.get("returnTick").getAsInt();
+        }
+
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
-            if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves"))return;
+            if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves") || string.equals("returnTick") || string.equals("isLoop"))return;
             Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
             Main.log(Level.WARN, "If it is a comment, ignore the warning");
         });
         int resetTick = node.has("stopTick") ? node.get("stopTick").getAsInt() : endTick;
         boolean degrees = !node.has("degrees") || node.get("degrees").getAsBoolean();
-        Emote emote = new Emote(beginTick, endTick, resetTick);
+        Emote emote = new Emote(beginTick, endTick, resetTick, isLoop, returnTick);
         moveDeserializer(emote, node.getAsJsonArray("moves"), degrees);
         return emote;
     }

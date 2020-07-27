@@ -3,6 +3,7 @@ package com.kosmx.emotecraft.config;
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
+import com.kosmx.emotecraft.math.Ease;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import io.netty.buffer.Unpooled;
@@ -19,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.Level;
 
@@ -51,10 +53,18 @@ public class EmoteHolder {
     }
 
     public static void bindKeys(SerializableConfig config) {
-        config.emotesWithKey.removeAll(config.emotesWithKey);
+        config.emotesWithKey = new ArrayList<>();
+        config.emotesWithHash = new ArrayList<>();
         for(EmoteHolder emote:list){
             if(!emote.keyBinding.equals(InputUtil.UNKNOWN_KEY)){
                 config.emotesWithKey.add(emote);
+                config.emotesWithHash.add(new Pair<>(emote.hash, emote.keyBinding.getTranslationKey()));
+            }
+        }
+        config.fastMenuHash = new int[8];
+        for(int i = 0; i != 8; i++){
+            if(Main.config.fastMenuEmotes[i] != null){
+                Main.config.fastMenuHash[i] = Main.config.fastMenuEmotes[i].hash;
             }
         }
     }

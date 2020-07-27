@@ -13,12 +13,19 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Synchronisable, playable object
+ *
+ */
 public class Emote {
     private boolean isRunning;
     private int currentTick;
     private int beginTick;
     private int endTick;
     private int stopTick;  //Tick after the emote ends, reset the pose to the normal minecraft pose...
+    private boolean isInfinite = false;
+    private boolean isInfStarted = false;
+    private int returnTick;
     public BodyPart head = new BodyPart(0,0,0,0,0,0);
     public Torso torso = new Torso(0,0,0,0,0,0);
     public BodyPart rightArm = new BodyPart(-5,2,0,0,0,0.09f);
@@ -27,11 +34,23 @@ public class Emote {
     public BodyPart rightLeg = new BodyPart(-1.9f,12,0.1f,0,0,0);
     private float tickDelta = 0;
 
+    public Emote(int a, int b, int c, boolean inf, int returnTick){
+        beginTick = a;
+        endTick = b;
+        stopTick = c;
+        this.isInfinite = inf;
+        this.returnTick = returnTick;
+    }
     public Emote(int a, int b, int c){
         beginTick = a;
         endTick = b;
         stopTick = c;
     }
+
+    public Emote(int a){
+        this.beginTick = a;
+    }
+
     public int getBeginTick(){
         return beginTick;
     }
@@ -40,6 +59,12 @@ public class Emote {
     }
     public int getStopTick(){
         return stopTick;
+    }
+    public boolean isInfinite() {
+        return isInfinite;
+    }
+    public int getReturnTick() {
+        return returnTick;
     }
 
     public void setTickDelta(float f){
@@ -59,7 +84,11 @@ public class Emote {
     }
 
     public void tick(){
-        if(this.isRunning)this.currentTick++;
+        if(this.isRunning) this.currentTick++;
+        else return;
+        if(isInfinite && currentTick == endTick){
+            currentTick = returnTick;
+        }
         if (currentTick > stopTick){
             this.isRunning = false;
         }
@@ -70,6 +99,7 @@ public class Emote {
 
     public void start(){
         this.currentTick = 0;
+        this.isInfStarted = false;
         this.isRunning = true;
         if (beginTick < 0)beginTick = 0;
         if (endTick < beginTick) endTick = beginTick;
@@ -149,13 +179,17 @@ public class Emote {
             this.defaultValue = defaultValue;
         }
 
+        public float getDefaultValue() {
+            return defaultValue;
+        }
+
         public List<Move> getList(){
             return list;
         }
         /*
          *finds where is the current move
          */
-        private int findTick(int tick) {
+        public int findTick(int tick) {
             int i = -1;
             while (this.list.size() > i+1 && this.list.get(i + 1).tick <= tick) {
                 i++;
@@ -181,24 +215,36 @@ public class Emote {
             this.list.add(i, move);
             return true;
         }
-        public float getCurrentValue(float currentState, float tickDelta){
-            int pos = findTick(currentTick);
-            Move moveBefore;
-            Move moveAfter;
+
+        private Move findBefore(int pos, float currentState){
             if(pos == -1){
-                moveBefore = (currentTick < beginTick || this.list.size() != 0) ? new Move(0, currentState, Ease.INOUTSINE)
+                return (currentTick < beginTick || this.list.size() != 0) ? new Move(0, currentState, Ease.INOUTSINE)
                         : (currentTick < endTick) ? new Move(beginTick, defaultValue, Ease.INOUTSINE)
                         : new Move(endTick, defaultValue, Ease.INOUTSINE);
             }
             else {
-                moveBefore = this.list.get(pos);
+                return  this.list.get(pos);
             }
+        }
+        private Move findAfter(int pos, float currentState){
             if(!(this.list.size() > pos +1)){
-                    moveAfter = (currentTick >= endTick || this.list.size() != 0) ? new Move(stopTick, currentState, Ease.INOUTSINE)
-                            : (currentTick >= beginTick) ? new Move(endTick, defaultValue, Ease.INOUTSINE)
-                            : new Move(beginTick, defaultValue, Ease.INOUTSINE);
+                return  (currentTick >= endTick || this.list.size() != 0) ? new Move(stopTick, currentState, Ease.INOUTSINE)
+                        : (currentTick >= beginTick) ? new Move(endTick, defaultValue, Ease.INOUTSINE)
+                        : new Move(beginTick, defaultValue, Ease.INOUTSINE);
             }
-            else moveAfter = this.list.get(pos + 1);
+            else return this.list.get(pos + 1);
+        }
+
+        public float getCurrentValue(float currentState, float tickDelta){
+            int pos = findTick(currentTick);
+            Move moveBefore = findBefore(pos, currentState);
+            if(isInfStarted && moveBefore.tick < returnTick){
+                moveBefore = findBefore(findTick(endTick), currentState);
+            }
+            Move moveAfter = findAfter(pos, currentState);
+            if(isInfStarted && moveBefore.tick >= endTick){
+                moveAfter = findAfter(findTick(returnTick), currentState);
+            }
             return moveBefore.getPos(moveAfter, getCurrentTick());
         }
 
@@ -229,13 +275,16 @@ public class Emote {
         }
     }
 
-    public static class Move{
+    public class Move{
         public int tick;
         public Float value;
-        private final Ease ease;
+        private Ease ease;
 
         public String getEase(){
             return ease.toString();
+        }
+        public void setEase(Ease ease){
+            this.ease = ease;
         }
 
         public Move(int tick, float value, Ease ease){
@@ -248,7 +297,13 @@ public class Emote {
         }
 
         public float getPos(Move nextMove, float tickDelta){
-            tickDelta = (tickDelta - (float)this.tick)/(nextMove.tick-this.tick);
+            int tickBefore = this.tick;
+            int tickAfter = nextMove.tick;
+            if (this.tick <= nextMove.tick) {
+                if(tickDelta < this.tick) tickBefore -= endTick - returnTick;
+                else tickAfter += endTick - returnTick;
+            }
+            tickDelta = (tickDelta - (float)tickBefore)/(tickAfter-tickBefore);
             return MathHelper.lerp(Easing.easingFromEnum(this.ease, tickDelta), this.value, nextMove.value);
         }
     }

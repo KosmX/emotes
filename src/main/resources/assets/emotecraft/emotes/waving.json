@@ -2,7 +2,6 @@
 	"name": "Waving",
 	"author": "KosmX",
 	"description": "Like say Hi!",
-	"you can add": "comment like this",
 	"emote":{
 		"beginTick":12,
 		"endTick":45,
