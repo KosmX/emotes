@@ -1,3 +1,7 @@
+[![](https://img.shields.io/discord/737216980095991838?label=Discord)](https://discord.gg/6NfdRuE)
+[![](http://cf.way2muchnoise.eu/title/emotecraft.svg)![](http://cf.way2muchnoise.eu/versions/emotecraft_latest.svg)](https://www.curseforge.com/minecraft/mc-mods/emotecraft)
+
+##
 Minecraft mod to add emotes to the game like in Bedrock Edition...
 Just it's open source and free unlike that :D
 ## Minecraft emotes
