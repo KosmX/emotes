@@ -136,7 +136,7 @@ public class EmoteHolder {
         if(!canRunEmote(entity))return false;
         if(entity != MinecraftClient.getInstance().getCameraEntity())return false;
         EmotePlayerInterface target = (EmotePlayerInterface)entity;
-        return !Emote.isRunningEmote(target.getEmote());
+        return !(Emote.isRunningEmote(target.getEmote()) && !target.getEmote().isInfStarted());
     }
 
     public static boolean canRunEmote(Entity entity){

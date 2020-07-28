@@ -40,7 +40,7 @@ public class Emote {
         endTick = b;
         stopTick = c;
         this.isInfinite = inf;
-        this.returnTick = returnTick;
+        this.returnTick = returnTick - 1;
     }
     public Emote(int a, int b, int c){
         beginTick = a;
@@ -90,6 +90,7 @@ public class Emote {
         else return;
         if(isInfinite && currentTick == endTick){
             currentTick = returnTick;
+            isInfStarted = true;
         }
         if (currentTick > stopTick){
             this.isRunning = false;
@@ -124,6 +125,10 @@ public class Emote {
         if (endTick >= stopTick){
             this.stopTick = this.endTick + 1;
         }
+    }
+
+    public boolean isInfStarted() {
+        return isInfStarted;
     }
 
     public class BodyPart {
@@ -251,7 +256,7 @@ public class Emote {
                 moveBefore = findBefore(findTick(endTick), currentState);
             }
             Move moveAfter = findAfter(pos, currentState);
-            if(isInfStarted && moveBefore.tick >= endTick){
+            if(isInfinite && moveAfter.tick >= endTick){
                 moveAfter = findAfter(findTick(returnTick), currentState);
             }
             return moveBefore.getPos(moveAfter, getCurrentTick());
@@ -306,12 +311,14 @@ public class Emote {
         }
 
         public float getPos(Move nextMove, float tickDelta){
+            //if(this == nextMove)return this.value;
             int tickBefore = this.tick;
             int tickAfter = nextMove.tick;
-            if (this.tick > nextMove.tick) {
+            if (this.tick >= nextMove.tick) {
                 if(tickDelta < this.tick) tickBefore -= endTick - returnTick;
                 else tickAfter += endTick - returnTick;
             }
+            if(tickAfter == tickBefore)return this.value;
             tickDelta = (tickDelta - (float)tickBefore)/(tickAfter-tickBefore);
             return MathHelper.lerp(Easing.easingFromEnum(this.ease, tickDelta), this.value, nextMove.value);
         }

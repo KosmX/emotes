@@ -14,6 +14,7 @@
   "emotecraft.emotelist": "All emote",
   "key.emotecraft.fastchoose":"Fastmenu",
   "key.emotecraft.debug": "play 'debug' emote",
+  "key.emotecraft.stop": "Stop playing emote",
   "emotecraft.openFolder": "Open emotes folder",
   "emotecraft.otherconfig.quark": "Enable quark serializer",
   "emotecraft.quark": "Unstable feature",

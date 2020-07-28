@@ -7,6 +7,7 @@ import com.kosmx.emotecraft.network.StopPacket;
 import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.screen.ingame.FastMenuScreen;
 import com.kosmx.quarktool.QuarkReader;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -17,6 +18,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
@@ -36,6 +38,7 @@ public class Client implements ClientModInitializer {
     private static final ResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES);
     private static KeyBinding emoteKeyBinding;
     private static KeyBinding debugEmote;
+    private static KeyBinding stopEmote;
     public static final File externalEmotes = FabricLoader.getInstance().getGameDir().resolve("emotes").toFile();
     @Override
     public void onInitializeClient() {
@@ -209,6 +212,19 @@ public class Client implements ClientModInitializer {
                 if(MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
                     MinecraftClient.getInstance().openScreen(new FastMenuScreen(new TranslatableText("emotecraft.fastmenu")));
                 }
+            }
+        });
+
+        stopEmote = new KeyBinding("key.emotecraft.stop", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding");
+        KeyBindingHelper.registerKeyBinding(stopEmote);
+
+        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
+            if(stopEmote.wasPressed() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface)MinecraftClient.getInstance().getCameraEntity()).getEmote())){
+                ((EmotePlayerInterface)MinecraftClient.getInstance().getCameraEntity()).getEmote().stop();
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                StopPacket packet = new StopPacket((PlayerEntity) MinecraftClient.getInstance().getCameraEntity());
+                packet.write(buf);
+                ClientSidePacketRegistry.INSTANCE.sendToServer(Main.EMOTE_STOP_NETWORK_PACKET_ID, buf);
             }
         });
 
