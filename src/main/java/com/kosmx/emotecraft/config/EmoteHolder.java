@@ -44,7 +44,7 @@ public class EmoteHolder {
      * @param description Emote decription
      * @param author Name of the Author
      */
-    EmoteHolder(Emote emote, StringRenderable name, StringRenderable description, StringRenderable author, int hash){
+    public EmoteHolder(Emote emote, StringRenderable name, StringRenderable description, StringRenderable author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;

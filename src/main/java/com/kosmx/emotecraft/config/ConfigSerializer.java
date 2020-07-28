@@ -19,6 +19,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         SerializableConfig config = new SerializableConfig();
         if(node.has("showDebug"))config.showDebug = node.get("showDebug").getAsBoolean();
         if(node.has("validate"))config.showDebug = node.get("validate").getAsBoolean();
+        if(node.has("enablequark"))config.enableQuark = node.get("enablequark").getAsBoolean();
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)clientDeserialize(node, config);
         return config;
     }
@@ -80,6 +81,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
     @Environment(EnvType.CLIENT)
     private void clientSerialize(SerializableConfig config, JsonObject node){
         node.addProperty("dark", config.dark);
+        if(Main.config.enableQuark)node.addProperty("enablequark", true);
         node.add("fastmenu", fastMenuSerializer(config));
         node.add("keys", keyBindsSerializer(config));
     }

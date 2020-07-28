@@ -14,5 +14,8 @@
   "emotecraft.emotelist": "All emote",
   "key.emotecraft.fastchoose":"Fastmenu",
   "key.emotecraft.debug": "play 'debug' emote",
-  "emotecraft.openFolder": "Open emotes folder"
+  "emotecraft.openFolder": "Open emotes folder",
+  "emotecraft.otherconfig.quark": "Enable quark serializer",
+  "emotecraft.quark": "Unstable feature",
+  "emotecraft.quark2": "Quark emote reader is highly unstable and not fully supported.\nUsing it is not recommend. It can work unexpectedly or even can cause crash\nDo you really want to turn it on?"
 }

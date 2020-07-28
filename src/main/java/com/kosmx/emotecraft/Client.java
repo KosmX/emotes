@@ -6,6 +6,7 @@ import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.network.StopPacket;
 import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.screen.ingame.FastMenuScreen;
+import com.kosmx.quarktool.QuarkReader;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -19,7 +20,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.glfw.GLFW;
@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Client implements ClientModInitializer {
 
@@ -113,7 +114,12 @@ public class Client implements ClientModInitializer {
     }
 
     private static void serializeExternalEmotes(File path){
-        for(File file:path.listFiles()){
+        for(File file: Objects.requireNonNull(path.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".json");
+            }
+        }))){
             try{
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
                 EmoteHolder.addEmoteToList(reader);
@@ -122,6 +128,35 @@ public class Client implements ClientModInitializer {
             catch (Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
                 Main.log(Level.ERROR, e.getMessage());
+            }
+        }
+
+        if(Main.config.enableQuark){
+            Main.log(Level.WARN, "Quark importer is on", true);
+            initQuarkEmotes(path);
+        }
+    }
+
+    private static void initQuarkEmotes(File path){
+        for(File file: Objects.requireNonNull(path.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".emote");
+            }
+        }))){
+            Main.log(Level.INFO, "[Quarktool]  Importing Quark emote: " + file.getName());
+            try {
+                BufferedReader reader = Files.newBufferedReader(file.toPath());
+                QuarkReader quarkReader = new QuarkReader();
+                if(quarkReader.deserialize(reader, file.getName())){
+                    EmoteHolder.addEmoteToList(quarkReader.getEmote());
+                }
+            }
+            catch (Throwable e){ //try to catch everything
+                if(Main.config.showDebug){
+                    e.getMessage();
+                    e.printStackTrace();
+                }
             }
         }
     }

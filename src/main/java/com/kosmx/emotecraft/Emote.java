@@ -33,6 +33,7 @@ public class Emote {
     public BodyPart leftLeg = new BodyPart(1.9f,12,0.1f,0,0,0);
     public BodyPart rightLeg = new BodyPart(-1.9f,12,0.1f,0,0,0);
     private float tickDelta = 0;
+    private boolean isQuark = false;
 
     public Emote(int a, int b, int c, boolean inf, int returnTick){
         beginTick = a;
@@ -49,6 +50,7 @@ public class Emote {
 
     public Emote(int a){
         this.beginTick = a;
+        this.isQuark = true;
     }
 
     public int getBeginTick(){
@@ -115,6 +117,13 @@ public class Emote {
     }
     public static boolean addMove(Part part, int tick, float value, String ease){
         return part.add(tick, value, Easing.easeFromString(ease));
+    }
+
+    public void setEndTick(int length) {
+        this.endTick = length;
+        if (endTick >= stopTick){
+            this.stopTick = this.endTick + 1;
+        }
     }
 
     public class BodyPart {
@@ -205,7 +214,7 @@ public class Emote {
         protected boolean add(Move move, boolean sameTickException, boolean limit){
             //TODO add value limit
             int i = findTick(move.tick) + 1;
-            if (this.list.size() != 0 && !sameTickException && this.list.get(i - 1).tick == move.tick || move.tick > lastPlayTick()){
+            if (this.list.size() != 0 && !sameTickException && this.list.get(i - 1).tick == move.tick || move.tick > lastPlayTick() && !isQuark){
                 Main.log(Level.ERROR, "two moving at the same tick error");
             }
             if(limit && Math.abs(move.value) >= 20){
@@ -299,7 +308,7 @@ public class Emote {
         public float getPos(Move nextMove, float tickDelta){
             int tickBefore = this.tick;
             int tickAfter = nextMove.tick;
-            if (this.tick <= nextMove.tick) {
+            if (this.tick > nextMove.tick) {
                 if(tickDelta < this.tick) tickBefore -= endTick - returnTick;
                 else tickAfter += endTick - returnTick;
             }

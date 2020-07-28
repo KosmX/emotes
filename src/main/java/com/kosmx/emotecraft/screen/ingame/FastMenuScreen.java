@@ -27,6 +27,11 @@ public class FastMenuScreen extends Screen {
     }
 
     @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         widget.render(matrices, mouseX, mouseY, delta);

@@ -4,6 +4,8 @@ import com.kosmx.emotecraft.Main;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
 
@@ -20,13 +22,21 @@ public class ClothConfigScreen {
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.debug"), Main.config.showDebug)
                                  .setDefaultValue(false)
                                  .setSaveConsumer(newValue -> Main.config.showDebug = newValue).build());
-        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.validate"), Main.config.dark)
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.validate"), Main.config.validateEmote)
                                  .setTooltip(new TranslatableText("emotecraft.otherconfig.validate.tooltip"))
                                  .setDefaultValue(false)
-                                 .setSaveConsumer(newValue -> Main.config.dark = newValue).build());
+                                 .setSaveConsumer(newValue -> Main.config.validateEmote = newValue).build());
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.dark"), Main.config.dark)
                                  .setDefaultValue(false)
                                  .setSaveConsumer(newValue -> Main.config.dark = newValue).build());
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.quark"), Main.config.enableQuark)
+                                 .setDefaultValue(false)
+                                 .setSaveConsumer(newValue -> {
+                                     if(newValue && parent instanceof EmoteMenu){
+                                         ((EmoteMenu)parent).warn = true;
+                                     }
+                                     Main.config.enableQuark = newValue;
+                                 }).build());
         return builder.build();
     }
 }

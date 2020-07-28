@@ -41,9 +41,10 @@ public class EmoteMenu extends Screen {
     private static final Text unboundText = InputUtil.UNKNOWN_KEY.getLocalizedText();
     private ButtonWidget setKeyButton;
     public boolean save = false;
+    public boolean warn = false;
     private TextFieldWidget searchBox;
     private final List<PositionedText> texts = new ArrayList<>();
-
+    private ButtonWidget resetKey;
 
 
     public EmoteMenu(Screen parent){
@@ -53,6 +54,16 @@ public class EmoteMenu extends Screen {
 
     @Override
     protected void init() {
+        if(warn && Main.config.enableQuark){
+            warn = false;
+            ConfirmScreen csr = new ConfirmScreen((bool)->{
+                Main.config.enableQuark = bool;
+                MinecraftClient.getInstance().openScreen(this);
+            },new TranslatableText("emotecraft.quark"), new TranslatableText("emotecraft.quark2"));
+            this.client.openScreen(csr);
+            csr.disableButtons(56);
+        }
+
         Client.initEmotes();
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width/2-(int)(this.width/2.2-16)-12, 12, (int)(this.width/2.2-16), 20, this.searchBox, new TranslatableText("emotecraft.search"));
 
@@ -81,12 +92,13 @@ public class EmoteMenu extends Screen {
             this.activateKey();
         });
         this.buttons.add(setKeyButton);
-        this.buttons.add(new ButtonWidget(this.width/2 + 124, 60, 96, 20, new TranslatableText("controls.reset"), (button -> {
+        resetKey =  new ButtonWidget(this.width/2 + 124, 60, 96, 20, new TranslatableText("controls.reset"), (button -> {
             if(emoteList.getSelected() != null){
                 emoteList.getSelected().emote.keyBinding = InputUtil.UNKNOWN_KEY;
                 this.save = true;
             }
-        })));
+        }));
+        this.buttons.add(resetKey);
         emoteList.setEmotes(EmoteHolder.list);
         this.children.addAll(buttons);
         super.init();
@@ -128,9 +140,21 @@ public class EmoteMenu extends Screen {
         else return super.mouseClicked(mouseX, mouseY, button);
     }
 
+
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
+        if(this.emoteList.getSelected() == null){
+            this.setKeyButton.active = false;
+            this.resetKey.active = false;
+        }
+        else {
+            this.setKeyButton.active = true;
+            if(this.emoteList.getSelected().emote.keyBinding.equals(InputUtil.UNKNOWN_KEY)){
+                this.resetKey.active = false;
+            }
+            else this.resetKey.active = true;
+        }
         for(PositionedText str:texts){
             str.render(matrices, textRenderer);
         }
