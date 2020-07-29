@@ -27,4 +27,7 @@ Use Blender to create the emote. You don't have to write code, just use blender
 to the description](https://kosmx.gitbook.io/emotecraft/)
 #### If you send me an emote, I may include it in the mod
 
-I'm planning Quark emote support (one way)
+Unstable quark importer: able to import quark emotes
+turn the feature on (in the menu), put quark emotes into the emotes folder.
+
+In the case you find an issue, Please report it (on Discord or on Github).
