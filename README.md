@@ -25,5 +25,6 @@ Use Blender to create the emote. You don't have to write code, just use blender
 ###
 [![](https://i.imgur.com/M3LBG6H.png)
 to the description](https://kosmx.gitbook.io/emotecraft/)
+#### If you send me an emote, I may include it in the mod
 
 I'm planning Quark emote support (one way)
