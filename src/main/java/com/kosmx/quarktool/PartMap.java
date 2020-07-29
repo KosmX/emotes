@@ -16,23 +16,6 @@ public class PartMap {
         this.z = new PartValue(this.part.roll);
     }
 
-    public void addWithStr(String id, int tickFrom, int tickTo, float deltaValue, Ease ease) throws QuarkParsingError {
-        switch (id) {
-            case "x":
-                this.x.addValue(tickFrom, tickTo, deltaValue, ease);
-                break;
-            case "y":
-                this.y.addValue(tickFrom, tickTo, deltaValue, ease);
-                break;
-            case "z":
-                this.z.addValue(tickFrom, tickTo, deltaValue, ease);
-                break;
-            default:
-                throw new QuarkParsingError();
-        }
-    }
-
-
     static class PartValue{
         private float value;
         private int lastTick;

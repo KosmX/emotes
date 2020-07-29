@@ -1,7 +1,6 @@
 package com.kosmx.emotecraft.config;
 
 import com.kosmx.emotecraft.Main;
-import com.kosmx.emotecraft.screen.widget.AbstractFastChooseWidget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.InputUtil;

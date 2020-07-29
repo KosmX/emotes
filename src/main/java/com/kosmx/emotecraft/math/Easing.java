@@ -87,7 +87,7 @@ public class Easing {
 
     /**
      *
-     * @param string
+     * @param string ease name
      * @return ease
      */
     public static Ease easeFromString(String string){
@@ -132,16 +132,16 @@ public class Easing {
         return (float) ((x < 0.5) ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
     }
     public static float inQuad(float x){
-        return (float)(x * x);
+        return (x * x);
     }
     public static float outQuad(float x){
-        return (float)(1 - (1 - x) * (1 - x));
+        return (1 - (1 - x) * (1 - x));
     }
     public static float inOutQuad(float x){
         return (float)((x < 0.5) ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
     }
     public static float inQuart(float x){
-        return (float)(x * x * x * x);
+        return (x * x * x * x);
     }
     public static float outQuart(float x){
         return (float)(1 - Math.pow(1 - x, 4));
@@ -150,7 +150,7 @@ public class Easing {
         return (float)(x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2);
     }
     public static float inQuint(float x){
-        return (float)(x * x * x * x * x);
+        return (x * x * x * x * x);
     }
     public static float outQuint(float x){
         return (float)(1 - Math.pow(1 - x, 5));

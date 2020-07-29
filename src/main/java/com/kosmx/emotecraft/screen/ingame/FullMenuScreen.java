@@ -27,18 +27,14 @@ public class FullMenuScreen extends Screen {
     public void init() {
         int x = (int) Math.min(this.width*0.8, this.height - 120);
         this.searchBox = new TextFieldWidget(this.textRenderer, (this.width - x)/2, 12, x, 20, this.searchBox, new TranslatableText("emotecraft.search"));
-        this.searchBox.setChangedListener((string)->{
-            this.emoteList.filter(string::toLowerCase);
-        });
+        this.searchBox.setChangedListener((string)-> this.emoteList.filter(string::toLowerCase));
         this.emoteList = new EmoteList(this.client, x, x,(this.height - x)/2, (this.height + x)/2, 36, this);
         this.emoteList.setLeftPos((this.width - x)/2);
         emoteList.setEmotes(EmoteHolder.list);
         this.children.add(searchBox);
         this.children.add(emoteList);
         this.setInitialFocus(this.searchBox);
-        this.buttons.add(new ButtonWidget(this.width - 120, this.height - 30, 96, 20, ScreenTexts.CANCEL, (button -> {
-            this.client.openScreen(null);
-        })));
+        this.buttons.add(new ButtonWidget(this.width - 120, this.height - 30, 96, 20, ScreenTexts.CANCEL, (button -> this.client.openScreen(null))));
         this.children.addAll(this.buttons);
     }
 

@@ -3,7 +3,6 @@ package com.kosmx.emotecraft.config;
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
-import com.kosmx.emotecraft.math.Ease;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import io.netty.buffer.Unpooled;
@@ -34,7 +33,7 @@ public class EmoteHolder {
     public final StringRenderable description;
     public final StringRenderable author;
     public final int hash;
-    public static List<EmoteHolder> list = new ArrayList<EmoteHolder>();
+    public static List<EmoteHolder> list = new ArrayList<>();
     public InputUtil.Key keyBinding = InputUtil.UNKNOWN_KEY;
 
     /**
@@ -80,10 +79,6 @@ public class EmoteHolder {
             }
         }
         return ActionResult.PASS;
-    }
-
-    public InputUtil.Key getKeyBinding(){
-        return keyBinding;
     }
 
     //public void setKeyBinding(InputUtil.Key key, )

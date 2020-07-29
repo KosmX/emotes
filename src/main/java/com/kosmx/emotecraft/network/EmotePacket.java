@@ -4,9 +4,7 @@ import com.kosmx.emotecraft.Emote;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.UUID;
 
 public class EmotePacket{
@@ -20,7 +18,7 @@ public class EmotePacket{
     }
     public EmotePacket(){}
 
-    public boolean read(PacketByteBuf buf) throws IOException {
+    public boolean read(PacketByteBuf buf){
         player = buf.readUuid();    //we need to know WHO playings this emote
         emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
         getBodyPartInfo(buf, emote.head);
@@ -38,7 +36,7 @@ public class EmotePacket{
         return emote;
     }
 
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeUuid(player);
         buf.writeInt(emote.getBeginTick());
         buf.writeInt(emote.getEndTick());
@@ -63,15 +61,14 @@ public class EmotePacket{
     private void writePartInfo(PacketByteBuf buf, Emote.Part part){
         List<Emote.Move> list = part.getList();
         buf.writeInt(list.size());
-        for (ListIterator<Emote.Move> it = list.listIterator(); it.hasNext(); ) {
-            Emote.Move move = it.next();
+        for (Emote.Move move : list) {
             buf.writeInt(move.tick);
             buf.writeFloat(move.value);
             buf.writeString(move.getEase());
         }
     }
 
-    private void getBodyPartInfo(PacketByteBuf buf, Emote.BodyPart part) throws IOException{
+    private void getBodyPartInfo(PacketByteBuf buf, Emote.BodyPart part){
         getPartInfo(buf, part.x);
         getPartInfo(buf, part.y);
         getPartInfo(buf, part.z);

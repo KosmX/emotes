@@ -6,7 +6,6 @@ import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.network.StopPacket;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
@@ -88,17 +87,12 @@ public class Main implements ModInitializer {
     private void initServerNetwork(){
         ServerSidePacketRegistry.INSTANCE.register(EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {EmotePacket packet = new EmotePacket();
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            try {
-                if(!packet.read(packetByteBuf) && config.validateEmote){
-                    //Todo kick player
-                    Main.log(Level.INFO,  packetContext.getPlayer().getEntityName() + " is trying to play invalid emote");
-                    return;
-                }
-                packet.write(buf);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(!packet.read(packetByteBuf) && config.validateEmote) {
+                //Todo kick player
+                Main.log(Level.INFO, packetContext.getPlayer().getEntityName() + " is trying to play invalid emote");
                 return;
             }
+                packet.write(buf);
             Stream<PlayerEntity> players = PlayerStream.watching(packetContext.getPlayer());
             players.forEach(playerEntity -> {                                   //TODO check correct emote and kick if not
                 if (playerEntity == packetContext.getPlayer()) return;
@@ -109,14 +103,9 @@ public class Main implements ModInitializer {
         ServerSidePacketRegistry.INSTANCE.register(EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByteBuf) -> {
             StopPacket packet = new StopPacket();
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            try{
-                packet.read(packetByteBuf);
-                packet.write(buf);
-            }
-            catch (IOException e){
-                e.printStackTrace();
-                return;
-            }
+            packet.read(packetByteBuf);
+            packet.write(buf);
+
             Stream<PlayerEntity> players = PlayerStream.watching(packetContex.getPlayer());
             players.forEach(player -> {
                 if(player == packetContex.getPlayer())return;

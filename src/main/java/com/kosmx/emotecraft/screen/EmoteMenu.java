@@ -18,12 +18,10 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
@@ -67,14 +65,10 @@ public class EmoteMenu extends Screen {
         Client.initEmotes();
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width/2-(int)(this.width/2.2-16)-12, 12, (int)(this.width/2.2-16), 20, this.searchBox, new TranslatableText("emotecraft.search"));
 
-        this.searchBox.setChangedListener((string)-> {
-            this.emoteList.filter(string::toLowerCase);
-        });
+        this.searchBox.setChangedListener((string)-> this.emoteList.filter(string::toLowerCase));
         this.children.add(searchBox);
 
-        this.buttons.add(new ButtonWidget(this.width / 2 - 154, this.height - 30, 150, 20, new TranslatableText("emotecraft.openFolder"), (buttonWidget) -> {
-            Util.getOperatingSystem().open(Client.externalEmotes);
-        }));
+        this.buttons.add(new ButtonWidget(this.width / 2 - 154, this.height - 30, 150, 20, new TranslatableText("emotecraft.openFolder"), (buttonWidget) -> Util.getOperatingSystem().open(Client.externalEmotes)));
 
         this.emoteList = new EmoteListWidget(this.client, (int) (this.width / 2.2 - 16), this.height, this);
         this.emoteList.setLeftPos(this.width/2-(int)(this.width/2.2-16)-12);
@@ -82,15 +76,9 @@ public class EmoteMenu extends Screen {
         int x = Math.min(this.width/4, this.height/2);
         this.fastMenu = new FastChooseWidget(this.width/2 + 2, this.height/2 - 8, x-7);
         this.children.add(fastMenu);
-        this.buttons.add(new ButtonWidget(this.width - 100, 4, 96, 20, new TranslatableText("emotecraft.options.options"), (button -> {
-            this.client.openScreen(ClothConfigScreen.getConfigScreen(this));
-        })));
-        this.buttons.add(new ButtonWidget(this.width/2 + 10, this.height - 30, 96, 20, ScreenTexts.DONE, (button -> {
-            this.client.openScreen(this.parent);
-        })));
-        setKeyButton = new ButtonWidget(this.width/2 + 6, 60, 96, 20, unboundText, button -> {
-            this.activateKey();
-        });
+        this.buttons.add(new ButtonWidget(this.width - 100, 4, 96, 20, new TranslatableText("emotecraft.options.options"), (button -> this.client.openScreen(ClothConfigScreen.getConfigScreen(this)))));
+        this.buttons.add(new ButtonWidget(this.width/2 + 10, this.height - 30, 96, 20, ScreenTexts.DONE, (button -> this.client.openScreen(this.parent))));
+        setKeyButton = new ButtonWidget(this.width/2 + 6, 60, 96, 20, unboundText, button -> this.activateKey());
         this.buttons.add(setKeyButton);
         resetKey =  new ButtonWidget(this.width/2 + 124, 60, 96, 20, new TranslatableText("controls.reset"), (button -> {
             if(emoteList.getSelected() != null){
@@ -150,10 +138,7 @@ public class EmoteMenu extends Screen {
         }
         else {
             this.setKeyButton.active = true;
-            if(this.emoteList.getSelected().emote.keyBinding.equals(InputUtil.UNKNOWN_KEY)){
-                this.resetKey.active = false;
-            }
-            else this.resetKey.active = true;
+            this.resetKey.active = !this.emoteList.getSelected().emote.keyBinding.equals(InputUtil.UNKNOWN_KEY);
         }
         for(PositionedText str:texts){
             str.render(matrices, textRenderer);
@@ -255,7 +240,7 @@ public class EmoteMenu extends Screen {
             for(EmoteHolder emote : list){
                 this.emotes.add(new EmoteListEntry(this.client, emote));
             }
-            filter(() -> {return "";});
+            filter(() -> "");
         }
 
         public  class EmoteListEntry extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntry> {
@@ -305,8 +290,8 @@ public class EmoteMenu extends Screen {
     }
     private class PositionedText {
         private final Text str;
-        private int x;
-        private int y;
+        private final int x;
+        private final int y;
 
         private PositionedText(Text str, int x, int y){
             this.str = str;

@@ -20,9 +20,7 @@ public class FastMenuScreen extends Screen {
         int x = (int) Math.min(this.width*0.8, this.height*0.8);
         this.widget = new FastMenuWidget((this.width - x)/2, (this.height - x)/2, x);
         this.children.add(widget);
-        this.buttons.add(new ButtonWidget(this.width - 120, this.height - 30, 96, 20, new TranslatableText("emotecraft.emotelist"), (button -> {
-            this.client.openScreen(new FullMenuScreen(new TranslatableText("emotecraft.emotelist")));
-        })));
+        this.buttons.add(new ButtonWidget(this.width - 120, this.height - 30, 96, 20, new TranslatableText("emotecraft.emotelist"), (button -> this.client.openScreen(new FullMenuScreen(new TranslatableText("emotecraft.emotelist"))))));
         this.children.addAll(this.buttons);
     }
 

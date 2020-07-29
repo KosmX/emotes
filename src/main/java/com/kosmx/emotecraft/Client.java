@@ -19,9 +19,6 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.resource.ReloadableResourceManagerImpl;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.glfw.GLFW;
@@ -35,7 +32,6 @@ import java.util.Objects;
 
 public class Client implements ClientModInitializer {
 
-    private static final ResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES);
     private static KeyBinding emoteKeyBinding;
     private static KeyBinding debugEmote;
     private static KeyBinding stopEmote;
@@ -49,7 +45,7 @@ public class Client implements ClientModInitializer {
 
         initKeyBindings();      //Init keyBinding, including debug key
 
-        initNetworkClient();        //Init the Client-ide network manager. The Main'll have a server-side
+        initNetworkClient();        //Init the Client-ide network manager. The Main will have a server-side
 
         initEmotes();       //Import the emotes, including both the default and the external.
 
@@ -60,15 +56,9 @@ public class Client implements ClientModInitializer {
         ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {
             EmotePacket emotePacket;
             Emote emote;
-            try{
-                emotePacket = new EmotePacket();
-                emotePacket.read(packetByteBuf);
-            }
-            catch(IOException e) {
-                Main.log(Level.ERROR, e.getMessage());
-                if (Main.config.showDebug) e.printStackTrace();
-                return;
-            }
+            emotePacket = new EmotePacket();
+            emotePacket.read(packetByteBuf);
+
             emote = emotePacket.getEmote();
             packetContext.getTaskQueue().execute(() ->{
                 PlayerEntity playerEntity = MinecraftClient.getInstance().world.getPlayerByUuid(emotePacket.getPlayer());
@@ -81,13 +71,8 @@ public class Client implements ClientModInitializer {
 
         ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByyeBuf) -> {
             StopPacket packet = new StopPacket();
-            try{
-                packet.read(packetByyeBuf);
+            packet.read(packetByyeBuf);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
             packetContex.getTaskQueue().execute(()-> {
                 EmotePlayerInterface player = (EmotePlayerInterface) MinecraftClient.getInstance().world.getPlayerByUuid(packet.getPlayer());
                 if(player != null && Emote.isRunningEmote(player.getEmote()))player.getEmote().stop();
@@ -100,6 +85,8 @@ public class Client implements ClientModInitializer {
         EmoteHolder.list = new ArrayList<>();
 
         serializeInternalEmotes("waving");
+        serializeInternalEmotes("clap");
+        serializeInternalEmotes("crying");
         //TODO add internal emotes to the list
 
 
@@ -117,12 +104,7 @@ public class Client implements ClientModInitializer {
     }
 
     private static void serializeExternalEmotes(File path){
-        for(File file: Objects.requireNonNull(path.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".json");
-            }
-        }))){
+        for(File file: Objects.requireNonNull(path.listFiles((dir, name) -> name.endsWith(".json")))){
             try{
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
                 EmoteHolder.addEmoteToList(reader);
@@ -141,12 +123,7 @@ public class Client implements ClientModInitializer {
     }
 
     private static void initQuarkEmotes(File path){
-        for(File file: Objects.requireNonNull(path.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".emote");
-            }
-        }))){
+        for(File file: Objects.requireNonNull(path.listFiles((dir, name) -> name.endsWith(".emote")))){
             Main.log(Level.INFO, "[Quarktool]  Importing Quark emote: " + file.getName());
             try {
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
@@ -157,7 +134,7 @@ public class Client implements ClientModInitializer {
             }
             catch (Throwable e){ //try to catch everything
                 if(Main.config.showDebug){
-                    e.getMessage();
+                    Main.log(Level.ERROR, e.getMessage());
                     e.printStackTrace();
                 }
             }

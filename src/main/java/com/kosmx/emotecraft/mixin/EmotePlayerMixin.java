@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlayerInterface {

@@ -5,9 +5,7 @@ import com.kosmx.emotecraft.Main;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Pair;
-import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Type;
 
@@ -50,7 +48,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
     private void keyBindsDeserializer(JsonArray node, SerializableConfig config){
         for(JsonElement object:node){
             JsonObject n = object.getAsJsonObject();
-            config.emotesWithHash.add(new Pair<Integer, String>(n.get("id").getAsInt(), n.get("key").getAsString()));
+            config.emotesWithHash.add(new Pair<>(n.get("id").getAsInt(), n.get("key").getAsString()));
             //keyBindDeserializer(object.getAsJsonObject());
         }
     }

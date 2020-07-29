@@ -77,9 +77,6 @@ public class Emote {
         return stopTick;
     }
 
-    private int getCurrentTickDelta(){
-        return currentTick;
-    }
 
     private float getCurrentTick(){
         return this.currentTick + this.tickDelta;
@@ -178,7 +175,7 @@ public class Emote {
     }
 
     public class Part{
-        private final List<Move> list = new ArrayList<Move>();
+        private final List<Move> list = new ArrayList<>();
         /*{
             @Override
             public Move get(int index){
@@ -191,10 +188,6 @@ public class Emote {
 
         private Part(float defaultValue){
             this.defaultValue = defaultValue;
-        }
-
-        public float getDefaultValue() {
-            return defaultValue;
         }
 
         public List<Move> getList(){
@@ -306,10 +299,6 @@ public class Emote {
             this.value = value;
             this.ease = ease;
         }
-        public Move(int tick, float value, String ease){
-            this(tick, value, Easing.easeFromString(ease));
-        }
-
         public float getPos(Move nextMove, float tickDelta){
             //if(this == nextMove)return this.value;
             int tickBefore = this.tick;
