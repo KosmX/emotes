@@ -35,18 +35,19 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
         return new EmoteHolder(emote, name, description, author, node.hashCode());
     }
 
-    private Emote emoteDeserializer(JsonObject node){
+    private Emote emoteDeserializer(JsonObject node) throws JsonParseException{
         int beginTick = 0;
         if(node.has("beginTick")){
             beginTick = node.get("beginTick").getAsInt();
         }
         int endTick = node.get("endTick").getAsInt();
-
+        if(endTick <= 0)throw new JsonParseException("endTick must be bigger than 0");
         boolean isLoop = false;
         int returnTick = 0;
         if(node.has("isLoop") && node.has("returnTick")){
             isLoop = node.get("isLoop").getAsBoolean();
             returnTick = node.get("returnTick").getAsInt();
+            if(isLoop && (returnTick >= endTick || returnTick < 0))throw new JsonParseException("return tick have to be smaller than endTick and not smaller than 0");
         }
 
         node.entrySet().forEach((entry)->{
