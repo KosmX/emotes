@@ -24,11 +24,11 @@ you can create your own emotes, and when you play, everyone will see it (who can
 Use Blender to create the emote. You don't have to write code, just use blender
 ###
 [![](https://i.imgur.com/M3LBG6H.png)
-to the description](https://kosmx.gitbook.io/emotecraft/)
+to the description](https://kosmx.gitbook.io/emotecraft/tutorial/custom-emotes)
 #### If you send me an emote, I may include it in the mod
 
 Unstable quark importer: able to import quark emotes
 turn the feature on (in the menu), put quark emotes into the emotes folder.  
 ###
-[Some tutorial and tips](https://kosmx.gitbook.io/emotecraft/)  
+[User manual](https://kosmx.gitbook.io/emotecraft/)  
 In the case you find an issue, Please report it (on Discord or on Github).
