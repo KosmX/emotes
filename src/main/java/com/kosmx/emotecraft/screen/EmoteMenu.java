@@ -162,6 +162,7 @@ public class EmoteMenu extends Screen {
     private void confirmReturn(boolean choice, EmoteHolder emoteHolder, InputUtil.Key key){
         if(choice){
             applyKey(true, emoteHolder, key);
+            this.saveConfig();
         }
         this.client.openScreen(this);
     }
@@ -192,17 +193,21 @@ public class EmoteMenu extends Screen {
     @Override
     public void removed() {
         if(save){
-            EmoteHolder.bindKeys(Main.config);
-            try {
-                BufferedWriter writer = Files.newBufferedWriter(Main.CONFIGPATH);
-                Serializer.serializer.toJson(Main.config, writer);
-                writer.close();
-                //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.saveConfig();
         }
         super.removed();
+    }
+
+    private void saveConfig(){
+        EmoteHolder.bindKeys(Main.config);
+        try {
+            BufferedWriter writer = Files.newBufferedWriter(Main.CONFIGPATH);
+            Serializer.serializer.toJson(Main.config, writer);
+            writer.close();
+            //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateKeyText(){

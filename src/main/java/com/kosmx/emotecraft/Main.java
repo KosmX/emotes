@@ -87,9 +87,9 @@ public class Main implements ModInitializer {
     private void initServerNetwork(){
         ServerSidePacketRegistry.INSTANCE.register(EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {EmotePacket packet = new EmotePacket();
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            if(!packet.read(packetByteBuf) && config.validateEmote) {
+            if(!packet.read(packetByteBuf, config.validateEmote)) {
                 //Todo kick player
-                Main.log(Level.INFO, packetContext.getPlayer().getEntityName() + " is trying to play invalid emote");
+                Main.log(Level.INFO, packetContext.getPlayer().getEntityName() + " is trying to play invalid emote", true);
                 return;
             }
                 packet.write(buf);

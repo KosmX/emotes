@@ -57,7 +57,7 @@ public class Client implements ClientModInitializer {
             EmotePacket emotePacket;
             Emote emote;
             emotePacket = new EmotePacket();
-            emotePacket.read(packetByteBuf);
+            if(!emotePacket.read(packetByteBuf, false)) return;
 
             emote = emotePacket.getEmote();
             packetContext.getTaskQueue().execute(() ->{

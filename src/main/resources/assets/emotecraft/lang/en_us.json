@@ -11,7 +11,7 @@
   "emotecraft.otherconfig.validate": "Validate emote",
   "emotecraft.otherconfig.validate.tooltip": "Only for PvP worlds, where somebody want to cheat. It creates a limitation, make impossible to play some emotes",
   "emotecraft.otherconfig.dark": "Dark fast-menu",
-  "emotecraft.emotelist": "All emote",
+  "emotecraft.emotelist": "All emotes",
   "key.emotecraft.fastchoose":"Fastmenu",
   "key.emotecraft.debug": "play 'debug' emote",
   "key.emotecraft.stop": "Stop playing emote",

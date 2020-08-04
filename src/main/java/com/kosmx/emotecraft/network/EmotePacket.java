@@ -18,7 +18,7 @@ public class EmotePacket{
     }
     public EmotePacket(){}
 
-    public boolean read(PacketByteBuf buf){
+    public boolean read(PacketByteBuf buf, boolean validate){
         player = buf.readUuid();    //we need to know WHO playings this emote
         emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
         getBodyPartInfo(buf, emote.head);
@@ -27,7 +27,7 @@ public class EmotePacket{
         getBodyPartInfo(buf, emote.leftArm);
         getBodyPartInfo(buf, emote.rightLeg);
         getBodyPartInfo(buf, emote.leftLeg);
-        return correct && emote.getBeginTick() >= 0 && emote.getBeginTick() < emote.getEndTick() && (!emote.isInfinite() || emote.getReturnTick() < emote.getEndTick() && emote.getReturnTick() >= 0);
+        return !(!correct && validate) && emote.getBeginTick() >= 0 && emote.getBeginTick() < emote.getEndTick() && (!emote.isInfinite() || emote.getReturnTick() < emote.getEndTick() && emote.getReturnTick() >= 0);
     }
     public UUID getPlayer(){
         return this.player;
