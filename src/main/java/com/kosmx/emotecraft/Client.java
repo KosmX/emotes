@@ -60,11 +60,17 @@ public class Client implements ClientModInitializer {
             if(!emotePacket.read(packetByteBuf, false)) return;
 
             emote = emotePacket.getEmote();
+            boolean isRepeat = emotePacket.isRepeat;
             packetContext.getTaskQueue().execute(() ->{
                 PlayerEntity playerEntity = MinecraftClient.getInstance().world.getPlayerByUuid(emotePacket.getPlayer());
                 if(playerEntity != null) {
-                    ((EmotePlayerInterface) playerEntity).playEmote(emote);
-                    ((EmotePlayerInterface) playerEntity).getEmote().start();
+                    if(!isRepeat || !Emote.isRunningEmote(((EmotePlayerInterface) playerEntity).getEmote())) {
+                        ((EmotePlayerInterface) playerEntity).playEmote(emote);
+                        ((EmotePlayerInterface) playerEntity).getEmote().start();
+                    }
+                    else if(isRepeat){
+                        ((EmotePlayerInterface)playerEntity).resetLastUpdated();
+                    }
                 }
             });
         }));

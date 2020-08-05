@@ -10,4 +10,8 @@ public interface EmotePlayerInterface {
 
     @Nullable
     Emote getEmote();
+
+    int getLastUpdated();
+
+    void resetLastUpdated();
 }
