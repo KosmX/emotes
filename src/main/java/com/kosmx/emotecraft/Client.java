@@ -93,11 +93,14 @@ public class Client implements ClientModInitializer {
         serializeInternalEmotes("waving");
         serializeInternalEmotes("clap");
         serializeInternalEmotes("crying");
+        serializeInternalEmotes("point");
+        serializeInternalEmotes("here");
+        serializeInternalEmotes("palm");
         //TODO add internal emotes to the list
 
 
         if(!externalEmotes.isDirectory())externalEmotes.mkdirs();
-        serializeExternalEmotes(externalEmotes);
+        serializeExternalEmotes();
 
         Main.config.assignEmotes();
     }
@@ -109,8 +112,8 @@ public class Client implements ClientModInitializer {
         EmoteHolder.addEmoteToList(Serializer.serializer.fromJson(reader, EmoteHolder.class));
     }
 
-    private static void serializeExternalEmotes(File path){
-        for(File file: Objects.requireNonNull(path.listFiles((dir, name) -> name.endsWith(".json")))){
+    private static void serializeExternalEmotes(){
+        for(File file: Objects.requireNonNull(Client.externalEmotes.listFiles((dir, name) -> name.endsWith(".json")))){
             try{
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
                 EmoteHolder.addEmoteToList(reader);
@@ -124,7 +127,7 @@ public class Client implements ClientModInitializer {
 
         if(Main.config.enableQuark){
             Main.log(Level.WARN, "Quark importer is on", true);
-            initQuarkEmotes(path);
+            initQuarkEmotes(Client.externalEmotes);
         }
     }
 

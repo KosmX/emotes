@@ -77,8 +77,7 @@ public class Emote {
         return stopTick;
     }
 
-
-    private float getCurrentTick(){
+    public float getCurrentTick(){
         return this.currentTick + this.tickDelta;
     }
 

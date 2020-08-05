@@ -55,10 +55,12 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
     public void tick() {
         super.tick();
         if(Emote.isRunningEmote(this.emote)){
+            this.bodyYaw = (this.bodyYaw * 3 + this.yaw)/4; //to set the body to the correct direction smooth.
             if(this != MinecraftClient.getInstance().getCameraEntity() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity || EmoteHolder.canRunEmote(this)) {
                 this.emote.tick();
                 this.lastUpdated++;
                 if(this == MinecraftClient.getInstance().getCameraEntity() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && lastUpdated >= 100){
+                    if(emote.getStopTick() - emote.getCurrentTick() < 50 && !emote.isInfinite())return;
                     PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                     EmotePacket emotePacket = new EmotePacket(emote, this);
                     emotePacket.isRepeat = true;
