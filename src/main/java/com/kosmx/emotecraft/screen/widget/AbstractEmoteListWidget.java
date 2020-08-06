@@ -10,6 +10,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
             }
             this.client.textRenderer.drawWithShadow(matrices, this.emote.name, x + 2, y + 1, 16777215);
             this.client.textRenderer.drawWithShadow(matrices, this.emote.description, x + 2, y + 12, 8421504);
-            if(!this.emote.author.getString().equals(""))this.client.textRenderer.drawWithShadow(matrices, new LiteralText("Author: ").formatted(Formatting.GOLD).append((Text) this.emote.author), x + 2, y + 23, 8421504);
+            if(!this.emote.author.getString().equals(""))this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append((Text) this.emote.author), x + 2, y + 23, 8421504);
         }
 
         @Override
