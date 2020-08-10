@@ -1,4 +1,4 @@
-package com.kosmx.emotecraft.screen.widget;
+package com.kosmx.emotecraft.gui.widget;
 
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;

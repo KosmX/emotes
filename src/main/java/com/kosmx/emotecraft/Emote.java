@@ -88,7 +88,7 @@ public class Emote {
             currentTick = returnTick;
             isInfStarted = true;
         }
-        if (currentTick > stopTick){
+        if (currentTick >= stopTick){
             this.isRunning = false;
         }
     }
@@ -102,7 +102,7 @@ public class Emote {
         this.isRunning = true;
         if (beginTick < 0)beginTick = 0;
         if (endTick < beginTick) endTick = beginTick;
-        if (stopTick <= endTick) stopTick = endTick + 1;
+        if (stopTick <= endTick) stopTick = endTick + 3;
     }
 
     public void stop(){

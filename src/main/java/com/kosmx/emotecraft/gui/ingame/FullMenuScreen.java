@@ -1,7 +1,7 @@
-package com.kosmx.emotecraft.screen.ingame;
+package com.kosmx.emotecraft.gui.ingame;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
-import com.kosmx.emotecraft.screen.widget.AbstractEmoteListWidget;
+import com.kosmx.emotecraft.gui.widget.AbstractEmoteListWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;

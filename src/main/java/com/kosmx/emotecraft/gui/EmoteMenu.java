@@ -1,12 +1,12 @@
-package com.kosmx.emotecraft.screen;
+package com.kosmx.emotecraft.gui;
 
 import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.math.Helper;
-import com.kosmx.emotecraft.screen.widget.AbstractEmoteListWidget;
-import com.kosmx.emotecraft.screen.widget.AbstractFastChooseWidget;
+import com.kosmx.emotecraft.gui.widget.AbstractEmoteListWidget;
+import com.kosmx.emotecraft.gui.widget.AbstractFastChooseWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
@@ -41,7 +41,7 @@ public class EmoteMenu extends Screen {
     public boolean save = false;
     public boolean warn = false;
     private TextFieldWidget searchBox;
-    private final List<PositionedText> texts = new ArrayList<>();
+    private List<PositionedText> texts = new ArrayList<>();
     private ButtonWidget resetKey;
 
 
@@ -61,6 +61,8 @@ public class EmoteMenu extends Screen {
             this.client.openScreen(csr);
             csr.disableButtons(56);
         }
+
+        this.texts = new ArrayList<>();
 
         Client.initEmotes();
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width/2-(int)(this.width/2.2-16)-12, 12, (int)(this.width/2.2-16), 20, this.searchBox, new TranslatableText("emotecraft.search"));

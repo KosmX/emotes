@@ -1,4 +1,4 @@
-package com.kosmx.emotecraft.screen;
+package com.kosmx.emotecraft.gui;
 
 import com.kosmx.emotecraft.Main;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;

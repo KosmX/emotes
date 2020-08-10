@@ -1,6 +1,6 @@
-package com.kosmx.emotecraft.screen.ingame;
+package com.kosmx.emotecraft.gui.ingame;
 
-import com.kosmx.emotecraft.screen.widget.AbstractFastChooseWidget;
+import com.kosmx.emotecraft.gui.widget.AbstractFastChooseWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
