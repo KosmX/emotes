@@ -5,7 +5,7 @@ import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.network.StopPacket;
 import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
-import com.kosmx.emotecraft.screen.ingame.FastMenuScreen;
+import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
 import com.kosmx.quarktool.QuarkReader;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
@@ -27,7 +27,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class Client implements ClientModInitializer {
@@ -38,7 +38,7 @@ public class Client implements ClientModInitializer {
     public static final File externalEmotes = FabricLoader.getInstance().getGameDir().resolve("emotes").toFile();
     @Override
     public void onInitializeClient() {
-        //There will be something only client stuff
+        //There is the only client stuff
         //like get emote list, or add emote player key
         //EmoteSerializer.initilaizeDeserializer();
         //Every type of initializing process has it's own method... It's easier to see through that
@@ -68,7 +68,7 @@ public class Client implements ClientModInitializer {
                         ((EmotePlayerInterface) playerEntity).playEmote(emote);
                         ((EmotePlayerInterface) playerEntity).getEmote().start();
                     }
-                    else if(isRepeat){
+                    else {
                         ((EmotePlayerInterface)playerEntity).resetLastUpdated();
                     }
                 }
@@ -88,7 +88,7 @@ public class Client implements ClientModInitializer {
 
     public static void initEmotes(){
         //Serialize emotes
-        EmoteHolder.list = new ArrayList<>();
+        EmoteHolder.clearEmotes();
 
         serializeInternalEmotes("waving");
         serializeInternalEmotes("clap");
@@ -109,15 +109,20 @@ public class Client implements ClientModInitializer {
         InputStream stream = Client.class.getResourceAsStream("/assets/" + Main.MOD_ID + "/emotes/" + name + ".json");
         InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         Reader reader = new BufferedReader(streamReader);
-        EmoteHolder.addEmoteToList(Serializer.serializer.fromJson(reader, EmoteHolder.class));
+        EmoteHolder emoteHolder = Serializer.serializer.fromJson(reader, EmoteHolder.class);
+        EmoteHolder.addEmoteToList(emoteHolder);
+        emoteHolder.bindIcon((String)("/assets/" + Main.MOD_ID + "/emotes/" + name + ".png"));
     }
 
     private static void serializeExternalEmotes(){
         for(File file: Objects.requireNonNull(Client.externalEmotes.listFiles((dir, name) -> name.endsWith(".json")))){
             try{
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
-                EmoteHolder.addEmoteToList(reader);
+                EmoteHolder emote = EmoteHolder.deserializeJson(reader);
+                EmoteHolder.addEmoteToList(emote);
                 reader.close();
+                File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length()-5) + ".png").toFile();
+                if(icon.isFile())emote.bindIcon(icon);
             }
             catch (Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
@@ -138,7 +143,10 @@ public class Client implements ClientModInitializer {
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
                 QuarkReader quarkReader = new QuarkReader();
                 if(quarkReader.deserialize(reader, file.getName())){
-                    EmoteHolder.addEmoteToList(quarkReader.getEmote());
+                    EmoteHolder emote = quarkReader.getEmote();
+                    EmoteHolder.addEmoteToList(emote);
+                    File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length()-6) + ".png").toFile();
+                    if(icon.isFile())emote.bindIcon(icon);
                 }
             }
             catch (Throwable e){ //try to catch everything
@@ -149,6 +157,7 @@ public class Client implements ClientModInitializer {
             }
         }
     }
+
 
     private static void playDebugEmote(){
         Main.log(Level.INFO, "Playing debug emote");

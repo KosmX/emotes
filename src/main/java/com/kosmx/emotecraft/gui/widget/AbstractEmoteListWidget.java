@@ -28,7 +28,6 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     }
 
 
-
     @Override
     public int getRowWidth() {
         return this.width-5;
@@ -71,9 +70,16 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
                 RenderSystem.color4f(1, 1, 1, 1);
                 DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, Helper.colorHelper(66, 66, 66, 128));
             }
-            this.client.textRenderer.drawWithShadow(matrices, this.emote.name, x + 2, y + 1, 16777215);
-            this.client.textRenderer.drawWithShadow(matrices, this.emote.description, x + 2, y + 12, 8421504);
-            if(!this.emote.author.getString().equals(""))this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append((Text) this.emote.author), x + 2, y + 23, 8421504);
+            this.client.textRenderer.drawWithShadow(matrices, this.emote.name, x + 38, y + 1, 16777215);
+            this.client.textRenderer.drawWithShadow(matrices, this.emote.description, x + 38, y + 12, 8421504);
+            if(!this.emote.author.getString().equals(""))this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append((Text) this.emote.author), x + 38, y + 23, 8421504);
+            if(this.emote.getIcon() != null) {
+                RenderSystem.color4f(1, 1, 1, 1);
+                MinecraftClient.getInstance().getTextureManager().bindTexture(this.emote.getIcon());
+                RenderSystem.enableBlend();
+                drawTexture(matrices, x, y, 32, 32, 0, 0, 256, 256, 256, 256);
+                RenderSystem.disableBlend();
+            }
         }
 
         @Override

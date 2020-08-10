@@ -1,6 +1,6 @@
 package com.kosmx.emotecraft.config;
 
-import com.kosmx.emotecraft.screen.EmoteMenu;
+import com.kosmx.emotecraft.gui.EmoteMenu;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 

@@ -40,36 +40,21 @@ public class Main implements ModInitializer {
     public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(MOD_ID, "playemote");
     public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(MOD_ID, "stopemote");
 
+    /**
+     * This initializer runs on the server and on the client.
+     * Load config, init networking
+     * And Main has the static variables of the mod.
+     */
     @Override
     public void onInitialize() {
+
         Serializer.initializeSerializer();/*
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT){ //I can't do it in the client initializer because I need it to serialize the config
             Client.initEmotes();
         }
         */
-        if(CONFIGPATH.toFile().isFile()){
-            try {
-                BufferedReader reader = Files.newBufferedReader(CONFIGPATH);
-                config = Serializer.serializer.fromJson(reader, SerializableConfig.class);
-                reader.close();
-                //config = Serializer.serializer.fromJson(FileUtils.readFileToString(CONFIGPATH, "UTF-8"), SerializableConfig.class);
-            }
-            catch (Throwable e){
-                config = new SerializableConfig();
-                if(e instanceof IOException){
-                    Main.log(Level.ERROR, "Can't access to config file: " + e.getLocalizedMessage(), true);
-                }
-                else if(e instanceof JsonParseException){
-                    Main.log(Level.ERROR, "Config is invalid Json file: " + e.getLocalizedMessage(), true);
-                }
-                else {
-                    e.printStackTrace();
-                }
-            }
-        }
-        else {
-            config = new SerializableConfig();
-        }
+
+        loadConfig();
 
         log(Level.INFO, "Initializing");
 
@@ -112,6 +97,33 @@ public class Main implements ModInitializer {
                 ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, EMOTE_STOP_NETWORK_PACKET_ID, buf);
             });
         }));
+    }
+
+    private static void loadConfig(){
+        if(CONFIGPATH.toFile().isFile()){
+            try {
+                BufferedReader reader = Files.newBufferedReader(CONFIGPATH);
+                config = Serializer.serializer.fromJson(reader, SerializableConfig.class);
+                reader.close();
+                //config = Serializer.serializer.fromJson(FileUtils.readFileToString(CONFIGPATH, "UTF-8"), SerializableConfig.class);
+            }
+            catch (Throwable e){
+                config = new SerializableConfig();
+                if(e instanceof IOException){
+                    Main.log(Level.ERROR, "Can't access to config file: " + e.getLocalizedMessage(), true);
+                }
+                else if(e instanceof JsonParseException){
+                    Main.log(Level.ERROR, "Config is invalid Json file: " + e.getLocalizedMessage(), true);
+                }
+                else {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+            config = new SerializableConfig();
+        }
+
     }
 
 
