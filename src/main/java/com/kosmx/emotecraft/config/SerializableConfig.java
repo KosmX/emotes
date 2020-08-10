@@ -22,6 +22,8 @@ public class SerializableConfig {
     public boolean dark = false;
     @Environment(EnvType.CLIENT)
     public boolean enableQuark = false;
+    @Environment(EnvType.CLIENT)
+    public boolean showIcons = true;
 
     public int[] fastMenuHash = new int[8];
     public List<Pair<Integer, String>> emotesWithHash = new ArrayList<>();

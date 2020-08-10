@@ -99,7 +99,7 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
             }
         }
         for(FastChooseElement f:elements){
-            if(f.hasEmote()) f.renderText(matrices, textRenderer);
+            if(f.hasEmote()) f.render(matrices, textRenderer);
         }
     }
 
@@ -169,12 +169,22 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
             this.setEmote(null);
         }
 
-        public void renderText(MatrixStack matrices, TextRenderer textRenderer) {
-            if (Main.config.fastMenuEmotes[id] != null) {
-                drawCenteredText(matrices, textRenderer, Main.config.fastMenuEmotes[id].name, this.angle);
+        public void render(MatrixStack matrices, TextRenderer textRenderer) {
+            Identifier identifier = Main.config.fastMenuEmotes[id] != null ? Main.config.fastMenuEmotes[id].getIcon() : null;
+            if(identifier != null && Main.config.showIcons){
+                int s = size / 10;
+                int iconX = (int) (((float)(x + size/2)) + size*0.4*Math.sin(this.angle * 0.0174533)) - s;
+                int iconY = (int) (((float)(y + size/2)) + size*0.4*Math.cos(this.angle * 0.0174533)) - s;
+                MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+                drawTexture(matrices, iconX, iconY, s*2, s*2, 0, 0, 256, 256, 256, 256);
             }
             else {
-                Main.log(Level.ERROR, "Tried to render non-existing name", true);
+                if (Main.config.fastMenuEmotes[id] != null) {
+                    drawCenteredText(matrices, textRenderer, Main.config.fastMenuEmotes[id].name, this.angle);
+                }
+                else {
+                    Main.log(Level.ERROR, "Tried to render non-existing name", true);
+                }
             }
         }
         public void renderHover(MatrixStack matrices){

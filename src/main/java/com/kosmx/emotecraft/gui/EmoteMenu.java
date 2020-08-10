@@ -75,7 +75,7 @@ public class EmoteMenu extends Screen {
         this.emoteList = new EmoteListWidget(this.client, (int) (this.width / 2.2 - 16), this.height, this);
         this.emoteList.setLeftPos(this.width/2-(int)(this.width/2.2-16)-12);
         this.children.add(this.emoteList);
-        int x = Math.min(this.width/4, this.height/2);
+        int x = Math.min(this.width/4, (int)(this.height/2.5));
         this.fastMenu = new FastChooseWidget(this.width/2 + 2, this.height/2 - 8, x-7);
         this.children.add(fastMenu);
         this.buttons.add(new ButtonWidget(this.width - 100, 4, 96, 20, new TranslatableText("emotecraft.options.options"), (button -> this.client.openScreen(ClothConfigScreen.getConfigScreen(this)))));
@@ -94,9 +94,9 @@ public class EmoteMenu extends Screen {
         super.init();
         this.setInitialFocus(this.searchBox);
         this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.keybind"), this.width/2 +115, 40));
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu"), this.width/2 + 2 + x/2, height/2 - 54));
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu2"), this.width/2 + 2 + x/2, height/2 - 40));
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu3"), this.width/2 + 2 + x/2, height/2 - 26));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu"), this.width/2 + 10 + x/2, height/2 - 54));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu2"), this.width/2 + 10 + x/2, height/2 - 40));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu3"), this.width/2 + 10 + x/2, height/2 - 26));
     }
 
     private void activateKey(){

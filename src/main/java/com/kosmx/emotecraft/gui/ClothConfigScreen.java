@@ -35,6 +35,10 @@ public class ClothConfigScreen {
                                      }
                                      Main.config.enableQuark = newValue;
                                  }).build());
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.showicon"), Main.config.showIcons)
+                                 .setDefaultValue(true)
+                                 .setTooltip(new TranslatableText("emotecraft.otherconfig.showicon.tooltip"))
+                                 .setSaveConsumer(newValue -> Main.config.showIcons = newValue).build());
         return builder.build();
     }
 }
