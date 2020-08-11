@@ -30,7 +30,7 @@ public class ClothConfigScreen {
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.quark"), Main.config.enableQuark)
                                  .setDefaultValue(false)
                                  .setSaveConsumer(newValue -> {
-                                     if(newValue && parent instanceof EmoteMenu){
+                                     if(newValue && parent instanceof EmoteMenu && !Main.config.enableQuark){
                                          ((EmoteMenu)parent).warn = true;
                                      }
                                      Main.config.enableQuark = newValue;
