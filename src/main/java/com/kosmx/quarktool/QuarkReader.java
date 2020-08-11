@@ -30,13 +30,13 @@ public class QuarkReader {
     private Playable animation;
 
     public boolean deserialize(BufferedReader reader, String name) {
-        this.hash = reader.hashCode();
         this.name = name;
         List<List<String>> strings = new ArrayList<>();
         Stream<String> stream = reader.lines();
         stream.forEach((s -> {
             strings.add(read(s.replaceAll("\t", "")));
         }));
+        this.hash = strings.hashCode();
         int i = 0;
         try {
             while (i < strings.size()) {
