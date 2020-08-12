@@ -20,9 +20,9 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	modCompile "io.github.prospector:modmenu:${project.modmenu_version}"
+	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 	include "io.github.prospector:modmenu:${project.modmenu_version}"
-	modApi "me.shedaniel.cloth:config-2:${project.cloth_version}"
+	modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
 	include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
 	implementation 'com.google.code.gson:gson:2.8.5' //GSon serializer

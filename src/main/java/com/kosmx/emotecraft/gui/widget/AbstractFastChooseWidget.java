@@ -10,7 +10,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 
@@ -44,11 +44,11 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
         this.size = size;       //It's a square with same width and height
     }
 
-    public void drawCenteredText(MatrixStack matrixStack, TextRenderer textRenderer, StringRenderable stringRenderable, float deg){
+    public void drawCenteredText(MatrixStack matrixStack, TextRenderer textRenderer, Text stringRenderable, float deg){
         drawCenteredText(matrixStack, textRenderer, stringRenderable, (float) (((float)(this.x + this.size/2)) + size*0.4*Math.sin(deg * 0.0174533)), (float) (((float)(this.y + this.size/2)) + size*0.4*Math.cos(deg * 0.0174533)));
     }
 
-    public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, StringRenderable stringRenderable, float x, float y){
+    public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, Text stringRenderable, float x, float y){
         int c = Main.config.dark ? 255 : 0; //:D
         textRenderer.draw(matrices, stringRenderable, x - (float)textRenderer.getWidth(stringRenderable) / 2, y - 2, Helper.colorHelper(c, c, c, 1));
     }

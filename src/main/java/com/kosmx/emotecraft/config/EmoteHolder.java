@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.*;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -34,9 +34,9 @@ import java.util.List;
 
 public class EmoteHolder {
     public final Emote emote;
-    public final StringRenderable name;
-    public final StringRenderable description;
-    public final StringRenderable author;
+    public final MutableText name;
+    public final MutableText description;
+    public final MutableText author;
     public final int hash;
     public static List<EmoteHolder> list = new ArrayList<>();
     public InputUtil.Key keyBinding = InputUtil.UNKNOWN_KEY;
@@ -53,7 +53,7 @@ public class EmoteHolder {
      * @param description Emote decription
      * @param author      Name of the Author
      */
-    public EmoteHolder(Emote emote, StringRenderable name, StringRenderable description, StringRenderable author, int hash) {
+    public EmoteHolder(Emote emote, MutableText name, MutableText description, MutableText author, int hash) {
         this.emote = emote;
         this.name = name;
         this.author = author;

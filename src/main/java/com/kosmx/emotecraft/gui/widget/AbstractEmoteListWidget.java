@@ -8,7 +8,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
@@ -38,7 +37,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     public void filter(Supplier<String> string){
         this.clearEntries();
         for(E emote : this.emotes){
-            if(emote.emote.name.getString().toLowerCase().contains(string.get()) || emote.emote.description.getString().toLowerCase().contains(string.get()) || emote.emote.author.getString().toLowerCase().equals(string.get())){
+            if(emote.emote.name.toString().toLowerCase().contains(string.get()) || emote.emote.description.toString().toLowerCase().contains(string.get()) || emote.emote.author.toString().toLowerCase().equals(string.get())){
                 this.addEntry(emote);
             }
         }
@@ -72,7 +71,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
             }
             this.client.textRenderer.drawWithShadow(matrices, this.emote.name, x + 38, y + 1, 16777215);
             this.client.textRenderer.drawWithShadow(matrices, this.emote.description, x + 38, y + 12, 8421504);
-            if(!this.emote.author.getString().equals(""))this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append((Text) this.emote.author), x + 38, y + 23, 8421504);
+            if(!this.emote.author.getString().equals(""))this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append( this.emote.author), x + 38, y + 23, 8421504);
             if(this.emote.getIcon() != null) {
                 RenderSystem.color4f(1, 1, 1, 1);
                 MinecraftClient.getInstance().getTextureManager().bindTexture(this.emote.getIcon());

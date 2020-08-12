@@ -3,8 +3,7 @@ package com.kosmx.emotecraft.config;
 import com.google.gson.*;
 import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
-import net.minecraft.text.StringRenderable;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Type;
@@ -16,14 +15,14 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
     @Override
     public EmoteHolder deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException {
         JsonObject node = p.getAsJsonObject();
-        StringRenderable author = StringRenderable.EMPTY;
-        StringRenderable name = Text.Serializer.fromJson(node.get("name"));
+        MutableText author = (MutableText) LiteralText.EMPTY;
+        MutableText name = Text.Serializer.fromJson(node.get("name"));
         if(node.has("author")){
             author = Text.Serializer.fromJson(node.get("author"));
         }
-        StringRenderable description = StringRenderable.EMPTY;
+        MutableText description = (MutableText) LiteralText.EMPTY;
         if(node.has("description")){
-            description = Text.Serializer.fromJson(node.get("description"));
+            description = (LiteralText) Text.Serializer.fromJson(node.get("description"));
         }
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
