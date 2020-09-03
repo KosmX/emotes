@@ -1,0 +1,11 @@
+accessWidener v1 named
+#Comment
+#accessible class net/minecraft/client/model/ModelPart$Quad
+#accessible class net/minecraft/client/model/ModelPart$Vertex
+accessible field net/minecraft/client/model/ModelPart textureWidth F
+accessible field net/minecraft/client/model/ModelPart textureHeight F
+accessible field net/minecraft/client/model/ModelPart textureOffsetU I
+accessible field net/minecraft/client/model/ModelPart textureOffsetV I
+#accessible field net/minecraft/client/model/ModelPart cuboids Lit/unimi/dsi/fastutil/objects/ObjectList;
+#accessible field net/minecraft/client/model/ModelPart children Lit/unimi/dsi/fastutil/objects/ObjectList;
+extendable method net/minecraft/client/model/ModelPart renderCuboids (Lnet/minecraft/client/util/math/MatrixStack$Entry;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V

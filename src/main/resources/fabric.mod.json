@@ -3,11 +3,13 @@
   "id": "emotecraft",
   "version": "${version}",
   "name": "Emotecraft",
-  "description": "Play emotes in Minecraft",
+  "description": "Play emotes in Minecraft\nSpecial thanks to OrangeKale64 for creating emotes and help in the UI design",
   "authors": [
     "KosmX"
   ],
-  "contributors": [],
+  "contributors": [
+    "OrangeKale64"
+  ],
   "contact": {
     "issues": "https://discord.com/invite/f3tZu3Z",
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/emotecraft"
@@ -15,6 +17,7 @@
   "license": "MIT",
   "icon": "assets/emotecraft/icon.png",
   "environment": "*",
+  "accessWidener" : "emotecraft.accesswidener",
   "entrypoints": {
     "main": [
       "com.kosmx.emotecraft.Main"
@@ -28,7 +31,8 @@
     ]
   },
   "mixins": [
-    "emotecraft.mixins.json"
+    "emotecraft.mixins.json",
+    "bendylib.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.9.0",

@@ -1,5 +1,6 @@
 package com.kosmx.emotecraft;
 
+import com.kosmx.bendylib.TestClass;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
@@ -96,6 +97,7 @@ public class Client implements ClientModInitializer {
         serializeInternalEmotes("point");
         serializeInternalEmotes("here");
         serializeInternalEmotes("palm");
+        serializeInternalEmotes("backflip");
         //TODO add internal emotes to the list
 
 
@@ -224,6 +226,6 @@ public class Client implements ClientModInitializer {
         });
 
         KeyPressCallback.EVENT.register((EmoteHolder::playEmote));
-
+        TestClass.init();
     }
 }

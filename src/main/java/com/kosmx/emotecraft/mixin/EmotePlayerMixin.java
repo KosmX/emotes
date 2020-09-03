@@ -25,7 +25,6 @@ import javax.annotation.Nullable;
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlayerInterface {
 
-    @Shadow public float elytraPitch;
     @Nullable
     private Emote emote;
 

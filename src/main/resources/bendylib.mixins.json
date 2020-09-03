@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.kosmx.bendylib.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "ModelPartMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

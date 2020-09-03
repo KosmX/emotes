@@ -40,7 +40,7 @@ public class Emote {
         endTick = b;
         stopTick = c;
         this.isInfinite = inf;
-        this.returnTick = returnTick - 1;
+        this.returnTick = returnTick;
     }
     public Emote(int a, int b, int c){
         beginTick = a;

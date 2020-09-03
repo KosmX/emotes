@@ -1,6 +1,7 @@
 package com.kosmx.emotecraft.gui.ingame;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
+import com.kosmx.emotecraft.gui.EmoteMenu;
 import com.kosmx.emotecraft.gui.widget.AbstractEmoteListWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -35,6 +36,7 @@ public class FullMenuScreen extends Screen {
         this.children.add(emoteList);
         this.setInitialFocus(this.searchBox);
         this.buttons.add(new ButtonWidget(this.width - 120, this.height - 30, 96, 20, ScreenTexts.CANCEL, (button -> this.client.openScreen(null))));
+        this.buttons.add(new ButtonWidget(this.width - 120, this.height - 60, 96, 20, new TranslatableText("emotecraft.config"), (button -> this.client.openScreen(new EmoteMenu(this)))));
         this.children.addAll(this.buttons);
     }
 

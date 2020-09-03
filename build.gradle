@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.4-SNAPSHOT'
+	id 'fabric-loom' version '0.5-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -11,6 +11,7 @@ version = project.mod_version
 group = project.maven_group
 
 minecraft {
+	accessWidener = file("src/main/resources/emotecraft.accesswidener")
 }
 
 dependencies {
@@ -19,7 +20,7 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 	include "io.github.prospector:modmenu:${project.modmenu_version}"
 	modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
