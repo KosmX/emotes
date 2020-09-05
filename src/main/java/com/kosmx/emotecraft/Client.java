@@ -1,6 +1,5 @@
 package com.kosmx.emotecraft;
 
-import com.kosmx.bendylib.TestClass;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
@@ -28,7 +27,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 public class Client implements ClientModInitializer {
@@ -226,6 +224,5 @@ public class Client implements ClientModInitializer {
         });
 
         KeyPressCallback.EVENT.register((EmoteHolder::playEmote));
-        TestClass.init();
     }
 }

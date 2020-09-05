@@ -6,7 +6,7 @@ public interface IModelPart {
 
     /**
      * Swap the Model part with a MutableModelPart
-     * @param part This will be renderer
+     * @param part This will be rendered
      * @return is the change success
      */
     boolean mutate(MutableModelPart part);

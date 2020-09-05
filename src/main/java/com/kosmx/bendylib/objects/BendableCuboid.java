@@ -1,5 +1,6 @@
 package com.kosmx.bendylib.objects;
 
+import com.kosmx.bendylib.math.Matrix4;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.Quaternion;
 public class BendableCuboid implements ICuboid {
     protected final Quad[] sides = new Quad[10];
     protected final Matrix4f matrix;
+    protected Matrix4f lastPosMatrix;
     protected final RepositionableVertex.Pos3f[] positions = new RepositionableVertex.Pos3f[8];
     protected final Vector3f[] origins = new Vector3f[4];
     public final float minX;
@@ -116,10 +118,10 @@ public class BendableCuboid implements ICuboid {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.loadIdentity();
         setRotation(matrix4f);
-        setRotationDeg(0, -90);
+        //setRotationDeg(-45, -100); //debug stuff
     }
 
-    public void setRotation(Matrix4f rotation){
+    public Matrix4f setRotation(Matrix4f rotation){
         Matrix4f shift = this.getMatrix();
         Matrix4f length = Matrix4f.translate(this.moveVec.getX(), this.moveVec.getY(), this.moveVec.getZ());
         shift.multiply(length);
@@ -134,6 +136,8 @@ public class BendableCuboid implements ICuboid {
         shift.multiply(Matrix4f.translate(-this.fixX, -this.fixY, -this.fixZ));
         shift.multiply(length);
         setPoints(shift, 4);
+        this.lastPosMatrix = shift; //Store it for later use
+        return shift;
     }
 
     private void setMiddle(Matrix4f matrix){
@@ -143,15 +147,16 @@ public class BendableCuboid implements ICuboid {
         cross.normalize();
         Vector3f transformed = new Vector3f(moved.getX(), moved.getY(), moved.getZ());
         transformed.normalize();
-        float dot = 1/cross.dot(transformed); //cosh
+        float cosh = 1/cross.dot(transformed); //cosh
         cross.cross(transformed);
         cross.normalize();
         //Matrix3f rotate = new Matrix3f(Vector3f.NEGATIVE_Y.getDegreesQuaternion(90));
-        //cross.transform(rotate);
-        float x = cross.getX() * cross.getX();
-        float z = cross.getZ() * cross.getZ();
-        //matrix.multiply(Matrix4f.scale(x + Math.abs(cross.getX() * dot), 1, z + Math.abs(cross.getZ() * dot)));
-        matrix.multiply(Matrix4f.scale(x + (1 - x) * dot, 1, z + (1 - z) * dot));
+        Vector3f rotated = cross.copy();
+        rotated.transform(new Matrix3f(Vector3f.NEGATIVE_Y.getDegreesQuaternion(-90)));
+        rotated.scale(cosh);
+        Matrix4 transformation = new Matrix4();
+        transformation.fromEigenVector(cross, new Vector3f(0, 1, 0), rotated);
+        matrix.multiply(transformation);
     }
 
     private void setPoints(Matrix4f matrix, int n){
@@ -162,17 +167,17 @@ public class BendableCuboid implements ICuboid {
         }
     }
 
-    public void setRotation(Quaternion quaternion){
+    public Matrix4f setRotation(Quaternion quaternion){
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.loadIdentity();
         matrix4f.multiply(quaternion);
-        setRotation(matrix4f);
+        return setRotation(matrix4f);
     }
 
-    public void setRotationRad(float axisf, float value){
+    public Matrix4f setRotationRad(float axisf, float value){
         value = value/2;
         Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
-        this.setRotation(axis.getRadialQuaternion(value));
+        return this.setRotation(axis.getRadialQuaternion(value));
     }
 
     public void setRotationDeg(float axis, float val){
@@ -189,6 +194,10 @@ public class BendableCuboid implements ICuboid {
         for(Quad quad:sides){
             quad.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
         }
+    }
+
+    public Matrix4f getLastPosMatrix(){
+        return this.lastPosMatrix.copy();
     }
 
     /*'//TODO remove me'*

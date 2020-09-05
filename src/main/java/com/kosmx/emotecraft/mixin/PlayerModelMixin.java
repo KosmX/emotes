@@ -3,11 +3,9 @@ package com.kosmx.emotecraft.mixin;
 
 import com.kosmx.bendylib.IModelPart;
 import com.kosmx.bendylib.MutableModelPart;
-import com.kosmx.bendylib.TestClass;
 import com.kosmx.bendylib.objects.BendableCuboid;
 import com.kosmx.emotecraft.BendableModelPart;
 import com.kosmx.emotecraft.Emote;
-import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -72,7 +70,6 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
     private void setEmote(BipedEntityModel<?> idk,T livingEntity, float f, float g, float h, float i, float j){
         setDefaultPivot();  //to not make everything wrong
         super.setAngles(livingEntity, f, g, h, i, j);
-        TestClass.featureTest((PlayerEntityModel) idk);
         if(livingEntity instanceof AbstractClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface)livingEntity).getEmote())){
             Emote emote = ((EmotePlayerInterface) livingEntity).getEmote();
             emote.head.setBodyPart(this.head);

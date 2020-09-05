@@ -12,6 +12,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 
 import javax.annotation.Nullable;
 
+/**
+ * You can use this to swap a ModelPart to something else.
+ * {@link IModelPart#mutate(MutableModelPart)} to do that
+ * You can use is as the default modelPart in a model.
+ * This can be used with {@link ICuboid}.
+ */
 public abstract class MutableModelPart extends ModelPart {
 
     @Nullable
