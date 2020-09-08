@@ -5,6 +5,7 @@ import com.kosmx.emotecraft.math.Easing;
 import com.kosmx.emotecraft.math.Helper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.Level;
@@ -134,6 +135,8 @@ public class Emote {
         public RotationPart pitch;
         public RotationPart yaw;
         public RotationPart roll;
+        public RotationPart axis;
+        public RotationPart bend;
 
         private BodyPart(float x, float y, float z, float yaw, float pitch, float roll){
             this.x = new Part(x);
@@ -142,6 +145,8 @@ public class Emote {
             this.yaw = new RotationPart(yaw);
             this.pitch = new RotationPart(pitch);
             this.roll = new RotationPart(roll);
+            this.axis = new RotationPart(0);
+            this.bend = new RotationPart(0);
         }
 
 
@@ -153,6 +158,11 @@ public class Emote {
             modelPart.yaw = yaw.getCurrentValue(modelPart.yaw, tickDelta);
             modelPart.roll = roll.getCurrentValue(modelPart.roll, tickDelta);
         }
+
+        public Pair<Float, Float> getBend(){
+            return new Pair<>(this.axis.getCurrentValue(0, tickDelta), this.bend.getCurrentValue(0, tickDelta));
+        }
+
     }
     public class Torso extends BodyPart {
         private Torso(float x, float y, float z, float yaw, float pitch, float roll) {

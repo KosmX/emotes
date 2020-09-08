@@ -20,6 +20,8 @@ public class EmotePacket{
     }
     public EmotePacket(){}
 
+    //TODO sync bending
+
     public boolean read(PacketByteBuf buf, boolean validate){
         this.version = buf.readInt();
         this.isRepeat = buf.readBoolean();

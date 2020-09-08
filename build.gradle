@@ -11,7 +11,7 @@ version = project.mod_version
 group = project.maven_group
 
 minecraft {
-	accessWidener = file("src/main/resources/emotecraft.accesswidener")
+	//accessWidener = file("src/main/resources/emotecraft.accesswidener")
 }
 
 dependencies {
@@ -25,6 +25,10 @@ dependencies {
 	include "io.github.prospector:modmenu:${project.modmenu_version}"
 	modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
 	include "me.shedaniel.cloth:config-2:${project.cloth_version}"
+
+	implementation files("bendy-lib-0.0.0-dev.jar")
+
+	include(files("bendy-lib-0.0.0.jar"))
 
 	implementation 'com.google.code.gson:gson:2.8.5' //GSon serializer
 
