@@ -27,8 +27,9 @@ dependencies {
 	include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
 	implementation files("bendy-lib-0.0.0-dev.jar")
+	runtimeOnly(files("bendy-lib-0.0.0-dev.jar"))
 
-	include(files("bendy-lib-0.0.0.jar"))
+	//include(files("bendy-lib-0.0.0-dev.jar"))
 
 	implementation 'com.google.code.gson:gson:2.8.5' //GSon serializer
 

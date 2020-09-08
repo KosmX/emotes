@@ -97,6 +97,8 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
             addPartIfExists(part.pitch, "pitch", partNode, degrees, tick, easing, turn);
             addPartIfExists(part.yaw, "yaw", partNode, degrees, tick, easing, turn);
             addPartIfExists(part.roll, "roll", partNode, degrees, tick, easing, turn);
+            addPartIfExists(part.bend, "bend", partNode, degrees, tick, easing, turn);
+            addPartIfExists(part.axis, "axis", partNode, degrees, tick, easing, turn);
         }
     }
     private void addPartIfExists(Emote.Part part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){

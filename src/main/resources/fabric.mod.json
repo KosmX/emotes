@@ -30,7 +30,7 @@
     ]
   },
   "mixins": [
-    "emotecraft.mixins.json",
+    "emotecraft.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.9.0",

@@ -65,6 +65,8 @@ public class EmotePacket{
         writePartInfo(buf, part.pitch);
         writePartInfo(buf, part.yaw);
         writePartInfo(buf, part.roll);
+        writePartInfo(buf, part.axis);
+        writePartInfo(buf, part.bend);
     }
     private void writePartInfo(PacketByteBuf buf, Emote.Part part){
         List<Emote.Move> list = part.getList();
@@ -83,6 +85,8 @@ public class EmotePacket{
         getPartInfo(buf, part.pitch);
         getPartInfo(buf, part.yaw);
         getPartInfo(buf, part.roll);
+        getPartInfo(buf, part.axis);
+        getPartInfo(buf, part.bend);
     }
     private void getPartInfo(PacketByteBuf buf, Emote.Part part) {
         int len = buf.readInt();
