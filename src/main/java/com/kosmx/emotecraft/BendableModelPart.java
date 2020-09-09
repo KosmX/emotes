@@ -5,6 +5,7 @@ import com.kosmx.bendylib.MutableModelPart;
 import com.kosmx.bendylib.objects.BendableCuboid;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.Matrix4f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,6 +31,14 @@ public class BendableModelPart extends MutableModelPart {
     @Override
     public int getPriority() {
         return 0;
+    }
+
+    public Matrix4f getMatrix4f(){
+        return ((BendableCuboid)this.iCuboids.get(0)).getLastPosMatrix();
+    }
+
+    public BendableCuboid getCuboid(){
+        return (BendableCuboid)this.iCuboids.get(0);
     }
 
     @Override

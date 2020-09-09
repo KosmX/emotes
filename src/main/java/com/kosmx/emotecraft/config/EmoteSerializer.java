@@ -87,7 +87,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
             JsonObject partNode = node.get(name).getAsJsonObject();
             partNode.entrySet().forEach((entry)->{
                 String string = entry.getKey();
-                if(string.equals("x") || string.equals("y") || string.equals("z") || string.equals("pitch") || string.equals("yaw") || string.equals("roll") || string.equals("comment"))return;
+                if(string.equals("x") || string.equals("y") || string.equals("z") || string.equals("pitch") || string.equals("yaw") || string.equals("roll") || string.equals("comment") || string.equals("bend") || string.equals("axis"))return;
                 Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
                 Main.log(Level.WARN, "If it is a comment, ignore the warning");
             });

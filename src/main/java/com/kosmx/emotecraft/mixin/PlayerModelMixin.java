@@ -6,10 +6,15 @@ import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,6 +49,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initBendableStuff(float scale, boolean thinArms, CallbackInfo ci) {
+        emoteSupplier.set(null);
         this.mutatedTorso = new BendableModelPart(this.torso, emoteSupplier);
         this.mutatedJacket = new BendableModelPart(this.jacket, emoteSupplier);
         this.mutatedRightArm = new BendableModelPart(this.rightArm, emoteSupplier);
@@ -91,6 +97,36 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         this.head.pivotY = 0.0F;
         this.head.roll = 0f;
         this.torso.pivotY = 0.0F;
+    }
+
+    @Override
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+        if(Emote.isRunningEmote(emoteSupplier.get())){
+            this.torso.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.rightLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.leftLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.jacket.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.rightPantLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.leftPantLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+
+            float offset = 0.4375f;
+            matrices.translate(0, offset, 0);
+            Pair<Float, Float> pair = emoteSupplier.get().torso.getBend();
+            float bend = pair.getRight();
+            float axisf = pair.getLeft();
+            Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
+            //return this.setRotation(axis.getRadialQuaternion(bend));
+            matrices.multiply(axis.getRadialQuaternion(-bend));
+            matrices.translate(0, -offset, 0);
+
+            this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.helmet.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.leftArm.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.rightArm.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.leftSleeve.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            this.rightSleeve.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+        }
+        else super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 
     @Redirect(method = "setAngles", at = @At(
