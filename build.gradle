@@ -3,6 +3,10 @@ plugins {
 	id 'maven-publish'
 }
 
+repositories{
+	mavenLocal()
+}
+
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -26,8 +30,8 @@ dependencies {
 	modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
 	include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
-	implementation files("bendy-lib-0.0.0-dev.jar")
-	runtimeOnly(files("bendy-lib-0.0.0-dev.jar"))
+	modImplementation "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
+	include "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
 
 	//include(files("bendy-lib-0.0.0-dev.jar"))
 

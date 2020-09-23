@@ -13,21 +13,48 @@ import java.util.function.Supplier;
 
 public class BendableModelPart extends MutableModelPart {
 
+    @Nullable
     protected EmoteSupplier emote;
     protected float axis = 0;
     protected float angl = 0;
 
-    public BendableModelPart(ModelPart modelPart, EmoteSupplier emote) {
+    //Render after or before bending the torso...
+    protected boolean isUpperPart = false;
+
+    public BendableModelPart(ModelPart modelPart, boolean isUpperPart, @Nullable EmoteSupplier emote) {
         super(modelPart);
         this.emote = emote;
+        this.isUpperPart = isUpperPart;
         ((IModelPart)modelPart).mutate(this);
     }
+
+    public BendableModelPart(ModelPart modelPart, @Nullable EmoteSupplier emote){
+        this(modelPart, false, emote);
+    }
+
+    public BendableModelPart(ModelPart modelPart){
+        this(modelPart, null);
+    }
+
+    public BendableModelPart(ModelPart modelPart, boolean isUpperPart){
+        this(modelPart, isUpperPart, null);
+    }
+
+    /*public void remove(ModelPart modelPart){
+        ((IModelPart)modelPart).removeMutate(this);
+    }
+     */
 
     @Override
     public String modId() {
         return Main.MOD_NAME;
     }
 
+
+    /**
+     * This mod has always max priority, but not always active.
+     * @return 0
+     */
     @Override
     public int getPriority() {
         return 0;
@@ -43,7 +70,11 @@ public class BendableModelPart extends MutableModelPart {
 
     @Override
     public boolean isActive() {
-        return Emote.isRunningEmote(this.emote.get());
+        return this.emote != null && Emote.isRunningEmote(this.emote.get());
+    }
+
+    public void setEmote(@Nullable EmoteSupplier emote){
+        this.emote = emote;
     }
 
     public void bend(float a, float b){
@@ -58,6 +89,10 @@ public class BendableModelPart extends MutableModelPart {
 
     public void copyBend(@Nonnull BendableModelPart mutableModelPart){
         this.bend(mutableModelPart.axis, mutableModelPart.angl);
+    }
+
+    public boolean isUpperPart() {
+        return isUpperPart;
     }
 
     public static class EmoteSupplier implements Supplier<Emote>{
