@@ -13,6 +13,7 @@ import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -26,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Function;
 
 @Mixin(BipedEntityModel.class)
-public abstract class BipedEntityMixin extends AnimalModel implements IMutatedBipedModel {
+public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalModel<T> implements IMutatedBipedModel {
 
     @Shadow public ModelPart torso;
     @Shadow public ModelPart rightLeg;
@@ -46,6 +47,8 @@ public abstract class BipedEntityMixin extends AnimalModel implements IMutatedBi
         mutatedRightArm = new BendableModelPart(this.rightArm, true);
         mutatedRightLeg = new BendableModelPart(this.rightLeg, false);
         mutatedTorso = new BendableModelPart(this.torso, false);
+        ((IUpperPartHelper)this.head).setUpperPart(true);
+        ((IUpperPartHelper)this.helmet).setUpperPart(true);
 
         mutatedTorso.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, scale, Direction.DOWN);
         mutatedRightLeg.addCuboid(-2, 0, -2, 4, 12, 4, scale, Direction.UP);
@@ -64,6 +67,10 @@ public abstract class BipedEntityMixin extends AnimalModel implements IMutatedBi
         this.mutatedTorso.setEmote(emoteSupplier);
     }
 
+    @Inject(method = "setAttributes", at = @At("RETURN"))
+    private void copyMutatedAttributes(BipedEntityModel<T> bipedEntityModel, CallbackInfo ci){
+        //TODO
+    }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
@@ -81,16 +88,6 @@ public abstract class BipedEntityMixin extends AnimalModel implements IMutatedBi
 
             BendableModelPart.EmoteSupplier emoteSupplier = this.mutatedTorso.getEmote();
             matrices.push();
-            /*
-            float offset = 0.375f;
-            matrices.translate(0, offset, 0);
-            Pair<Float, Float> pair = emoteSupplier.get().torso.getBend();
-            float bend = pair.getRight();
-            float axisf = -pair.getLeft();
-            Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
-            //return this.setRotation(axis.getRadialQuaternion(bend));
-            matrices.multiply(axis.getRadialQuaternion(bend));
-            matrices.translate(0, -offset, 0);*/
             Helper.roteteMatrixStack(matrices, emoteSupplier.get().torso.getBend());
             this.getHeadParts().forEach((part)->{
                 if(((IUpperPartHelper)part).isUpperPart()){
@@ -123,6 +120,10 @@ public abstract class BipedEntityMixin extends AnimalModel implements IMutatedBi
     @Shadow protected abstract Iterable<ModelPart> getHeadParts();
 
     @Shadow protected abstract Iterable<ModelPart> getBodyParts();
+
+    @Shadow public ModelPart head;
+
+    @Shadow public ModelPart helmet;
 
     @Override
     public BendableModelPart getTorso() {

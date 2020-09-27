@@ -45,15 +45,10 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
     private void initBendableStuff(float scale, boolean thinArms, CallbackInfo ci) {
         thisWithMixin = (IMutatedBipedModel) this;
         emoteSupplier.set(null);
-        //thisWithMixix.setTorso(new BendableModelPart(this.torso, emoteSupplier));
-        this.mutatedJacket = new BendableModelPart(this.jacket, emoteSupplier);
-        //this.mutatedRightArm = new BendableModelPart(this.rightArm, emoteSupplier);
-        this.mutatedRightSleeve = new BendableModelPart(this.rightSleeve, emoteSupplier);
-        //this.mutatedLeftArm = new BendableModelPart(this.leftArm, emoteSupplier);
-        this.mutatedLeftSleeve = new BendableModelPart(this.leftSleeve, emoteSupplier);
-        //this.mutatedRightLeg = new BendableModelPart(this.rightLeg, emoteSupplier);
+        this.mutatedJacket = new BendableModelPart(this.jacket, true, emoteSupplier);
+        this.mutatedRightSleeve = new BendableModelPart(this.rightSleeve, true, emoteSupplier);
+        this.mutatedLeftSleeve = new BendableModelPart(this.leftSleeve, true, emoteSupplier);
         this.mutatedRightPantLeg = new BendableModelPart(this.rightPantLeg, emoteSupplier);
-        //this.mutatedLeftLeg = new BendableModelPart(this.leftLeg, emoteSupplier);
         this.mutatedLeftPantLeg = new BendableModelPart(this.leftPantLeg, emoteSupplier);
 
         thisWithMixin.setLeftArm(new BendableModelPart(this.leftArm, true));
@@ -62,13 +57,8 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         thisWithMixin.setEmoteSupplier(emoteSupplier);
 
         thisWithMixin.setLeftLeg(new BendableModelPart(this.leftLeg, false, emoteSupplier));
-        //thisWithMixin.setRightLeg(new BendableModelPart(this.rightLeg, false, emoteSupplier));
-        //thisWithMixin.getRightLeg().addCuboid(-2, 0, -2, 4, 12, 4, scale, Direction.UP);
         thisWithMixin.getLeftLeg().addCuboid(-2, 0, -2, 4, 12, 4, scale, Direction.UP);
 
-        //mutatedTorso.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, scale, Direction.DOWN);
-        //mutatedRightLeg.addCuboid(-2, 0, -2, 4, 12, 4, scale, Direction.UP);
-        //mutatedLeftLeg.addCuboid(-2, 0, -2, 4, 12, 4, scale, Direction.UP);
         mutatedJacket.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, scale + 0.25f, Direction.DOWN);
         mutatedRightPantLeg.addCuboid(-2, 0, -2, 4, 12, 4, scale + 0.25f, Direction.UP);
         mutatedLeftPantLeg.addCuboid(-2, 0, -2, 4, 12, 4, scale + 0.25f, Direction.UP);
@@ -104,40 +94,6 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         this.head.roll = 0f;
         this.torso.pivotY = 0.0F;
     }
-
-    /*@Override //TODO not override it
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-        if(Emote.isRunningEmote(emoteSupplier.get()) && ((IModelPart)torso).getActiveMutatedPart() == thisWithMixin.getTorso()){
-            this.torso.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.rightLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.leftLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.jacket.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.rightPantLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.leftPantLeg.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-
-            //matrices.push();
-            float offset = 0.375f;
-            matrices.translate(0, offset, 0);
-            Pair<Float, Float> pair = emoteSupplier.get().torso.getBend();
-            float bend = pair.getRight();
-            float axisf = -pair.getLeft();
-            Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
-            //return this.setRotation(axis.getRadialQuaternion(bend));
-            matrices.multiply(axis.getRadialQuaternion(bend));
-            matrices.translate(0, -offset, 0);
-
-            this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.helmet.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.leftArm.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.rightArm.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.leftSleeve.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            this.rightSleeve.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-            //matrices.pop();
-        }
-        else super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-    }
-
-     */
 
     @Redirect(method = "setAngles", at = @At(
             value = "INVOKE",
