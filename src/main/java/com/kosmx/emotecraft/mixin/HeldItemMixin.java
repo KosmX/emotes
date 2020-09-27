@@ -2,7 +2,7 @@ package com.kosmx.emotecraft.mixin;
 
 
 import com.kosmx.emotecraft.Emote;
-import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;

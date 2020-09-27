@@ -5,7 +5,7 @@ import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.network.StopPacket;
-import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
@@ -18,7 +18,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nullable;
 

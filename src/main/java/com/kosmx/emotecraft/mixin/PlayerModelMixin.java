@@ -1,20 +1,15 @@
 package com.kosmx.emotecraft.mixin;
 
 
-import com.kosmx.bendylib.IModelPart;
 import com.kosmx.emotecraft.BendableModelPart;
 import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.mixinInterface.IMutatedBipedModel;
-import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -110,7 +105,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         this.torso.pivotY = 0.0F;
     }
 
-    @Override //TODO not override it
+    /*@Override //TODO not override it
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         if(Emote.isRunningEmote(emoteSupplier.get()) && ((IModelPart)torso).getActiveMutatedPart() == thisWithMixin.getTorso()){
             this.torso.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -141,6 +136,8 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         }
         else super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
+
+     */
 
     @Redirect(method = "setAngles", at = @At(
             value = "INVOKE",

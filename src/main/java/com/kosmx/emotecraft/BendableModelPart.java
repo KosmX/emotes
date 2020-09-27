@@ -3,6 +3,7 @@ package com.kosmx.emotecraft;
 import com.kosmx.bendylib.IModelPart;
 import com.kosmx.bendylib.MutableModelPart;
 import com.kosmx.bendylib.objects.BendableCuboid;
+import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Matrix4f;
@@ -26,6 +27,7 @@ public class BendableModelPart extends MutableModelPart {
         this.emote = emote;
         this.isUpperPart = isUpperPart;
         ((IModelPart)modelPart).mutate(this);
+        ((IUpperPartHelper)modelPart).setUpperPart(isUpperPart);
     }
 
     public BendableModelPart(ModelPart modelPart, @Nullable EmoteSupplier emote){
@@ -75,6 +77,11 @@ public class BendableModelPart extends MutableModelPart {
 
     public void setEmote(@Nullable EmoteSupplier emote){
         this.emote = emote;
+    }
+
+    @Nullable
+    public EmoteSupplier getEmote() {
+        return emote;
     }
 
     public void bend(float a, float b){

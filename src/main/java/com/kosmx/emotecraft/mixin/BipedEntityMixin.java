@@ -1,13 +1,21 @@
 package com.kosmx.emotecraft.mixin;
 
+import com.kosmx.bendylib.IModelPart;
 import com.kosmx.emotecraft.BendableModelPart;
+import com.kosmx.emotecraft.Emote;
+import com.kosmx.emotecraft.math.Helper;
+import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
 import com.kosmx.emotecraft.mixinInterface.IMutatedBipedModel;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -56,6 +64,49 @@ public abstract class BipedEntityMixin extends AnimalModel implements IMutatedBi
         this.mutatedTorso.setEmote(emoteSupplier);
     }
 
+
+    @Override
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+        if(((IModelPart)this.torso).getActiveMutatedPart()==this.mutatedTorso && mutatedTorso.getEmote()!= null && Emote.isRunningEmote(mutatedTorso.getEmote().get())){
+            this.getHeadParts().forEach((part)->{
+                if(!((IUpperPartHelper)part).isUpperPart()){
+                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+                }
+            });
+            this.getBodyParts().forEach((part)->{
+                if(!((IUpperPartHelper)part).isUpperPart()){
+                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+                }
+            });
+
+            BendableModelPart.EmoteSupplier emoteSupplier = this.mutatedTorso.getEmote();
+            matrices.push();
+            /*
+            float offset = 0.375f;
+            matrices.translate(0, offset, 0);
+            Pair<Float, Float> pair = emoteSupplier.get().torso.getBend();
+            float bend = pair.getRight();
+            float axisf = -pair.getLeft();
+            Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
+            //return this.setRotation(axis.getRadialQuaternion(bend));
+            matrices.multiply(axis.getRadialQuaternion(bend));
+            matrices.translate(0, -offset, 0);*/
+            Helper.roteteMatrixStack(matrices, emoteSupplier.get().torso.getBend());
+            this.getHeadParts().forEach((part)->{
+                if(((IUpperPartHelper)part).isUpperPart()){
+                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+                }
+            });
+            this.getBodyParts().forEach((part)->{
+                if(((IUpperPartHelper)part).isUpperPart()){
+                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+                }
+            });
+            matrices.pop();
+        }
+        else super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+    }
+
     @Shadow protected abstract ModelPart getArm(Arm arm);
 
 
@@ -69,6 +120,9 @@ public abstract class BipedEntityMixin extends AnimalModel implements IMutatedBi
      */
 
 
+    @Shadow protected abstract Iterable<ModelPart> getHeadParts();
+
+    @Shadow protected abstract Iterable<ModelPart> getBodyParts();
 
     @Override
     public BendableModelPart getTorso() {

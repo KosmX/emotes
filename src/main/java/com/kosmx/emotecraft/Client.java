@@ -4,7 +4,7 @@ import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.network.StopPacket;
-import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
 import com.kosmx.quarktool.QuarkReader;
 import io.netty.buffer.Unpooled;

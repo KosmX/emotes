@@ -5,7 +5,7 @@ import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.network.EmotePacket;
-import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
