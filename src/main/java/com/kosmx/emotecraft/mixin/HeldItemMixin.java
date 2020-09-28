@@ -28,7 +28,8 @@ public abstract class HeldItemMixin<T extends LivingEntity, M extends EntityMode
         if(livingEntity instanceof EmotePlayerInterface){
             EmotePlayerInterface player = (EmotePlayerInterface) livingEntity;
             if(Emote.isRunningEmote(player.getEmote())){
-
+                Emote emote = player.getEmote();
+                //TODO
             }
         }
     }

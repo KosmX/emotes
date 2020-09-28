@@ -15,4 +15,5 @@ public interface IMutatedBipedModel {
     void setLeftLeg(BendableModelPart part);
 
     void setEmoteSupplier(BendableModelPart.EmoteSupplier emoteSupplier);
+    BendableModelPart.EmoteSupplier getEmoteSupplier();
 }

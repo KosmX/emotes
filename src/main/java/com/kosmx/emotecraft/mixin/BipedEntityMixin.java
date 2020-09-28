@@ -39,6 +39,7 @@ public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalMod
     protected BendableModelPart mutatedLeftArm;
     protected BendableModelPart mutatedLeftLeg;
     protected BendableModelPart mutatedRightLeg;
+    protected BendableModelPart.EmoteSupplier emote;
 
     @Inject(method = "<init>(Ljava/util/function/Function;FFII)V", at = @At("RETURN"))
     private void InitInject(Function<Identifier, RenderLayer> texturedLayerFactory, float scale, float pivotY, int textureWidth, int textureHeight, CallbackInfo ci){
@@ -65,11 +66,23 @@ public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalMod
         this.mutatedLeftArm.setEmote(emoteSupplier);
         this.mutatedRightArm.setEmote(emoteSupplier);
         this.mutatedTorso.setEmote(emoteSupplier);
+        this.emote = emoteSupplier;
     }
 
     @Inject(method = "setAttributes", at = @At("RETURN"))
     private void copyMutatedAttributes(BipedEntityModel<T> bipedEntityModel, CallbackInfo ci){
-        //TODO
+        if(emote != null){
+            if(((IMutatedBipedModel)bipedEntityModel).getEmoteSupplier() != emote)((IMutatedBipedModel)bipedEntityModel).setEmoteSupplier(emote);
+            if(Emote.isRunningEmote(this.emote.get())){
+                IMutatedBipedModel thisWithMixin = (IMutatedBipedModel) bipedEntityModel;
+                Emote playedEmote = emote.get();
+                thisWithMixin.getTorso().bend(playedEmote.torso.getBend());
+                thisWithMixin.getLeftArm().bend(playedEmote.leftArm.getBend());
+                thisWithMixin.getLeftLeg().bend(playedEmote.leftLeg.getBend());
+                thisWithMixin.getRightArm().bend(playedEmote.rightArm.getBend());
+                thisWithMixin.getRightLeg().bend(playedEmote.rightLeg.getBend());
+            }
+        }
     }
 
     @Override
@@ -173,5 +186,10 @@ public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalMod
     @Override
     public void setLeftLeg(BendableModelPart part) {
         mutatedLeftLeg = part;
+    }
+
+    @Override
+    public BendableModelPart.EmoteSupplier getEmoteSupplier() {
+        return emote;
     }
 }
