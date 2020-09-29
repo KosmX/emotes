@@ -9,8 +9,13 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Arm;
+import net.minecraft.util.Pair;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,13 +28,23 @@ public abstract class HeldItemMixin<T extends LivingEntity, M extends EntityMode
         super(context);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V"))
-    private void renderMixin(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo ci){
+    @Inject(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;multiply(Lnet/minecraft/util/math/Quaternion;)V", ordinal = 0))
+    private void renderMixin(LivingEntity livingEntity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci){
         if(livingEntity instanceof EmotePlayerInterface){
             EmotePlayerInterface player = (EmotePlayerInterface) livingEntity;
             if(Emote.isRunningEmote(player.getEmote())){
                 Emote emote = player.getEmote();
-                //TODO
+
+                Pair<Float, Float> pair = arm == Arm.LEFT ? emote.leftArm.getBend() : emote.rightArm.getBend();
+
+                float offset = 0.25f;
+                matrices.translate(0, offset, 0);
+                float bend = pair.getRight();
+                float axisf = -pair.getLeft();
+                Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
+                //return this.setRotation(axis.getRadialQuaternion(bend));
+                matrices.multiply(axis.getRadialQuaternion(bend));
+                matrices.translate(0, -offset, 0);
             }
         }
     }
