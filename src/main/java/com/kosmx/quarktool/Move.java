@@ -2,7 +2,7 @@ package com.kosmx.quarktool;
 
 import com.kosmx.emotecraft.math.Ease;
 
-public class Move implements Playable{
+public class Move implements Playable {
     private final Ease ease;
     private final float value;
     private float valueBefore;
@@ -19,14 +19,13 @@ public class Move implements Playable{
     }
 
     @Override
-    public int playForward(int time) throws QuarkParsingError {
-        if(!isInitialized){
+    public int playForward(int time) throws QuarkParsingError{
+        if(! isInitialized){
             this.isInitialized = true;
             this.valueBefore = part.getValue();
             this.valueAfter = this.value;
             this.part.addValue(time, time + this.length, this.valueAfter, ease);
-        }
-        else {
+        }else{
             this.part.hold();
             this.part.addValue(time, valueBefore, ease);
             this.part.addValue(time + this.length, valueAfter, Ease.CONSTANT);
@@ -34,9 +33,10 @@ public class Move implements Playable{
         }
         return time + this.length;
     }
+
     @Override
-    public int playBackward(int time) throws QuarkParsingError {
-        if(!isInitialized) throw new QuarkParsingError();
+    public int playBackward(int time) throws QuarkParsingError{
+        if(! isInitialized) throw new QuarkParsingError();
         this.part.hold();
         this.part.addValue(time, this.valueAfter, InverseEase.inverse(ease));
         this.part.addValue(time + this.length, this.valueBefore, Ease.CONSTANT);

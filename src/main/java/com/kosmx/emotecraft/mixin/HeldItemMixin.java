@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(HeldItemFeatureRenderer.class)
 public abstract class HeldItemMixin<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
 
-    public HeldItemMixin(FeatureRendererContext<T, M> context) {
+    public HeldItemMixin(FeatureRendererContext<T, M> context){
         super(context);
     }
 
@@ -40,11 +40,11 @@ public abstract class HeldItemMixin<T extends LivingEntity, M extends EntityMode
                 float offset = 0.25f;
                 matrices.translate(0, offset, 0);
                 float bend = pair.getRight();
-                float axisf = -pair.getLeft();
+                float axisf = - pair.getLeft();
                 Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
                 //return this.setRotation(axis.getRadialQuaternion(bend));
                 matrices.multiply(axis.getRadialQuaternion(bend));
-                matrices.translate(0, -offset, 0);
+                matrices.translate(0, - offset, 0);
             }
         }
     }

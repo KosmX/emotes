@@ -3,8 +3,8 @@ package com.kosmx.emotecraft.mixin;
 
 import com.kosmx.emotecraft.BendableModelPart;
 import com.kosmx.emotecraft.Emote;
-import com.kosmx.emotecraft.mixinInterface.IMutatedBipedModel;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.mixinInterface.IMutatedBipedModel;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -21,11 +21,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntityModel.class)
 public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T> {
-    @Shadow @Final public ModelPart jacket;
-    @Shadow @Final public ModelPart rightSleeve;
-    @Shadow @Final public ModelPart leftSleeve;
-    @Shadow @Final public ModelPart rightPantLeg;
-    @Shadow @Final public ModelPart leftPantLeg;
+    @Shadow
+    @Final
+    public ModelPart jacket;
+    @Shadow
+    @Final
+    public ModelPart rightSleeve;
+    @Shadow
+    @Final
+    public ModelPart leftSleeve;
+    @Shadow
+    @Final
+    public ModelPart rightPantLeg;
+    @Shadow
+    @Final
+    public ModelPart leftPantLeg;
     public BendableModelPart.EmoteSupplier emoteSupplier = new BendableModelPart.EmoteSupplier();
     //private BendableModelPart mutatedTorso;
     private BendableModelPart mutatedJacket;
@@ -37,12 +47,12 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
     private IMutatedBipedModel thisWithMixin;
 
 
-    public PlayerModelMixin(float scale) {
+    public PlayerModelMixin(float scale){
         super(scale);
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void initBendableStuff(float scale, boolean thinArms, CallbackInfo ci) {
+    private void initBendableStuff(float scale, boolean thinArms, CallbackInfo ci){
         thisWithMixin = (IMutatedBipedModel) this;
         emoteSupplier.set(null);
         this.mutatedJacket = new BendableModelPart(this.jacket, true, emoteSupplier);
@@ -57,32 +67,31 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         thisWithMixin.setEmoteSupplier(emoteSupplier);
 
         thisWithMixin.setLeftLeg(new BendableModelPart(this.leftLeg, false, emoteSupplier));
-        thisWithMixin.getLeftLeg().addCuboid(-2, 0, -2, 4, 12, 4, scale, Direction.UP);
+        thisWithMixin.getLeftLeg().addCuboid(- 2, 0, - 2, 4, 12, 4, scale, Direction.UP);
 
-        mutatedJacket.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, scale + 0.25f, Direction.DOWN);
-        mutatedRightPantLeg.addCuboid(-2, 0, -2, 4, 12, 4, scale + 0.25f, Direction.UP);
-        mutatedLeftPantLeg.addCuboid(-2, 0, -2, 4, 12, 4, scale + 0.25f, Direction.UP);
+        mutatedJacket.addCuboid(- 4.0F, 0.0F, - 2.0F, 8, 12, 4, scale + 0.25f, Direction.DOWN);
+        mutatedRightPantLeg.addCuboid(- 2, 0, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
+        mutatedLeftPantLeg.addCuboid(- 2, 0, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
         if(thinArms){
-            thisWithMixin.getLeftArm().addCuboid(-1, -2, -2, 3, 12, 4, scale, Direction.UP);
-            thisWithMixin.getRightArm().addCuboid(-2, -2, -2, 3, 12, 4, scale, Direction.UP);
-            mutatedLeftSleeve.addCuboid(-1, -2, -2, 3, 12, 4, scale + 0.25f, Direction.UP);
-            mutatedRightSleeve.addCuboid(-2, -2, -2, 3, 12, 4, scale + 0.25f, Direction.UP);
-        }
-        else {
-            thisWithMixin.getLeftArm().addCuboid(-1, -2, -2, 4, 12, 4, scale, Direction.UP);
-            thisWithMixin.getRightArm().addCuboid(-3, -2, -2, 4, 12, 4, scale, Direction.UP);
-            mutatedLeftSleeve.addCuboid(-1, -2, -2, 4, 12, 4, scale + 0.25f, Direction.UP);
-            mutatedRightSleeve.addCuboid(-3, -2, -2, 4, 12, 4, scale + 0.25f, Direction.UP);
+            thisWithMixin.getLeftArm().addCuboid(- 1, - 2, - 2, 3, 12, 4, scale, Direction.UP);
+            thisWithMixin.getRightArm().addCuboid(- 2, - 2, - 2, 3, 12, 4, scale, Direction.UP);
+            mutatedLeftSleeve.addCuboid(- 1, - 2, - 2, 3, 12, 4, scale + 0.25f, Direction.UP);
+            mutatedRightSleeve.addCuboid(- 2, - 2, - 2, 3, 12, 4, scale + 0.25f, Direction.UP);
+        }else{
+            thisWithMixin.getLeftArm().addCuboid(- 1, - 2, - 2, 4, 12, 4, scale, Direction.UP);
+            thisWithMixin.getRightArm().addCuboid(- 3, - 2, - 2, 4, 12, 4, scale, Direction.UP);
+            mutatedLeftSleeve.addCuboid(- 1, - 2, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
+            mutatedRightSleeve.addCuboid(- 3, - 2, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
         }
         //TODO some bendable armor...
     }
 
     private void setDefaultPivot(){
         this.leftLeg.setPivot(1.9F, 12.0F, 0.0F);
-        this.rightLeg.setPivot(-1.9F, 12.0F, 0.0F);
+        this.rightLeg.setPivot(- 1.9F, 12.0F, 0.0F);
         this.head.setPivot(0.0F, 0.0F, 0.0F);
         this.rightArm.pivotZ = 0.0F;
-        this.rightArm.pivotX = -5.0F;
+        this.rightArm.pivotX = - 5.0F;
         this.leftArm.pivotZ = 0.0F;
         this.leftArm.pivotX = 5.0F;
         this.torso.pitch = 0.0F;
@@ -95,13 +104,11 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         this.torso.pivotY = 0.0F;
     }
 
-    @Redirect(method = "setAngles", at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/render/entity/model/BipedEntityModel;setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V"))
-    private void setEmote(BipedEntityModel<?> idk,T livingEntity, float f, float g, float h, float i, float j){
+    @Redirect(method = "setAngles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/BipedEntityModel;setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V"))
+    private void setEmote(BipedEntityModel<?> idk, T livingEntity, float f, float g, float h, float i, float j){
         setDefaultPivot();  //to not make everything wrong
         super.setAngles(livingEntity, f, g, h, i, j);
-        if(livingEntity instanceof AbstractClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface)livingEntity).getEmote())){
+        if(livingEntity instanceof AbstractClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface) livingEntity).getEmote())){
             Emote emote = ((EmotePlayerInterface) livingEntity).getEmote();
             if(emote != emoteSupplier.get()) emoteSupplier.set(emote);
             emote.head.setBodyPart(this.head);

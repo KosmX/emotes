@@ -16,7 +16,7 @@ public class PartMap {
         this.z = new PartValue(this.part.roll);
     }
 
-    static class PartValue{
+    static class PartValue {
         private float value;
         private int lastTick;
         private final Emote.Part timeline;
@@ -25,19 +25,18 @@ public class PartMap {
         private PartValue(Emote.Part timeline){
             this.timeline = timeline;
         }
+
         public void addValue(int tick, float value, Ease ease){
             this.lastTick = tick;
             this.timeline.add(tick, value, ease);
         }
 
-        public void addValue(int tickFrom, int tickTo, float value, Ease ease) throws QuarkParsingError {
+        public void addValue(int tickFrom, int tickTo, float value, Ease ease) throws QuarkParsingError{
             if(tickFrom < this.lastTick){
                 throw new QuarkParsingError();
-            }
-            else if(tickFrom == this.lastTick && timeline.getList().size() != 0){
+            }else if(tickFrom == this.lastTick && timeline.getList().size() != 0){
                 timeline.getList().get(timeline.findTick(tickFrom)).setEase(ease);
-            }
-            else {
+            }else{
                 timeline.add(tickFrom, this.value, ease);
             }
             this.value = value;
@@ -45,15 +44,15 @@ public class PartMap {
             this.timeline.add(tickTo, this.value, Ease.CONSTANT);
         }
 
-        public float getValue() {
+        public float getValue(){
             return value;
         }
 
-        public void hold() {
+        public void hold(){
             this.timeline.getList().get(this.timeline.getList().size() - 1).setEase(Ease.CONSTANT);
         }
 
-        public void setValue(float valueAfter) {
+        public void setValue(float valueAfter){
             this.value = valueAfter;
         }
     }

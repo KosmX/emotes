@@ -2,10 +2,10 @@ package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
+import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
+import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.network.StopPacket;
-import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
-import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
 import com.kosmx.quarktool.QuarkReader;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
@@ -35,8 +35,9 @@ public class Client implements ClientModInitializer {
     private static KeyBinding debugEmote;
     private static KeyBinding stopEmote;
     public static final File externalEmotes = FabricLoader.getInstance().getGameDir().resolve("emotes").toFile();
+
     @Override
-    public void onInitializeClient() {
+    public void onInitializeClient(){
         //There is the only client stuff
         //like get emote list, or add emote player key
         //EmoteSerializer.initilaizeDeserializer();
@@ -52,35 +53,34 @@ public class Client implements ClientModInitializer {
     }
 
     private void initNetworkClient(){
-        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {
+        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf)->{
             EmotePacket emotePacket;
             Emote emote;
             emotePacket = new EmotePacket();
-            if(!emotePacket.read(packetByteBuf, false)) return;
+            if(! emotePacket.read(packetByteBuf, false)) return;
 
             emote = emotePacket.getEmote();
             boolean isRepeat = emotePacket.isRepeat;
-            packetContext.getTaskQueue().execute(() ->{
+            packetContext.getTaskQueue().execute(()->{
                 PlayerEntity playerEntity = MinecraftClient.getInstance().world.getPlayerByUuid(emotePacket.getPlayer());
-                if(playerEntity != null) {
-                    if(!isRepeat || !Emote.isRunningEmote(((EmotePlayerInterface) playerEntity).getEmote())) {
+                if(playerEntity != null){
+                    if(! isRepeat || ! Emote.isRunningEmote(((EmotePlayerInterface) playerEntity).getEmote())){
                         ((EmotePlayerInterface) playerEntity).playEmote(emote);
                         ((EmotePlayerInterface) playerEntity).getEmote().start();
-                    }
-                    else {
-                        ((EmotePlayerInterface)playerEntity).resetLastUpdated();
+                    }else{
+                        ((EmotePlayerInterface) playerEntity).resetLastUpdated();
                     }
                 }
             });
         }));
 
-        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByyeBuf) -> {
+        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByyeBuf)->{
             StopPacket packet = new StopPacket();
             packet.read(packetByyeBuf);
 
-            packetContex.getTaskQueue().execute(()-> {
+            packetContex.getTaskQueue().execute(()->{
                 EmotePlayerInterface player = (EmotePlayerInterface) MinecraftClient.getInstance().world.getPlayerByUuid(packet.getPlayer());
-                if(player != null && Emote.isRunningEmote(player.getEmote()))player.getEmote().stop();
+                if(player != null && Emote.isRunningEmote(player.getEmote())) player.getEmote().stop();
             });
         }));
     }
@@ -99,7 +99,7 @@ public class Client implements ClientModInitializer {
         //TODO add internal emotes to the list
 
 
-        if(!externalEmotes.isDirectory())externalEmotes.mkdirs();
+        if(! externalEmotes.isDirectory()) externalEmotes.mkdirs();
         serializeExternalEmotes();
 
         Main.config.assignEmotes();
@@ -111,20 +111,19 @@ public class Client implements ClientModInitializer {
         Reader reader = new BufferedReader(streamReader);
         EmoteHolder emoteHolder = Serializer.serializer.fromJson(reader, EmoteHolder.class);
         EmoteHolder.addEmoteToList(emoteHolder);
-        emoteHolder.bindIcon((String)("/assets/" + Main.MOD_ID + "/emotes/" + name + ".png"));
+        emoteHolder.bindIcon((String) ("/assets/" + Main.MOD_ID + "/emotes/" + name + ".png"));
     }
 
     private static void serializeExternalEmotes(){
-        for(File file: Objects.requireNonNull(Client.externalEmotes.listFiles((dir, name) -> name.endsWith(".json")))){
+        for(File file : Objects.requireNonNull(Client.externalEmotes.listFiles((dir, name)->name.endsWith(".json")))){
             try{
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
                 EmoteHolder emote = EmoteHolder.deserializeJson(reader);
                 EmoteHolder.addEmoteToList(emote);
                 reader.close();
-                File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length()-5) + ".png").toFile();
-                if(icon.isFile())emote.bindIcon(icon);
-            }
-            catch (Exception e){
+                File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".png").toFile();
+                if(icon.isFile()) emote.bindIcon(icon);
+            }catch(Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
                 Main.log(Level.ERROR, e.getMessage());
             }
@@ -137,19 +136,18 @@ public class Client implements ClientModInitializer {
     }
 
     private static void initQuarkEmotes(File path){
-        for(File file: Objects.requireNonNull(path.listFiles((dir, name) -> name.endsWith(".emote")))){
+        for(File file : Objects.requireNonNull(path.listFiles((dir, name)->name.endsWith(".emote")))){
             Main.log(Level.INFO, "[Quarktool]  Importing Quark emote: " + file.getName());
-            try {
+            try{
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
                 QuarkReader quarkReader = new QuarkReader();
                 if(quarkReader.deserialize(reader, file.getName())){
                     EmoteHolder emote = quarkReader.getEmote();
                     EmoteHolder.addEmoteToList(emote);
-                    File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length()-6) + ".png").toFile();
-                    if(icon.isFile())emote.bindIcon(icon);
+                    File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 6) + ".png").toFile();
+                    if(icon.isFile()) emote.bindIcon(icon);
                 }
-            }
-            catch (Throwable e){ //try to catch everything
+            }catch(Throwable e){ //try to catch everything
                 if(Main.config.showDebug){
                     Main.log(Level.ERROR, e.getMessage());
                     e.printStackTrace();
@@ -162,7 +160,7 @@ public class Client implements ClientModInitializer {
     private static void playDebugEmote(){
         Main.log(Level.INFO, "Playing debug emote");
         Path location = FabricLoader.getInstance().getGameDir().resolve("emote.json");
-        try {
+        try{
             BufferedReader reader = Files.newBufferedReader(location);
             EmoteHolder emoteHolder = EmoteHolder.deserializeJson(reader);
             reader.close();
@@ -170,8 +168,7 @@ public class Client implements ClientModInitializer {
                 PlayerEntity entity = (PlayerEntity) MinecraftClient.getInstance().getCameraEntity();
                 emoteHolder.playEmote(entity);
             }
-        }
-        catch (Exception e){
+        }catch(Exception e){
             Main.log(Level.ERROR, "Error while importing debug emote.", true);
             Main.log(Level.ERROR, e.getMessage());
             e.printStackTrace();
@@ -180,30 +177,22 @@ public class Client implements ClientModInitializer {
 
 
     private void initKeyBindings(){
-        emoteKeyBinding = new KeyBinding(
-                "key.emotecraft.fastchoose",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_B,        //because bedrock edition has the same key
-                "category.emotecraft.keybinding"
-        );
-        if(FabricLoader.getInstance().getGameDir().resolve("emote.json").toFile().isFile()) { //Secret feature//
-            debugEmote = new KeyBinding(
-                    "key.emotecraft.debug",
-                    InputUtil.Type.KEYSYM,
-                    GLFW.GLFW_KEY_O,       //I don't know why... just
-                    "category.emotecraft.keybinding"
-            );
+        emoteKeyBinding = new KeyBinding("key.emotecraft.fastchoose", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B,        //because bedrock edition has the same key
+                "category.emotecraft.keybinding");
+        if(FabricLoader.getInstance().getGameDir().resolve("emote.json").toFile().isFile()){ //Secret feature//
+            debugEmote = new KeyBinding("key.emotecraft.debug", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_O,       //I don't know why... just
+                    "category.emotecraft.keybinding");
             KeyBindingHelper.registerKeyBinding(debugEmote);
-            ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
-                if (debugEmote.wasPressed()){
+            ClientTickEvents.END_CLIENT_TICK.register(minecraftClient->{
+                if(debugEmote.wasPressed()){
                     playDebugEmote();
                 }
             });
         }
         KeyBindingHelper.registerKeyBinding(emoteKeyBinding);
 
-        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
-            if (emoteKeyBinding.wasPressed()){
+        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient->{
+            if(emoteKeyBinding.wasPressed()){
                 if(MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
                     MinecraftClient.getInstance().openScreen(new FastMenuScreen(new TranslatableText("emotecraft.fastmenu")));
                 }
@@ -213,9 +202,9 @@ public class Client implements ClientModInitializer {
         stopEmote = new KeyBinding("key.emotecraft.stop", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding");
         KeyBindingHelper.registerKeyBinding(stopEmote);
 
-        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
-            if(stopEmote.wasPressed() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface)MinecraftClient.getInstance().getCameraEntity()).getEmote())){
-                ((EmotePlayerInterface)MinecraftClient.getInstance().getCameraEntity()).getEmote().stop();
+        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient->{
+            if(stopEmote.wasPressed() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface) MinecraftClient.getInstance().getCameraEntity()).getEmote())){
+                ((EmotePlayerInterface) MinecraftClient.getInstance().getCameraEntity()).getEmote().stop();
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                 StopPacket packet = new StopPacket((PlayerEntity) MinecraftClient.getInstance().getCameraEntity());
                 packet.write(buf);

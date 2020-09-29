@@ -10,11 +10,11 @@ public class Helper {
     }
 
     public static float clamp(float f){
-        while (f > Math.PI){
-            f -= Math.PI*2;
+        while(f > Math.PI){
+            f -= Math.PI * 2;
         }
-        while (f <= Math.PI*-1){
-            f += Math.PI*2;
+        while(f <= Math.PI * - 1){
+            f += Math.PI * 2;
         }
         return f;
     }
@@ -23,10 +23,10 @@ public class Helper {
         float offset = 0.375f;
         matrices.translate(0, offset, 0);
         float bend = pair.getRight();
-        float axisf = -pair.getLeft();
+        float axisf = - pair.getLeft();
         Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
         //return this.setRotation(axis.getRadialQuaternion(bend));
         matrices.multiply(axis.getRadialQuaternion(bend));
-        matrices.translate(0, -offset, 0);
+        matrices.translate(0, - offset, 0);
     }
 }

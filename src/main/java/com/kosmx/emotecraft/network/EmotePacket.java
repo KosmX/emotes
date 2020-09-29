@@ -7,7 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import java.util.List;
 import java.util.UUID;
 
-public class EmotePacket{
+public class EmotePacket {
     protected Emote emote;
     protected UUID player;
     protected boolean correct = true;
@@ -18,7 +18,9 @@ public class EmotePacket{
         this.emote = emote;
         player = playerEntity.getGameProfile().getId();
     }
-    public EmotePacket(){}
+
+    public EmotePacket(){
+    }
 
     //TODO sync bending
 
@@ -33,16 +35,18 @@ public class EmotePacket{
         getBodyPartInfo(buf, emote.leftArm);
         getBodyPartInfo(buf, emote.rightLeg);
         getBodyPartInfo(buf, emote.leftLeg);
-        return !(!correct && validate) && emote.getBeginTick() >= 0 && emote.getBeginTick() < emote.getEndTick() && (!emote.isInfinite() || emote.getReturnTick() < emote.getEndTick() && emote.getReturnTick() >= 0);
+        return ! (! correct && validate) && emote.getBeginTick() >= 0 && emote.getBeginTick() < emote.getEndTick() && (! emote.isInfinite() || emote.getReturnTick() < emote.getEndTick() && emote.getReturnTick() >= 0);
     }
+
     public UUID getPlayer(){
         return this.player;
     }
+
     public Emote getEmote(){
         return emote;
     }
 
-    public void write(PacketByteBuf buf) {
+    public void write(PacketByteBuf buf){
         buf.writeInt(version);
         buf.writeBoolean(isRepeat);
         buf.writeUuid(player);
@@ -58,6 +62,7 @@ public class EmotePacket{
         writeBodyPartInfo(buf, emote.rightLeg);
         writeBodyPartInfo(buf, emote.leftLeg);
     }
+
     private void writeBodyPartInfo(PacketByteBuf buf, Emote.BodyPart part){
         writePartInfo(buf, part.x);
         writePartInfo(buf, part.y);
@@ -68,10 +73,11 @@ public class EmotePacket{
         writePartInfo(buf, part.axis);
         writePartInfo(buf, part.bend);
     }
+
     private void writePartInfo(PacketByteBuf buf, Emote.Part part){
         List<Emote.Move> list = part.getList();
         buf.writeInt(list.size());
-        for (Emote.Move move : list) {
+        for(Emote.Move move : list){
             buf.writeInt(move.tick);
             buf.writeFloat(move.value);
             buf.writeString(move.getEase());
@@ -88,10 +94,11 @@ public class EmotePacket{
         getPartInfo(buf, part.axis);
         getPartInfo(buf, part.bend);
     }
-    private void getPartInfo(PacketByteBuf buf, Emote.Part part) {
+
+    private void getPartInfo(PacketByteBuf buf, Emote.Part part){
         int len = buf.readInt();
-        for(int i = 0; i<len; i++){
-            if(!Emote.addMove(part, buf.readInt(), buf.readFloat(), buf.readString(32767))){
+        for(int i = 0; i < len; i++){
+            if(! Emote.addMove(part, buf.readInt(), buf.readFloat(), buf.readString(32767))){
                 this.correct = false;
             }
         }

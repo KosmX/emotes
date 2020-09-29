@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ArmorFeatureRenderer.class)
 public abstract class ArmorRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-    public ArmorRendererMixin(FeatureRendererContext<T, M> context) {
+    public ArmorRendererMixin(FeatureRendererContext<T, M> context){
         super(context);
     }
 
     @Inject(method = "<init>", at = @At(value = "RETURN"))
     private void initInject(FeatureRendererContext<T, M> context, A leggingsModel, A bodyModel, CallbackInfo ci){
-        ((IUpperPartHelper)this).setUpperPart(false);
+        ((IUpperPartHelper) this).setUpperPart(false);
     }
 }

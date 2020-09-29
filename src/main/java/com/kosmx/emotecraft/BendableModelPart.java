@@ -22,12 +22,12 @@ public class BendableModelPart extends MutableModelPart {
     //Render after or before bending the torso...
     protected boolean isUpperPart = false;
 
-    public BendableModelPart(ModelPart modelPart, boolean isUpperPart, @Nullable EmoteSupplier emote) {
+    public BendableModelPart(ModelPart modelPart, boolean isUpperPart, @Nullable EmoteSupplier emote){
         super(modelPart);
         this.emote = emote;
         this.isUpperPart = isUpperPart;
-        ((IModelPart)modelPart).mutate(this);
-        ((IUpperPartHelper)modelPart).setUpperPart(isUpperPart);
+        ((IModelPart) modelPart).mutate(this);
+        ((IUpperPartHelper) modelPart).setUpperPart(isUpperPart);
     }
 
     public BendableModelPart(ModelPart modelPart, @Nullable EmoteSupplier emote){
@@ -48,30 +48,31 @@ public class BendableModelPart extends MutableModelPart {
      */
 
     @Override
-    public String modId() {
+    public String modId(){
         return Main.MOD_NAME;
     }
 
 
     /**
      * This mod has always max priority, but not always active.
+     *
      * @return 0
      */
     @Override
-    public int getPriority() {
+    public int getPriority(){
         return 0;
     }
 
     public Matrix4f getMatrix4f(){
-        return ((BendableCuboid)this.iCuboids.get(0)).getLastPosMatrix();
+        return ((BendableCuboid) this.iCuboids.get(0)).getLastPosMatrix();
     }
 
     public BendableCuboid getCuboid(){
-        return (BendableCuboid)this.iCuboids.get(0);
+        return (BendableCuboid) this.iCuboids.get(0);
     }
 
     @Override
-    public boolean isActive() {
+    public boolean isActive(){
         return this.emote != null && Emote.isRunningEmote(this.emote.get());
     }
 
@@ -80,14 +81,14 @@ public class BendableModelPart extends MutableModelPart {
     }
 
     @Nullable
-    public EmoteSupplier getEmote() {
+    public EmoteSupplier getEmote(){
         return emote;
     }
 
     public void bend(float a, float b){
         this.axis = a;
         this.angl = b;
-        ((BendableCuboid)this.iCuboids.get(0)).setRotationRad(a, b);
+        ((BendableCuboid) this.iCuboids.get(0)).setRotationRad(a, b);
     }
 
     public void bend(Pair<Float, Float> pair){
@@ -98,17 +99,17 @@ public class BendableModelPart extends MutableModelPart {
         this.bend(mutableModelPart.axis, mutableModelPart.angl);
     }
 
-    public boolean isUpperPart() {
+    public boolean isUpperPart(){
         return isUpperPart;
     }
 
-    public static class EmoteSupplier implements Supplier<Emote>{
+    public static class EmoteSupplier implements Supplier<Emote> {
         @Nullable
         Emote emote;
 
         @Override
         @Nullable
-        public Emote get() {
+        public Emote get(){
             return this.emote;
         }
 

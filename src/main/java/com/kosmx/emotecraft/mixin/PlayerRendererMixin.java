@@ -18,9 +18,8 @@ public class PlayerRendererMixin {
 
     @Inject(method = "setupTransforms", at = @At("RETURN"))
     private void setRotation(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float a, float bodyYaw, float tickDelta, CallbackInfo info){
-        if( Emote.isRunningEmote(((EmotePlayerInterface)abstractClientPlayerEntity).getEmote()))
-        {
-            Emote emote = ((EmotePlayerInterface)abstractClientPlayerEntity).getEmote();
+        if(Emote.isRunningEmote(((EmotePlayerInterface) abstractClientPlayerEntity).getEmote())){
+            Emote emote = ((EmotePlayerInterface) abstractClientPlayerEntity).getEmote();
             emote.setTickDelta(tickDelta);
 
             Vec3d vec3d = emote.torso.getBodyOffshet();
@@ -29,7 +28,7 @@ public class PlayerRendererMixin {
             matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(vec3f.getZ()));    //roll
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(vec3f.getY()));    //pitch
             matrixStack.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(vec3f.getX()));    //yaw
-            matrixStack.translate(0, -0.7d, 0);
+            matrixStack.translate(0, - 0.7d, 0);
         }
     }
 }

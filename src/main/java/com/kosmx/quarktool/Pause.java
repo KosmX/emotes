@@ -1,8 +1,6 @@
 package com.kosmx.quarktool;
 
-import com.kosmx.emotecraft.Emote;
-
-public class Pause implements Playable{
+public class Pause implements Playable {
     private final int len;
 
     public Pause(int len){
@@ -10,12 +8,12 @@ public class Pause implements Playable{
     }
 
     @Override
-    public int playForward(int time) {
+    public int playForward(int time){
         return time + this.len;
     }
 
     @Override
-    public int playBackward(int time) {
+    public int playBackward(int time){
         return time + this.len;
     }
 }
