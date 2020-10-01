@@ -9,12 +9,12 @@ public class UpperPartMixin implements IUpperPartHelper {
     private boolean Emotecraft_isUpperPart = false;
 
     @Override
-    public boolean isUpperPart() {
+    public boolean isUpperPart(){
         return Emotecraft_isUpperPart;
     }
 
     @Override
-    public void setUpperPart(boolean bl) {
+    public void setUpperPart(boolean bl){
         this.Emotecraft_isUpperPart = bl;
     }
 }

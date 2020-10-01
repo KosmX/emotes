@@ -6,7 +6,7 @@ import io.github.prospector.modmenu.api.ModMenuApi;
 
 public class Menu implements ModMenuApi {
     @Override
-    public ConfigScreenFactory<?> getModConfigScreenFactory() {
+    public ConfigScreenFactory<?> getModConfigScreenFactory(){
         return EmoteMenu::new;
     }
 }
