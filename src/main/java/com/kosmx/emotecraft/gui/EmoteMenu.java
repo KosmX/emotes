@@ -4,9 +4,9 @@ import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
-import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraft.gui.widget.AbstractEmoteListWidget;
 import com.kosmx.emotecraft.gui.widget.AbstractFastChooseWidget;
+import com.kosmx.emotecraft.math.Helper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
@@ -51,13 +51,13 @@ public class EmoteMenu extends Screen {
     }
 
     @Override
-    protected void init() {
+    protected void init(){
         if(warn && Main.config.enableQuark){
             warn = false;
             ConfirmScreen csr = new ConfirmScreen((bool)->{
                 Main.config.enableQuark = bool;
                 MinecraftClient.getInstance().openScreen(this);
-            },new TranslatableText("emotecraft.quark"), new TranslatableText("emotecraft.quark2"));
+            }, new TranslatableText("emotecraft.quark"), new TranslatableText("emotecraft.quark2"));
             this.client.openScreen(csr);
             csr.disableButtons(56);
         }
@@ -65,24 +65,24 @@ public class EmoteMenu extends Screen {
         this.texts = new ArrayList<>();
 
         Client.initEmotes();
-        this.searchBox = new TextFieldWidget(this.textRenderer, this.width/2-(int)(this.width/2.2-16)-12, 12, (int)(this.width/2.2-16), 20, this.searchBox, new TranslatableText("emotecraft.search"));
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - (int) (this.width / 2.2 - 16) - 12, 12, (int) (this.width / 2.2 - 16), 20, this.searchBox, new TranslatableText("emotecraft.search"));
 
-        this.searchBox.setChangedListener((string)-> this.emoteList.filter(string::toLowerCase));
+        this.searchBox.setChangedListener((string)->this.emoteList.filter(string::toLowerCase));
         this.children.add(searchBox);
 
-        this.buttons.add(new ButtonWidget(this.width / 2 - 154, this.height - 30, 150, 20, new TranslatableText("emotecraft.openFolder"), (buttonWidget) -> Util.getOperatingSystem().open(Client.externalEmotes)));
+        this.buttons.add(new ButtonWidget(this.width / 2 - 154, this.height - 30, 150, 20, new TranslatableText("emotecraft.openFolder"), (buttonWidget)->Util.getOperatingSystem().open(Client.externalEmotes)));
 
         this.emoteList = new EmoteListWidget(this.client, (int) (this.width / 2.2 - 16), this.height, this);
-        this.emoteList.setLeftPos(this.width/2-(int)(this.width/2.2-16)-12);
+        this.emoteList.setLeftPos(this.width / 2 - (int) (this.width / 2.2 - 16) - 12);
         this.children.add(this.emoteList);
-        int x = Math.min(this.width/4, (int)(this.height/2.5));
-        this.fastMenu = new FastChooseWidget(this.width/2 + 2, this.height/2 - 8, x-7);
+        int x = Math.min(this.width / 4, (int) (this.height / 2.5));
+        this.fastMenu = new FastChooseWidget(this.width / 2 + 2, this.height / 2 - 8, x - 7);
         this.children.add(fastMenu);
-        this.buttons.add(new ButtonWidget(this.width - 100, 4, 96, 20, new TranslatableText("emotecraft.options.options"), (button -> this.client.openScreen(ClothConfigScreen.getConfigScreen(this)))));
-        this.buttons.add(new ButtonWidget(this.width/2 + 10, this.height - 30, 96, 20, ScreenTexts.DONE, (button -> this.client.openScreen(this.parent))));
-        setKeyButton = new ButtonWidget(this.width/2 + 6, 60, 96, 20, unboundText, button -> this.activateKey());
+        this.buttons.add(new ButtonWidget(this.width - 100, 4, 96, 20, new TranslatableText("emotecraft.options.options"), (button->this.client.openScreen(ClothConfigScreen.getConfigScreen(this)))));
+        this.buttons.add(new ButtonWidget(this.width / 2 + 10, this.height - 30, 96, 20, ScreenTexts.DONE, (button->this.client.openScreen(this.parent))));
+        setKeyButton = new ButtonWidget(this.width / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
         this.buttons.add(setKeyButton);
-        resetKey =  new ButtonWidget(this.width/2 + 124, 60, 96, 20, new TranslatableText("controls.reset"), (button -> {
+        resetKey = new ButtonWidget(this.width / 2 + 124, 60, 96, 20, new TranslatableText("controls.reset"), (button->{
             if(emoteList.getSelected() != null){
                 emoteList.getSelected().emote.keyBinding = InputUtil.UNKNOWN_KEY;
                 this.save = true;
@@ -93,26 +93,26 @@ public class EmoteMenu extends Screen {
         this.children.addAll(buttons);
         super.init();
         this.setInitialFocus(this.searchBox);
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.keybind"), this.width/2 +115, 40));
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu"), this.width/2 + 10 + x/2, height/2 - 54));
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu2"), this.width/2 + 10 + x/2, height/2 - 40));
-        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu3"), this.width/2 + 10 + x/2, height/2 - 26));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.keybind"), this.width / 2 + 115, 40));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu"), this.width / 2 + 10 + x / 2, height / 2 - 54));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu2"), this.width / 2 + 10 + x / 2, height / 2 - 40));
+        this.texts.add(new PositionedText(new TranslatableText("emotecraft.options.fastmenu3"), this.width / 2 + 10 + x / 2, height / 2 - 26));
     }
 
     private void activateKey(){
-        if(emoteList.getSelected() != null) {
+        if(emoteList.getSelected() != null){
             this.setFocused(setKeyButton);
             activeKeyTime = 200;
         }
     }
 
     @Override
-    public void setFocused(@Nullable Element focused) {
+    public void setFocused(@Nullable Element focused){
         if(activeKeyTime == 0) super.setFocused(focused);
     }
 
     @Override
-    public void tick() {
+    public void tick(){
         super.tick();
         if(activeKeyTime == 1){
             setFocused(null);
@@ -123,26 +123,24 @@ public class EmoteMenu extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button){
         if(this.activeKeyTime != 0 && emoteList.getSelected() != null){
             return setKey(InputUtil.Type.MOUSE.createFromCode(button));
-        }
-        else return super.mouseClicked(mouseX, mouseY, button);
+        }else return super.mouseClicked(mouseX, mouseY, button);
     }
 
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta){
         this.renderBackgroundTexture(0);
         if(this.emoteList.getSelected() == null){
             this.setKeyButton.active = false;
             this.resetKey.active = false;
-        }
-        else {
+        }else{
             this.setKeyButton.active = true;
-            this.resetKey.active = !this.emoteList.getSelected().emote.keyBinding.equals(InputUtil.UNKNOWN_KEY);
+            this.resetKey.active = ! this.emoteList.getSelected().emote.keyBinding.equals(InputUtil.UNKNOWN_KEY);
         }
-        for(PositionedText str:texts){
+        for(PositionedText str : texts){
             str.render(matrices, textRenderer);
         }
         this.emoteList.render(matrices, mouseX, mouseY, delta);
@@ -151,16 +149,18 @@ public class EmoteMenu extends Screen {
         updateKeyText();
         super.render(matrices, mouseX, mouseY, delta);
     }
+
     private boolean setKey(InputUtil.Key key){
         boolean bl = false;
-        if(emoteList.getSelected()!= null){
+        if(emoteList.getSelected() != null){
             bl = true;
-            if(!applyKey(false, emoteList.getSelected().emote, key)){
-                this.client.openScreen(new ConfirmScreen((bool)-> confirmReturn(bool, emoteList.getSelected().emote, key), new TranslatableText("emotecraft.sure"), new TranslatableText("emotecraft.sure2")));
+            if(! applyKey(false, emoteList.getSelected().emote, key)){
+                this.client.openScreen(new ConfirmScreen((bool)->confirmReturn(bool, emoteList.getSelected().emote, key), new TranslatableText("emotecraft.sure"), new TranslatableText("emotecraft.sure2")));
             }
         }
         return bl;
     }
+
     private void confirmReturn(boolean choice, EmoteHolder emoteHolder, InputUtil.Key key){
         if(choice){
             applyKey(true, emoteHolder, key);
@@ -171,15 +171,15 @@ public class EmoteMenu extends Screen {
 
     private boolean applyKey(boolean force, EmoteHolder emote, InputUtil.Key key){
         boolean bl = true;
-        for (EmoteHolder emoteHolder:EmoteHolder.list){
-            if(!key.equals(InputUtil.UNKNOWN_KEY) && emoteHolder.keyBinding.equals(key)){
+        for(EmoteHolder emoteHolder : EmoteHolder.list){
+            if(! key.equals(InputUtil.UNKNOWN_KEY) && emoteHolder.keyBinding.equals(key)){
                 bl = false;
                 if(force){
                     emoteHolder.keyBinding = InputUtil.UNKNOWN_KEY;
                 }
             }
         }
-        if (bl || force){
+        if(bl || force){
             emote.keyBinding = key;
             this.save = true;
         }
@@ -193,7 +193,7 @@ public class EmoteMenu extends Screen {
     }
 
     @Override
-    public void removed() {
+    public void removed(){
         if(save){
             this.saveConfig();
         }
@@ -202,12 +202,12 @@ public class EmoteMenu extends Screen {
 
     private void saveConfig(){
         EmoteHolder.bindKeys(Main.config);
-        try {
+        try{
             BufferedWriter writer = Files.newBufferedWriter(Main.CONFIGPATH);
             Serializer.serializer.toJson(Main.config, writer);
             writer.close();
             //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
-        }catch (IOException e) {
+        }catch(IOException e){
             e.printStackTrace();
         }
     }
@@ -215,86 +215,83 @@ public class EmoteMenu extends Screen {
     private void updateKeyText(){
         if(emoteList.getSelected() != null){
             Text message = emoteList.getSelected().emote.keyBinding.getLocalizedText();
-            if(activeKeyTime != 0)message = (new LiteralText("> ")).append(message.shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW);
+            if(activeKeyTime != 0)
+                message = (new LiteralText("> ")).append(message.shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW);
             setKeyButton.setMessage(message);
         }
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int mod) {
+    public boolean keyPressed(int keyCode, int scanCode, int mod){
         if(emoteList.getSelected() != null && activeKeyTime != 0){
             if(keyCode == 256){
                 return setKey(InputUtil.UNKNOWN_KEY);
-            }
-            else {
+            }else{
                 return setKey(InputUtil.fromKeyCode(keyCode, scanCode));
             }
-        }
-        else {
+        }else{
             return super.keyPressed(keyCode, scanCode, mod);
         }
     }
 
 
-
     public static class EmoteListWidget extends AbstractEmoteListWidget<EmoteListWidget.EmoteListEntry> {
-        public EmoteListWidget(MinecraftClient minecraftClient, int width, int height, Screen screen) {
-            super(minecraftClient, width, height - 51 - 32, 51, height-32, 36, screen);
+        public EmoteListWidget(MinecraftClient minecraftClient, int width, int height, Screen screen){
+            super(minecraftClient, width, height - 51 - 32, 51, height - 32, 36, screen);
         }
 
         @Override
-        public void setEmotes(List<EmoteHolder> list) {
+        public void setEmotes(List<EmoteHolder> list){
             for(EmoteHolder emote : list){
                 this.emotes.add(new EmoteListEntry(this.client, emote));
             }
-            filter(() -> "");
+            filter(()->"");
         }
 
-        public  class EmoteListEntry extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntry> {
-            public EmoteListEntry(MinecraftClient client, EmoteHolder emote) {
+        public class EmoteListEntry extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntry> {
+            public EmoteListEntry(MinecraftClient client, EmoteHolder emote){
                 super(client, emote);
             }
 
-            protected void onPressed() {        //setup screen -> select pack, play screen -> play
+            protected void onPressed(){        //setup screen -> select pack, play screen -> play
                 EmoteListWidget.this.setSelected(this);
             }
         }
     }
 
-    private class FastChooseWidget extends AbstractFastChooseWidget{
+    private class FastChooseWidget extends AbstractFastChooseWidget {
 
-        public FastChooseWidget(int x, int y, int size) {
+        public FastChooseWidget(int x, int y, int size){
             super(x, y, size);
         }
 
         @Override
-        protected boolean isValidClickButton(int button) {
+        protected boolean isValidClickButton(int button){
             return (button == 0 || button == 1) && activeKeyTime == 0;
         }
 
         @Override
-        protected boolean onClick(FastChooseElement element, int button) {
-            if(activeKeyTime != 0)return false;
+        protected boolean onClick(FastChooseElement element, int button){
+            if(activeKeyTime != 0) return false;
             if(button == 1){
                 element.clearEmote();
                 save = true;
                 return true;
-            }
-            else if (emoteList.getSelected() != null){
+            }else if(emoteList.getSelected() != null){
                 element.setEmote(emoteList.getSelected().emote);
                 save = true;
                 return true;
-            }
-            else {
+            }else{
                 return false;
             }
         }
 
         @Override
-        protected boolean doHoverPart(FastChooseElement part) {
+        protected boolean doHoverPart(FastChooseElement part){
             return activeKeyTime == 0;
         }
     }
+
     private class PositionedText {
         private final Text str;
         private final int x;
@@ -305,8 +302,9 @@ public class EmoteMenu extends Screen {
             this.x = x;
             this.y = y;
         }
+
         private void render(MatrixStack matrixStack, TextRenderer textRenderer){
-            drawCenteredText(matrixStack, textRenderer, this.str, this.x, this.y, Helper.colorHelper(255,255,255,255));
+            drawCenteredText(matrixStack, textRenderer, this.str, this.x, this.y, Helper.colorHelper(255, 255, 255, 255));
             textRenderer.getClass();
         }
     }

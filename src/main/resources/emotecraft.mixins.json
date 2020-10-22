@@ -2,12 +2,20 @@
   "required": true,
   "package": "com.kosmx.emotecraft.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [],
+  "mixins": [
+    "LivingEntityRendererMixin"
+  ],
   "client": [
+    "ArmorRendererMixin",
+    "BipedEntityMixin",
     "EmotePlayerMixin",
-    "PlayerRendererMixin",
+    "FeatureRendererMixin",
+    "HeldItemMixin",
+    "KeyEventMixin",
     "PlayerModelMixin",
-    "KeyEventMixin"
+    "PlayerRendererMixin",
+    "UpperPartMixin",
+    "LivingEntityRendererMixin"
   ],
   "server": [],
   "injectors": {

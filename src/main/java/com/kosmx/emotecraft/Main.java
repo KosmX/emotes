@@ -7,7 +7,6 @@ import com.kosmx.emotecraft.network.EmotePacket;
 import com.kosmx.emotecraft.network.StopPacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
-
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.fabric.api.server.PlayerStream;
 import net.fabricmc.loader.api.FabricLoader;
@@ -46,7 +45,7 @@ public class Main implements ModInitializer {
      * And Main has the static variables of the mod.
      */
     @Override
-    public void onInitialize() {
+    public void onInitialize(){
 
         Serializer.initializeSerializer();/*
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT){ //I can't do it in the client initializer because I need it to serialize the config
@@ -66,34 +65,35 @@ public class Main implements ModInitializer {
     }
 
     public static void log(Level level, String message, boolean force){
-        if (force || (config != null && config.showDebug)) LOGGER.log(level, "["+MOD_NAME+"] " + message);
+        if(force || (config != null && config.showDebug)) LOGGER.log(level, "[" + MOD_NAME + "] " + message);
     }
 
     private void initServerNetwork(){
-        ServerSidePacketRegistry.INSTANCE.register(EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf) -> {EmotePacket packet = new EmotePacket();
+        ServerSidePacketRegistry.INSTANCE.register(EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf)->{
+            EmotePacket packet = new EmotePacket();
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            if(!packet.read(packetByteBuf, config.validateEmote)) {
+            if(! packet.read(packetByteBuf, config.validateEmote)){
                 //Todo kick player
                 Main.log(Level.INFO, packetContext.getPlayer().getEntityName() + " is trying to play invalid emote", true);
                 return;
             }
-                packet.write(buf);
+            packet.write(buf);
             Stream<PlayerEntity> players = PlayerStream.watching(packetContext.getPlayer());
-            players.forEach(playerEntity -> {                                   //TODO check correct emote and kick if not
-                if (playerEntity == packetContext.getPlayer()) return;
+            players.forEach(playerEntity->{                                   //TODO check correct emote and kick if not
+                if(playerEntity == packetContext.getPlayer()) return;
                 ServerSidePacketRegistry.INSTANCE.sendToPlayer(playerEntity, EMOTE_PLAY_NETWORK_PACKET_ID, buf);
             });
         }));
 
-        ServerSidePacketRegistry.INSTANCE.register(EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByteBuf) -> {
+        ServerSidePacketRegistry.INSTANCE.register(EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByteBuf)->{
             StopPacket packet = new StopPacket();
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             packet.read(packetByteBuf);
             packet.write(buf);
 
             Stream<PlayerEntity> players = PlayerStream.watching(packetContex.getPlayer());
-            players.forEach(player -> {
-                if(player == packetContex.getPlayer())return;
+            players.forEach(player->{
+                if(player == packetContex.getPlayer()) return;
                 ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, EMOTE_STOP_NETWORK_PACKET_ID, buf);
             });
         }));
@@ -101,26 +101,22 @@ public class Main implements ModInitializer {
 
     private static void loadConfig(){
         if(CONFIGPATH.toFile().isFile()){
-            try {
+            try{
                 BufferedReader reader = Files.newBufferedReader(CONFIGPATH);
                 config = Serializer.serializer.fromJson(reader, SerializableConfig.class);
                 reader.close();
                 //config = Serializer.serializer.fromJson(FileUtils.readFileToString(CONFIGPATH, "UTF-8"), SerializableConfig.class);
-            }
-            catch (Throwable e){
+            }catch(Throwable e){
                 config = new SerializableConfig();
                 if(e instanceof IOException){
                     Main.log(Level.ERROR, "Can't access to config file: " + e.getLocalizedMessage(), true);
-                }
-                else if(e instanceof JsonParseException){
+                }else if(e instanceof JsonParseException){
                     Main.log(Level.ERROR, "Config is invalid Json file: " + e.getLocalizedMessage(), true);
-                }
-                else {
+                }else{
                     e.printStackTrace();
                 }
             }
-        }
-        else {
+        }else{
             config = new SerializableConfig();
         }
 

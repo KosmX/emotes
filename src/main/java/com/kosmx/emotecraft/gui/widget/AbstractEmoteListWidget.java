@@ -20,7 +20,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     protected List<E> emotes = new ArrayList<>();
     private final Screen screen;
 
-    public AbstractEmoteListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
+    public AbstractEmoteListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, Screen screen){
         super(minecraftClient, i, j, k, l, m);
         this.centerListVertically = false;
         this.screen = screen;
@@ -28,8 +28,8 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
 
 
     @Override
-    public int getRowWidth() {
-        return this.width-5;
+    public int getRowWidth(){
+        return this.width - 5;
     }
 
     public abstract void setEmotes(List<EmoteHolder> list);
@@ -44,12 +44,12 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     }
 
     @Override
-    protected int getScrollbarPositionX() {
+    protected int getScrollbarPositionX(){
         return this.right - 6;
     }
 
     @Override
-    protected boolean isFocused() {
+    protected boolean isFocused(){
         return screen.getFocused() == this;
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
         }
 
         @Override
-        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta){
 
             if(this.client.options.touchscreen || hovered){
                 RenderSystem.color4f(1, 1, 1, 1);
@@ -71,8 +71,9 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
             }
             this.client.textRenderer.drawWithShadow(matrices, this.emote.name, x + 38, y + 1, 16777215);
             this.client.textRenderer.drawWithShadow(matrices, this.emote.description, x + 38, y + 12, 8421504);
-            if(!this.emote.author.getString().equals(""))this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append( this.emote.author), x + 38, y + 23, 8421504);
-            if(this.emote.getIcon() != null) {
+            if(! this.emote.author.getString().equals(""))
+                this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append(this.emote.author), x + 38, y + 23, 8421504);
+            if(this.emote.getIcon() != null){
                 RenderSystem.color4f(1, 1, 1, 1);
                 MinecraftClient.getInstance().getTextureManager().bindTexture(this.emote.getIcon());
                 RenderSystem.enableBlend();
@@ -82,12 +83,11 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        public boolean mouseClicked(double mouseX, double mouseY, int button){
             if(button == 0){
                 this.onPressed();
                 return true;
-            }
-            else {
+            }else{
                 return false;
             }
         }

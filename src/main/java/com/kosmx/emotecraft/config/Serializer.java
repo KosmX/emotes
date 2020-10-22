@@ -10,7 +10,7 @@ public class Serializer {
 
     public static Gson serializer;
 
-    public static void initializeSerializer() {
+    public static void initializeSerializer(){
         GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
 
         JsonDeserializer<SerializableConfig> configSerializer = new ConfigSerializer();

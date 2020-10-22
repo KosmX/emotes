@@ -1,4 +1,4 @@
-package com.kosmx.emotecraft.playerInterface;
+package com.kosmx.emotecraft.mixinInterface;
 
 import com.kosmx.emotecraft.Emote;
 

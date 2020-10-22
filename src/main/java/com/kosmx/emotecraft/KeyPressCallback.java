@@ -15,21 +15,18 @@ public interface KeyPressCallback {
      * PASS - Continue searching, somewhy don't play idk...(not that key was set)
      * FAIL --> ERROR
      */
-    Event<KeyPressCallback> EVENT = EventFactory.createArrayBacked(KeyPressCallback.class,
-            (listeners) -> (key) -> {
-                for(KeyPressCallback listener :listeners){
-                    ActionResult result = listener.onKeyPress(key);
-                    if(result == ActionResult.SUCCESS || result == ActionResult.CONSUME){
-                        return result;
-                    }
-                    else if(result != ActionResult.PASS){
-                        Main.log(Level.WARN, "problem while KeyEVENT!");
-                        return result;
-                    }
-                }
-                return ActionResult.PASS;
+    Event<KeyPressCallback> EVENT = EventFactory.createArrayBacked(KeyPressCallback.class, (listeners)->(key)->{
+        for(KeyPressCallback listener : listeners){
+            ActionResult result = listener.onKeyPress(key);
+            if(result == ActionResult.SUCCESS || result == ActionResult.CONSUME){
+                return result;
+            }else if(result != ActionResult.PASS){
+                Main.log(Level.WARN, "problem while KeyEVENT!");
+                return result;
             }
-    );
+        }
+        return ActionResult.PASS;
+    });
 
     ActionResult onKeyPress(InputUtil.Key key);
 }

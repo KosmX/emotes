@@ -4,8 +4,8 @@ import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
+import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.network.EmotePacket;
-import com.kosmx.emotecraft.playerInterface.EmotePlayerInterface;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.*;
+import net.minecraft.text.MutableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -53,7 +53,7 @@ public class EmoteHolder {
      * @param description Emote decription
      * @param author      Name of the Author
      */
-    public EmoteHolder(Emote emote, MutableText name, MutableText description, MutableText author, int hash) {
+    public EmoteHolder(Emote emote, MutableText name, MutableText description, MutableText author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;
@@ -61,28 +61,28 @@ public class EmoteHolder {
         this.hash = hash;
     }
 
-    public static void bindKeys(SerializableConfig config) {
+    public static void bindKeys(SerializableConfig config){
         config.emotesWithKey = new ArrayList<>();
         config.emotesWithHash = new ArrayList<>();
-        for (EmoteHolder emote : list) {
-            if (!emote.keyBinding.equals(InputUtil.UNKNOWN_KEY)) {
+        for(EmoteHolder emote : list){
+            if(! emote.keyBinding.equals(InputUtil.UNKNOWN_KEY)){
                 config.emotesWithKey.add(emote);
                 config.emotesWithHash.add(new Pair<>(emote.hash, emote.keyBinding.getTranslationKey()));
             }
         }
         config.fastMenuHash = new int[8];
-        for (int i = 0; i != 8; i++) {
-            if (Main.config.fastMenuEmotes[i] != null) {
+        for(int i = 0; i != 8; i++){
+            if(Main.config.fastMenuEmotes[i] != null){
                 Main.config.fastMenuHash[i] = Main.config.fastMenuEmotes[i].hash;
             }
         }
     }
 
     @Environment(EnvType.CLIENT)
-    public static ActionResult playEmote(InputUtil.Key key) {
-        if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().getCameraEntity() != null && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity) {
-            for (EmoteHolder emote : Main.config.emotesWithKey) {
-                if (emote.keyBinding.equals(key)) {
+    public static ActionResult playEmote(InputUtil.Key key){
+        if(MinecraftClient.getInstance() != null && MinecraftClient.getInstance().getCameraEntity() != null && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
+            for(EmoteHolder emote : Main.config.emotesWithKey){
+                if(emote.keyBinding.equals(key)){
                     emote.playEmote((PlayerEntity) MinecraftClient.getInstance().getCameraEntity());
                     return ActionResult.SUCCESS;
                 }
@@ -91,9 +91,9 @@ public class EmoteHolder {
         return ActionResult.PASS;
     }
 
-    public static void clearEmotes() {
-        for (EmoteHolder emoteHolder : list) {
-            if (emoteHolder.icon != null) {
+    public static void clearEmotes(){
+        for(EmoteHolder emoteHolder : list){
+            if(emoteHolder.icon != null){
                 MinecraftClient.getInstance().getTextureManager().destroyTexture(emoteHolder.icon);
                 assert emoteHolder.nativeIcon != null;
                 emoteHolder.nativeIcon.close();
@@ -103,15 +103,15 @@ public class EmoteHolder {
     }
 
     public void bindIcon(Object path){
-        if(path instanceof String || path instanceof File)this.path = path;
-        else Main.log(Level.FATAL, "Can't use " + path.getClass() + " as file" );
+        if(path instanceof String || path instanceof File) this.path = path;
+        else Main.log(Level.FATAL, "Can't use " + path.getClass() + " as file");
     }
 
-    public void assignIcon(File file) {
-        if(file.isFile()) {
-            try {
+    public void assignIcon(File file){
+        if(file.isFile()){
+            try{
                 assignIcon(new FileInputStream(file));
-            } catch (FileNotFoundException e) {
+            }catch(FileNotFoundException e){
                 e.printStackTrace();
             }
         }
@@ -123,33 +123,33 @@ public class EmoteHolder {
 
     public Identifier getIcon(){
         if(icon == null && this.path != null){
-            if(this.path instanceof String)assignIcon((String) this.path);
-            else if(this.path instanceof File)assignIcon((File) this.path);
+            if(this.path instanceof String) assignIcon((String) this.path);
+            else if(this.path instanceof File) assignIcon((File) this.path);
         }
         return icon;
     }
 
-    public void assignIcon(InputStream inputStream) {
-        try {
+    public void assignIcon(InputStream inputStream){
+        try{
             Throwable throwable = null;
 
-            try {
+            try{
                 NativeImage image = NativeImage.read(inputStream);
                 NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(image);
                 this.icon = new Identifier(Main.MOD_ID, "icon" + this.hash);
                 MinecraftClient.getInstance().getTextureManager().registerTexture(this.icon, nativeImageBackedTexture);
                 this.nativeIcon = nativeImageBackedTexture;
-            } catch (IOException e) {
+            }catch(IOException e){
                 throwable = e;
                 throw e;
-            } finally {
-                try {
+            }finally{
+                try{
                     inputStream.close();
-                } catch (Throwable throwable1) {
-                    if (throwable != null) throwable.addSuppressed(throwable1);
+                }catch(Throwable throwable1){
+                    if(throwable != null) throwable.addSuppressed(throwable1);
                 }
             }
-        } catch (Throwable var) {
+        }catch(Throwable var){
             Main.log(Level.ERROR, "Can't open emote icon: " + var);
             this.icon = null;
             this.nativeIcon = null;
@@ -164,27 +164,29 @@ public class EmoteHolder {
     }
 
     public static EmoteHolder getEmoteFromHash(int hash){
-        for(EmoteHolder emote:list){
-            if (emote.hash == hash){
+        for(EmoteHolder emote : list){
+            if(emote.hash == hash){
                 return emote;
             }
         }
         return null;
     }
 
-    public static EmoteHolder deserializeJson(BufferedReader json) throws JsonParseException {     //throws BowlingBall XD
+    public static EmoteHolder deserializeJson(BufferedReader json) throws JsonParseException{     //throws BowlingBall XD
         return Serializer.serializer.fromJson(json, EmoteHolder.class);
     }
+
     public static void addEmoteToList(BufferedReader json) throws JsonParseException{
         list.add(deserializeJson(json));
     }
+
     public static void addEmoteToList(EmoteHolder hold){
         list.add(hold);
     }
 
     public static boolean playEmote(Emote emote, PlayerEntity player){
-        if(canPlayEmote(player)) {
-            try {
+        if(canPlayEmote(player)){
+            try{
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                 EmotePacket emotePacket = new EmotePacket(emote, player);
                 emotePacket.write(buf);
@@ -192,30 +194,29 @@ public class EmoteHolder {
                 EmotePlayerInterface target = (EmotePlayerInterface) player;
                 target.playEmote(emote);
                 emote.start();
-            } catch (Exception e) {
+            }catch(Exception e){
                 Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
-                if (Main.config.showDebug) e.printStackTrace();
+                if(Main.config.showDebug) e.printStackTrace();
             }
             return true;
-        }
-        else {
+        }else{
             return false;
         }
     }
 
     private static boolean canPlayEmote(PlayerEntity entity){
-        if(!canRunEmote(entity))return false;
-        if(entity != MinecraftClient.getInstance().getCameraEntity())return false;
-        EmotePlayerInterface target = (EmotePlayerInterface)entity;
-        return !(Emote.isRunningEmote(target.getEmote()) && !target.getEmote().isInfStarted());
+        if(! canRunEmote(entity)) return false;
+        if(entity != MinecraftClient.getInstance().getCameraEntity()) return false;
+        EmotePlayerInterface target = (EmotePlayerInterface) entity;
+        return ! (Emote.isRunningEmote(target.getEmote()) && ! target.getEmote().isInfStarted());
     }
 
     public static boolean canRunEmote(Entity entity){
-        if(!(entity instanceof AbstractClientPlayerEntity))return false;
+        if(! (entity instanceof AbstractClientPlayerEntity)) return false;
         AbstractClientPlayerEntity player = (AbstractClientPlayerEntity) entity;
-        if(player.getPose() != EntityPose.STANDING)return false;
+        if(player.getPose() != EntityPose.STANDING) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
-        return !(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)) > 0.04f);
+        return ! (player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)) > 0.04f);
     }
 
     public boolean playEmote(PlayerEntity playerEntity){

@@ -30,8 +30,8 @@ public class SerializableConfig {
 
     public void assignEmotes(){
         this.emotesWithKey = new ArrayList<>();
-        for (int i = 0; i != 8; i++){
-            if(fastMenuHash[i] == 0)continue;
+        for(int i = 0; i != 8; i++){
+            if(fastMenuHash[i] == 0) continue;
             EmoteHolder emote = EmoteHolder.getEmoteFromHash(fastMenuHash[i]);
             this.fastMenuEmotes[i] = emote;
             if(emote == null){
@@ -39,12 +39,11 @@ public class SerializableConfig {
             }
         }
 
-        for (Pair<Integer, String> pair : emotesWithHash){
+        for(Pair<Integer, String> pair : emotesWithHash){
             EmoteHolder emote = EmoteHolder.getEmoteFromHash(pair.getLeft());
-            if (emote != null){
+            if(emote != null){
                 emote.keyBinding = InputUtil.fromTranslationKey(pair.getRight());
-            }
-            else {
+            }else{
                 Main.log(Level.ERROR, "Can't find emote from hash: " + pair.getLeft());
             }
         }
