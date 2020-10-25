@@ -3,13 +3,11 @@ package com.kosmx.emotecraft.config;
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Emote;
+import com.kosmx.emotecraft.Events;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
-import com.kosmx.emotecraft.network.EmotePacket;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -19,7 +17,6 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
@@ -37,15 +34,25 @@ public class EmoteHolder {
     public final MutableText name;
     public final MutableText description;
     public final MutableText author;
-    public final int hash;
-    public static List<EmoteHolder> list = new ArrayList<>();
-    public InputUtil.Key keyBinding = InputUtil.UNKNOWN_KEY;
+    public final int hash; // The emote's identifier hash
+    public static List<EmoteHolder> list = new ArrayList<>(); // static array of all imported emotes
+    public InputUtil.Key keyBinding = InputUtil.UNKNOWN_KEY; // assigned keybinding
     @Nullable
     public NativeImageBackedTexture nativeIcon = null;
     @Nullable
-    private Identifier icon = null;
+    private Identifier iconIdentifier = null;
     @Nullable
-    public Object path = null;
+    public Object iconName = null; //Icon name
+
+    /**
+     * was it imported by {@link com.kosmx.quarktool.QuarkReader}
+     */
+    public boolean isQuarkEmote = false;
+
+    public EmoteHolder setQuarkEmote(boolean bl){
+        this.isQuarkEmote = bl;
+        return this;
+    }
 
     /**
      * @param emote       {@link com.kosmx.emotecraft.Emote}
@@ -61,6 +68,10 @@ public class EmoteHolder {
         this.hash = hash;
     }
 
+    /**
+     * Bind keys to emotes from config class
+     * @param config
+     */
     public static void bindKeys(SerializableConfig config){
         config.emotesWithKey = new ArrayList<>();
         config.emotesWithHash = new ArrayList<>();
@@ -78,6 +89,11 @@ public class EmoteHolder {
         }
     }
 
+    /**
+     * Play emote from keybinding (if available)
+     * @param key pressed key
+     * @return Was it success?
+     */
     @Environment(EnvType.CLIENT)
     public static ActionResult playEmote(InputUtil.Key key){
         if(MinecraftClient.getInstance() != null && MinecraftClient.getInstance().getCameraEntity() != null && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
@@ -91,10 +107,13 @@ public class EmoteHolder {
         return ActionResult.PASS;
     }
 
+    /**
+     * just clear the {@link EmoteHolder#list} before reimporting emotes
+     */
     public static void clearEmotes(){
         for(EmoteHolder emoteHolder : list){
-            if(emoteHolder.icon != null){
-                MinecraftClient.getInstance().getTextureManager().destroyTexture(emoteHolder.icon);
+            if(emoteHolder.iconIdentifier != null){
+                MinecraftClient.getInstance().getTextureManager().destroyTexture(emoteHolder.iconIdentifier);
                 assert emoteHolder.nativeIcon != null;
                 emoteHolder.nativeIcon.close();
             }
@@ -102,8 +121,12 @@ public class EmoteHolder {
         list = new ArrayList<>();
     }
 
+    /**
+     *
+     * @param path try to import emote icon
+     */
     public void bindIcon(Object path){
-        if(path instanceof String || path instanceof File) this.path = path;
+        if(path instanceof String || path instanceof File) this.iconName = path;
         else Main.log(Level.FATAL, "Can't use " + path.getClass() + " as file");
     }
 
@@ -121,12 +144,12 @@ public class EmoteHolder {
         assignIcon(Client.class.getResourceAsStream(str));
     }
 
-    public Identifier getIcon(){
-        if(icon == null && this.path != null){
-            if(this.path instanceof String) assignIcon((String) this.path);
-            else if(this.path instanceof File) assignIcon((File) this.path);
+    public Identifier getIconIdentifier(){
+        if(iconIdentifier == null && this.iconName != null){
+            if(this.iconName instanceof String) assignIcon((String) this.iconName);
+            else if(this.iconName instanceof File) assignIcon((File) this.iconName);
         }
-        return icon;
+        return iconIdentifier;
     }
 
     public void assignIcon(InputStream inputStream){
@@ -136,8 +159,8 @@ public class EmoteHolder {
             try{
                 NativeImage image = NativeImage.read(inputStream);
                 NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(image);
-                this.icon = new Identifier(Main.MOD_ID, "icon" + this.hash);
-                MinecraftClient.getInstance().getTextureManager().registerTexture(this.icon, nativeImageBackedTexture);
+                this.iconIdentifier = new Identifier(Main.MOD_ID, "icon" + this.hash);
+                MinecraftClient.getInstance().getTextureManager().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
                 this.nativeIcon = nativeImageBackedTexture;
             }catch(IOException e){
                 throwable = e;
@@ -151,7 +174,7 @@ public class EmoteHolder {
             }
         }catch(Throwable var){
             Main.log(Level.ERROR, "Can't open emote icon: " + var);
-            this.icon = null;
+            this.iconIdentifier = null;
             this.nativeIcon = null;
         }
     }
@@ -159,8 +182,11 @@ public class EmoteHolder {
 
     //public void setKeyBinding(InputUtil.Key key, )
 
+    /**
+     * @return EmoteHolder's emote
+     */
     public Emote getEmote(){
-        return emote;
+        return emote.copy();
     }
 
     public static EmoteHolder getEmoteFromHash(int hash){
@@ -185,20 +211,12 @@ public class EmoteHolder {
     }
 
     public static boolean playEmote(Emote emote, PlayerEntity player){
+        return playEmote(emote, player, null);
+    }
+
+    public static boolean playEmote(Emote emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
-            try{
-                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                EmotePacket emotePacket = new EmotePacket(emote, player);
-                emotePacket.write(buf);
-                ClientSidePacketRegistry.INSTANCE.sendToServer(Main.EMOTE_PLAY_NETWORK_PACKET_ID, buf);
-                EmotePlayerInterface target = (EmotePlayerInterface) player;
-                target.playEmote(emote);
-                emote.start();
-            }catch(Exception e){
-                Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
-                if(Main.config.showDebug) e.printStackTrace();
-            }
-            return true;
+            return Events.clientStartEmote(emote, player, emoteHolder);
         }else{
             return false;
         }
@@ -211,6 +229,11 @@ public class EmoteHolder {
         return ! (Emote.isRunningEmote(target.getEmote()) && ! target.getEmote().isInfStarted());
     }
 
+    /**
+     * Check if the emote can be played.
+     * @param entity Witch entity (player)
+     * @return True if possible to play
+     */
     public static boolean canRunEmote(Entity entity){
         if(! (entity instanceof AbstractClientPlayerEntity)) return false;
         AbstractClientPlayerEntity player = (AbstractClientPlayerEntity) entity;
@@ -220,7 +243,7 @@ public class EmoteHolder {
     }
 
     public boolean playEmote(PlayerEntity playerEntity){
-        return playEmote(this.getEmote(), playerEntity);
+        return playEmote(this.getEmote(), playerEntity, this);
     }
 }
 

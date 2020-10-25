@@ -73,9 +73,9 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
             this.client.textRenderer.drawWithShadow(matrices, this.emote.description, x + 38, y + 12, 8421504);
             if(! this.emote.author.getString().equals(""))
                 this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append(this.emote.author), x + 38, y + 23, 8421504);
-            if(this.emote.getIcon() != null){
+            if(this.emote.getIconIdentifier() != null){
                 RenderSystem.color4f(1, 1, 1, 1);
-                MinecraftClient.getInstance().getTextureManager().bindTexture(this.emote.getIcon());
+                MinecraftClient.getInstance().getTextureManager().bindTexture(this.emote.getIconIdentifier());
                 RenderSystem.enableBlend();
                 drawTexture(matrices, x, y, 32, 32, 0, 0, 256, 256, 256, 256);
                 RenderSystem.disableBlend();

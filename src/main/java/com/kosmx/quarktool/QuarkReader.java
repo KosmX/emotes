@@ -66,7 +66,7 @@ public class QuarkReader {
 
     public EmoteHolder getEmote(){
         if(isSuccess){
-            return new EmoteHolder(this.emote, new LiteralText(this.name).formatted(Formatting.WHITE), new LiteralText("Imported from quark").formatted(Formatting.GRAY), new LiteralText("").formatted(Formatting.GRAY), this.hash);
+            return new EmoteHolder(this.emote, new LiteralText(this.name).formatted(Formatting.WHITE), new LiteralText("Imported from quark").formatted(Formatting.GRAY), new LiteralText("").formatted(Formatting.GRAY), this.hash).setQuarkEmote(true);
         }else return null;
     }
 

@@ -169,7 +169,7 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
         }
 
         public void render(MatrixStack matrices, TextRenderer textRenderer){
-            Identifier identifier = Main.config.fastMenuEmotes[id] != null ? Main.config.fastMenuEmotes[id].getIcon() : null;
+            Identifier identifier = Main.config.fastMenuEmotes[id] != null ? Main.config.fastMenuEmotes[id].getIconIdentifier() : null;
             if(identifier != null && Main.config.showIcons){
                 int s = size / 10;
                 int iconX = (int) (((float) (x + size / 2)) + size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
