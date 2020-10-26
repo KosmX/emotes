@@ -28,12 +28,12 @@ public class Emote {
     private boolean isInfinite = false;
     private boolean isInfStarted = false;
     private int returnTick;
-    public BodyPart head = new BodyPart(0, 0, 0, 0, 0, 0);
-    public Torso torso = new Torso(0, 0, 0, 0, 0, 0);
-    public BodyPart rightArm = new BodyPart(- 5, 2, 0, 0, 0, 0.09f);
-    public BodyPart leftArm = new BodyPart(5, 2, 0, 0, 0, - 0.09f);
-    public BodyPart leftLeg = new BodyPart(1.9f, 12, 0.1f, 0, 0, 0);
-    public BodyPart rightLeg = new BodyPart(- 1.9f, 12, 0.1f, 0, 0, 0);
+    public BodyPart head = new BodyPart(0, 0, 0, 0, 0, 0, "head");
+    public Torso torso = new Torso(0, 0, 0, 0, 0, 0, "torso");
+    public BodyPart rightArm = new BodyPart(- 5, 2, 0, 0, 0, 0.09f, "rightArm");
+    public BodyPart leftArm = new BodyPart(5, 2, 0, 0, 0, - 0.09f, "leftArm");
+    public BodyPart leftLeg = new BodyPart(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg");
+    public BodyPart rightLeg = new BodyPart(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg");
     private float tickDelta = 0;
     private boolean isQuark = false;
 
@@ -205,16 +205,18 @@ public class Emote {
         public RotationPart roll;
         public RotationPart axis;
         public RotationPart bend;
+        public final String name;
 
-        private BodyPart(float x, float y, float z, float yaw, float pitch, float roll){
-            this.x = new Part(x);
-            this.y = new Part(y);
-            this.z = new Part(z);
-            this.yaw = new RotationPart(yaw);
-            this.pitch = new RotationPart(pitch);
-            this.roll = new RotationPart(roll);
-            this.axis = new RotationPart(0);
-            this.bend = new RotationPart(0);
+        private BodyPart(float x, float y, float z, float yaw, float pitch, float roll, String name){
+            this.name = name;
+            this.x = new Part(x, "x");
+            this.y = new Part(y, "y");
+            this.z = new Part(z, "z");
+            this.yaw = new RotationPart(yaw, "yaw");
+            this.pitch = new RotationPart(pitch, "pitch");
+            this.roll = new RotationPart(roll, "roll");
+            this.axis = new RotationPart(0, "axis");
+            this.bend = new RotationPart(0, "bend");
         }
 
 
@@ -234,8 +236,8 @@ public class Emote {
     }
 
     public class Torso extends BodyPart {
-        private Torso(float x, float y, float z, float yaw, float pitch, float roll){
-            super(x, y, z, yaw, pitch, roll);
+        private Torso(float x, float y, float z, float yaw, float pitch, float roll, String name){
+            super(x, y, z, yaw, pitch, roll, name);
         }
 
         public Vec3d getBodyOffshet(){
@@ -255,6 +257,7 @@ public class Emote {
 
     public class Part {
         private final List<Move> list = new ArrayList<>();
+        public final String name;
         /*{
             @Override
             public Move get(int index){
@@ -265,7 +268,8 @@ public class Emote {
          */
         private final float defaultValue;
 
-        private Part(float defaultValue){
+        private Part(float defaultValue, String name){
+            this.name = name;
             this.defaultValue = defaultValue;
         }
 
@@ -344,8 +348,8 @@ public class Emote {
     }
 
     public class RotationPart extends Part {
-        public RotationPart(float x){
-            super(x);
+        public RotationPart(float x, String name){
+            super(x, name);
         }
 
         @Override

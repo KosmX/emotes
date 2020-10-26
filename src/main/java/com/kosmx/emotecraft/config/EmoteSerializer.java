@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Level;
 import java.lang.reflect.Type;
 
 
-public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
+public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSerializer<EmoteHolder> {
 
     //Todo create error feedback about missing items (names)
     @Override
@@ -113,6 +113,97 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder> {
     private void addPartIfExists(Emote.Part part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){
         if(node.has(name)){
             Emote.addMove(part, tick, node.get(name).getAsFloat(), easing, turn, degrees);
+        }
+    }
+
+
+
+
+    /**
+     * To serialize emotes to Json.
+     * This code was not used in the mod, but I left it here for modders.
+     *
+     * If you want to serialize an emote without EmoteHolder
+     * do new EmoteHolder(emote, new LiteralText("name").formatted(Formatting.WHITE), new LiteralText("someString").formatted(Formatting.GRAY), new LiteralText("author").formatted(Formatting.GRAY), some random hash(int));
+     * (this code is from {@link com.kosmx.quarktool.QuarkReader#getEmote()})
+     *
+     * or use {@link EmoteSerializer#emoteSerializer(Emote)}
+     *
+     *
+     * @param emote source EmoteHolder
+     * @param typeOfSrc idk
+     * @param context :)
+     * @return :D
+     * Sorry for these really... useful comments
+     */
+    @Override
+    public JsonElement serialize(EmoteHolder emote, Type typeOfSrc, JsonSerializationContext context) {
+        JsonObject node = new JsonObject();
+        node.add("name", Text.Serializer.toJsonTree(emote.name));
+        node.add("description", Text.Serializer.toJsonTree(emote.description)); // :D
+        if(!emote.author.getString().equals("")){
+            node.add("author", Text.Serializer.toJsonTree(emote.author));
+        }
+        node.add("emote", emoteSerializer(emote.getEmote()));
+        return node;
+    }
+
+    /**
+     * serialize an emote to json
+     * It won't be the same json file (not impossible) but multiple jsons can mean the same emote...
+     *
+     * Oh, and it's public and static, so you can call it from anywhere.
+     *
+     * @param emote Emote to serialize
+     * @return return Json object
+     */
+    public static JsonObject emoteSerializer(Emote emote){
+        JsonObject node = new JsonObject();
+        node.addProperty("beginTick", emote.getBeginTick());
+        node.addProperty("endTick", emote.getEndTick());
+        node.addProperty("stopTick", emote.getStopTick());
+        node.addProperty("isLoop", emote.isInfinite());
+        node.addProperty("returnTick", emote.getReturnTick());
+        node.addProperty("degrees", false); //No program uses degrees.
+        node.add("moves", moveSerializer(emote));
+        return node;
+    }
+
+    public static JsonArray moveSerializer(Emote emote){
+        JsonArray node = new JsonArray();
+        bodyPartDeserializer(node, emote.head);
+        bodyPartDeserializer(node, emote.torso);
+        bodyPartDeserializer(node, emote.rightArm);
+        bodyPartDeserializer(node, emote.leftArm);
+        bodyPartDeserializer(node, emote.rightLeg);
+        bodyPartDeserializer(node, emote.leftLeg);
+        return node;
+    }
+
+    /*
+     * from here and below the methods are not public
+     * these are really depend on the upper method and I don't think anyone will use these.
+     */
+    private static void bodyPartDeserializer(JsonArray node, Emote.BodyPart bodyPart){
+        partDeserialize(node, bodyPart.x, bodyPart.name);
+        partDeserialize(node, bodyPart.y, bodyPart.name);
+        partDeserialize(node, bodyPart.z, bodyPart.name);
+        partDeserialize(node, bodyPart.pitch, bodyPart.name);
+        partDeserialize(node, bodyPart.yaw, bodyPart.name);
+        partDeserialize(node, bodyPart.roll, bodyPart.name);
+        partDeserialize(node, bodyPart.bend, bodyPart.name);
+        partDeserialize(node, bodyPart.axis, bodyPart.name);
+    }
+
+    private static void partDeserialize(JsonArray array, Emote.Part part, String parentName){
+        for(Emote.Move move : part.getList()){
+            JsonObject node = new JsonObject();
+            node.addProperty("tick", move.tick);
+            node.addProperty("easing", move.getEase());
+            JsonObject jsonMove = new JsonObject();
+            jsonMove.addProperty(part.name, move.value);
+            node.add(parentName, jsonMove);
+            array.add(node);
         }
     }
 }
