@@ -1,10 +1,26 @@
+buildscript {
+	dependencies {
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+	}
+}
+
 plugins {
 	id 'fabric-loom' version '0.5-SNAPSHOT'
 	id 'maven-publish'
 }
+apply plugin: 'com.jfrog.bintray'
 
+boolean keys_imported = new File("keys.properties").exists()
+
+if(keys_imported) {
+	file("keys.properties").withReader {
+		Properties props = new Properties()
+		props.load(it)
+		project.ext.keys = props
+	}
+}
 repositories{
-	mavenLocal()
+	//mavenLocal()
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -102,4 +118,29 @@ publishing {
 		//@Nullable essential for mc modding
 		compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 	}
+}
+
+bintray {
+	if(keys_imported) {
+		user = project.keys.bintray_user
+		key = project.keys.bintray_key
+	}
+	pkg {
+		repo = 'Emotecraft'
+		name = 'Emotecraft'
+		//userOrg = 'kosmx'
+		licenses = ['CC0-1.0']
+		vcsUrl = 'https://github.com/KosmX/emotes.git'
+		version {
+			version {
+				name = project.version
+				desc = 'Minecraft mod'
+				githubRepo = "kosmx/emotes"
+				released  = new Date()
+				vcsTag = project.version
+				//attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+			}
+		}
+	}
+	publications = ['mavenJava']
 }
