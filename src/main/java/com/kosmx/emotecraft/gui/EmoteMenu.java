@@ -237,7 +237,7 @@ public class EmoteMenu extends Screen {
 
     public static class EmoteListWidget extends AbstractEmoteListWidget<EmoteListWidget.EmoteListEntry> {
         public EmoteListWidget(MinecraftClient minecraftClient, int width, int height, Screen screen){
-            super(minecraftClient, width, height - 51 - 32, 51, height - 32, 36, screen);
+            super(minecraftClient, width, height , 51, height - 32, 36, screen);
         }
 
         @Override
