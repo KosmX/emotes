@@ -5,6 +5,8 @@ import com.kosmx.emotecraft.math.Easing;
 import com.kosmx.emotecraft.math.Helper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -26,15 +28,24 @@ public class Emote {
     private boolean isInfinite = false;
     private boolean isInfStarted = false;
     private int returnTick;
-    public BodyPart head = new BodyPart(0, 0, 0, 0, 0, 0);
-    public Torso torso = new Torso(0, 0, 0, 0, 0, 0);
-    public BodyPart rightArm = new BodyPart(- 5, 2, 0, 0, 0, 0.09f);
-    public BodyPart leftArm = new BodyPart(5, 2, 0, 0, 0, - 0.09f);
-    public BodyPart leftLeg = new BodyPart(1.9f, 12, 0.1f, 0, 0, 0);
-    public BodyPart rightLeg = new BodyPart(- 1.9f, 12, 0.1f, 0, 0, 0);
+    public BodyPart head = new BodyPart(0, 0, 0, 0, 0, 0, "head");
+    public Torso torso = new Torso(0, 0, 0, 0, 0, 0, "torso");
+    public BodyPart rightArm = new BodyPart(- 5, 2, 0, 0, 0, 0.09f, "rightArm");
+    public BodyPart leftArm = new BodyPart(5, 2, 0, 0, 0, - 0.09f, "leftArm");
+    public BodyPart leftLeg = new BodyPart(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg");
+    public BodyPart rightLeg = new BodyPart(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg");
     private float tickDelta = 0;
     private boolean isQuark = false;
 
+
+    /**
+     *
+     * @param a begin tick
+     * @param b end tick
+     * @param c stop tick
+     * @param inf is looped
+     * @param returnTick if looped, where to return
+     */
     public Emote(int a, int b, int c, boolean inf, int returnTick){
         beginTick = a;
         endTick = b;
@@ -86,6 +97,10 @@ public class Emote {
         return this.currentTick + this.tickDelta;
     }
 
+    /**
+     * tick emote.
+     * stop it or repeat...
+     */
     public void tick(){
         if(this.isRunning) this.currentTick++;
         else return;
@@ -98,11 +113,21 @@ public class Emote {
         }
     }
 
+    /**
+     *
+     * @param emote witch emote
+     * @return is this emote running. (null is not running)
+     */
     public static boolean isRunningEmote(@Nullable Emote emote){
         return (emote != null && emote.isRunning);
     }
 
-    public void start(){
+    public void start(PlayerEntity player){
+        ActionResult result = EmotecraftCallbacks.startPlayEmote.invoker().playEmote(this, player);
+        if(result == ActionResult.FAIL){
+            return;
+        }
+
         this.currentTick = 0;
         this.isInfStarted = false;
         this.isRunning = true;
@@ -130,8 +155,45 @@ public class Emote {
         }
     }
 
+    /**
+     * is the emote already in an infinite loop?
+     * @return :D
+     */
     public boolean isInfStarted(){
         return isInfStarted;
+    }
+
+
+    /**
+     * Copy the emote, to not play the original
+     * @return the copied emote.
+     */
+    public Emote copy(){
+        Emote emote = new Emote(this.beginTick, this.endTick, this.stopTick, this.isInfinite, this.returnTick);
+        copyPart(emote.head, this.head);
+        copyPart(emote.torso, this.torso);
+        copyPart(emote.rightArm, this.rightArm);
+        copyPart(emote.leftArm, this.leftArm);
+        copyPart(emote.rightLeg, this.rightLeg);
+        copyPart(emote.leftLeg, this.leftLeg);
+        return emote;
+    }
+
+    private static void copyPart(BodyPart targetPart, BodyPart sourcePart){
+        copyPartData(targetPart.x, sourcePart.x);
+        copyPartData(targetPart.y, sourcePart.y);
+        copyPartData(targetPart.z, sourcePart.z);
+        copyPartData(targetPart.pitch, sourcePart.pitch);
+        copyPartData(targetPart.yaw, sourcePart.yaw);
+        copyPartData(targetPart.roll, sourcePart.roll);
+        copyPartData(targetPart.bend, sourcePart.bend);
+        copyPartData(targetPart.axis, sourcePart.axis);
+    }
+
+    private static void copyPartData(Part targetPart, Part sourcePart){
+        for(Move move : sourcePart.list){
+            targetPart.add(move, true, false);
+        }
     }
 
     public class BodyPart {
@@ -143,16 +205,18 @@ public class Emote {
         public RotationPart roll;
         public RotationPart axis;
         public RotationPart bend;
+        public final String name;
 
-        private BodyPart(float x, float y, float z, float yaw, float pitch, float roll){
-            this.x = new Part(x);
-            this.y = new Part(y);
-            this.z = new Part(z);
-            this.yaw = new RotationPart(yaw);
-            this.pitch = new RotationPart(pitch);
-            this.roll = new RotationPart(roll);
-            this.axis = new RotationPart(0);
-            this.bend = new RotationPart(0);
+        private BodyPart(float x, float y, float z, float yaw, float pitch, float roll, String name){
+            this.name = name;
+            this.x = new Part(x, "x");
+            this.y = new Part(y, "y");
+            this.z = new Part(z, "z");
+            this.yaw = new RotationPart(yaw, "yaw");
+            this.pitch = new RotationPart(pitch, "pitch");
+            this.roll = new RotationPart(roll, "roll");
+            this.axis = new RotationPart(0, "axis");
+            this.bend = new RotationPart(0, "bend");
         }
 
 
@@ -172,8 +236,8 @@ public class Emote {
     }
 
     public class Torso extends BodyPart {
-        private Torso(float x, float y, float z, float yaw, float pitch, float roll){
-            super(x, y, z, yaw, pitch, roll);
+        private Torso(float x, float y, float z, float yaw, float pitch, float roll, String name){
+            super(x, y, z, yaw, pitch, roll, name);
         }
 
         public Vec3d getBodyOffshet(){
@@ -193,6 +257,7 @@ public class Emote {
 
     public class Part {
         private final List<Move> list = new ArrayList<>();
+        public final String name;
         /*{
             @Override
             public Move get(int index){
@@ -203,7 +268,8 @@ public class Emote {
          */
         private final float defaultValue;
 
-        private Part(float defaultValue){
+        private Part(float defaultValue, String name){
+            this.name = name;
             this.defaultValue = defaultValue;
         }
 
@@ -230,6 +296,14 @@ public class Emote {
             return this.add(new Move(tick, value, ease), true, true);
         }
 
+
+        /**
+         *
+         * @param move move to add
+         * @param sameTickException to move at the same tick possible?
+         * @param limit is limit checking
+         * @return is success
+         */
         protected boolean add(Move move, boolean sameTickException, boolean limit){
             //TODO add value limit
             int i = findTick(move.tick) + 1;
@@ -274,8 +348,8 @@ public class Emote {
     }
 
     public class RotationPart extends Part {
-        public RotationPart(float x){
-            super(x);
+        public RotationPart(float x, String name){
+            super(x, name);
         }
 
         @Override

@@ -121,20 +121,6 @@ public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalMod
     }
 
     @Shadow
-    protected abstract ModelPart getArm(Arm arm);
-
-
-    /*
-    @Inject(method = "setArmAngle", at = @At("HEAD"), cancellable = true)
-    private void setArmInject(Arm arm, MatrixStack matrices, CallbackInfo ci){
-        ModelPart armModel = this.getArm(arm);
-        if(((IModelPart)armModel).getActiveMutatedPart())
-    }
-    TODO
-     */
-
-
-    @Shadow
     protected abstract Iterable<ModelPart> getHeadParts();
 
     @Shadow

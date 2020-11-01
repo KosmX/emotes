@@ -53,34 +53,22 @@ public class Client implements ClientModInitializer {
     }
 
     private void initNetworkClient(){
-        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf)->{
+        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_PLAY_NETWORK_PACKET_ID, (packetContext, packetByteBuf)->{
             EmotePacket emotePacket;
-            Emote emote;
             emotePacket = new EmotePacket();
             if(! emotePacket.read(packetByteBuf, false)) return;
 
-            emote = emotePacket.getEmote();
-            boolean isRepeat = emotePacket.isRepeat;
             packetContext.getTaskQueue().execute(()->{
-                PlayerEntity playerEntity = MinecraftClient.getInstance().world.getPlayerByUuid(emotePacket.getPlayer());
-                if(playerEntity != null){
-                    if(! isRepeat || ! Emote.isRunningEmote(((EmotePlayerInterface) playerEntity).getEmote())){
-                        ((EmotePlayerInterface) playerEntity).playEmote(emote);
-                        ((EmotePlayerInterface) playerEntity).getEmote().start();
-                    }else{
-                        ((EmotePlayerInterface) playerEntity).resetLastUpdated();
-                    }
-                }
+                Events.clientReceiveEmote(emotePacket);
             });
-        }));
+        });
 
         ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByyeBuf)->{
-            StopPacket packet = new StopPacket();
-            packet.read(packetByyeBuf);
+            StopPacket stopPacket = new StopPacket();
+            stopPacket.read(packetByyeBuf);
 
             packetContex.getTaskQueue().execute(()->{
-                EmotePlayerInterface player = (EmotePlayerInterface) MinecraftClient.getInstance().world.getPlayerByUuid(packet.getPlayer());
-                if(player != null && Emote.isRunningEmote(player.getEmote())) player.getEmote().stop();
+                Events.clientReceiveStop(stopPacket);
             });
         }));
     }
@@ -130,7 +118,7 @@ public class Client implements ClientModInitializer {
         }
 
         if(Main.config.enableQuark){
-            Main.log(Level.WARN, "Quark importer is on", true);
+            Main.log(Level.WARN, "Quark importer is active", true);
             initQuarkEmotes(Client.externalEmotes);
         }
     }
@@ -204,11 +192,7 @@ public class Client implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient->{
             if(stopEmote.wasPressed() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface) MinecraftClient.getInstance().getCameraEntity()).getEmote())){
-                ((EmotePlayerInterface) MinecraftClient.getInstance().getCameraEntity()).getEmote().stop();
-                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                StopPacket packet = new StopPacket((PlayerEntity) MinecraftClient.getInstance().getCameraEntity());
-                packet.write(buf);
-                ClientSidePacketRegistry.INSTANCE.sendToServer(Main.EMOTE_STOP_NETWORK_PACKET_ID, buf);
+                Events.clientSendStop();
             }
         });
 

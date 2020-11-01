@@ -24,6 +24,10 @@ public class SerializableConfig {
     public boolean enableQuark = false;
     @Environment(EnvType.CLIENT)
     public boolean showIcons = true;
+    @Environment(EnvType.CLIENT)
+    public float stopThreshold = 0.04f;
+    @Environment(EnvType.CLIENT)
+    public float yRatio = 0.75f;
 
     public int[] fastMenuHash = new int[8];
     public List<Pair<Integer, String>> emotesWithHash = new ArrayList<>();
