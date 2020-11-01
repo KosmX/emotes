@@ -21,6 +21,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.Level;
 
@@ -239,7 +240,7 @@ public class EmoteHolder {
         AbstractClientPlayerEntity player = (AbstractClientPlayerEntity) entity;
         if(player.getPose() != EntityPose.STANDING) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
-        return ! (player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)) > 0.04f);
+        return ! (player.getPos().distanceTo(new Vec3d(player.prevX, MathHelper.lerp(Main.config.yRatio, player.prevY, player.getPos().getY()), player.prevZ)) > Main.config.stopThreshold);
     }
 
     public boolean playEmote(PlayerEntity playerEntity){
