@@ -26,10 +26,10 @@ public class FullMenuScreen extends Screen {
 
     @Override
     public void init(){
-        int x = (int) Math.min(this.width * 0.8, this.height - 120);
+        int x = (int) Math.min(this.width * 0.8, this.height - 60);
         this.searchBox = new TextFieldWidget(this.textRenderer, (this.width - x) / 2, 12, x, 20, this.searchBox, new TranslatableText("emotecraft.search"));
         this.searchBox.setChangedListener((string)->this.emoteList.filter(string::toLowerCase));
-        this.emoteList = new EmoteList(this.client, x, height, this);
+        this.emoteList = new EmoteList(this.client, x, height, width, this);
         this.emoteList.setLeftPos((this.width - x) / 2);
         emoteList.setEmotes(EmoteHolder.list);
         this.children.add(searchBox);
@@ -55,13 +55,8 @@ public class FullMenuScreen extends Screen {
 
     private class EmoteList extends AbstractEmoteListWidget<EmoteList.EmoteEntry> {
 
-        @Deprecated
-        public EmoteList(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, Screen screen){
-            super(minecraftClient, i, j, k, l, m, screen);
-        }
-
-        public EmoteList(MinecraftClient client, int boxSize, int height, Screen screen){
-            super(client, boxSize, height, (height - boxSize) / 2, (height + boxSize) / 2,36, screen);
+        public EmoteList(MinecraftClient client, int boxSize, int height, int width, Screen screen){
+            super(client, boxSize, height, (height - boxSize) / 2 + 10, width > (width + boxSize)/2 + 120 ? (height + boxSize) / 2 + 10 : height - 80,36, screen);
         }
 
         @Override

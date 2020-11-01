@@ -110,7 +110,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         super.setAngles(livingEntity, f, g, h, i, j);
         if(livingEntity instanceof AbstractClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface) livingEntity).getEmote())){
             Emote emote = ((EmotePlayerInterface) livingEntity).getEmote();
-            if(emote != emoteSupplier.get()) emoteSupplier.set(emote);
+            emoteSupplier.set(emote);
             emote.head.setBodyPart(this.head);
             this.helmet.copyPositionAndRotation(this.head);
             emote.leftArm.setBodyPart(this.leftArm);
@@ -129,6 +129,9 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
             mutatedRightPantLeg.copyBend(thisWithMixin.getRightLeg());
             mutatedLeftSleeve.copyBend(thisWithMixin.getLeftArm());
             mutatedRightSleeve.copyBend(thisWithMixin.getRightArm());
+        }
+        else {
+            emoteSupplier.set(null);
         }
     }
 }
