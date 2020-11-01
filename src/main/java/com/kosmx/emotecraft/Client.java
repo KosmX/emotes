@@ -118,7 +118,7 @@ public class Client implements ClientModInitializer {
         }
 
         if(Main.config.enableQuark){
-            Main.log(Level.WARN, "Quark importer is on", true);
+            Main.log(Level.WARN, "Quark importer is active", true);
             initQuarkEmotes(Client.externalEmotes);
         }
     }
