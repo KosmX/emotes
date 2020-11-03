@@ -28,6 +28,8 @@ public class SerializableConfig {
     public float stopThreshold = 0.04f;
     @Environment(EnvType.CLIENT)
     public float yRatio = 0.75f;
+    @Environment(EnvType.CLIENT)
+    public boolean loadBuiltinEmotes = true;
 
     public int[] fastMenuHash = new int[8];
     public List<Pair<Integer, String>> emotesWithHash = new ArrayList<>();

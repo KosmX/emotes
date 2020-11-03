@@ -20,6 +20,7 @@ public class ClothConfigScreen {
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.debug"), Main.config.showDebug).setDefaultValue(false).setSaveConsumer(newValue->Main.config.showDebug = newValue).build());
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.validate"), Main.config.validateEmote).setTooltip(new TranslatableText("emotecraft.otherconfig.validate.tooltip")).setDefaultValue(false).setSaveConsumer(newValue->Main.config.validateEmote = newValue).build());
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.dark"), Main.config.dark).setDefaultValue(false).setSaveConsumer(newValue->Main.config.dark = newValue).build());
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.loadbuiltin"), Main.config.loadBuiltinEmotes).setDefaultValue(true).setTooltip(new TranslatableText("emotecraft.otherconfig.loadbuiltin.tooltip")).setSaveConsumer(newValue->Main.config.loadBuiltinEmotes = newValue).build());
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.quark"), Main.config.enableQuark).setDefaultValue(false).setSaveConsumer(newValue->{
             if(newValue && parent instanceof EmoteMenu && ! Main.config.enableQuark){
                 ((EmoteMenu) parent).warn = true;
