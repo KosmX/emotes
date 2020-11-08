@@ -2,9 +2,7 @@
   "required": true,
   "package": "com.kosmx.emotecraft.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "LivingEntityRendererMixin"
-  ],
+  "mixins": [],
   "client": [
     "ArmorRendererMixin",
     "BipedEntityMixin",

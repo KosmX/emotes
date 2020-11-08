@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Function;
 
+@Environment(EnvType.CLIENT)
 @Mixin(BipedEntityModel.class)
 public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalModel<T> implements IMutatedBipedModel {
 
