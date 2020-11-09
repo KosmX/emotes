@@ -2,6 +2,8 @@ package com.kosmx.emotecraft.mixin;
 
 
 import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;

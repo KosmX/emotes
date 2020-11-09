@@ -4,6 +4,8 @@ package com.kosmx.emotecraft.mixin;
 import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import org.spongepowered.asm.mixin.Mixin;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 @Mixin(FeatureRenderer.class)
