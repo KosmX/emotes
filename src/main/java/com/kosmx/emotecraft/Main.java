@@ -119,7 +119,7 @@ public class Main implements ModInitializer {
         }else{
             config = new SerializableConfig();
         }
-
+        EmotecraftCallbacks.loadConfig.invoker().loadConfig(config);
     }
 
 

@@ -1,6 +1,7 @@
 package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
+import com.kosmx.emotecraft.config.SerializableConfig;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
@@ -79,5 +80,22 @@ public interface EmotecraftCallbacks {
 
     interface PlayEmote {
         ActionResult playEmote(Emote emote, PlayerEntity player);
+    }
+
+    /**
+     * Triggers every time when an emote start to playing. This is after synchronising the emote.
+     */
+    Event<LoadConfig> loadConfig = EventFactory.createArrayBacked(LoadConfig.class, (listeners) -> (config) -> {
+                for (LoadConfig listener : listeners){
+                    ActionResult result = listener.loadConfig(config);
+                    if(result != ActionResult.PASS){
+                        return result;
+                    }
+                }
+                return ActionResult.PASS;
+            });
+
+    interface LoadConfig {
+        ActionResult loadConfig(SerializableConfig config);
     }
 }

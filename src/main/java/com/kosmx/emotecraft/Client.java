@@ -94,6 +94,9 @@ public class Client implements ClientModInitializer {
     }
 
     private static void serializeInternalEmotes(String name){
+        if(!Main.config.loadBuiltinEmotes){
+            return;
+        }
         InputStream stream = Client.class.getResourceAsStream("/assets/" + Main.MOD_ID + "/emotes/" + name + ".json");
         InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         Reader reader = new BufferedReader(streamReader);
