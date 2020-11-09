@@ -5,6 +5,7 @@ import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 
+@Environment(EnvType.CLIENT)
 @Mixin(FeatureRenderer.class)
 public class FeatureRendererMixin implements IUpperPartHelper {
     private boolean Emotecraft_isUpperPart = true;

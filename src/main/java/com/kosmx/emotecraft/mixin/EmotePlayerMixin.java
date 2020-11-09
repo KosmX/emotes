@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import javax.annotation.Nullable;
 
+@Environment(EnvType.CLIENT)
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlayerInterface {
 
