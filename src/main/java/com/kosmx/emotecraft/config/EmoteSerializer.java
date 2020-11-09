@@ -13,7 +13,6 @@ import java.lang.reflect.Type;
 
 public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSerializer<EmoteHolder> {
 
-    //Todo create error feedback about missing items (names)
     @Override
     public EmoteHolder deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
         JsonObject node = p.getAsJsonObject();

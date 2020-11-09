@@ -38,14 +38,6 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         for(int i = 0; i != 8; i++){
             if(node.has(Integer.toString(i))){
                 config.fastMenuHash[i] = node.get(Integer.toString(i)).getAsInt();
-                /*
-                EmoteHolder emote = EmoteHolder.getEmoteFromHash(node.get(Integer.toString(i)).getAsInt());
-                config.fastMenuEmotes[i] = emote;
-                if(emote == null){
-                    Main.log(Level.ERROR, "Can't find emote from hash: " + node.get(Integer.toString(i)).getAsInt());
-                }
-
-                 *///TODO remove comment if stable
             }
         }
     }
