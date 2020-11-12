@@ -33,7 +33,7 @@ public class EmotePacket {
         getBodyPartInfo(buf, emote.leftArm);
         getBodyPartInfo(buf, emote.rightLeg);
         getBodyPartInfo(buf, emote.leftLeg);
-        return ! (! correct && validate) && emote.getBeginTick() >= 0 && emote.getBeginTick() < emote.getEndTick() && (! emote.isInfinite() || emote.getReturnTick() < emote.getEndTick() && emote.getReturnTick() >= 0);
+        return ! (! correct && validate) && emote.getBeginTick() >= 0 && emote.getBeginTick() < emote.getEndTick() && (! emote.isInfinite() || emote.getReturnTick() <= emote.getEndTick() && emote.getReturnTick() >= 0);
     }
 
     public UUID getPlayer(){

@@ -104,7 +104,7 @@ public class Emote {
     public void tick(){
         if(this.isRunning) this.currentTick++;
         else return;
-        if(isInfinite && currentTick == endTick){
+        if(isInfinite && currentTick >= endTick){
             currentTick = returnTick;
             isInfStarted = true;
         }
@@ -150,7 +150,7 @@ public class Emote {
 
     public void setEndTick(int length){
         this.endTick = length;
-        if(endTick >= stopTick){
+        if(endTick > stopTick){
             this.stopTick = this.endTick + 1;
         }
     }
@@ -277,8 +277,9 @@ public class Emote {
             return list;
         }
 
-        /*
-         *finds where is the current move
+        /**
+         *finds what is the move just before the tick
+         * @param tick int tick value
          */
         public int findTick(int tick){
             int i = - 1;
@@ -328,7 +329,7 @@ public class Emote {
 
         private Move findAfter(int pos, float currentState){
             if(! (this.list.size() > pos + 1)){
-                return (currentTick >= endTick || this.list.size() != 0) ? new Move(stopTick, currentState, Ease.INOUTSINE) : (currentTick >= beginTick) ? new Move(endTick, defaultValue, Ease.INOUTSINE) : new Move(beginTick, defaultValue, Ease.INOUTSINE);
+                return (currentTick >= endTick || this.list.size() != 0) && !isInfinite ? new Move(stopTick, currentState, Ease.INOUTSINE) : (currentTick >= beginTick) ? new Move(endTick, defaultValue, Ease.INOUTSINE) : new Move(beginTick, defaultValue, Ease.INOUTSINE);
             }else return this.list.get(pos + 1);
         }
 
@@ -339,8 +340,8 @@ public class Emote {
                 moveBefore = findBefore(findTick(endTick), currentState);
             }
             Move moveAfter = findAfter(pos, currentState);
-            if(isInfinite && moveAfter.tick >= endTick){
-                moveAfter = findAfter(findTick(returnTick), currentState);
+            if(isInfinite && moveAfter.tick > endTick){
+                moveAfter = findAfter(findTick(returnTick-1), currentState);
             }
             return moveBefore.getPos(moveAfter, getCurrentTick());
         }

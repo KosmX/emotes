@@ -84,6 +84,8 @@ public class Client implements ClientModInitializer {
         serializeInternalEmotes("here");
         serializeInternalEmotes("palm");
         serializeInternalEmotes("backflip");
+        serializeInternalEmotes("roblox_potion_dance");
+        serializeInternalEmotes("kazotsky_kick");
         //TODO add internal emotes to the list
 
 
@@ -102,7 +104,7 @@ public class Client implements ClientModInitializer {
         Reader reader = new BufferedReader(streamReader);
         EmoteHolder emoteHolder = Serializer.serializer.fromJson(reader, EmoteHolder.class);
         EmoteHolder.addEmoteToList(emoteHolder);
-        emoteHolder.bindIcon((String) ("/assets/" + Main.MOD_ID + "/emotes/" + name + ".png"));
+        emoteHolder.bindIcon(("/assets/" + Main.MOD_ID + "/emotes/" + name + ".png"));
     }
 
     private static void serializeExternalEmotes(){
