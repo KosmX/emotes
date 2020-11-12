@@ -340,7 +340,7 @@ public class Emote {
                 moveBefore = findBefore(findTick(endTick), currentState);
             }
             Move moveAfter = findAfter(pos, currentState);
-            if(isInfinite && moveAfter.tick > endTick){
+            if(isInfinite && moveAfter.tick >= endTick){
                 moveAfter = findAfter(findTick(returnTick-1), currentState);
             }
             return moveBefore.getPos(moveAfter, getCurrentTick());
