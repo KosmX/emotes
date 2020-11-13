@@ -8,19 +8,31 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Level;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 
 
 public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSerializer<EmoteHolder> {
 
+    private final int modVersion = 1;
+    @Nullable
     @Override
     public EmoteHolder deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
         JsonObject node = p.getAsJsonObject();
+
+        int version = 1;
+        if(node.has("version")) version = node.get("version").getAsInt();
         MutableText author = (MutableText) LiteralText.EMPTY;
         MutableText name = Text.Serializer.fromJson(node.get("name"));
         if(node.has("author")){
             author = Text.Serializer.fromJson(node.get("author"));
         }
+
+        if(modVersion < version){
+            Main.log(Level.ERROR, "Emote: " + name.getString() + " was made for a newer mod version", true);
+            return null;
+        }
+
         MutableText description = (MutableText) LiteralText.EMPTY;
         if(node.has("description")){
             description = (LiteralText) Text.Serializer.fromJson(node.get("description"));
