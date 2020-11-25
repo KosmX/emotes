@@ -58,7 +58,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
     private void initBendableStuff(float scale, boolean thinArms, CallbackInfo ci){
         thisWithMixin = (IMutatedBipedModel) this;
         emoteSupplier.set(null);
-        this.mutatedJacket = new BendableModelPart(this.jacket, true, emoteSupplier);
+        this.mutatedJacket = new BendableModelPart(this.jacket, false, emoteSupplier);
         this.mutatedRightSleeve = new BendableModelPart(this.rightSleeve, true, emoteSupplier);
         this.mutatedLeftSleeve = new BendableModelPart(this.leftSleeve, true, emoteSupplier);
         this.mutatedRightPantLeg = new BendableModelPart(this.rightPantLeg, emoteSupplier);
