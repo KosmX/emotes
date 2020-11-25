@@ -8,14 +8,12 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.Level;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 
 
 public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSerializer<EmoteHolder> {
 
     private final int modVersion = 1;
-    @Nullable
     @Override
     public EmoteHolder deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
         JsonObject node = p.getAsJsonObject();
@@ -30,7 +28,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
 
         if(modVersion < version){
             Main.log(Level.ERROR, "Emote: " + name.getString() + " was made for a newer mod version", true);
-            return null;
+            throw new JsonParseException(name.getString() + " is version " + Integer.toString(version) + ". Emotecraft can only process version " + Integer.toString(modVersion) + ".");
         }
 
         MutableText description = (MutableText) LiteralText.EMPTY;
@@ -39,7 +37,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
         }
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
-            if(string.equals("author") || string.equals("comment") || string.equals("name") || string.equals("description") || string.equals("emote"))
+            if(string.equals("author") || string.equals("comment") || string.equals("name") || string.equals("description") || string.equals("emote") || string.equals("version"))
                 return;
             Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
             Main.log(Level.WARN, "If it is a comment, ignore the warning");
