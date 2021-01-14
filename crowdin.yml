@@ -3,7 +3,7 @@
 #
 "project_id" : "414868"
 "api_token_env" : "CROWDIN_PERSONAL_TOKEN"
-"base_path" : "."
+"base_path" : "./src/main/resources/assets/emotecraft"
 "base_url" : "https://api.crowdin.com"
 
 #
@@ -21,13 +21,13 @@ files: [
   # Source files filter
   # e.g. "/resources/en/*.json"
   #
-  "source" : "/src/main/resources/assets/emotecraft/lang/en_us.json",
+  "source" : "/lang/en_us.json",
 
   #
   # Where translations will be placed
   # e.g. "/resources/%two_letters_code%/%original_file_name%"
   #
-  "translation" : "/src/main/resources/assets/emotecraft/lang/%locale_with_underscore%.json",
+  "translation" : "/lang/%locale_with_underscore%.json",
 
   #
   # Files or directories for ignore
