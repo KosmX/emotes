@@ -20,7 +20,5 @@
   "emotecraft.quark": "Instabiles feature",
   "emotecraft.quark2": "Der Quark Emote Support ist sehr instabil, und noch nicht komplett implementiert.\nEs wird nicht empfohlen diesen zu aktivieren, da es zu unerwarteten Problemen oder sogar\neinem Absturz führen kann.\nMöchten sie ihn trotzdem aktivieren?",
   "category.emotecraft.keybinding": "Emotecraft",
-  "emotecraft.emote.author": "Ersteller: ",
-  "emotecraft.otherconfig.showicon": "Show icons instead of emote names",
-  "emotecraft.otherconfig.showicon.tooltip": "If available"
+  "emotecraft.emote.author": "Ersteller: "
 }
