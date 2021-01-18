@@ -61,6 +61,16 @@ tasks.withType(JavaCompile){
 	options.deprecation = true	//deprecated warning on compile
 }
 
+tasks.withType(Copy){
+	eachFile{
+		rename{
+			String filename->filename = filename.toLowerCase()
+		}
+		//Rename every file to lowercase. This is essential for the translations to work
+		//Possibly creates other problems on other operating systems
+	}
+}
+
 processResources {
 	inputs.property "version", project.version
 
@@ -73,6 +83,7 @@ processResources {
 		exclude "fabric.mod.json"
 	}
 }
+
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
 // this fixes some edge cases with special characters not displaying correctly
