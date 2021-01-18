@@ -52,8 +52,6 @@ dependencies {
 
 	//include(files("bendy-lib-0.0.0-dev.jar"))
 
-	implementation 'com.google.code.gson:gson:2.8.5' //GSon serializer
-
 }
 
 tasks.withType(JavaCompile){

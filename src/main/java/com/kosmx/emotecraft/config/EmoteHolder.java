@@ -3,9 +3,9 @@ package com.kosmx.emotecraft.config;
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Emote;
-import com.kosmx.emotecraft.Events;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.network.ClientNetwork;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -217,7 +217,7 @@ public class EmoteHolder {
 
     public static boolean playEmote(Emote emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
-            return Events.clientStartEmote(emote, player, emoteHolder);
+            return ClientNetwork.clientStartEmote(emote, player, emoteHolder);
         }else{
             return false;
         }

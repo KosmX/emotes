@@ -51,9 +51,9 @@ public interface EmotecraftCallbacks {
     /**
      * Triggers when the client start an emote. With cancelling, the play won't be synced.
      */
-    Event<PlayClientEmote> startPlayClientEmote = EventFactory.createArrayBacked(PlayClientEmote.class, (listeners) -> (emote, player, emoteHolder) -> {
+    Event<PlayClientEmote> startPlayClientEmote = EventFactory.createArrayBacked(PlayClientEmote.class, (listeners) -> (emote, player, emoteHolder, hasServerEmotecraft) -> {
         for (PlayClientEmote listener : listeners){
-            ActionResult result = listener.playClientEmote(emote, player, emoteHolder);
+            ActionResult result = listener.playClientEmote(emote, player, emoteHolder, hasServerEmotecraft);
             if(result != ActionResult.PASS){
                 return result;
             }
@@ -62,7 +62,7 @@ public interface EmotecraftCallbacks {
     });
 
     interface PlayClientEmote {
-        ActionResult playClientEmote(Emote emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder);
+        ActionResult playClientEmote(Emote emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder, boolean hasServerEmotecraft);
     }
 
     /**
