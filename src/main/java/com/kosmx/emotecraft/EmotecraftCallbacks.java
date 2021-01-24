@@ -34,9 +34,9 @@ public interface EmotecraftCallbacks {
     /**
      * Triggers every time when the client receive an emote
      */
-    Event<PlayReceivedEmote> startPlayReceivedEmote = EventFactory.createArrayBacked(PlayReceivedEmote.class, (listeners) -> (emote, player) -> {
+    Event<PlayReceivedEmote> startPlayReceivedEmote = EventFactory.createArrayBacked(PlayReceivedEmote.class, (listeners) -> (emote, player, enable) -> {
         for (PlayReceivedEmote listener : listeners){
-            ActionResult result = listener.playReceivedEmote(emote, player);
+            ActionResult result = listener.playReceivedEmote(emote, player, enable);
             if(result != ActionResult.PASS){
                 return result;
             }
@@ -45,7 +45,14 @@ public interface EmotecraftCallbacks {
     });
 
     interface PlayReceivedEmote {
-        ActionResult playReceivedEmote(Emote emote, PlayerEntity player);
+        /**
+         *
+         * @param emote Emote to play
+         * @param player Player
+         * @param isPlayerBlocked Is the player blocked by player safety
+         * @return
+         */
+        ActionResult playReceivedEmote(Emote emote, PlayerEntity player, boolean isPlayerBlocked);
     }
 
     /**

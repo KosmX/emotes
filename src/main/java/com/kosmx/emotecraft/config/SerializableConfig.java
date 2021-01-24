@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SerializableConfig {
+
+    /**
+     * changelog
+     * 2 - PlayerSafetyOption
+     */
+    public static int staticConfigVersion = 2;
+
     @Environment(EnvType.CLIENT)
     public List<EmoteHolder> emotesWithKey = new ArrayList<>();
     @Environment(EnvType.CLIENT)
@@ -31,6 +38,8 @@ public class SerializableConfig {
     public float yRatio = 0.75f;
     @Environment(EnvType.CLIENT)
     public boolean loadBuiltinEmotes = true;
+    @Environment(EnvType.CLIENT)
+    public boolean enablePlayerSafety = true;
 
     public int[] fastMenuHash = new int[8];
     public List<Pair<Integer, String>> emotesWithHash = new ArrayList<>();

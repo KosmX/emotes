@@ -12,20 +12,19 @@ import java.lang.reflect.Type;
 
 public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, JsonSerializer<SerializableConfig> {
 
-    public static int configVersion = 1;
 
     @Override
     public SerializableConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
         JsonObject node = json.getAsJsonObject();
         SerializableConfig config = new SerializableConfig();
-        config.configVersion = configVersion;
+        config.configVersion = SerializableConfig.staticConfigVersion;
         if(node.has("showDebug")) config.showDebug = node.get("showDebug").getAsBoolean();
         if(node.has("config_version"))config.configVersion = node.get("config_version").getAsInt();
-        if(config.showDebug && config.configVersion < configVersion){
+        if(config.showDebug && config.configVersion < SerializableConfig.staticConfigVersion){
             Main.log(Level.INFO, "Serializing config with older version.", true);
         }
-        else if(config.configVersion > configVersion){
-            Main.log(Level.WARN, "You are trying to load version "+ config.configVersion + " config. The mod can only load correctly up to v" + configVersion+". If you won't modify any config, I won't overwrite your config file.", true);
+        else if(config.configVersion > SerializableConfig.staticConfigVersion){
+            Main.log(Level.WARN, "You are trying to load version "+ config.configVersion + " config. The mod can only load correctly up to v" + SerializableConfig.staticConfigVersion+". If you won't modify any config, I won't overwrite your config file.", true);
         }
         if(node.has("validate")) config.validateEmote = node.get("validate").getAsBoolean();
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) clientDeserialize(node, config);
@@ -40,6 +39,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         if(node.has("stopThreshold")) config.stopThreshold = node.get("stopThreshold").getAsFloat();
         if(node.has("yRatio")) config.yRatio = node.get("yRatio").getAsFloat();
         if(node.has("loadBuiltin")) config.loadBuiltinEmotes = node.get("loadBuiltin").getAsBoolean();
+        if(node.has("playersafety")) config.enablePlayerSafety = node.get("playersafety").getAsBoolean();
         if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config);
         if(node.has("keys")) keyBindsDeserializer(node.get("keys").getAsJsonArray(), config);
     }
@@ -79,7 +79,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
     @Override
     public JsonElement serialize(SerializableConfig config, Type typeOfSrc, JsonSerializationContext context){
         JsonObject node = new JsonObject();
-        node.addProperty("config_version", configVersion); //I always save config with the latest format.
+        node.addProperty("config_version", SerializableConfig.staticConfigVersion); //I always save config with the latest format.
         node.addProperty("showDebug", config.showDebug);
         node.addProperty("validate", config.validateEmote);
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) clientSerialize(config, node);
@@ -94,6 +94,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         node.addProperty("stopThreshold", config.stopThreshold);
         node.addProperty("yRatio", config.yRatio);
         node.addProperty("loadBuiltin", config.loadBuiltinEmotes);
+        node.addProperty("playersafety", config.enablePlayerSafety);
         node.add("fastmenu", fastMenuSerializer(config));
         node.add("keys", keyBindsSerializer(config));
     }

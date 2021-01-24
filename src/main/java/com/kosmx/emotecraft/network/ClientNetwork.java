@@ -79,10 +79,11 @@ public class ClientNetwork {
 
     public static void clientReceiveEmote(EmotePacket emotePacket){
         PlayerEntity playerEntity = MinecraftClient.getInstance().world.getPlayerByUuid(emotePacket.getPlayer());
+        boolean blocked = MinecraftClient.getInstance().shouldBlockMessages(emotePacket.getPlayer()) && Main.config.enablePlayerSafety;
         if(playerEntity != null){
             if(!emotePacket.isRepeat || ! Emote.isRunningEmote(((EmotePlayerInterface) playerEntity).getEmote())){
-                ActionResult result = EmotecraftCallbacks.startPlayReceivedEmote.invoker().playReceivedEmote(emotePacket.getEmote(), playerEntity);
-                if(result == ActionResult.FAIL){
+                ActionResult result = EmotecraftCallbacks.startPlayReceivedEmote.invoker().playReceivedEmote(emotePacket.getEmote(), playerEntity, blocked);
+                if(result == ActionResult.FAIL || blocked){
                     return;
                 }
                 ((EmotePlayerInterface) playerEntity).playEmote(emotePacket.getEmote());

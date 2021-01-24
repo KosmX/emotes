@@ -30,6 +30,7 @@ public class ClothConfigScreen {
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.showicon"), Main.config.showIcons).setDefaultValue(true).setTooltip(new TranslatableText("emotecraft.otherconfig.showicon.tooltip")).setSaveConsumer(newValue->Main.config.showIcons = newValue).build());
         general.addEntry(entryBuilder.startFloatField(new TranslatableText("emotecraft.otherconfig.stopthreshold"), Main.config.stopThreshold).setDefaultValue(0.04f).setTooltip(new TranslatableText("emotecraft.otherconfig.stopthreshold.tooltip")).setSaveConsumer(newValue->Main.config.stopThreshold = newValue).build());
         general.addEntry(entryBuilder.startIntSlider(new TranslatableText("emotecraft.otherconfig.yratio"), (int) (Main.config.yRatio * 100), 0, 100).setDefaultValue(75).setTooltip(new TranslatableText("emotecraft.otherconfig.yratio.tooltip")).setSaveConsumer(newValue -> Main.config.yRatio = newValue / 100f).build());
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.playersafety"), Main.config.enablePlayerSafety).setDefaultValue(true).setTooltip(new TranslatableText("emotecraft.otherconfig.playersafety.tooltip")).setSaveConsumer(newValue->Main.config.enablePlayerSafety = newValue).build());
         return builder.build();
     }
 }

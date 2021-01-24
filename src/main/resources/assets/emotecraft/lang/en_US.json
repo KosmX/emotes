@@ -19,6 +19,8 @@
   "emotecraft.otherconfig.yratio.tooltip": "bigger value means bigger influence",
   "emotecraft.otherconfig.loadbuiltin": "Load built-in emotes",
   "emotecraft.otherconfig.loadbuiltin.tooltip": "If you want to remove these for some reason...",
+  "emotecraft.otherconfig.playersafety": "Enable player safety feature",
+  "emotecraft.otherconfig.playersafety.tooltip": "won't show emotes from muted players (1.16.4+)",
   "emotecraft.emotelist": "All emote",
   "key.emotecraft.fastchoose": "Fastmenu",
   "key.emotecraft.debug": "play 'debug' emote",
