@@ -5,7 +5,6 @@ import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,9 +14,10 @@ import org.apache.logging.log4j.Level;
 
 /**
  * Emotecraft core package for networking
- * //ALWAYS// send packages with these methods.
+ * //ALWAYS// send packages with these methods. (or with the client methods)
+ * This package will run on the server (including local server)
  */
-public class Network {
+public class ServerNetwork {
 
 
     public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, "playemote");

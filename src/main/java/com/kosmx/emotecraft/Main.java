@@ -3,16 +3,9 @@ package com.kosmx.emotecraft;
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.config.SerializableConfig;
 import com.kosmx.emotecraft.config.Serializer;
-import com.kosmx.emotecraft.network.EmotePacket;
-import com.kosmx.emotecraft.network.Network;
-import com.kosmx.emotecraft.network.StopPacket;
-import io.netty.buffer.Unpooled;
+import com.kosmx.emotecraft.network.ServerNetwork;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.fabricmc.fabric.api.server.PlayerStream;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 
 public class Main implements ModInitializer {
@@ -62,7 +54,7 @@ public class Main implements ModInitializer {
 
         //initServerNetwork(); //Network handler both dedicated server and client internal server
 
-        Network.init();
+        ServerNetwork.init();
     }
 
     public static void log(Level level, String message){

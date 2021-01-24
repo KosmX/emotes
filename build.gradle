@@ -1,5 +1,11 @@
+/*
+This build.gradle has been tweaked. Don't build other mods with this or this with the default Fabric.
+ */
+
+
 buildscript {
 	dependencies {
+		//Jfrog for auto publish on jcenter
 		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
 	}
 }
@@ -10,8 +16,9 @@ plugins {
 }
 apply plugin: 'com.jfrog.bintray'
 
+//Import jfrog keys from file (not included in the git repo :D)
 boolean keys_imported = new File("keys.properties").exists()
-
+//and well... serialize it
 if(keys_imported) {
 	file("keys.properties").withReader {
 		Properties props = new Properties()
@@ -99,6 +106,9 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 jar {
+	manifest {
+		attributes("Main-Class": "com.kosmx.emoteStandalone.StandaloneServer")
+	}
 	from "LICENSE"
 }
 
@@ -130,6 +140,8 @@ publishing {
 	}
 }
 
+
+//bintray upload script
 bintray {
 	if(keys_imported) {
 		user = project.keys.bintray_user
