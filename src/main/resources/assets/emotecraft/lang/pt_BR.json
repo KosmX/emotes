@@ -1,13 +1,13 @@
 {
   "emotecraft.options.options": "Outras definições",
-  "emotecraft.options.keybind": "Defina uma tecla customizada para executar o emote selecionado",
+  "emotecraft.options.keybind": "Definir atalho para executar emote selecionado",
   "emotecraft.options.fastmenu": "Selecione um emote então clique para",
   "emotecraft.options.fastmenu2": "adicioná-lo ao menu rápido.",
   "emotecraft.options.fastmenu3": "Clique direito para limpar",
   "emotecraft.sure": "Sobrescrevendo atalho",
   "emotecraft.sure2": "Outro emote tem esse atalho.\nVocê quer reiniciar isso e definir a tecla para essa?",
   "emotecraft.otherconfig": "Outras definições",
-  "emotecraft.otherconfig.debug": "Debug",
+  "emotecraft.otherconfig.debug": "Depuração",
   "emotecraft.otherconfig.validate": "Validar emote",
   "emotecraft.otherconfig.validate.tooltip": "Somente para mundos com JvJ, onde alguém quer trapacear. Isso cria uma limitação, tornando impossível executar alguns gestos",
   "emotecraft.otherconfig.dark": "Menu rápido escuro",
@@ -21,7 +21,7 @@
   "emotecraft.otherconfig.loadbuiltin.tooltip": "Se quiser removê-los por algum motivo...",
   "emotecraft.emotelist": "Todos os emotes",
   "key.emotecraft.fastchoose": "Menu rápido",
-  "key.emotecraft.debug": "executar emote de 'debug'",
+  "key.emotecraft.debug": "executar emote de depuração",
   "key.emotecraft.stop": "Parar de executar emote",
   "emotecraft.openFolder": "Abrir pasta de emotes",
   "emotecraft.otherconfig.quark": "Ativar serializador de quark",
@@ -29,5 +29,5 @@
   "emotecraft.quark2": "O leitor de emotes de quark é altamente instável e não é completamente suportado.\nUsá-lo não é recomendado. Ele pode funcionar inesperadamente ou pode até causar travamento\nVocê realmente quer ligá-lo?",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
-  "emotecraft.config": "Configurar emotes"
+  "emotecraft.config": "Definir emotes"
 }

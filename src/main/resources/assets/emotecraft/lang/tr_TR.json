@@ -1,7 +1,7 @@
 {
   "emotecraft.options.options": "Diğer seçenekler",
   "emotecraft.options.keybind": "Seçili ifadeyi oynatmak için özel bir tuş ayarla",
-  "emotecraft.options.fastmenu": "Bir ifade seç sonra şuna tıkla:",
+  "emotecraft.options.fastmenu": "Bir ifade seçtikten sonra şuna bas",
   "emotecraft.options.fastmenu2": "ile hızlı menüye ekle.",
   "emotecraft.options.fastmenu3": "Temizlemek için sağ tıkla",
   "emotecraft.sure": "Tuş atamasının üzerine yaz",
@@ -13,6 +13,12 @@
   "emotecraft.otherconfig.dark": "Karanlık temalı hızlı menü",
   "emotecraft.otherconfig.showicon": "İfade isimleri yerine simgeleri göster",
   "emotecraft.otherconfig.showicon.tooltip": "Eğer mevcutsa",
+  "emotecraft.otherconfig.stopthreshold": "İfadeyi bu hız sınırında durdur. (0.22 yürüme hızıdır)",
+  "emotecraft.otherconfig.stopthreshold.tooltip": "büyük bir değer ile, ifadeyi kullanmayı bırakmayacaksınız. Fakat durdurma tuşuna basarak sonlandırabilirsiniz",
+  "emotecraft.otherconfig.yratio": "Y ekseninde hareket etme, durma sınırının yüzdesini(%) etkiliyor",
+  "emotecraft.otherconfig.yratio.tooltip": "daha büyük bir değer etkiyi arttırır",
+  "emotecraft.otherconfig.loadbuiltin": "Varsayılan ifadeleri yükle",
+  "emotecraft.otherconfig.loadbuiltin.tooltip": "Eğer bunları herhangi bir sebepten ötürü yok etmek istiyorsan...",
   "emotecraft.emotelist": "Tüm ifadeler",
   "key.emotecraft.fastchoose": "Hızlı Menü",
   "key.emotecraft.debug": "'hata ayıklama' ifadesini oynat",
@@ -21,5 +27,7 @@
   "emotecraft.otherconfig.quark": "Quark Sıralandırıcısını Etkinleştir",
   "emotecraft.quark": "Stabil olmayan özellik",
   "emotecraft.quark2": "Quark ifade okuyucusu hiçbir şekilde stabil değil ve tam destekli değil.\nKullanımı tavsiye edilmez.Beklenmedik şekilde çalışabilir hatta veya oyundan atabilir\nGerçekten açmak istiyor musun?",
-  "emotecraft.emote.author": "Yaratıcı: "
+  "category.emotecraft.keybinding": "Emotecraft",
+  "emotecraft.emote.author": "Yaratıcı: ",
+  "emotecraft.config": "İfade yapılandır"
 }
