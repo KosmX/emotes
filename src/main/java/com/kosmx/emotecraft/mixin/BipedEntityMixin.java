@@ -6,6 +6,8 @@ import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraft.mixinInterface.IMutatedBipedModel;
 import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -20,8 +22,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 import java.util.function.Function;
 

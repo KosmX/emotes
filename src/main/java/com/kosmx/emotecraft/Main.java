@@ -3,15 +3,9 @@ package com.kosmx.emotecraft;
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.config.SerializableConfig;
 import com.kosmx.emotecraft.config.Serializer;
-import com.kosmx.emotecraft.network.EmotePacket;
-import com.kosmx.emotecraft.network.StopPacket;
-import io.netty.buffer.Unpooled;
+import com.kosmx.emotecraft.network.ServerNetwork;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.fabricmc.fabric.api.server.PlayerStream;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 
 public class Main implements ModInitializer {
@@ -36,7 +29,9 @@ public class Main implements ModInitializer {
 
     public static SerializableConfig config;
 
+    @Deprecated
     public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(MOD_ID, "playemote");
+    @Deprecated
     public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(MOD_ID, "stopemote");
 
     /**
@@ -57,7 +52,9 @@ public class Main implements ModInitializer {
 
         log(Level.INFO, "Initializing");
 
-        initServerNetwork(); //Network handler both dedicated server and client internal server
+        //initServerNetwork(); //Network handler both dedicated server and client internal server
+
+        ServerNetwork.init();
     }
 
     public static void log(Level level, String message){
@@ -66,37 +63,6 @@ public class Main implements ModInitializer {
 
     public static void log(Level level, String message, boolean force){
         if(force || (config != null && config.showDebug)) LOGGER.log(level, "[" + MOD_NAME + "] " + message);
-    }
-
-    private void initServerNetwork(){
-        ServerSidePacketRegistry.INSTANCE.register(EMOTE_PLAY_NETWORK_PACKET_ID, ((packetContext, packetByteBuf)->{
-            EmotePacket packet = new EmotePacket();
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            if(! packet.read(packetByteBuf, config.validateEmote)){
-                //Todo kick player
-                Main.log(Level.INFO, packetContext.getPlayer().getEntityName() + " is trying to play invalid emote", true);
-                return;
-            }
-            packet.write(buf);
-            Stream<PlayerEntity> players = PlayerStream.watching(packetContext.getPlayer());
-            players.forEach(playerEntity->{                                   //TODO check correct emote and kick if not
-                if(playerEntity == packetContext.getPlayer()) return;
-                ServerSidePacketRegistry.INSTANCE.sendToPlayer(playerEntity, EMOTE_PLAY_NETWORK_PACKET_ID, buf);
-            });
-        }));
-
-        ServerSidePacketRegistry.INSTANCE.register(EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByteBuf)->{
-            StopPacket packet = new StopPacket();
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            packet.read(packetByteBuf);
-            packet.write(buf);
-
-            Stream<PlayerEntity> players = PlayerStream.watching(packetContex.getPlayer());
-            players.forEach(player->{
-                if(player == packetContex.getPlayer()) return;
-                ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, EMOTE_STOP_NETWORK_PACKET_ID, buf);
-            });
-        }));
     }
 
     private static void loadConfig(){

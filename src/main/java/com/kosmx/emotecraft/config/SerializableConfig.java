@@ -18,6 +18,7 @@ public class SerializableConfig {
 
     public boolean validateEmote = false;
     public boolean showDebug = false;
+    public int configVersion;
     @Environment(EnvType.CLIENT)
     public boolean dark = false;
     @Environment(EnvType.CLIENT)

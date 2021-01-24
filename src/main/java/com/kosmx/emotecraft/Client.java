@@ -4,21 +4,17 @@ import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
-import com.kosmx.emotecraft.network.EmotePacket;
-import com.kosmx.emotecraft.network.StopPacket;
+import com.kosmx.emotecraft.network.ClientNetwork;
 import com.kosmx.quarktool.QuarkReader;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.glfw.GLFW;
@@ -45,32 +41,11 @@ public class Client implements ClientModInitializer {
 
         initKeyBindings();      //Init keyBinding, including debug key
 
-        initNetworkClient();        //Init the Client-ide network manager. The Main will have a server-side
+        ClientNetwork.init();        //Init the Client-ide network manager. The Main will have a server-side
 
         initEmotes();       //Import the emotes, including both the default and the external.
 
 
-    }
-
-    private void initNetworkClient(){
-        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_PLAY_NETWORK_PACKET_ID, (packetContext, packetByteBuf)->{
-            EmotePacket emotePacket;
-            emotePacket = new EmotePacket();
-            if(! emotePacket.read(packetByteBuf, false)) return;
-
-            packetContext.getTaskQueue().execute(()->{
-                Events.clientReceiveEmote(emotePacket);
-            });
-        });
-
-        ClientSidePacketRegistry.INSTANCE.register(Main.EMOTE_STOP_NETWORK_PACKET_ID, ((packetContex, packetByyeBuf)->{
-            StopPacket stopPacket = new StopPacket();
-            stopPacket.read(packetByyeBuf);
-
-            packetContex.getTaskQueue().execute(()->{
-                Events.clientReceiveStop(stopPacket);
-            });
-        }));
     }
 
     public static void initEmotes(){
@@ -197,7 +172,7 @@ public class Client implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient->{
             if(stopEmote.wasPressed() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface) MinecraftClient.getInstance().getCameraEntity()).getEmote())){
-                Events.clientSendStop();
+                ClientNetwork.clientSendStop();
             }
         });
 
