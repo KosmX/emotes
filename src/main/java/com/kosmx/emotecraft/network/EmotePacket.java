@@ -11,7 +11,7 @@ public class EmotePacket {
     protected Emote emote;
     protected UUID player;
     protected boolean correct = true;
-    private int version = 2;
+    private int version = MainNetwork.networkingVersion;
     public boolean isRepeat = false;
 
     public EmotePacket(Emote emote, PlayerEntity playerEntity){

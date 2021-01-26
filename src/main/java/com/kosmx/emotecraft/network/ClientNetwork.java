@@ -22,8 +22,11 @@ import java.util.Objects;
  * the client-only network stuff
  */
 public class ClientNetwork {
+
+    public static boolean versionWarn;
+
     public static void init(){
-        ClientPlayNetworking.registerGlobalReceiver(ServerNetwork.EMOTE_PLAY_NETWORK_PACKET_ID, (client, handler, packetByteBuf, rs)->{
+        ClientPlayNetworking.registerGlobalReceiver(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID, (client, handler, packetByteBuf, rs)->{
             EmotePacket emotePacket;
             emotePacket = new EmotePacket();
             if(! emotePacket.read(packetByteBuf, false)) return;
@@ -33,13 +36,26 @@ public class ClientNetwork {
             });
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(ServerNetwork.EMOTE_STOP_NETWORK_PACKET_ID, (client, handler, packetByteBuf, rs)->{
+        ClientPlayNetworking.registerGlobalReceiver(MainNetwork.EMOTE_STOP_NETWORK_PACKET_ID, (client, handler, packetByteBuf, rs)->{
             StopPacket stopPacket = new StopPacket();
             stopPacket.read(packetByteBuf);
 
             client.execute(()->{
                 clientReceiveStop(stopPacket);
             });
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID, (client, handler, packetByteBuf, rs)->{
+            DiscoveryPacket discoveryPacket = new DiscoveryPacket();
+            discoveryPacket.read(packetByteBuf);
+            int ver = discoveryPacket.getVersion();
+            boolean warn = ver != MainNetwork.networkingVersion;
+            client.execute(()->{
+                ((IEmotecraftPresence)handler).setInstalledEmotecraft(ver);
+                versionWarn = warn;
+                EmotecraftPong();
+            });
+
         });
     }
 
@@ -51,7 +67,7 @@ public class ClientNetwork {
      * @return is success
      */
     public static boolean clientStartEmote(Emote emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder) {
-        boolean hasServerEmotecraftInstalled = MinecraftClient.getInstance().getNetworkHandler() != null && ((IEmotecraftPresence) MinecraftClient.getInstance().getNetworkHandler()).hasEmotecraftInstalled();
+        boolean hasServerEmotecraftInstalled = MinecraftClient.getInstance().getNetworkHandler() != null && ((IEmotecraftPresence) MinecraftClient.getInstance().getNetworkHandler()).getInstalledEmotecraft() != 0;
         ActionResult result = EmotecraftCallbacks.startPlayClientEmote.invoker().playClientEmote(emote, player, emoteHolder, hasServerEmotecraftInstalled);
         if (result == ActionResult.FAIL) {
             return false;
@@ -69,7 +85,23 @@ public class ClientNetwork {
             EmotePacket emotePacket = new EmotePacket(emote, player);
             emotePacket.isRepeat = isRepeating;
             emotePacket.write(buf);
-            ClientPlayNetworking.send(ServerNetwork.EMOTE_PLAY_NETWORK_PACKET_ID, buf);
+            ClientPlayNetworking.send(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID, buf);
+        }
+        catch (Exception e){
+            Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
+            if(Main.config.showDebug) e.printStackTrace();
+        }
+    }
+
+    /**
+     * reply to ping
+     */
+    public static void EmotecraftPong(){
+        try{
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            DiscoveryPacket packet = new DiscoveryPacket(MainNetwork.networkingVersion);
+            packet.write(buf);
+            ClientPlayNetworking.send(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID, buf);
         }
         catch (Exception e){
             Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
@@ -99,7 +131,7 @@ public class ClientNetwork {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         StopPacket packet = new StopPacket((PlayerEntity) MinecraftClient.getInstance().getCameraEntity());
         packet.write(buf);
-        ClientPlayNetworking.send(ServerNetwork.EMOTE_STOP_NETWORK_PACKET_ID, buf);
+        ClientPlayNetworking.send(MainNetwork.EMOTE_STOP_NETWORK_PACKET_ID, buf);
     }
     public static void clientReceiveStop(StopPacket stopPacket){
         EmotePlayerInterface player = (EmotePlayerInterface) MinecraftClient.getInstance().world.getPlayerByUuid(stopPacket.getPlayer());

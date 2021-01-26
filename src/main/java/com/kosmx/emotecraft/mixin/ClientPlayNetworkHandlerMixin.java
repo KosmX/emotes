@@ -7,13 +7,15 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin implements IEmotecraftPresence {
 
+    int emotecraftVer = 0;
+
     @Override
-    public boolean hasEmotecraftInstalled() {
-        return true; //TODO
+    public int getInstalledEmotecraft() {
+        return emotecraftVer;
     }
 
     @Override
-    public void setEmotecraftInstalled(boolean bl) {
-
+    public void setInstalledEmotecraft(int ver) {
+        emotecraftVer = ver;
     }
 }

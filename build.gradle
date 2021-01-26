@@ -90,9 +90,14 @@ processResources {
 		include "fabric.mod.json"
 		expand "version": project.version
 	}
+	from(sourceSets.main.resources.srcDirs) {
+		include "plugin.yml"
+		expand version: project.version
+	}
 
 	from(sourceSets.main.resources.srcDirs) {
 		exclude "fabric.mod.json"
+		exclude "plugin.yml"
 	}
 }
 

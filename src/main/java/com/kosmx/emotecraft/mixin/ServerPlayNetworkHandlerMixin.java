@@ -7,15 +7,15 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(ServerPlayNetworkHandler.class)
 public class ServerPlayNetworkHandlerMixin implements IEmotecraftPresence {
     //Does the specific player have the mod installed
-    boolean hasEmotecraft = true; //TODO
+    int hasEmotecraft = 0;
 
     @Override
-    public boolean hasEmotecraftInstalled() {
-        return this.hasEmotecraft;
+    public int getInstalledEmotecraft() {
+        return hasEmotecraft;
     }
 
     @Override
-    public void setEmotecraftInstalled(boolean bl) {
-        this.hasEmotecraft = bl;
+    public void setInstalledEmotecraft(int ver) {
+        hasEmotecraft = ver;
     }
 }

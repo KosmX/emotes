@@ -3,7 +3,7 @@ package com.kosmx.emotecraft;
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.config.SerializableConfig;
 import com.kosmx.emotecraft.config.Serializer;
-import com.kosmx.emotecraft.network.ServerNetwork;
+import com.kosmx.emotecraft.network.MainNetwork;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
@@ -54,7 +54,7 @@ public class Main implements ModInitializer {
 
         //initServerNetwork(); //Network handler both dedicated server and client internal server
 
-        ServerNetwork.init();
+        MainNetwork.init();
     }
 
     public static void log(Level level, String message){
