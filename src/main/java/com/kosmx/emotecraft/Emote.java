@@ -18,7 +18,10 @@ import java.util.List;
 
 /**
  * Synchronisable, playable object
+ *
+ * It should be split into Emote data and a player (possibly mix-in the player into the playerEntity)
  */
+@Deprecated
 public class Emote {
     private boolean isRunning;
     private int currentTick;

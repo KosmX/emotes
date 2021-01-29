@@ -7,6 +7,9 @@ import net.minecraft.network.PacketByteBuf;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * It should be placed into emotecraftCommon but it has too many references to minecraft codes...
+ */
 public class EmotePacket {
     protected Emote emote;
     protected UUID player;

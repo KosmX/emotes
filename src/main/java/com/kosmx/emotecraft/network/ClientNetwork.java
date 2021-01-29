@@ -7,7 +7,9 @@ import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
+import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,9 +55,18 @@ public class ClientNetwork {
             client.execute(()->{
                 ((IEmotecraftPresence)handler).setInstalledEmotecraft(ver);
                 versionWarn = warn;
-                EmotecraftPong();
             });
 
+        });
+
+        //Network discovery
+        C2SPlayChannelEvents.REGISTER.register((handler, sender, client, channels) -> {
+            if(channels.contains(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID)) {
+                DiscoveryPacket packet = new DiscoveryPacket(MainNetwork.networkingVersion);
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                packet.write(buf);
+                ClientPlayNetworking.send(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID, buf);
+            }
         });
     }
 
@@ -80,6 +91,8 @@ public class ClientNetwork {
     }
 
     public static void sendEmotePacket(Emote emote, PlayerEntity player, boolean isRepeating){
+        boolean test = ClientPlayNetworking.canSend(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID);
+        Main.log(Level.INFO, "canSend result:" + test);
         try{
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             EmotePacket emotePacket = new EmotePacket(emote, player);
@@ -93,21 +106,6 @@ public class ClientNetwork {
         }
     }
 
-    /**
-     * reply to ping
-     */
-    public static void EmotecraftPong(){
-        try{
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            DiscoveryPacket packet = new DiscoveryPacket(MainNetwork.networkingVersion);
-            packet.write(buf);
-            ClientPlayNetworking.send(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID, buf);
-        }
-        catch (Exception e){
-            Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
-            if(Main.config.showDebug) e.printStackTrace();
-        }
-    }
 
     public static void clientReceiveEmote(EmotePacket emotePacket){
         PlayerEntity playerEntity = MinecraftClient.getInstance().world.getPlayerByUuid(emotePacket.getPlayer());

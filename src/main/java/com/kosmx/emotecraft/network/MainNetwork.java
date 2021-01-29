@@ -1,15 +1,23 @@
 package com.kosmx.emotecraft.network;
 
 
+import com.kosmx.emotecraftCommon.EmotecraftConstants;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
+import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
+
+import java.util.List;
 
 
 /**
@@ -19,11 +27,11 @@ import org.apache.logging.log4j.Level;
  */
 public class MainNetwork {
 
-    public static final int networkingVersion = 3;
+    public static final int networkingVersion = EmotecraftConstants.networkingVersion;
 
-    public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, "playemote");
-    public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, "stopemote");
-    public static final Identifier EMOTECRAFT_DISCOVERY_PACKET_ID = new Identifier(Main.MOD_ID, "discovery");
+    public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.playEmoteID);
+    public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.stopEmoteID);
+    public static final Identifier EMOTECRAFT_DISCOVERY_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.discoverEmoteID);
     /**
      * packet initializer, both for server and client side
      */
@@ -40,6 +48,7 @@ public class MainNetwork {
 
             for(ServerPlayerEntity otherPlayer : PlayerLookup.tracking(player)){
                 if(otherPlayer != player && ((IEmotecraftPresence)otherPlayer.networkHandler).getInstalledEmotecraft() != 0){
+                    //ServerPlayNetworking.canSend(otherPlayer, EMOTE_PLAY_NETWORK_PACKET_ID);
                     ServerPlayNetworking.send(otherPlayer, EMOTE_PLAY_NETWORK_PACKET_ID, buf);
                 }
             }
@@ -66,6 +75,14 @@ public class MainNetwork {
             });
         }));
 
+        S2CPlayChannelEvents.REGISTER.register((handler, sender, server, channels) -> {
+            if(channels.contains(EMOTECRAFT_DISCOVERY_PACKET_ID)) {
+                DiscoveryPacket packet = new DiscoveryPacket(networkingVersion);
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                packet.write(buf);
+                sender.sendPacket(EMOTECRAFT_DISCOVERY_PACKET_ID, buf);
+            }
+        });
 
     }
 }

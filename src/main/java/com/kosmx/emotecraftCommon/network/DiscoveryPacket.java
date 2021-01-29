@@ -1,5 +1,6 @@
-package com.kosmx.emotecraft.network;
+package com.kosmx.emotecraftCommon.network;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
 
 public class DiscoveryPacket {
@@ -15,11 +16,11 @@ public class DiscoveryPacket {
         return version;
     }
 
-    public void read(PacketByteBuf buf){
+    public void read(ByteBuf buf){
         this.version = buf.readInt();
     }
 
-    public void write(PacketByteBuf buf){
+    public void write(ByteBuf buf){
         buf.writeInt(this.version);
     }
 }
