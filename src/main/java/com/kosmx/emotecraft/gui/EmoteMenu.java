@@ -292,7 +292,7 @@ public class EmoteMenu extends Screen {
         }
     }
 
-    private class PositionedText {
+    private static class PositionedText {
         private final Text str;
         private final int x;
         private final int y;

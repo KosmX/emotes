@@ -6,7 +6,6 @@ import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.MainNetwork;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,11 +28,6 @@ public class Main implements ModInitializer {
 
     public static SerializableConfig config;
 
-    @Deprecated
-    public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(MOD_ID, "playemote");
-    @Deprecated
-    public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(MOD_ID, "stopemote");
-
     /**
      * This initializer runs on the server and on the client.
      * Load config, init networking
@@ -42,11 +36,7 @@ public class Main implements ModInitializer {
     @Override
     public void onInitialize(){
 
-        Serializer.initializeSerializer();/*
-        if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT){ //I can't do it in the client initializer because I need it to serialize the config
-            Client.initEmotes();
-        }
-        */
+        Serializer.initializeSerializer();
 
         loadConfig();
 

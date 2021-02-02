@@ -1,9 +1,9 @@
 package com.kosmx.emoteBukkit;
 
 import com.kosmx.emotecraftCommon.EmotecraftConstants;
+import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -13,10 +13,18 @@ import org.bukkit.event.player.PlayerRegisterChannelEvent;
 public class EmoteListener implements Listener {
     @EventHandler
     public void onPlayerOpenEmoteDiscoveryChannel(PlayerRegisterChannelEvent event){
-        if(Bukkit.getPluginManager().isPluginEnabled("emotecraft") && event.getChannel().equals(BukkitMain.DiscPacket)) { //TODO
+        BukkitMain plugin = BukkitMain.getPlugin(BukkitMain.class);
+        plugin.getLogger().info("PlayerPacketEvent: " + event.getPlayer().getName() + " : " + event.getChannel());
+        if(plugin.isEnabled() && event.getChannel().equals(BukkitMain.DiscPacket)) {
+            plugin.getLogger().info("Sending Emotecraft version to player " + event.getPlayer().getName());
+            DiscoveryPacket packet = new DiscoveryPacket(EmotecraftConstants.networkingVersion);
             ByteBuf buf = Unpooled.buffer();
-            buf.writeInt(EmotecraftConstants.networkingVersion);
+            packet.write(buf);
             event.getPlayer().sendPluginMessage(BukkitMain.getPlugin(BukkitMain.class), BukkitMain.DiscPacket, buf.array());
+        }
+        if(plugin.isEnabled() && event.getChannel().equals(BukkitMain.Emotepacket)
+                && BukkitMain.player_database.get(event.getPlayer().getUniqueId()) == 0){
+            BukkitMain.player_database.replace(event.getPlayer().getUniqueId(), 2);
         }
     }
 

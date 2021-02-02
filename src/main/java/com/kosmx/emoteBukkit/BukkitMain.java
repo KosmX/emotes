@@ -2,6 +2,7 @@ package com.kosmx.emoteBukkit;
 
 import com.kosmx.emotecraftCommon.EmotecraftConstants;
 import com.kosmx.emotecraftCommon.Proxy;
+import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.bukkit.Bukkit;
@@ -20,6 +21,7 @@ public class BukkitMain extends JavaPlugin {
     final static String Emotepacket = EmotecraftConstants.getIDAsString(EmotecraftConstants.playEmoteID);
     final static String Stoppacket = EmotecraftConstants.getIDAsString(EmotecraftConstants.stopEmoteID);
     final static String DiscPacket = EmotecraftConstants.getIDAsString(EmotecraftConstants.discoverEmoteID);
+    final EmoteListener listener = new EmoteListener();
 
 
     static HashMap<UUID, Integer> player_database = new HashMap<>();
@@ -46,12 +48,13 @@ public class BukkitMain extends JavaPlugin {
             return Proxy.isLoadedAsFabricMod();
         }
         catch (ClassNotFoundException exception){
-            return true;
+            return false;
         }
     }
 
     @Override
     public void onEnable() {
+        getServer().getPluginManager().registerEvents(listener, this);
         super.onEnable();
         getLogger().info("Loading Emotecraft as a bukkit plugin...");
 
@@ -75,8 +78,10 @@ public class BukkitMain extends JavaPlugin {
         });
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, DiscPacket);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, DiscPacket, (channel, player, message) -> {
+            DiscoveryPacket packet = new DiscoveryPacket();
             ByteBuf reader = Unpooled.copiedBuffer(message);
-            int ver = reader.readInt();
+            packet.read(reader);
+            int ver = packet.getVersion();
             player_database.replace(player.getUniqueId(), ver);
             getLogger().info("Player " + player.getName() + " has Emotecraft v" + ver + " installed.");
         });

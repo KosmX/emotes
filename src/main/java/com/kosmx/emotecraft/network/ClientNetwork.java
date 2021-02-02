@@ -10,6 +10,7 @@ import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
 import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -47,17 +48,13 @@ public class ClientNetwork {
             });
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID, (client, handler, packetByteBuf, rs)->{
-            DiscoveryPacket discoveryPacket = new DiscoveryPacket();
-            discoveryPacket.read(packetByteBuf);
-            int ver = discoveryPacket.getVersion();
-            boolean warn = ver != MainNetwork.networkingVersion;
-            client.execute(()->{
-                ((IEmotecraftPresence)handler).setInstalledEmotecraft(ver);
-                versionWarn = warn;
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID, (client1, handler1, buf, responseSender) -> {
+            DiscoveryPacket packet = new DiscoveryPacket();
+            packet.read(buf);
+            client1.execute(()->{
+                ((IEmotecraftPresence) handler1).setInstalledEmotecraft(packet.getVersion());
             });
-
-        });
+        }));
 
         //Network discovery
         C2SPlayChannelEvents.REGISTER.register((handler, sender, client, channels) -> {
@@ -66,6 +63,9 @@ public class ClientNetwork {
                 PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
                 packet.write(buf);
                 ClientPlayNetworking.send(MainNetwork.EMOTECRAFT_DISCOVERY_PACKET_ID, buf);
+            }
+            if(channels.contains(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID) && ((IEmotecraftPresence)handler).getInstalledEmotecraft() == 0){
+                ((IEmotecraftPresence)handler).setInstalledEmotecraft(2);
             }
         });
     }
@@ -91,8 +91,6 @@ public class ClientNetwork {
     }
 
     public static void sendEmotePacket(Emote emote, PlayerEntity player, boolean isRepeating){
-        boolean test = ClientPlayNetworking.canSend(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID);
-        Main.log(Level.INFO, "canSend result:" + test);
         try{
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             EmotePacket emotePacket = new EmotePacket(emote, player);
