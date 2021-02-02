@@ -1,15 +1,17 @@
 package com.kosmx.emotecraft.network;
 
 
+import com.kosmx.emotecraftCommon.EmotecraftConstants;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
+import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
+
 
 
 /**
@@ -19,11 +21,11 @@ import org.apache.logging.log4j.Level;
  */
 public class MainNetwork {
 
-    public static final int networkingVersion = 3;
+    public static final int networkingVersion = EmotecraftConstants.networkingVersion;
 
-    public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, "playemote");
-    public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, "stopemote");
-    public static final Identifier EMOTECRAFT_DISCOVERY_PACKET_ID = new Identifier(Main.MOD_ID, "discovery");
+    public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.playEmoteID);
+    public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.stopEmoteID);
+    public static final Identifier EMOTECRAFT_DISCOVERY_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.discoverEmoteID);
     /**
      * packet initializer, both for server and client side
      */
@@ -40,6 +42,7 @@ public class MainNetwork {
 
             for(ServerPlayerEntity otherPlayer : PlayerLookup.tracking(player)){
                 if(otherPlayer != player && ((IEmotecraftPresence)otherPlayer.networkHandler).getInstalledEmotecraft() != 0){
+                    //ServerPlayNetworking.canSend(otherPlayer, EMOTE_PLAY_NETWORK_PACKET_ID);
                     ServerPlayNetworking.send(otherPlayer, EMOTE_PLAY_NETWORK_PACKET_ID, buf);
                 }
             }
@@ -58,14 +61,39 @@ public class MainNetwork {
             }
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(EMOTECRAFT_DISCOVERY_PACKET_ID, ((server, player, handler, buf, responseSender) -> {
+        /*ServerPlayNetworking.registerGlobalReceiver(EMOTECRAFT_DISCOVERY_PACKET_ID, ((server, player, handler, buf, responseSender) -> {
             DiscoveryPacket packet = new DiscoveryPacket();
             packet.read(buf);
             server.execute(()->{
                 ((IEmotecraftPresence)handler).setInstalledEmotecraft(packet.getVersion());
             });
         }));
+         */
 
+        //The client will make a response but in singlePlayer it will happen before the "login" and causes a crash...
+        //the channel registration will happen after a success login
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ServerPlayNetworking.registerReceiver(handler, EMOTECRAFT_DISCOVERY_PACKET_ID, (server1, player, handler1, buf, responseSender) -> {
+            DiscoveryPacket packet = new DiscoveryPacket();
+            packet.read(buf);
+            server1.execute(()->{
+                ((IEmotecraftPresence)handler).setInstalledEmotecraft(packet.getVersion());
+            });
+        }));
+
+
+        S2CPlayChannelEvents.REGISTER.register((handler, sender, server, channels) -> {
+            if(channels.contains(EMOTECRAFT_DISCOVERY_PACKET_ID)) {
+                DiscoveryPacket packet = new DiscoveryPacket(networkingVersion);
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                packet.write(buf);
+                sender.sendPacket(EMOTECRAFT_DISCOVERY_PACKET_ID, buf);
+            }
+            if(channels.contains(EMOTE_PLAY_NETWORK_PACKET_ID) && ((IEmotecraftPresence)handler).getInstalledEmotecraft() == 0){
+                ((IEmotecraftPresence)handler).setInstalledEmotecraft(2);
+            }
+        });
 
     }
 }
+
+
