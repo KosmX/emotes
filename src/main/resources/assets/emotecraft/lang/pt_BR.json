@@ -19,6 +19,8 @@
   "emotecraft.otherconfig.yratio.tooltip": "valor maior significa influência maior",
   "emotecraft.otherconfig.loadbuiltin": "Carregar emotes embutidos",
   "emotecraft.otherconfig.loadbuiltin.tooltip": "Se quiser removê-los por algum motivo...",
+  "emotecraft.otherconfig.playersafety": "Ativar recurso de segurança do jogador",
+  "emotecraft.otherconfig.playersafety.tooltip": "não mostrará emotes de jogadores silenciados (1.16.4+)",
   "emotecraft.emotelist": "Todos os emotes",
   "key.emotecraft.fastchoose": "Menu rápido",
   "key.emotecraft.debug": "executar emote de depuração",
