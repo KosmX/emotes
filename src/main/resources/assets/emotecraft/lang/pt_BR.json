@@ -22,6 +22,8 @@
   "emotecraft.otherconfig.playersafety": "Ativar recurso de segurança do jogador",
   "emotecraft.otherconfig.playersafety.tooltip": "não mostrará emotes de jogadores silenciados (1.16.4+)",
   "emotecraft.emotelist": "Todos os emotes",
+  "emotecraft.no_server": "Esse servidor não tem o Emotecraft instalado, outros jogadores não poderão ver se você usar um emote",
+  "emotecraft.different_server": "Esse servidor tem uma versão diferente do Emotecraft instalada, outros jogadores poderão não ver seus emotes corretamente",
   "key.emotecraft.fastchoose": "Menu rápido",
   "key.emotecraft.debug": "executar emote de depuração",
   "key.emotecraft.stop": "Parar de executar emote",
