@@ -1,7 +1,7 @@
 package com.kosmx.emotecraft;
 
-import com.kosmx.emotecraft.math.Ease;
-import com.kosmx.emotecraft.math.Easing;
+import com.kosmx.emotecraftCommon.math.Ease;
+import com.kosmx.emotecraftCommon.math.Easing;
 import com.kosmx.emotecraft.math.Helper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.Vector3f;

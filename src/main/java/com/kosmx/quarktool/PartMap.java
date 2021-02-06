@@ -1,7 +1,7 @@
 package com.kosmx.quarktool;
 
 import com.kosmx.emotecraft.Emote;
-import com.kosmx.emotecraft.math.Ease;
+import com.kosmx.emotecraftCommon.math.Ease;
 
 public class PartMap {
     public Emote.BodyPart part;

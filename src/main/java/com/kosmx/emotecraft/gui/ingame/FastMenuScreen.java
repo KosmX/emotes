@@ -3,7 +3,7 @@ package com.kosmx.emotecraft.gui.ingame;
 import com.kosmx.emotecraft.gui.widget.AbstractFastChooseWidget;
 import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
-import com.kosmx.emotecraftCommon.EmotecraftConstants;
+import com.kosmx.emotecraftCommon.CommonData;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -43,7 +43,7 @@ public class FastMenuScreen extends Screen {
         widget.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
         int remoteVer = MinecraftClient.getInstance().getNetworkHandler() != null ? ((IEmotecraftPresence)(MinecraftClient.getInstance().getNetworkHandler())).getInstalledEmotecraft() : 0;
-        if(remoteVer != EmotecraftConstants.networkingVersion){
+        if(remoteVer != CommonData.networkingVersion){
             drawCenteredText(matrices, textRenderer, remoteVer == 0 ? warn_no_emotecraft : warn_diff_emotecraft, this.width/2, this.height/24 - 1, Helper.colorHelper(255, 255, 255, 255));
         }
     }

@@ -1,7 +1,7 @@
 package com.kosmx.quarktool;
 
-import com.kosmx.emotecraft.math.Ease;
-import com.kosmx.emotecraft.math.Easing;
+import com.kosmx.emotecraftCommon.math.Ease;
+import com.kosmx.emotecraftCommon.math.Easing;
 
 public class InverseEase {
     public static Ease inverse(Ease ease){

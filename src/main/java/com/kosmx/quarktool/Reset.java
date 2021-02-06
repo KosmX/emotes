@@ -1,6 +1,6 @@
 package com.kosmx.quarktool;
 
-import com.kosmx.emotecraft.math.Ease;
+import com.kosmx.emotecraftCommon.math.Ease;
 
 public class Reset implements Playable {
     private Playable[] parts;

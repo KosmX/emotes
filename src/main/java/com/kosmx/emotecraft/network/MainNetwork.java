@@ -1,7 +1,7 @@
 package com.kosmx.emotecraft.network;
 
 
-import com.kosmx.emotecraftCommon.EmotecraftConstants;
+import com.kosmx.emotecraftCommon.CommonData;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
 import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
@@ -21,11 +21,11 @@ import org.apache.logging.log4j.Level;
  */
 public class MainNetwork {
 
-    public static final int networkingVersion = EmotecraftConstants.networkingVersion;
+    public static final int networkingVersion = CommonData.networkingVersion;
 
-    public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.playEmoteID);
-    public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.stopEmoteID);
-    public static final Identifier EMOTECRAFT_DISCOVERY_PACKET_ID = new Identifier(Main.MOD_ID, EmotecraftConstants.discoverEmoteID);
+    public static final Identifier EMOTE_PLAY_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, CommonData.playEmoteID);
+    public static final Identifier EMOTE_STOP_NETWORK_PACKET_ID = new Identifier(Main.MOD_ID, CommonData.stopEmoteID);
+    public static final Identifier EMOTECRAFT_DISCOVERY_PACKET_ID = new Identifier(Main.MOD_ID, CommonData.discoverEmoteID);
     /**
      * packet initializer, both for server and client side
      */

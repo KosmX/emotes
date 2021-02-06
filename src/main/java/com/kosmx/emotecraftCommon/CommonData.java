@@ -4,8 +4,9 @@ package com.kosmx.emotecraftCommon;
  * static channel to access constant from everywhere in the mod.
  * Including Fabric and Bukkit code.
  */
-public class EmotecraftConstants {
+public class CommonData {
     public static boolean isLoaded = false; //to detect if the mod loads twice...
+    public static Logger logger;
 
     public static final String MOD_ID = "emotecraft";
     public static final String MOD_NAME = "Emotecraft";

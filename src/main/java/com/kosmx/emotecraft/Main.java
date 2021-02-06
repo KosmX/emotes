@@ -4,6 +4,7 @@ import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.config.SerializableConfig;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.network.MainNetwork;
+import com.kosmx.emotecraftCommon.CommonData;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.Level;
@@ -35,6 +36,23 @@ public class Main implements ModInitializer {
      */
     @Override
     public void onInitialize(){
+
+        CommonData.logger = new com.kosmx.emotecraftCommon.Logger() {
+            @Override
+            public void log(String msg) {
+                Main.log(Level.INFO, msg);
+            }
+
+            @Override
+            public void warn(String msg) {
+                Main.log(Level.WARN, msg);
+            }
+
+            @Override
+            public void error(String msg) {
+                Main.log(Level.ERROR, msg);
+            }
+        };
 
         Serializer.initializeSerializer();
 
