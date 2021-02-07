@@ -96,7 +96,7 @@ public class ClientNetwork {
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             EmotePacket emotePacket = new EmotePacket(emote, player);
             emotePacket.isRepeat = isRepeating;
-            emotePacket.write(buf);
+            emotePacket.write(buf, ((IEmotecraftPresence)(MinecraftClient.getInstance().getNetworkHandler())).getInstalledEmotecraft());
             ClientPlayNetworking.send(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID, buf);
         }
         catch (Exception e){

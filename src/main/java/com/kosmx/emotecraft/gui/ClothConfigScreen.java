@@ -4,6 +4,7 @@ import com.kosmx.emotecraft.Main;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.TranslatableText;
 
@@ -31,6 +32,10 @@ public class ClothConfigScreen {
         general.addEntry(entryBuilder.startFloatField(new TranslatableText("emotecraft.otherconfig.stopthreshold"), Main.config.stopThreshold).setDefaultValue(0.04f).setTooltip(new TranslatableText("emotecraft.otherconfig.stopthreshold.tooltip")).setSaveConsumer(newValue->Main.config.stopThreshold = newValue).build());
         general.addEntry(entryBuilder.startIntSlider(new TranslatableText("emotecraft.otherconfig.yratio"), (int) (Main.config.yRatio * 100), 0, 100).setDefaultValue(75).setTooltip(new TranslatableText("emotecraft.otherconfig.yratio.tooltip")).setSaveConsumer(newValue -> Main.config.yRatio = newValue / 100f).build());
         general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.playersafety"), Main.config.enablePlayerSafety).setDefaultValue(true).setTooltip(new TranslatableText("emotecraft.otherconfig.playersafety.tooltip")).setSaveConsumer(newValue->Main.config.enablePlayerSafety = newValue).build());
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.perspective"), Main.config.enablePerspective).setDefaultValue(true).setSaveConsumer(newValue -> Main.config.enablePerspective = newValue).build());
+        if(FabricLoader.getInstance().isModLoaded("perspectivemod")){
+            general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.prespective_redux"), Main.config.perspectiveReduxIntegration).setDefaultValue(true).setSaveConsumer(newValue->Main.config.perspectiveReduxIntegration = newValue).build());
+        }
         return builder.build();
     }
 }

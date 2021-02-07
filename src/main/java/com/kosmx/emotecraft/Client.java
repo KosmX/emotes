@@ -179,4 +179,8 @@ public class Client implements ClientModInitializer {
 
         KeyPressCallback.EVENT.register((EmoteHolder::playEmote));
     }
+
+    public static boolean isPersonRedux(){
+        return FabricLoader.getInstance().isModLoaded("perspectivemod") && Main.config.perspectiveReduxIntegration;
+    }
 }

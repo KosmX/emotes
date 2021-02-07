@@ -11,6 +11,9 @@ import java.util.List;
  */
 public class EmoteData {
     //Time, while the player can move to the beginning pose
+
+    public static final StateCollection.State EMPTY_STATE = new StateCollection.State("empty", 0, 0, false);
+
     public final int beginTick;
     public final int endTick;
     public final int stopTick;

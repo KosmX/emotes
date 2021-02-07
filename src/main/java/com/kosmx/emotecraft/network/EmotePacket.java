@@ -32,12 +32,12 @@ public class EmotePacket {
         player = buf.readUuid();    //we need to know WHO playings this emote
         //emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
         emote = new EmoteData(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
-        getBodyPartInfo(buf, emote.head);
-        getBodyPartInfo(buf, emote.torso);
-        getBodyPartInfo(buf, emote.rightArm);
-        getBodyPartInfo(buf, emote.leftArm);
-        getBodyPartInfo(buf, emote.rightLeg);
-        getBodyPartInfo(buf, emote.leftLeg);
+        getBodyPartInfo(buf, emote.head, false);
+        getBodyPartInfo(buf, emote.torso, true);
+        getBodyPartInfo(buf, emote.rightArm, true);
+        getBodyPartInfo(buf, emote.leftArm, true);
+        getBodyPartInfo(buf, emote.rightLeg, true);
+        getBodyPartInfo(buf, emote.leftLeg, true);
         return ! (!valid && validate) && emote.beginTick >= 0 && emote.beginTick < emote.endTick && (! emote.isInfinite || emote.returnToTick <= emote.endTick && emote.returnToTick >= 0);
     }
 
@@ -49,7 +49,8 @@ public class EmotePacket {
         return emote;
     }
 
-    public void write(PacketByteBuf buf){
+    public void write(PacketByteBuf buf, int version){
+        this.version = version;
         buf.writeInt(version);
         buf.writeBoolean(isRepeat);
         buf.writeUuid(player);
@@ -58,23 +59,29 @@ public class EmotePacket {
         buf.writeInt(emote.stopTick);
         buf.writeBoolean(emote.isInfinite);
         buf.writeInt(emote.returnToTick);
-        writeBodyPartInfo(buf, emote.head);
-        writeBodyPartInfo(buf, emote.torso);
-        writeBodyPartInfo(buf, emote.rightArm);
-        writeBodyPartInfo(buf, emote.leftArm);
-        writeBodyPartInfo(buf, emote.rightLeg);
-        writeBodyPartInfo(buf, emote.leftLeg);
+        writeBodyPartInfo(buf, emote.head, false);
+        writeBodyPartInfo(buf, emote.torso, true);
+        writeBodyPartInfo(buf, emote.rightArm, true);
+        writeBodyPartInfo(buf, emote.leftArm, true);
+        writeBodyPartInfo(buf, emote.rightLeg, true);
+        writeBodyPartInfo(buf, emote.leftLeg, true);
     }
 
-    private void writeBodyPartInfo(PacketByteBuf buf, EmoteData.StateCollection part){
+    private void writeBodyPartInfo(PacketByteBuf buf, EmoteData.StateCollection part, boolean bending){
         writePartInfo(buf, part.x);
         writePartInfo(buf, part.y);
         writePartInfo(buf, part.z);
         writePartInfo(buf, part.pitch);
         writePartInfo(buf, part.yaw);
         writePartInfo(buf, part.roll);
-        writePartInfo(buf, part.bendDirection);
-        writePartInfo(buf, part.bend);
+        if(bending) {
+            writePartInfo(buf, part.bendDirection);
+            writePartInfo(buf, part.bend);
+        }
+        else if(version < 4){
+            writePartInfo(buf, EmoteData.EMPTY_STATE);
+            writePartInfo(buf, EmoteData.EMPTY_STATE);
+        }
     }
 
     private void writePartInfo(PacketByteBuf buf, EmoteData.StateCollection.State part){
@@ -87,15 +94,17 @@ public class EmotePacket {
         }
     }
 
-    private void getBodyPartInfo(PacketByteBuf buf, EmoteData.StateCollection part){
+    private void getBodyPartInfo(PacketByteBuf buf, EmoteData.StateCollection part, boolean bending){
         getPartInfo(buf, part.x);
         getPartInfo(buf, part.y);
         getPartInfo(buf, part.z);
         getPartInfo(buf, part.pitch);
         getPartInfo(buf, part.yaw);
         getPartInfo(buf, part.roll);
-        getPartInfo(buf, part.bendDirection);
-        getPartInfo(buf, part.bend);
+        if(bending || version < 4) {
+            getPartInfo(buf, part.bendDirection);
+            getPartInfo(buf, part.bend);
+        }
     }
 
     private void getPartInfo(PacketByteBuf buf, EmoteData.StateCollection.State part){

@@ -36,7 +36,7 @@ if(keys_imported) {
 	}
 }
 repositories{
-	//mavenLocal()
+	mavenLocal()
 	jcenter()
 	maven{
 		url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
@@ -69,8 +69,14 @@ dependencies {
 
 	modImplementation "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
 	include "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
+	//
+	//other dependency(ies)
+
+	modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"
 
 
+
+	//Spigot stuff
 	implementation("org.spigotmc:spigot-api:${project.spigot_api}")
 
 	//include(files("bendy-lib-0.0.0-dev.jar"))

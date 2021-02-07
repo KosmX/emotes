@@ -40,6 +40,8 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         if(node.has("yRatio")) config.yRatio = node.get("yRatio").getAsFloat();
         if(node.has("loadBuiltin")) config.loadBuiltinEmotes = node.get("loadBuiltin").getAsBoolean();
         if(node.has("playersafety")) config.enablePlayerSafety = node.get("playersafety").getAsBoolean();
+        if(node.has("perspective")) config.enablePerspective = node.get("perspective").getAsBoolean();
+        if(node.has("preduxintegration")) config.perspectiveReduxIntegration = node.get("preduxintegration").getAsBoolean();
         if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config);
         if(node.has("keys")) keyBindsDeserializer(node.get("keys").getAsJsonArray(), config);
     }
@@ -61,20 +63,6 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
             //keyBindDeserializer(object.getAsJsonObject());
         }
     }
-    /*
-    @Environment(EnvType.CLIENT)
-    private void keyBindDeserializer(JsonObject node){
-
-        EmoteHolder emote = EmoteHolder.getEmoteFromHash(node.get("id").getAsInt());
-        if(emote != null){
-            emote.keyBinding = InputUtil.fromTranslationKey(node.get("key").getAsString());
-        }
-        else {
-            Main.log(Level.ERROR, "Can't find emote from hash: " + node.get("id").getAsInt());
-        }
-    }
-
-     */
 
     @Override
     public JsonElement serialize(SerializableConfig config, Type typeOfSrc, JsonSerializationContext context){
@@ -95,6 +83,8 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         node.addProperty("yRatio", config.yRatio);
         node.addProperty("loadBuiltin", config.loadBuiltinEmotes);
         node.addProperty("playersafety", config.enablePlayerSafety);
+        node.addProperty("perspective", config.enablePerspective);
+        node.addProperty("preduxintegration", config.perspectiveReduxIntegration);
         node.add("fastmenu", fastMenuSerializer(config));
         node.add("keys", keyBindsSerializer(config));
     }

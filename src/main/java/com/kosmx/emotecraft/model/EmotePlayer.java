@@ -2,11 +2,15 @@ package com.kosmx.emotecraft.model;
 
 
 import com.kosmx.emotecraft.math.Helper;
+import com.kosmx.emotecraft.proxy.PerspectiveReduxProxy;
 import com.kosmx.emotecraftCommon.EmoteData;
 import com.kosmx.emotecraftCommon.math.Easing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.options.Perspective;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Pair;
 import net.minecraft.util.Tickable;
@@ -14,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 /**
  * Play emotes form a given EmoteData
@@ -33,6 +38,9 @@ public class EmotePlayer implements Tickable {
     public BodyPart leftArm;
     public BodyPart rightLeg;
     public BodyPart leftLeg;
+    @Nullable
+    public Perspective perspective = null;
+    public boolean perspectiveRedux = false;
 
     /**
      *
@@ -57,7 +65,7 @@ public class EmotePlayer implements Tickable {
                 this.isLoopStarted = true;
             }
             if(currentTick >= data.stopTick){
-                this.isRunning = false;
+                this.stop();
             }
         }
     }
@@ -73,6 +81,8 @@ public class EmotePlayer implements Tickable {
 
     public void stop(){
         isRunning = false;
+        if(this.perspectiveRedux) PerspectiveReduxProxy.setPerspective(false);
+        if(this.perspective != null) MinecraftClient.getInstance().options.setPerspective(perspective);
     }
 
     /**

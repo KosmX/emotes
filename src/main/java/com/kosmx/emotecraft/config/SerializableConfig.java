@@ -40,6 +40,10 @@ public class SerializableConfig {
     public boolean loadBuiltinEmotes = true;
     @Environment(EnvType.CLIENT)
     public boolean enablePlayerSafety = true;
+    @Environment(EnvType.CLIENT)
+    public boolean enablePerspective = true;
+    @Environment(EnvType.CLIENT)
+    public boolean perspectiveReduxIntegration = true;
 
     public int[] fastMenuHash = new int[8];
     public List<Pair<Integer, String>> emotesWithHash = new ArrayList<>();

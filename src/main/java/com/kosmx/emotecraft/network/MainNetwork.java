@@ -32,16 +32,18 @@ public class MainNetwork {
     public static void init(){
         ServerPlayNetworking.registerGlobalReceiver(EMOTE_PLAY_NETWORK_PACKET_ID, (server, player, handler, packetByteBuf, responseSender)->{
             EmotePacket packet = new EmotePacket();
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            //PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             if(! packet.read(packetByteBuf, Main.config.validateEmote)){
                 //Todo kick player
                 Main.log(Level.INFO, player.getEntityName() + " is trying to play invalid emote", true);
                 return;
             }
-            packet.write(buf);
+            //packet.write(buf);
 
             for(ServerPlayerEntity otherPlayer : PlayerLookup.tracking(player)){
                 if(otherPlayer != player && ((IEmotecraftPresence)otherPlayer.networkHandler).getInstalledEmotecraft() != 0){
+                    PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                    packet.write(buf, ((IEmotecraftPresence)(otherPlayer.networkHandler)).getInstalledEmotecraft());
                     //ServerPlayNetworking.canSend(otherPlayer, EMOTE_PLAY_NETWORK_PACKET_ID);
                     ServerPlayNetworking.send(otherPlayer, EMOTE_PLAY_NETWORK_PACKET_ID, buf);
                 }
