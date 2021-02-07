@@ -1,8 +1,8 @@
 package com.kosmx.emotecraft.mixin;
 
 
-import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -35,8 +35,8 @@ public abstract class HeldItemMixin<T extends LivingEntity, M extends EntityMode
     private void renderMixin(LivingEntity livingEntity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci){
         if(livingEntity instanceof EmotePlayerInterface){
             EmotePlayerInterface player = (EmotePlayerInterface) livingEntity;
-            if(Emote.isRunningEmote(player.getEmote())){
-                Emote emote = player.getEmote();
+            if(EmotePlayer.isRunningEmote(player.getEmote())){
+                EmotePlayer emote = player.getEmote();
 
                 Pair<Float, Float> pair = arm == Arm.LEFT ? emote.leftArm.getBend() : emote.rightArm.getBend();
 

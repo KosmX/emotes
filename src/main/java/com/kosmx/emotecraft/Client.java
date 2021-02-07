@@ -4,6 +4,7 @@ import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import com.kosmx.emotecraft.network.ClientNetwork;
 import com.kosmx.quarktool.QuarkReader;
 import net.fabricmc.api.ClientModInitializer;
@@ -171,7 +172,7 @@ public class Client implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(stopEmote);
 
         ClientTickEvents.END_CLIENT_TICK.register(minecraftClient->{
-            if(stopEmote.wasPressed() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface) MinecraftClient.getInstance().getCameraEntity()).getEmote())){
+            if(stopEmote.wasPressed() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && EmotePlayer.isRunningEmote(((EmotePlayerInterface) MinecraftClient.getInstance().getCameraEntity()).getEmote())){
                 ClientNetwork.clientSendStop();
             }
         });

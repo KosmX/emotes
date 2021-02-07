@@ -1,6 +1,7 @@
 package com.kosmx.emoteBukkit;
 
-import com.kosmx.emotecraftCommon.EmotecraftConstants;
+import com.kosmx.emotecraftCommon.CommonData;
+import com.kosmx.emotecraftCommon.Logger;
 import com.kosmx.emotecraftCommon.Proxy;
 import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.ByteBuf;
@@ -18,9 +19,9 @@ import java.util.UUID;
  */
 public class BukkitMain extends JavaPlugin {
 
-    final static String Emotepacket = EmotecraftConstants.getIDAsString(EmotecraftConstants.playEmoteID);
-    final static String Stoppacket = EmotecraftConstants.getIDAsString(EmotecraftConstants.stopEmoteID);
-    final static String DiscPacket = EmotecraftConstants.getIDAsString(EmotecraftConstants.discoverEmoteID);
+    final static String Emotepacket = CommonData.getIDAsString(CommonData.playEmoteID);
+    final static String Stoppacket = CommonData.getIDAsString(CommonData.stopEmoteID);
+    final static String DiscPacket = CommonData.getIDAsString(CommonData.discoverEmoteID);
     final EmoteListener listener = new EmoteListener();
 
 
@@ -28,12 +29,28 @@ public class BukkitMain extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        if(EmotecraftConstants.isLoaded || checkForFabricInstance()){
+        if(CommonData.isLoaded || checkForFabricInstance()){
             getLogger().warning("Emotecraft is ALREADY loaded as a Fabric mod. Don't load it twice!");
             Bukkit.getPluginManager().disablePlugin(this); //disable itself.
         }
         else {
-            EmotecraftConstants.isLoaded = true;
+            CommonData.isLoaded = true;
+            CommonData.logger = new Logger() {
+                @Override
+                public void log(String msg) {
+                    this.log(msg);
+                }
+
+                @Override
+                public void warn(String msg) {
+                    this.warn(msg);
+                }
+
+                @Override
+                public void error(String msg) {
+                    this.error(msg);
+                }
+            };
         }
     }
 

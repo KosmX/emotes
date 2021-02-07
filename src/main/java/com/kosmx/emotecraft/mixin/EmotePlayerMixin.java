@@ -1,9 +1,11 @@
 package com.kosmx.emotecraft.mixin;
 
-import com.kosmx.emotecraft.Emote;
+import com.kosmx.emotecraft.EmotecraftCallbacks;
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import com.kosmx.emotecraft.network.ClientNetwork;
+import com.kosmx.emotecraftCommon.EmoteData;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,6 +14,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +26,7 @@ import javax.annotation.Nullable;
 public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlayerInterface {
 
     @Nullable
-    private Emote emote;
+    private EmotePlayer emote;
 
     private int lastUpdated;
 
@@ -32,13 +35,15 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
     }
 
     @Override
-    public void playEmote(Emote emote){
-        this.emote = emote;
+    public void playEmote(EmoteData emote){
+        ActionResult result = EmotecraftCallbacks.startPlayEmote.invoker().playEmote(emote, this);
+
+        this.emote = new EmotePlayer(emote);
     }
 
     @Override
     @Nullable
-    public Emote getEmote(){
+    public EmotePlayer getEmote(){
         return this.emote;
     }
 
@@ -50,7 +55,7 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
     @Override
     public void tick(){
         super.tick();
-        if(Emote.isRunningEmote(this.emote)){
+        if(EmotePlayer.isRunningEmote(this.emote)){
             this.bodyYaw = (this.bodyYaw * 3 + this.yaw) / 4; //to set the body to the correct direction smooth.
             //if not the clientPlayer playing this emote (not the camera or the camera is in someone else) OR I can play that emote
             if(this != MinecraftClient.getInstance().getCameraEntity() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity || EmoteHolder.canRunEmote(this)){
@@ -58,7 +63,7 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
                 this.lastUpdated++;
                 if(this == MinecraftClient.getInstance().getCameraEntity() && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity && lastUpdated >= 100){
                     if(emote.getStopTick() - emote.getCurrentTick() < 50 && ! emote.isInfinite()) return;
-                    ClientNetwork.sendEmotePacket(emote, this, true);
+                    ClientNetwork.sendEmotePacket(emote.getData(), this, true);
                     lastUpdated = 0;
                 }else if((this != MinecraftClient.getInstance().getCameraEntity() || MinecraftClient.getInstance().getCameraEntity() instanceof OtherClientPlayerEntity) && lastUpdated > 300){
                     this.emote.stop();

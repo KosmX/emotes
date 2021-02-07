@@ -1,7 +1,7 @@
-package com.kosmx.emotecraft.math;
+package com.kosmx.emotecraftCommon.math;
 
-import com.kosmx.emotecraft.Main;
-import org.apache.logging.log4j.Level;
+
+import com.kosmx.emotecraftCommon.CommonData;
 
 public class Easing {
 
@@ -80,7 +80,7 @@ public class Easing {
             case CONSTANT:
                 return 0;
             default:
-                Main.log(Level.WARN, "easing function unknown: " + type);
+                CommonData.logger.warn("easing function unknown: " + type);
                 return f;
         }
     }
@@ -96,8 +96,8 @@ public class Easing {
             }
             return Ease.valueOf(string.toUpperCase());
         }catch(Exception exception){
-            Main.log(Level.ERROR, "Ease name unknown: \"" + string + "\" using linear", true);
-            Main.log(Level.WARN, exception.toString());
+            //Main.log(Level.ERROR, "Ease name unknown: \"" + string + "\" using linear", true);
+            //Main.log(Level.WARN, exception.toString());
             return Ease.LINEAR;
         }
     }

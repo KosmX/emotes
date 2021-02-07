@@ -1,6 +1,6 @@
 package com.kosmx.quarktool;
 
-import com.kosmx.emotecraft.math.Ease;
+import com.kosmx.emotecraftCommon.math.Ease;
 
 public class Move implements Playable {
     private final Ease ease;

@@ -1,9 +1,9 @@
 package com.kosmx.emotecraft.mixin;
 
-import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -30,7 +30,7 @@ public abstract class LivingEntityRendererMixin<T extends Entity, M extends Enti
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/feature/FeatureRenderer;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/Entity;FFFFFF)V"))
     private void featureRendererTransformer(FeatureRenderer<T, M> featureRenderer, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T livingEntity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch){
-        if(livingEntity instanceof PlayerEntity && livingEntity instanceof EmotePlayerInterface && Emote.isRunningEmote(((EmotePlayerInterface) livingEntity).getEmote()) && ((IUpperPartHelper) featureRenderer).isUpperPart()){
+        if(livingEntity instanceof PlayerEntity && livingEntity instanceof EmotePlayerInterface && EmotePlayer.isRunningEmote(((EmotePlayerInterface) livingEntity).getEmote()) && ((IUpperPartHelper) featureRenderer).isUpperPart()){
             matrices.push();
             Helper.roteteMatrixStack(matrices, ((EmotePlayerInterface) livingEntity).getEmote().torso.getBend());
             featureRenderer.render(matrices, vertexConsumers, light, livingEntity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);

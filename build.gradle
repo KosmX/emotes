@@ -4,16 +4,25 @@ This build.gradle has been tweaked. Don't build other mods with this or this wit
 
 
 buildscript {
+	/*repositories {
+		maven {
+			url "https://plugins.gradle.org/m2/"
+		}
+	}*/
 	dependencies {
 		//Jfrog for auto publish on jcenter
 		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+		//classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
 	}
 }
 
 plugins {
 	id 'fabric-loom' version '0.6-SNAPSHOT'
 	id 'maven-publish'
+	//id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id "com.github.breadmoirai.github-release" version "2.2.12"
 }
+
 apply plugin: 'com.jfrog.bintray'
 
 //Import jfrog keys from file (not included in the git repo :D)
@@ -145,6 +154,7 @@ publishing {
 	repositories {
 		// uncomment to publish to the local maven
 		mavenLocal()
+		bintrayUpload
 	}
 	dependencies {
 		//@Nullable essential for mc modding
@@ -178,3 +188,48 @@ bintray {
 	}
 	publications = ['mavenJava']
 }
+/*githubRelease {
+	token "<your token>" // This is your personal access token with Repo permissions
+	// You get this from your user settings > developer settings > Personal Access Tokens
+	owner "KosmX" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
+	repo "emotes" // by default this is set to your project name
+	tagName project.version // by default this is set to "v${project.version}"
+	targetCommitish "master" // by default this is set to "master"
+	releaseName project.version // Release title, by default this is the same as the tagName
+	body "" // by default this is empty
+	draft false // by default this is false
+	prerelease false // by default this is false
+	releaseAssets jar.destinationDir.listFiles // this points to which files you want to upload as assets with your release
+
+	overwrite false // by default false; if set to true, will delete an existing release with the same tag and name
+	dryRun false // by default false; you can use this to see what actions would be taken without making a release
+	apiEndpoint "https://api.github.com" // should only change for github enterprise users
+	client // This is the okhttp client used for http requests
+}
+ */ //TODO
+/*curseforge {
+	apiKey = project.keys.curseforge_key
+	project {
+		id = '397809'
+		changelogType = "markdown"
+		changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+		releaseType = 'release'
+		addGameVersion project.minecraft_version
+
+
+		relations {
+			requiredDependency 'fabric-api'
+			embeddedLibrary 'cloth-config'
+			embeddedLibrary 'modmenu'
+		}
+
+		options {
+			forgeGradleIntegration = false // FABRIC MOD
+		}
+
+		mainArtifact(jar) {
+			displayName = archivesBaseName
+		}
+	}
+}
+ */

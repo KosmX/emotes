@@ -9,14 +9,13 @@ public class Helper {
         return ((a & 255) << 24) | ((r & 255) << 16) | ((g & 255) << 8) | (b & 255);  //Sometimes minecraft uses ints as color...
     }
 
-    public static float clamp(float f){
-        while(f > Math.PI){
-            f -= Math.PI * 2;
+    public static float clampToRadian(float f){
+        final double a = Math.PI*2;
+        double b = ((f + Math.PI)%a);
+        if(b < 0){
+            b += a;
         }
-        while(f <= Math.PI * - 1){
-            f += Math.PI * 2;
-        }
-        return f;
+        return (float) (b - Math.PI);
     }
 
     public static void roteteMatrixStack(MatrixStack matrices, Pair<Float, Float> pair){

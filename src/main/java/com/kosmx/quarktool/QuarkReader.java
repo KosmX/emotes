@@ -1,8 +1,8 @@
 package com.kosmx.quarktool;
 
-import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;
+import com.kosmx.emotecraftCommon.EmoteData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.LiteralText;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
 public class QuarkReader {
-    private final Emote emote = new Emote(0);
+    private final EmoteData.EmoteBuilder emote = new EmoteData.EmoteBuilder();
     private boolean isSuccess = false;
     private String name;
     final PartMap head = new PartMap(emote.head);
@@ -56,7 +56,7 @@ public class QuarkReader {
             }
             int length = this.animation.playForward(0);
             this.isSuccess = true;
-            this.emote.setEndTick(length);
+            this.emote.endTick = length;
         }catch(QuarkParsingError e){
             Main.log(Level.ERROR, "Error while parsing quark: " + e.getMessage());
             if(Main.config.showDebug) e.printStackTrace();
@@ -66,7 +66,7 @@ public class QuarkReader {
 
     public EmoteHolder getEmote(){
         if(isSuccess){
-            return new EmoteHolder(this.emote, new LiteralText(this.name).formatted(Formatting.WHITE), new LiteralText("Imported from quark").formatted(Formatting.GRAY), new LiteralText("").formatted(Formatting.GRAY), this.hash).setQuarkEmote(true);
+            return new EmoteHolder(this.emote.build(), new LiteralText(this.name).formatted(Formatting.WHITE), new LiteralText("Imported from quark").formatted(Formatting.GRAY), new LiteralText("").formatted(Formatting.GRAY), this.hash).setQuarkEmote(true);
         }else return null;
     }
 

@@ -1,6 +1,6 @@
 package com.kosmx.emoteBukkit;
 
-import com.kosmx.emotecraftCommon.EmotecraftConstants;
+import com.kosmx.emotecraftCommon.CommonData;
 import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -17,7 +17,7 @@ public class EmoteListener implements Listener {
         plugin.getLogger().info("PlayerPacketEvent: " + event.getPlayer().getName() + " : " + event.getChannel());
         if(plugin.isEnabled() && event.getChannel().equals(BukkitMain.DiscPacket)) {
             plugin.getLogger().info("Sending Emotecraft version to player " + event.getPlayer().getName());
-            DiscoveryPacket packet = new DiscoveryPacket(EmotecraftConstants.networkingVersion);
+            DiscoveryPacket packet = new DiscoveryPacket(CommonData.networkingVersion);
             ByteBuf buf = Unpooled.buffer();
             packet.write(buf);
             event.getPlayer().sendPluginMessage(BukkitMain.getPlugin(BukkitMain.class), BukkitMain.DiscPacket, buf.array());

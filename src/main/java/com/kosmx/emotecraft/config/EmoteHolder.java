@@ -2,10 +2,11 @@ package com.kosmx.emotecraft.config;
 
 import com.google.gson.JsonParseException;
 import com.kosmx.emotecraft.Client;
-import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import com.kosmx.emotecraft.network.ClientNetwork;
+import com.kosmx.emotecraftCommon.EmoteData;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmoteHolder {
-    public final Emote emote;
+    public final EmoteData emote;
     public final MutableText name;
     public final MutableText description;
     public final MutableText author;
@@ -56,12 +57,12 @@ public class EmoteHolder {
     }
 
     /**
-     * @param emote       {@link com.kosmx.emotecraft.Emote}
+     * @param emote       {@link EmoteData}
      * @param name        Emote name
      * @param description Emote decription
      * @param author      Name of the Author
      */
-    public EmoteHolder(Emote emote, MutableText name, MutableText description, MutableText author, int hash){
+    public EmoteHolder(EmoteData emote, MutableText name, MutableText description, MutableText author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;
@@ -184,10 +185,10 @@ public class EmoteHolder {
     //public void setKeyBinding(InputUtil.Key key, )
 
     /**
-     * @return EmoteHolder's emote
+     * @return Playable EmotePlayer
      */
-    public Emote getEmote(){
-        return emote.copy();
+    public EmoteData getEmote(){
+        return emote;
     }
 
     public static EmoteHolder getEmoteFromHash(int hash){
@@ -211,11 +212,11 @@ public class EmoteHolder {
         list.add(hold);
     }
 
-    public static boolean playEmote(Emote emote, PlayerEntity player){
+    public static boolean playEmote(EmoteData emote, PlayerEntity player){
         return playEmote(emote, player, null);
     }
 
-    public static boolean playEmote(Emote emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder){
+    public static boolean playEmote(EmoteData emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
             return ClientNetwork.clientStartEmote(emote, player, emoteHolder);
         }else{
@@ -227,7 +228,7 @@ public class EmoteHolder {
         if(! canRunEmote(entity)) return false;
         if(entity != MinecraftClient.getInstance().getCameraEntity()) return false;
         EmotePlayerInterface target = (EmotePlayerInterface) entity;
-        return ! (Emote.isRunningEmote(target.getEmote()) && ! target.getEmote().isInfStarted());
+        return ! (EmotePlayer.isRunningEmote(target.getEmote()) && ! target.getEmote().isLoopStarted());
     }
 
     /**
@@ -244,7 +245,7 @@ public class EmoteHolder {
     }
 
     public boolean playEmote(PlayerEntity playerEntity){
-        return playEmote(this.getEmote(), playerEntity, this);
+        return playEmote(this.emote, playerEntity, this);
     }
 }
 
