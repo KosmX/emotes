@@ -2,9 +2,9 @@ package com.kosmx.emotecraft.mixin;
 
 
 import com.kosmx.emotecraft.BendableModelPart;
-import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.mixinInterface.IMutatedBipedModel;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -106,19 +106,20 @@ public class PlayerModelMixin<T extends LivingEntity> extends BipedEntityModel<T
         this.torso.pivotY = 0.0F;
     }
 
+    //TODO inject instead of redirect
     @Redirect(method = "setAngles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/model/BipedEntityModel;setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V"))
     private void setEmote(BipedEntityModel<?> idk, T livingEntity, float f, float g, float h, float i, float j){
         setDefaultPivot();  //to not make everything wrong
         super.setAngles(livingEntity, f, g, h, i, j);
-        if(livingEntity instanceof AbstractClientPlayerEntity && Emote.isRunningEmote(((EmotePlayerInterface) livingEntity).getEmote())){
-            Emote emote = ((EmotePlayerInterface) livingEntity).getEmote();
+        if(livingEntity instanceof AbstractClientPlayerEntity && EmotePlayer.isRunningEmote(((EmotePlayerInterface) livingEntity).getEmote())){
+            EmotePlayer emote = ((EmotePlayerInterface) livingEntity).getEmote();
             emoteSupplier.set(emote);
-            emote.head.setBodyPart(this.head);
+            emote.head.updateBodyPart(this.head);
             this.helmet.copyPositionAndRotation(this.head);
-            emote.leftArm.setBodyPart(this.leftArm);
-            emote.rightArm.setBodyPart(this.rightArm);
-            emote.leftLeg.setBodyPart(this.leftLeg);
-            emote.rightLeg.setBodyPart(this.rightLeg);
+            emote.leftArm.updateBodyPart(this.leftArm);
+            emote.rightArm.updateBodyPart(this.rightArm);
+            emote.leftLeg.updateBodyPart(this.leftLeg);
+            emote.rightLeg.updateBodyPart(this.rightLeg);
 
             thisWithMixin.getTorso().bend(emote.torso.getBend());
             thisWithMixin.getLeftArm().bend(emote.leftArm.getBend());

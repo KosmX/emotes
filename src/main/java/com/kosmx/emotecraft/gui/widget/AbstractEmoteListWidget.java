@@ -66,7 +66,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta){
 
             if(this.client.options.touchscreen || hovered){
-                RenderSystem.color4f(1, 1, 1, 1);
+                RenderSystem.blendColor(1, 1, 1, 1);
                 DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, Helper.colorHelper(66, 66, 66, 128));
             }
             this.client.textRenderer.drawWithShadow(matrices, this.emote.name, x + 38, y + 1, 16777215);
@@ -74,7 +74,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
             if(! this.emote.author.getString().equals(""))
                 this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("emotecraft.emote.author").formatted(Formatting.GOLD).append(this.emote.author), x + 38, y + 23, 8421504);
             if(this.emote.getIconIdentifier() != null){
-                RenderSystem.color4f(1, 1, 1, 1);
+                RenderSystem.blendColor(1, 1, 1, 1); //color4f => blendColor
                 MinecraftClient.getInstance().getTextureManager().bindTexture(this.emote.getIconIdentifier());
                 RenderSystem.enableBlend();
                 drawTexture(matrices, x, y, 32, 32, 0, 0, 256, 256, 256, 256);

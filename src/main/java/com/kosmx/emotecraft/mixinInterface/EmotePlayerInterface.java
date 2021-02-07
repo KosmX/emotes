@@ -1,15 +1,16 @@
 package com.kosmx.emotecraft.mixinInterface;
 
-import com.kosmx.emotecraft.Emote;
+import com.kosmx.emotecraft.model.EmotePlayer;
+import com.kosmx.emotecraftCommon.EmoteData;
 
 import javax.annotation.Nullable;
 
 public interface EmotePlayerInterface {
 
-    void playEmote(Emote emote);
+    void playEmote(EmoteData emote);
 
     @Nullable
-    Emote getEmote();
+    EmotePlayer getEmote();
 
     int getLastUpdated();
 

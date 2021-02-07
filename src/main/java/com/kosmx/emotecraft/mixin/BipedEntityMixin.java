@@ -2,10 +2,10 @@ package com.kosmx.emotecraft.mixin;
 
 import com.kosmx.bendylib.IModelPart;
 import com.kosmx.emotecraft.BendableModelPart;
-import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraft.mixinInterface.IMutatedBipedModel;
 import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -79,9 +79,9 @@ public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalMod
         if(emote != null){
             if(((IMutatedBipedModel) bipedEntityModel).getEmoteSupplier() != emote)
                 ((IMutatedBipedModel) bipedEntityModel).setEmoteSupplier(emote);
-            if(Emote.isRunningEmote(this.emote.get())){
+            if(EmotePlayer.isRunningEmote(this.emote.get())){
                 IMutatedBipedModel thisWithMixin = (IMutatedBipedModel) bipedEntityModel;
-                Emote playedEmote = emote.get();
+                EmotePlayer playedEmote = emote.get();
                 thisWithMixin.getTorso().bend(playedEmote.torso.getBend());
                 thisWithMixin.getLeftArm().bend(playedEmote.leftArm.getBend());
                 thisWithMixin.getLeftLeg().bend(playedEmote.leftLeg.getBend());
@@ -93,7 +93,7 @@ public abstract class BipedEntityMixin<T extends LivingEntity> extends AnimalMod
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha){
-        if(((IModelPart) this.torso).getActiveMutatedPart() == this.mutatedTorso && mutatedTorso.getEmote() != null && Emote.isRunningEmote(mutatedTorso.getEmote().get())){
+        if(((IModelPart) this.torso).getActiveMutatedPart() == this.mutatedTorso && mutatedTorso.getEmote() != null && EmotePlayer.isRunningEmote(mutatedTorso.getEmote().get())){
             this.getHeadParts().forEach((part)->{
                 if(! ((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);

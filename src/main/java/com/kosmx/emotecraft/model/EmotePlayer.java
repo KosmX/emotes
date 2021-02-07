@@ -1,9 +1,9 @@
 package com.kosmx.emotecraft.model;
 
 
+import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraftCommon.EmoteData;
 import com.kosmx.emotecraftCommon.math.Easing;
-import jdk.internal.jline.internal.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -12,6 +12,8 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+
+import javax.annotation.Nullable;
 
 /**
  * Play emotes form a given EmoteData
@@ -87,6 +89,18 @@ public class EmotePlayer implements Tickable {
 
     public void setTickDelta(float tickDelta){
         this.tickDelta = tickDelta;
+    }
+
+    public int getStopTick() {
+        return this.data.stopTick;
+    }
+
+    public int getCurrentTick() {
+        return currentTick;
+    }
+
+    public boolean isInfinite() {
+        return data.isInfinite;
     }
 
     public class BodyPart{
@@ -173,7 +187,7 @@ public class EmotePlayer implements Tickable {
             if(this.keyframes.length() > pos + 1){
                 return this.keyframes.keyFrames.get(pos + 1);
             }
-            return (currentState >= data.endTick || this.keyframes.length() != 0) && data.isInfinite ?
+            return (currentTick >= data.endTick || this.keyframes.length() != 0) && !data.isInfinite ?
                     new EmoteData.KeyFrame(data.stopTick, currentState) :
                     (currentTick >= getData().beginTick) ?
                             new EmoteData.KeyFrame(getData().endTick, keyframes.defaultValue) :
@@ -189,10 +203,10 @@ public class EmotePlayer implements Tickable {
             int pos = keyframes.findAtTick(currentTick);
             EmoteData.KeyFrame keyBefore = findBefore(pos, currentValue);
             if(isLoopStarted && keyBefore.tick < data.returnToTick){
-                keyBefore = findBefore(keyframes.findAtTick(data.returnToTick), currentValue);
+                keyBefore = findBefore(keyframes.findAtTick(data.endTick), currentValue);
             }
             EmoteData.KeyFrame keyAfter = findAfter(pos, currentValue);
-            if(isLoopStarted && keyAfter.tick >= data.endTick){
+            if(data.isInfinite && keyAfter.tick >= data.endTick){
                 keyAfter = findAfter(keyframes.findAtTick(data.returnToTick - 1), currentValue);
             }
             return getValueFromKeyframes(keyBefore, keyAfter);
@@ -213,7 +227,7 @@ public class EmotePlayer implements Tickable {
             }
             if(tickBefore == tickAfter) return before.value;
             float f = (currentTick + tickDelta - (float) tickBefore) / (tickAfter - tickBefore);
-            return MathHelper.lerp(Easing.easingFromEnum(before.ease, tickDelta), before.value, after.value);
+            return MathHelper.lerp(Easing.easingFromEnum(before.ease, f), before.value, after.value);
         }
 
     }
@@ -225,7 +239,7 @@ public class EmotePlayer implements Tickable {
 
         @Override
         protected float getValueAtCurrentTick(float currentValue) {
-            return super.getValueAtCurrentTick(currentValue)%(float) Math.PI;
+            return Helper.clampToRadian(super.getValueAtCurrentTick(Helper.clampToRadian(currentValue)));
         }
     }
 }

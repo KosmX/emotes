@@ -2,6 +2,7 @@ package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
 import com.kosmx.emotecraft.config.SerializableConfig;
+import com.kosmx.emotecraftCommon.EmoteData;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,7 +53,7 @@ public interface EmotecraftCallbacks {
          * @param isPlayerBlocked Is the player blocked by player safety
          * @return
          */
-        ActionResult playReceivedEmote(Emote emote, PlayerEntity player, boolean isPlayerBlocked);
+        ActionResult playReceivedEmote(EmoteData emote, PlayerEntity player, boolean isPlayerBlocked);
     }
 
     /**
@@ -69,7 +70,7 @@ public interface EmotecraftCallbacks {
     });
 
     interface PlayClientEmote {
-        ActionResult playClientEmote(Emote emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder, boolean hasServerEmotecraft);
+        ActionResult playClientEmote(EmoteData emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder, boolean hasServerEmotecraft);
     }
 
     /**
@@ -86,7 +87,7 @@ public interface EmotecraftCallbacks {
     });
 
     interface PlayEmote {
-        ActionResult playEmote(Emote emote, PlayerEntity player);
+        ActionResult playEmote(EmoteData emote, PlayerEntity player);
     }
 
     /**

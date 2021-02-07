@@ -84,7 +84,7 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         TextRenderer textRenderer = minecraftClient.textRenderer;
         minecraftClient.getTextureManager().bindTexture(TEXTURE);
-        RenderSystem.color4f(1, 1, 1, 1);
+        RenderSystem.blendColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();

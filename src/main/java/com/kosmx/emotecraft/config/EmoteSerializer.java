@@ -1,8 +1,9 @@
 package com.kosmx.emotecraft.config;
 
 import com.google.gson.*;
-import com.kosmx.emotecraft.Emote;
 import com.kosmx.emotecraft.Main;
+import com.kosmx.emotecraftCommon.EmoteData;
+import com.kosmx.emotecraftCommon.math.Easing;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -42,11 +43,11 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
             Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
             Main.log(Level.WARN, "If it is a comment, ignore the warning");
         });
-        Emote emote = emoteDeserializer(node.getAsJsonObject("emote"));
+        EmoteData emote = emoteDeserializer(node.getAsJsonObject("emote"));
         return new EmoteHolder(emote, name, description, author, node.hashCode());
     }
 
-    private Emote emoteDeserializer(JsonObject node) throws JsonParseException{
+    private EmoteData emoteDeserializer(JsonObject node) throws JsonParseException{
         int beginTick = 0;
         if(node.has("beginTick")){
             beginTick = node.get("beginTick").getAsInt();
@@ -71,12 +72,12 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
         });
         int resetTick = node.has("stopTick") ? node.get("stopTick").getAsInt() : endTick;
         boolean degrees = ! node.has("degrees") || node.get("degrees").getAsBoolean();
-        Emote emote = new Emote(beginTick, endTick, resetTick, isLoop, returnTick);
+        EmoteData emote = new EmoteData(beginTick, endTick, resetTick, isLoop, returnTick);
         moveDeserializer(emote, node.getAsJsonArray("moves"), degrees);
         return emote;
     }
 
-    private void moveDeserializer(Emote emote, JsonArray node, boolean degrees){
+    private void moveDeserializer(EmoteData emote, JsonArray node, boolean degrees){
         for(JsonElement n : node){
             JsonObject obj = n.getAsJsonObject();
             int tick = obj.get("tick").getAsInt();
@@ -98,7 +99,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
         }
     }
 
-    private void addBodyPartIfExists(Emote.BodyPart part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){
+    private void addBodyPartIfExists(EmoteData.StateCollection part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){
         if(node.has(name)){
             JsonObject partNode = node.get(name).getAsJsonObject();
             partNode.entrySet().forEach((entry)->{
@@ -115,13 +116,13 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
             addPartIfExists(part.yaw, "yaw", partNode, degrees, tick, easing, turn);
             addPartIfExists(part.roll, "roll", partNode, degrees, tick, easing, turn);
             addPartIfExists(part.bend, "bend", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.axis, "axis", partNode, degrees, tick, easing, turn);
+            addPartIfExists(part.bendDirection, "axis", partNode, degrees, tick, easing, turn);
         }
     }
 
-    private void addPartIfExists(Emote.Part part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){
+    private void addPartIfExists(EmoteData.StateCollection.State part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){
         if(node.has(name)){
-            Emote.addMove(part, tick, node.get(name).getAsFloat(), easing, turn, degrees);
+            part.addKeyFrame(tick, node.get(name).getAsFloat(), Easing.easeFromString(easing), turn, degrees);
         }
     }
 
@@ -136,7 +137,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
      * do new EmoteHolder(emote, new LiteralText("name").formatted(Formatting.WHITE), new LiteralText("someString").formatted(Formatting.GRAY), new LiteralText("author").formatted(Formatting.GRAY), some random hash(int));
      * (this code is from {@link com.kosmx.quarktool.QuarkReader#getEmote()})
      *
-     * or use {@link EmoteSerializer#emoteSerializer(Emote)}
+     * or use {@link EmoteSerializer#emoteSerializer(EmoteData)}
      *
      *
      * @param emote source EmoteHolder
@@ -166,19 +167,19 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
      * @param emote Emote to serialize
      * @return return Json object
      */
-    public static JsonObject emoteSerializer(Emote emote){
+    public static JsonObject emoteSerializer(EmoteData emote){
         JsonObject node = new JsonObject();
-        node.addProperty("beginTick", emote.getBeginTick());
-        node.addProperty("endTick", emote.getEndTick());
-        node.addProperty("stopTick", emote.getStopTick());
-        node.addProperty("isLoop", emote.isInfinite());
-        node.addProperty("returnTick", emote.getReturnTick());
+        node.addProperty("beginTick", emote.beginTick);
+        node.addProperty("endTick", emote.endTick);
+        node.addProperty("stopTick", emote.stopTick);
+        node.addProperty("isLoop", emote.isInfinite);
+        node.addProperty("returnTick", emote.returnToTick);
         node.addProperty("degrees", false); //No program uses degrees.
         node.add("moves", moveSerializer(emote));
         return node;
     }
 
-    public static JsonArray moveSerializer(Emote emote){
+    public static JsonArray moveSerializer(EmoteData emote){
         JsonArray node = new JsonArray();
         bodyPartDeserializer(node, emote.head);
         bodyPartDeserializer(node, emote.torso);
@@ -193,7 +194,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
      * from here and below the methods are not public
      * these are really depend on the upper method and I don't think anyone will use these.
      */
-    private static void bodyPartDeserializer(JsonArray node, Emote.BodyPart bodyPart){
+    private static void bodyPartDeserializer(JsonArray node, EmoteData.StateCollection bodyPart){
         partDeserialize(node, bodyPart.x, bodyPart.name);
         partDeserialize(node, bodyPart.y, bodyPart.name);
         partDeserialize(node, bodyPart.z, bodyPart.name);
@@ -201,16 +202,16 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
         partDeserialize(node, bodyPart.yaw, bodyPart.name);
         partDeserialize(node, bodyPart.roll, bodyPart.name);
         partDeserialize(node, bodyPart.bend, bodyPart.name);
-        partDeserialize(node, bodyPart.axis, bodyPart.name);
+        partDeserialize(node, bodyPart.bendDirection, bodyPart.name);
     }
 
-    private static void partDeserialize(JsonArray array, Emote.Part part, String parentName){
-        for(Emote.Move move : part.getList()){
+    private static void partDeserialize(JsonArray array, EmoteData.StateCollection.State part, String parentName){
+        for(EmoteData.KeyFrame keyFrame : part.keyFrames){
             JsonObject node = new JsonObject();
-            node.addProperty("tick", move.tick);
-            node.addProperty("easing", move.getEase());
+            node.addProperty("tick", keyFrame.tick);
+            node.addProperty("easing", keyFrame.ease.toString());
             JsonObject jsonMove = new JsonObject();
-            jsonMove.addProperty(part.name, move.value);
+            jsonMove.addProperty(part.name, keyFrame.value);
             node.add(parentName, jsonMove);
             array.add(node);
         }

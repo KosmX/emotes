@@ -4,6 +4,7 @@ import com.kosmx.bendylib.IModelPart;
 import com.kosmx.bendylib.MutableModelPart;
 import com.kosmx.bendylib.objects.BendableCuboid;
 import com.kosmx.emotecraft.mixinInterface.IUpperPartHelper;
+import com.kosmx.emotecraft.model.EmotePlayer;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Matrix4f;
@@ -73,7 +74,7 @@ public class BendableModelPart extends MutableModelPart {
 
     @Override
     public boolean isActive(){
-        return this.emote != null && Emote.isRunningEmote(this.emote.get());
+        return this.emote != null && EmotePlayer.isRunningEmote(this.emote.get());
     }
 
     public void setEmote(@Nullable EmoteSupplier emote){
@@ -103,17 +104,17 @@ public class BendableModelPart extends MutableModelPart {
         return isUpperPart;
     }
 
-    public static class EmoteSupplier implements Supplier<Emote> {
+    public static class EmoteSupplier implements Supplier<EmotePlayer> {
         @Nullable
-        Emote emote;
+        EmotePlayer emote;
 
         @Override
         @Nullable
-        public Emote get(){
+        public EmotePlayer get(){
             return this.emote;
         }
 
-        public void set(@Nullable Emote emote){
+        public void set(@Nullable EmotePlayer emote){
             this.emote = emote;
         }
     }
