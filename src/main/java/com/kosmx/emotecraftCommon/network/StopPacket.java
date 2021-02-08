@@ -1,7 +1,8 @@
-package com.kosmx.emotecraft.network;
+package com.kosmx.emotecraftCommon.network;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
+
 
 import java.util.UUID;
 
@@ -15,15 +16,15 @@ public class StopPacket {
         this.player = playerEntity.getGameProfile().getId();
     }
 
-    public void read(PacketByteBuf buf){
-        player = buf.readUuid();
+    public void read(ByteBuf buf){
+        player = CommonNetwork.readUUID(buf);
     }
 
     public UUID getPlayer(){
         return this.player;
     }
 
-    public void write(PacketByteBuf buf){
-        buf.writeUuid(player);
+    public void write(ByteBuf buf){
+        CommonNetwork.writeUUID(buf, player);
     }
 }

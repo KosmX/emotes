@@ -5,6 +5,8 @@ import com.kosmx.emotecraftCommon.CommonData;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
 import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
+import com.kosmx.emotecraftCommon.network.EmotePacket;
+import com.kosmx.emotecraftCommon.network.StopPacket;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.minecraft.network.PacketByteBuf;
@@ -33,7 +35,7 @@ public class MainNetwork {
         ServerPlayNetworking.registerGlobalReceiver(EMOTE_PLAY_NETWORK_PACKET_ID, (server, player, handler, packetByteBuf, responseSender)->{
             EmotePacket packet = new EmotePacket();
             //PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            if(! packet.read(packetByteBuf, Main.config.validateEmote)){
+            if(! packet.read(packetByteBuf) && Main.config.validateEmote){
                 //Todo kick player
                 Main.log(Level.INFO, player.getEntityName() + " is trying to play invalid emote", true);
                 return;

@@ -4,8 +4,11 @@ import com.kosmx.emotecraftCommon.CommonData;
 import com.kosmx.emotecraftCommon.Logger;
 import com.kosmx.emotecraftCommon.Proxy;
 import com.kosmx.emotecraftCommon.network.DiscoveryPacket;
+import com.kosmx.emotecraftCommon.network.EmotePacket;
+import com.kosmx.emotecraftCommon.network.StopPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import net.minecraft.network.PacketByteBuf;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,6 +26,8 @@ public class BukkitMain extends JavaPlugin {
     final static String Stoppacket = CommonData.getIDAsString(CommonData.stopEmoteID);
     final static String DiscPacket = CommonData.getIDAsString(CommonData.discoverEmoteID);
     final EmoteListener listener = new EmoteListener();
+
+    public static boolean validate = false;
 
 
     static HashMap<UUID, Integer> player_database = new HashMap<>();
@@ -78,18 +83,29 @@ public class BukkitMain extends JavaPlugin {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Emotepacket);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, Emotepacket, (channel, player, message) -> {
             getLogger().info("[EMOTECRAFT] streaming emote");
+            EmotePacket packet = new EmotePacket();
+            if(!packet.read(Unpooled.wrappedBuffer(message)) && validate){
+                getLogger().info("Player: " + player.getName() + " is playing an invalid emote");
+                return;
+            }
             for(Player otherPlayer:getServer().getOnlinePlayers()){
                 if(otherPlayer != player && otherPlayer.canSee(player)){
-                    otherPlayer.sendPluginMessage(this, Emotepacket, message);
+                    ByteBuf buf = Unpooled.buffer();
+                    packet.write(buf, player_database.get(otherPlayer.getUniqueId()));
+                    otherPlayer.sendPluginMessage(this, Emotepacket, buf.array());
                 }
             }
         });
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Stoppacket);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, Stoppacket, (channel, player, message) -> {
             getLogger().info("[EMOTECRAFT] streaming emote");
+            StopPacket packet = new StopPacket();
+            packet.read(Unpooled.wrappedBuffer(message));
             for(Player otherPlayer:getServer().getOnlinePlayers()){
                 if(otherPlayer != player && otherPlayer.canSee(player)){
-                    otherPlayer.sendPluginMessage(this, Stoppacket, message);
+                    ByteBuf buf = Unpooled.buffer();
+                    packet.write(buf);
+                    otherPlayer.sendPluginMessage(this, Stoppacket, buf.array());
                 }
             }
         });
