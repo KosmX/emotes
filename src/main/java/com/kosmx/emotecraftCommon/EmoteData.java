@@ -164,7 +164,7 @@ public class EmoteData {
                 if(degrees && this.isAngle) value *= 0.01745329251f;
                 boolean bl = this.addKeyFrame(new KeyFrame(tick, value, ease));
                 if(isAngle && rotate != 0){
-                    bl = this.addKeyFrame(new KeyFrame(tick, (float) (value + Math.PI * 2d) * rotate, ease)) && bl;
+                    bl = this.addKeyFrame(new KeyFrame(tick, (float) (value + Math.PI * 2d * rotate), ease)) && bl;
                 }
                 return bl;
             }
