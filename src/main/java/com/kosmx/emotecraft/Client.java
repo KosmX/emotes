@@ -62,7 +62,6 @@ public class Client implements ClientModInitializer {
         serializeInternalEmotes("backflip");
         serializeInternalEmotes("roblox_potion_dance");
         serializeInternalEmotes("kazotsky_kick");
-        //TODO add internal emotes to the list
 
 
         if(! externalEmotes.isDirectory()) externalEmotes.mkdirs();

@@ -6,6 +6,8 @@
   "emotecraft.options.fastmenu3": "Right click to clear",
   "emotecraft.sure": "Overwriting keybind",
   "emotecraft.sure2": "An other emote has this keybind.\nDo you want to reset that and set the key to this?",
+  "emotecraft.otherconfig.category.general": "Basic options",
+  "emotecraft.otherconfig.category.expert": "Expert options",
   "emotecraft.otherconfig": "Other options",
   "emotecraft.otherconfig.debug": "Debug",
   "emotecraft.otherconfig.validate": "Validate emote",
