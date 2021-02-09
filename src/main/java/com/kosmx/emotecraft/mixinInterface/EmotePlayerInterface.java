@@ -15,4 +15,6 @@ public interface EmotePlayerInterface {
     int getLastUpdated();
 
     void resetLastUpdated();
+
+    boolean isPlayingEmote();
 }

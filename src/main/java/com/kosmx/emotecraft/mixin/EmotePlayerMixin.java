@@ -72,6 +72,11 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
     }
 
     @Override
+    public boolean isPlayingEmote() {
+        return EmotePlayer.isRunningEmote(this.getEmote());
+    }
+
+    @Override
     public void tick(){
         super.tick();
         if(EmotePlayer.isRunningEmote(this.emote)){
@@ -79,8 +84,8 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
             //if not the clientPlayer playing this emote (not the camera or the camera is in someone else) OR I can play that emote
             if(this == MinecraftClient.getInstance().getCameraEntity() && this.emote.perspectiveRedux){
                 if(!PerspectiveReduxProxy.getPerspective()){
-                    this.emote.perspectiveRedux = false;
-                    this.emote.perspective = null;
+                    //this.emote.perspectiveRedux = false;
+                    //this.emote.perspective = null;
                 }
             }
             else if(this == MinecraftClient.getInstance().getCameraEntity() && this.emote.perspective != null){

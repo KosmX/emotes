@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "package": "com.kosmx.emotecraft.compatibility.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "PerspectiveModReduxMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
