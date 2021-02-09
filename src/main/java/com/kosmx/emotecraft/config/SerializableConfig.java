@@ -24,6 +24,7 @@ public class SerializableConfig {
     public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
 
     public boolean validateEmote = false;
+    public float validThreshold = 8f;
     public boolean showDebug = false;
     public int configVersion;
     @Environment(EnvType.CLIENT)

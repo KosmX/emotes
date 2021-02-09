@@ -12,8 +12,8 @@ public class StopPacket {
     public StopPacket(){
     }
 
-    public StopPacket(PlayerEntity playerEntity){
-        this.player = playerEntity.getGameProfile().getId();
+    public StopPacket(UUID playerEntity){
+        this.player = playerEntity;
     }
 
     public void read(ByteBuf buf){

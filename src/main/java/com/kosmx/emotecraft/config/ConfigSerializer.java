@@ -27,6 +27,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
             Main.log(Level.WARN, "You are trying to load version "+ config.configVersion + " config. The mod can only load correctly up to v" + SerializableConfig.staticConfigVersion+". If you won't modify any config, I won't overwrite your config file.", true);
         }
         if(node.has("validate")) config.validateEmote = node.get("validate").getAsBoolean();
+        if(node.has("validThreshold")) config.validThreshold = node.get("validThreshold").getAsFloat();
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) clientDeserialize(node, config);
         return config;
     }
@@ -70,6 +71,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         node.addProperty("config_version", SerializableConfig.staticConfigVersion); //I always save config with the latest format.
         node.addProperty("showDebug", config.showDebug);
         node.addProperty("validate", config.validateEmote);
+        node.addProperty("validThreshold", config.validThreshold);
         if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) clientSerialize(config, node);
         return node;
     }

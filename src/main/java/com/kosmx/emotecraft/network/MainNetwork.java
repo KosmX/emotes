@@ -35,9 +35,12 @@ public class MainNetwork {
         ServerPlayNetworking.registerGlobalReceiver(EMOTE_PLAY_NETWORK_PACKET_ID, (server, player, handler, packetByteBuf, responseSender)->{
             EmotePacket packet = new EmotePacket();
             //PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            if(! packet.read(packetByteBuf) && Main.config.validateEmote){
-                //Todo kick player
+            if(! packet.read(packetByteBuf, Main.config.validThreshold) && Main.config.validateEmote){
                 Main.log(Level.INFO, player.getEntityName() + " is trying to play invalid emote", true);
+                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                StopPacket stopPacket = new StopPacket(player.getUuid());
+                stopPacket.write(buf);
+                handler.sendPacket(ServerPlayNetworking.createS2CPacket(EMOTE_STOP_NETWORK_PACKET_ID, buf));
                 return;
             }
             //packet.write(buf);
@@ -64,15 +67,6 @@ public class MainNetwork {
                 }
             }
         });
-
-        /*ServerPlayNetworking.registerGlobalReceiver(EMOTECRAFT_DISCOVERY_PACKET_ID, ((server, player, handler, buf, responseSender) -> {
-            DiscoveryPacket packet = new DiscoveryPacket();
-            packet.read(buf);
-            server.execute(()->{
-                ((IEmotecraftPresence)handler).setInstalledEmotecraft(packet.getVersion());
-            });
-        }));
-         */
 
         //The client will make a response but in singlePlayer it will happen before the "login" and causes a crash...
         //the channel registration will happen after a success login

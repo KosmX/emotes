@@ -26,12 +26,12 @@ public class EmotePacket {
     public EmotePacket(){
     }
 
-    public boolean read(ByteBuf buf){
+    public boolean read(ByteBuf buf, float validationThreshold){
         this.version = buf.readInt();
         this.isRepeat = buf.readBoolean();
         player = CommonNetwork.readUUID(buf);    //we need to know WHO playings this emote
         //emote = new Emote(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
-        emote = new EmoteData(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
+        emote = new EmoteData(buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt(), validationThreshold);
         getBodyPartInfo(buf, emote.head, false);
         getBodyPartInfo(buf, emote.torso, true);
         getBodyPartInfo(buf, emote.rightArm, true);

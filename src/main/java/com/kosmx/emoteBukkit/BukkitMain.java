@@ -8,11 +8,12 @@ import com.kosmx.emotecraftCommon.network.EmotePacket;
 import com.kosmx.emotecraftCommon.network.StopPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.network.PacketByteBuf;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -25,9 +26,12 @@ public class BukkitMain extends JavaPlugin {
     final static String Emotepacket = CommonData.getIDAsString(CommonData.playEmoteID);
     final static String Stoppacket = CommonData.getIDAsString(CommonData.stopEmoteID);
     final static String DiscPacket = CommonData.getIDAsString(CommonData.discoverEmoteID);
+    @Nullable
+    public FileConfiguration config = null;
     final EmoteListener listener = new EmoteListener();
 
     public static boolean validate = false;
+    public static boolean debug = true;
 
 
     static HashMap<UUID, Integer> player_database = new HashMap<>();
@@ -56,6 +60,7 @@ public class BukkitMain extends JavaPlugin {
                     this.error(msg);
                 }
             };
+            this.saveDefaultConfig();
         }
     }
 
@@ -76,16 +81,23 @@ public class BukkitMain extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.config = this.getConfig();
+        validate = config.getBoolean("validation");
+        debug = config.getBoolean("debug");
         getServer().getPluginManager().registerEvents(listener, this);
         super.onEnable();
         getLogger().info("Loading Emotecraft as a bukkit plugin...");
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Emotepacket);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, Emotepacket, (channel, player, message) -> {
-            getLogger().info("[EMOTECRAFT] streaming emote");
+            if(debug) getLogger().info("[EMOTECRAFT] streaming emote");
             EmotePacket packet = new EmotePacket();
-            if(!packet.read(Unpooled.wrappedBuffer(message)) && validate){
+            if(!packet.read(Unpooled.wrappedBuffer(message), (float) this.config.getDouble("validThreshold")) && validate){
                 getLogger().info("Player: " + player.getName() + " is playing an invalid emote");
+                ByteBuf buf = Unpooled.buffer();
+                StopPacket stopPacket = new StopPacket(player.getUniqueId());
+                stopPacket.write(buf);
+                player.sendPluginMessage(this, Stoppacket, buf.array());
                 return;
             }
             for(Player otherPlayer:getServer().getOnlinePlayers()){
@@ -98,7 +110,7 @@ public class BukkitMain extends JavaPlugin {
         });
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Stoppacket);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, Stoppacket, (channel, player, message) -> {
-            getLogger().info("[EMOTECRAFT] streaming emote");
+            if(debug)getLogger().info("[EMOTECRAFT] streaming emote stop");
             StopPacket packet = new StopPacket();
             packet.read(Unpooled.wrappedBuffer(message));
             for(Player otherPlayer:getServer().getOnlinePlayers()){
@@ -116,7 +128,7 @@ public class BukkitMain extends JavaPlugin {
             packet.read(reader);
             int ver = packet.getVersion();
             player_database.replace(player.getUniqueId(), ver);
-            getLogger().info("Player " + player.getName() + " has Emotecraft v" + ver + " installed.");
+            if(debug)getLogger().info("Player " + player.getName() + " has Emotecraft networking-v" + ver + " installed.");
         });
     }
 

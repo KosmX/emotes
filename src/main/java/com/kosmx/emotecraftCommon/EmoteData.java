@@ -27,7 +27,7 @@ public class EmoteData {
     public final StateCollection rightLeg;
     public final StateCollection leftLeg;
 
-    public static float threshold = 8; //TODO default threshold
+    public static float staticThreshold = 8; //TODO default threshold
 
     /**
      * Create new EmoteData
@@ -75,12 +75,12 @@ public class EmoteData {
      * @param returnToTick to return
      */
     public EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick){
-        this(beginTick, endTick, stopTick, isInfinite, returnToTick, threshold);
+        this(beginTick, endTick, stopTick, isInfinite, returnToTick, staticThreshold);
     }
 
     @Deprecated
     public EmoteData(int beginTick, int endTick, int stopTick){
-        this(beginTick, endTick, stopTick, false, 0, threshold);
+        this(beginTick, endTick, stopTick, false, 0, staticThreshold);
     }
 
 
@@ -237,12 +237,12 @@ public class EmoteData {
 
 
         public EmoteBuilder(){
-            head = new StateCollection(0, 0, 0, 0, 0, 0, "head", threshold);
-            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", threshold / 8f);
-            rightArm = new StateCollection(- 5, 2, 0, 0, 0, 0.09f, "rightArm", threshold);
-            leftArm = new StateCollection(5, 2, 0, 0, 0, - 0.09f, "leftArm", threshold);
-            leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", threshold);
-            rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", threshold);
+            head = new StateCollection(0, 0, 0, 0, 0, 0, "head", staticThreshold);
+            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", staticThreshold / 8f);
+            rightArm = new StateCollection(- 5, 2, 0, 0, 0, 0.09f, "rightArm", staticThreshold);
+            leftArm = new StateCollection(5, 2, 0, 0, 0, - 0.09f, "leftArm", staticThreshold);
+            leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", staticThreshold);
+            rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", staticThreshold);
         }
 
         public EmoteData build(){

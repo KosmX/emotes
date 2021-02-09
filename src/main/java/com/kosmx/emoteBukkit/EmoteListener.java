@@ -14,9 +14,8 @@ public class EmoteListener implements Listener {
     @EventHandler
     public void onPlayerOpenEmoteDiscoveryChannel(PlayerRegisterChannelEvent event){
         BukkitMain plugin = BukkitMain.getPlugin(BukkitMain.class);
-        plugin.getLogger().info("PlayerPacketEvent: " + event.getPlayer().getName() + " : " + event.getChannel());
         if(plugin.isEnabled() && event.getChannel().equals(BukkitMain.DiscPacket)) {
-            plugin.getLogger().info("Sending Emotecraft version to player " + event.getPlayer().getName());
+            if(BukkitMain.debug)plugin.getLogger().info("Sending Emotecraft version to player " + event.getPlayer().getName());
             DiscoveryPacket packet = new DiscoveryPacket(CommonData.networkingVersion);
             ByteBuf buf = Unpooled.buffer();
             packet.write(buf);
