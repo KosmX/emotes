@@ -22,6 +22,7 @@
   "emotecraft.otherconfig.playersafety": "Ativar recurso de segurança do jogador",
   "emotecraft.otherconfig.playersafety.tooltip": "não mostrará emotes de jogadores silenciados (1.16.4+)",
   "emotecraft.otherconfig.perspective": "Ativar perspectiva de 3ª pessoa enquanto usa um emote",
+  "emotecraft.otherconfig.prespective_redux": "Ativar integração com o Perspective Mod Redux",
   "emotecraft.otherconfig.prespective_redux.tooltip": "ativo apenas quando o modo de 3ª pessoa estiver ativado",
   "emotecraft.emotelist": "Todos os emotes",
   "emotecraft.no_server": "Esse servidor não tem o Emotecraft instalado, outros jogadores não poderão ver se você usar um emote",
