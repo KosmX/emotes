@@ -19,8 +19,10 @@ buildscript {
 plugins {
 	id 'fabric-loom' version '0.6-SNAPSHOT'
 	id 'maven-publish'
-	//id 'com.matthewprenger.cursegradle' version '1.4.0'
+	//publish mod to other places :D
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id "com.github.breadmoirai.github-release" version "2.2.12"
+	id "com.modrinth.minotaur" version "1.1.0"
 }
 
 apply plugin: 'com.jfrog.bintray'
@@ -49,6 +51,19 @@ targetCompatibility = JavaVersion.VERSION_1_8
 archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
 version = project.mod_version
 group = project.maven_group
+
+
+String version_name = project.version, isRelease, changes ="""Can be used as a bukkit plugin
++Auto 3rd person while playing an emote
++Network discovery
++(re)implemented emote validation
+"""
+
+//isRelease = "release"
+isRelease = "beta"
+//isRelease == "alpha"
+//changes = "This is a test for automated publishing, don't use this"
+
 
 minecraft {
 	//accessWidener = file("src/main/resources/emotecraft.accesswidener")
@@ -139,6 +154,9 @@ jar {
 	from "LICENSE"
 }
 
+import com.modrinth.minotaur.TaskModrinthUpload
+
+
 // configure the maven publication
 publishing {
 	publications {
@@ -147,7 +165,10 @@ publishing {
 			artifact(jar) {
 				builtBy remapJar
 			}
-			artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}.jar"){
+			//artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}.jar"){
+			//	builtBy remapJar
+			//}
+			artifact(remapJar) {
 				builtBy remapJar
 			}
 			artifact(sourcesJar) {
@@ -160,7 +181,6 @@ publishing {
 	repositories {
 		// uncomment to publish to the local maven
 		mavenLocal()
-		bintrayUpload
 	}
 	dependencies {
 		//@Nullable essential for mc modding
@@ -168,6 +188,27 @@ publishing {
 	}
 }
 
+task publishModrinth (type: TaskModrinthUpload) {
+	//BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	//System.out.println("Enter a Github Access Token: ");
+	//System.out.println("Enter release type")
+	//isRelease = br.readLine()
+	//System.out.println("Enter the version name:");
+	//version_name = br.readLine();
+	//System.out.println("Enter changelog:");
+	//changes = br.readLine();
+	releaseType = isRelease
+	token = project.keys.modrinth_token; // Get the GitHub Access Token you got from the basics part of this tutorial.
+	projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
+	//System.out.println("Enter the version number:");
+	versionNumber = project.version
+	//versionName = version_name;
+	uploadFile = remapJar // This links to a task that builds your mod jar and sets "uploadFile" to the mod jar.
+	//System.out.println("Enter the game version number: (See minotaur docs for valids)");
+	addGameVersion(project.minecraft_version);
+	changelog = changes;
+	addLoader("fabric")
+}
 
 //bintray upload script
 bintray {
@@ -194,8 +235,9 @@ bintray {
 	}
 	publications = ['mavenJava']
 }
-/*githubRelease {
-	token "<your token>" // This is your personal access token with Repo permissions
+
+githubRelease {
+	token project.keys.github_token // This is your personal access token with Repo permissions
 	// You get this from your user settings > developer settings > Personal Access Tokens
 	owner "KosmX" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
 	repo "emotes" // by default this is set to your project name
@@ -205,37 +247,46 @@ bintray {
 	body "" // by default this is empty
 	draft false // by default this is false
 	prerelease false // by default this is false
-	releaseAssets jar.destinationDir.listFiles // this points to which files you want to upload as assets with your release
+	releaseAssets jar, remapJar, sourcesJar // this points to which files you want to upload as assets with your release
 
 	overwrite false // by default false; if set to true, will delete an existing release with the same tag and name
 	dryRun false // by default false; you can use this to see what actions would be taken without making a release
 	apiEndpoint "https://api.github.com" // should only change for github enterprise users
 	client // This is the okhttp client used for http requests
+	body changes
 }
- */ //TODO
-/*curseforge {
+
+curseforge {
 	apiKey = project.keys.curseforge_key
 	project {
 		id = '397809'
 		changelogType = "markdown"
-		changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
-		releaseType = 'release'
+		//changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+		changelog = changes
+		releaseType = isRelease
 		addGameVersion project.minecraft_version
+		addGameVersion "Fabric"
 
 
 		relations {
 			requiredDependency 'fabric-api'
 			embeddedLibrary 'cloth-config'
 			embeddedLibrary 'modmenu'
+			optionalDependency 'perspective-mod-redux'
 		}
 
 		options {
 			forgeGradleIntegration = false // FABRIC MOD
 		}
 
-		mainArtifact(jar) {
-			displayName = archivesBaseName
+		mainArtifact(remapJar) {
+			//displayName = archivesBaseName
 		}
 	}
 }
- */
+
+task autoPublish{
+	//:D
+}
+autoPublish.dependsOn(build)
+autoPublish.finalizedBy(publishModrinth, bintrayUpload, tasks.githubRelease , tasks.curseforge, publish)

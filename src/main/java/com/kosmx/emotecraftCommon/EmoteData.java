@@ -27,7 +27,7 @@ public class EmoteData {
     public final StateCollection rightLeg;
     public final StateCollection leftLeg;
 
-    public static float staticThreshold = 8; //TODO default threshold
+    public static float staticThreshold = 8;
 
     /**
      * Create new EmoteData
