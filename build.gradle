@@ -53,15 +53,12 @@ version = project.mod_version
 group = project.maven_group
 
 
-String version_name = project.version, isRelease, changes ="""Can be used as a bukkit plugin
-+Auto 3rd person while playing an emote
-+Network discovery
-+(re)implemented emote validation
+String version_name = project.version, isRelease, changes ="""changelog
 """
 
 //isRelease = "release"
 isRelease = "beta"
-//isRelease == "alpha"
+//isRelease = "alpha"
 //changes = "This is a test for automated publishing, don't use this"
 
 
@@ -266,6 +263,9 @@ curseforge {
 		releaseType = isRelease
 		addGameVersion project.minecraft_version
 		addGameVersion "Fabric"
+		addGameVersion "Java 8"
+		addGameVersion "Java 9"
+		addGameVersion "Java 10"
 
 
 		relations {
