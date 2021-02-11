@@ -1,6 +1,6 @@
-package com.kosmx.emotecraft.compatibility.mixin;
+package com.kosmx.emotecraft.integration.mixin;
 
-import com.kosmx.emotecraft.compatibility.perspectiveRedux.HackedKeyBinding;
+import com.kosmx.emotecraft.integration.perspectiveRedux.HackedKeyBinding;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;

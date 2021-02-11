@@ -1,4 +1,4 @@
-package com.kosmx.quarktool;
+package com.kosmx.emotecraft.quarktool;
 
 public class Pauseable implements Playable {
     private final Playable playable;

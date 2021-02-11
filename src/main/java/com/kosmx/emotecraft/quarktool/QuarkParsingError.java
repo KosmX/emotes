@@ -1,4 +1,4 @@
-package com.kosmx.quarktool;
+package com.kosmx.emotecraft.quarktool;
 
 public class QuarkParsingError extends Exception {
     final String message;

@@ -1,4 +1,4 @@
-package com.kosmx.emotecraft.compatibility.perspectiveRedux;
+package com.kosmx.emotecraft.integration.perspectiveRedux;
 
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import net.minecraft.client.MinecraftClient;

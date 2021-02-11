@@ -6,7 +6,7 @@ import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.model.EmotePlayer;
 import com.kosmx.emotecraft.network.ClientNetwork;
-import com.kosmx.quarktool.QuarkReader;
+import com.kosmx.emotecraft.quarktool.QuarkReader;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;

@@ -1,4 +1,4 @@
-package com.kosmx.emotecraft.compatibility;
+package com.kosmx.emotecraft.integration;
 
 /*
 make Emotecraft compatible with other mods

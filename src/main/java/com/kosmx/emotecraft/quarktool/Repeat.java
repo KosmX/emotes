@@ -1,4 +1,4 @@
-package com.kosmx.quarktool;
+package com.kosmx.emotecraft.quarktool;
 
 public class Repeat implements Playable {
     protected final Playable playable;

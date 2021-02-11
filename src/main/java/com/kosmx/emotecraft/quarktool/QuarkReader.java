@@ -1,4 +1,4 @@
-package com.kosmx.quarktool;
+package com.kosmx.emotecraft.quarktool;
 
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;

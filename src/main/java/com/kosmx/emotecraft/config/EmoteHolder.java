@@ -47,7 +47,7 @@ public class EmoteHolder {
     public Object iconName = null; //Icon name
 
     /**
-     * was it imported by {@link com.kosmx.quarktool.QuarkReader}
+     * was it imported by {@link com.kosmx.emotecraft.quarktool.QuarkReader}
      */
     public boolean isQuarkEmote = false;
 

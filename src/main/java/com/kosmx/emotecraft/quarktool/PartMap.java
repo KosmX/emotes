@@ -1,4 +1,4 @@
-package com.kosmx.quarktool;
+package com.kosmx.emotecraft.quarktool;
 
 import com.kosmx.emotecraftCommon.EmoteData;
 import com.kosmx.emotecraftCommon.math.Ease;

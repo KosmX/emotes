@@ -135,7 +135,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
      *
      * If you want to serialize an emote without EmoteHolder
      * do new EmoteHolder(emote, new LiteralText("name").formatted(Formatting.WHITE), new LiteralText("someString").formatted(Formatting.GRAY), new LiteralText("author").formatted(Formatting.GRAY), some random hash(int));
-     * (this code is from {@link com.kosmx.quarktool.QuarkReader#getEmote()})
+     * (this code is from {@link com.kosmx.emotecraft.quarktool.QuarkReader#getEmote()})
      *
      * or use {@link EmoteSerializer#emoteSerializer(EmoteData)}
      *
