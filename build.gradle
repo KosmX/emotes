@@ -185,6 +185,7 @@ publishing {
 	}
 }
 
+if(keys_imported){
 task publishModrinth (type: TaskModrinthUpload) {
 	//BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	//System.out.println("Enter a Github Access Token: ");
@@ -290,3 +291,4 @@ task autoPublish{
 }
 autoPublish.dependsOn(build)
 autoPublish.finalizedBy(publishModrinth, bintrayUpload, tasks.githubRelease , tasks.curseforge, publish)
+}
