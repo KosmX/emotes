@@ -19,7 +19,7 @@
   "emotecraft.otherconfig.showicon.tooltip": "If available",
   "emotecraft.otherconfig.stopthreshold": "Stop emote at this speed threshold. (0.22 is walking speed)",
   "emotecraft.otherconfig.stopthreshold.tooltip": "with large value, you won't stop playing the emote. You can still use the stop play key",
-  "emotecraft.otherconfig.yratio": "Y way moving influence in stop threshold in percents(%)",
+  "emotecraft.otherconfig.yratio": "Y axis moving influence in stop threshold in percents(%)",
   "emotecraft.otherconfig.yratio.tooltip": "bigger value means bigger influence",
   "emotecraft.otherconfig.loadbuiltin": "Load built-in emotes",
   "emotecraft.otherconfig.loadbuiltin.tooltip": "If you want to remove these for some reason...",

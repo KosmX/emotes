@@ -6,29 +6,69 @@ Minecraft mod to add emotes to the game like in Bedrock Edition...
 Just it's open source and free unlike that :D
 ## Minecraft emotes
 
-play emotes in Minecraft
-###
-![](https://i.imgur.com/tWD40Fg.png)
-###
-Easy-to-use menu
-###
-![](https://i.imgur.com/etlReBO.png)
-
-### MENU
-![](https://i.imgur.com/t2aD77K.png)
-Select an emote from the list, than you can add custom keybinding to it or add to the fast menu :D
-(In the seacrh box you can search for Author, but you have to write they full name)
-
-### Custom emotes are supported!
-you can create your own emotes, and when you play, everyone will see it (who can see your player...)
-Use Blender to create the emote. You don't have to write code, just use blender
-###
-[![](https://i.imgur.com/M3LBG6H.png)
-to the description](https://kosmx.gitbook.io/emotecraft/tutorial/custom-emotes)
-#### If you send me an emote, I may include it in the mod
-
-Unstable quark importer: able to import quark emotes
-turn the feature on (in the menu), put quark emotes into the emotes folder.  
-###
 [User manual](https://kosmx.gitbook.io/emotecraft/)  
-In the case you find an issue, Please report it (on Discord or on Github).
+[Mod code documentation](https://github.com/KosmX/emotes/wiki)
+
+
+Set-up dev environment and compile
+```bash
+git clone https://github.com/KosmX/emotes.git
+```
+You should set it up as a [Fabric mod](https://fabricmc.net/wiki/tutorial:setup)
+
+Emotecraft dependencies:  
+Note: some dependencies are from jcenter `jcenter()`
+<br>
+[Fabric-api](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+```groovy
+modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+```
+[Mod Menu](https://github.com/TerraformersMC/ModMenu)
+```groovy
+modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+include "io.github.prospector:modmenu:${project.modmenu_version}"
+```
+[Cloth Config](https://github.com/shedaniel/cloth-config)
+```groovy
+modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
+include "me.shedaniel.cloth:config-2:${project.cloth_version}"
+```
+[bendy-lib](https://github.com/kosmx/bendy-lib)  
+```groovy
+modImplementation "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
+include "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
+```  
+    
+[Perspective Mod Redux](https://github.com/BackportProjectMC/PerspectiveModRedux)
+```groovy
+modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"
+```
+Perpective Mod Redux is not in any maven repo, you need to publish it to your local repo
+```groovy
+mavenLocal()
+```
+To do it, you need to git it  
+`git clone https://github.com/BackportProjectMC/PerspectiveModRedux.git`  
+edit the build.gradle with the following
+```diff
+@@ -77,6 +77,9 @@
+ 			artifact(jar) {
+ 				builtBy remapJar
+ 			}
++			artifact(remapJar){
++				builtBy remapJar
++			}
+ 			artifact(sourcesJar) {
+ 				builtBy remapSourcesJar
+ 			}
+@@ -86,6 +89,6 @@
+ 	// select the repositories you want to publish to
+ 	repositories {
+ 		// uncomment to publish to the local maven
+-		// mavenLocal()
++		mavenLocal()
+ 	}
+ }
+```
+<br>
+If you want to implement the mod, you won't need Perspective Mod Redux to build your mod
