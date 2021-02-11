@@ -6,10 +6,14 @@
   "emotecraft.options.fastmenu3": "Clique direito para limpar",
   "emotecraft.sure": "Sobrescrição de atalho",
   "emotecraft.sure2": "Outro emote tem esse atalho.\nVocê quer reiniciar isso e definir a tecla para essa?",
+  "emotecraft.otherconfig.category.general": "Definições básicas",
+  "emotecraft.otherconfig.category.expert": "Definições avançadas",
   "emotecraft.otherconfig": "Outras definições",
   "emotecraft.otherconfig.debug": "Depuração",
   "emotecraft.otherconfig.validate": "Validar emote",
   "emotecraft.otherconfig.validate.tooltip": "Somente para mundos com JvJ, onde alguém quer trapacear. Isso cria uma limitação, tornando impossível executar alguns gestos",
+  "emotecraft.otherconfig.validationThreshold": "Limite de validação",
+  "emotecraft.otherconfig.validationThreshold.tooltip": "Exatamente quanto deslocamento é demais",
   "emotecraft.otherconfig.dark": "Menu rápido escuro",
   "emotecraft.otherconfig.showicon": "Mostrar ícones ao invés dos nomes dos emotes",
   "emotecraft.otherconfig.showicon.tooltip": "Se disponível",
@@ -36,5 +40,6 @@
   "emotecraft.quark2": "O leitor de emotes de quark é altamente instável e não é completamente suportado.\nUsá-lo não é recomendado. Ele pode funcionar inesperadamente ou pode até causar travamento\nVocê realmente quer ligá-lo?",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
-  "emotecraft.config": "Definir emotes"
+  "emotecraft.config": "Definir emotes",
+  "emotecraft.blockedEmote": "Você não tem permissão para executar este emote"
 }
