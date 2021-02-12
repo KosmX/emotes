@@ -51,7 +51,7 @@ public class EmotePacket {
 
     public void write(ByteBuf buf, int version){
         this.version = Math.min(version, CommonData.networkingVersion);
-        buf.writeInt(version);
+        buf.writeInt(this.version);
         buf.writeBoolean(isRepeat);
         CommonNetwork.writeUUID(buf, player);
         buf.writeInt(emote.beginTick);

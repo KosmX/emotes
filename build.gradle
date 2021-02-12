@@ -53,11 +53,11 @@ version = project.mod_version
 group = project.maven_group
 
 
-String version_name = project.version, isRelease, changes ="""changelog
+String version_name = project.version, isRelease, changes ="""Crash when connecting to a server with never Emotecraft
 """
 
-//isRelease = "release"
-isRelease = "beta"
+isRelease = "release"
+//isRelease = "beta"
 //isRelease = "alpha"
 //changes = "This is a test for automated publishing, don't use this"
 
