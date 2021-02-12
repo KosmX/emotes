@@ -26,6 +26,7 @@ public class EmoteData {
     public final StateCollection leftArm;
     public final StateCollection rightLeg;
     public final StateCollection leftLeg;
+    public final boolean isEasingBefore;
 
     public static float staticThreshold = 8;
 
@@ -37,8 +38,9 @@ public class EmoteData {
      * @param isInfinite is looped
      * @param returnToTick to return
      * @param threshold threshold value
+     * @param isEasingBefore easing show what was before instead of after
      */
-    public EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, float threshold) {
+    public EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, float threshold, boolean isEasingBefore) {
         this.beginTick = Math.max(beginTick, 0);
         this.endTick = Math.max(beginTick + 1, endTick);
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
@@ -46,13 +48,18 @@ public class EmoteData {
         this.returnToTick = returnToTick;
         head = new StateCollection(0, 0, 0, 0, 0, 0, "head", threshold);
         torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", threshold / 8f);
-        rightArm = new StateCollection(- 5, 2, 0, 0, 0, 0.09f, "rightArm", threshold);
-        leftArm = new StateCollection(5, 2, 0, 0, 0, - 0.09f, "leftArm", threshold);
+        rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", threshold);
+        leftArm = new StateCollection(5, 2, 0, 0, 0, 0f, "leftArm", threshold);
         leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", threshold);
         rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", threshold);
+        this.isEasingBefore = isEasingBefore;
     }
 
-    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg){
+    public EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, float threshold){
+        this(beginTick, endTick, stopTick, isInfinite, returnToTick, threshold, false);
+    }
+
+    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore){
         this.beginTick = Math.max(beginTick, 0);
         this.endTick = Math.max(beginTick + 1, endTick);
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
@@ -64,6 +71,7 @@ public class EmoteData {
         this.rightLeg = rightLeg;
         this.leftArm = leftArm;
         this.leftLeg = leftLeg;
+        this.isEasingBefore = isEasingBefore;
     }
 
     /**
@@ -228,6 +236,8 @@ public class EmoteData {
         public final StateCollection leftArm;
         public final StateCollection rightLeg;
         public final StateCollection leftLeg;
+        public boolean isEasingBefore = false;
+        public float validationThreshold = staticThreshold;
 
         public int beginTick;
         public int endTick;
@@ -237,16 +247,16 @@ public class EmoteData {
 
 
         public EmoteBuilder(){
-            head = new StateCollection(0, 0, 0, 0, 0, 0, "head", staticThreshold);
-            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", staticThreshold / 8f);
-            rightArm = new StateCollection(- 5, 2, 0, 0, 0, 0.09f, "rightArm", staticThreshold);
-            leftArm = new StateCollection(5, 2, 0, 0, 0, - 0.09f, "leftArm", staticThreshold);
-            leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", staticThreshold);
-            rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", staticThreshold);
+            head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold);
+            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", validationThreshold / 8f);
+            rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold);
+            leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold);
+            leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold);
+            rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold);
         }
 
         public EmoteData build(){
-            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg);
+            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore);
         }
     }
 }

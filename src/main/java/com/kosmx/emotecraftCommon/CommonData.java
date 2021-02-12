@@ -17,8 +17,9 @@ public class CommonData {
      * ver 2: no network discovery, repeating and bending exists
      * ver 3: network discovery
      * ver 4: not syncing head bending values
+     * ver 5: boolean, easing can indicated after the move
      */
-    public static final int networkingVersion = 4;
+    public static final int networkingVersion = 5;
 
     //bidirectional, Emote playing or repeating
     public static final String playEmoteID = "playemote";

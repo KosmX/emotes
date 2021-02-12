@@ -19,6 +19,10 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
     public EmoteHolder deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
         JsonObject node = p.getAsJsonObject();
 
+        if(!node.has("emote")){
+            return GeckoLibSerializer.serialize(node);
+        }
+
         int version = 1;
         if(node.has("version")) version = node.get("version").getAsInt();
         MutableText author = (MutableText) LiteralText.EMPTY;

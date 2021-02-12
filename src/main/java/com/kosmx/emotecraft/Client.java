@@ -94,6 +94,7 @@ public class Client implements ClientModInitializer {
             }catch(Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
                 Main.log(Level.ERROR, e.getMessage());
+                if(Main.config.showDebug)e.printStackTrace();
             }
         }
 
