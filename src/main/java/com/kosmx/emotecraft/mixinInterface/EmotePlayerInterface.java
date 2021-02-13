@@ -12,9 +12,10 @@ public interface EmotePlayerInterface {
     @Nullable
     EmotePlayer getEmote();
 
-    int getLastUpdated();
-
     void resetLastUpdated();
 
     boolean isPlayingEmote();
+
+    void stopEmote();
+
 }

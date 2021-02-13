@@ -61,6 +61,11 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
     }
 
     @Override
+    public void stopEmote() {
+        if(this.emote != null)this.emote.stop();
+    }
+
+    @Override
     @Nullable
     public EmotePlayer getEmote(){
         return this.emote;

@@ -237,7 +237,7 @@ public class EmotePlayer implements Tickable {
             }
             if(tickBefore == tickAfter) return before.value;
             float f = (currentTick + tickDelta - (float) tickBefore) / (tickAfter - tickBefore);
-            return MathHelper.lerp(Easing.easingFromEnum(before.ease, f), before.value, after.value);
+            return MathHelper.lerp(Easing.easingFromEnum(data.isEasingBefore ? after.ease : before.ease, f), before.value, after.value);
         }
 
     }

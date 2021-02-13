@@ -7,6 +7,7 @@ import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.gui.widget.AbstractEmoteListWidget;
 import com.kosmx.emotecraft.gui.widget.AbstractFastChooseWidget;
 import com.kosmx.emotecraft.math.Helper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
@@ -22,13 +23,18 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
+import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EmoteMenu extends Screen {
     private final Screen parent;
@@ -44,6 +50,7 @@ public class EmoteMenu extends Screen {
     private List<PositionedText> texts = new ArrayList<>();
     private ButtonWidget resetKey;
 
+    public boolean exportGeckoEmotes = false;
 
     public EmoteMenu(Screen parent){
         super(new TranslatableText("menu_title"));
@@ -63,8 +70,32 @@ public class EmoteMenu extends Screen {
         }
 
         this.texts = new ArrayList<>();
-
         Client.initEmotes();
+
+        if(this.exportGeckoEmotes){
+            exportGeckoEmotes = false;
+            EmoteHolder.list.forEach(emoteHolder -> {
+                if(emoteHolder.isFromGeckoLib){
+                    File dir = FabricLoader.getInstance().getGameDir().resolve("emotes").resolve("GeckoLibExport").toFile();
+                    if(!dir.isDirectory()){
+                        if(!dir.mkdirs()){
+                            Main.log(Level.ERROR, "can't create directory for exporting emotes");
+                            return;
+                        }
+                    }
+                    Path target = dir.toPath().resolve(emoteHolder.name.asString() + ".json");
+                    try {
+                        BufferedWriter writer = Files.newBufferedWriter(target);
+                        Serializer.serializer.toJson(emoteHolder, writer);
+                        writer.close();
+                    } catch (IOException e) {
+                        Main.log(Level.ERROR, "Can't create file: " + e.getMessage(), true);
+                        if(Main.config.showDebug) e.printStackTrace();
+                    }
+                }
+            });
+        }
+
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - (int) (this.width / 2.2 - 16) - 12, 12, (int) (this.width / 2.2 - 16), 20, this.searchBox, new TranslatableText("emotecraft.search"));
 
         this.searchBox.setChangedListener((string)->this.emoteList.filter(string::toLowerCase));

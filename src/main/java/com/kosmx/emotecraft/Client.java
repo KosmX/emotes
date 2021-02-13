@@ -24,6 +24,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 public class Client implements ClientModInitializer {
@@ -76,24 +77,25 @@ public class Client implements ClientModInitializer {
         }
         InputStream stream = Client.class.getResourceAsStream("/assets/" + Main.MOD_ID + "/emotes/" + name + ".json");
         InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-        Reader reader = new BufferedReader(streamReader);
-        EmoteHolder emoteHolder = Serializer.serializer.fromJson(reader, EmoteHolder.class);
-        EmoteHolder.addEmoteToList(emoteHolder);
-        emoteHolder.bindIcon(("/assets/" + Main.MOD_ID + "/emotes/" + name + ".png"));
+        BufferedReader reader = new BufferedReader(streamReader);
+        List<EmoteHolder> emoteHolders = EmoteHolder.deserializeJson(reader); //Serializer.serializer.fromJson(reader, EmoteHolder.class);
+        EmoteHolder.addEmoteToList(emoteHolders);
+        emoteHolders.get(0).bindIcon(("/assets/" + Main.MOD_ID + "/emotes/" + name + ".png"));
     }
 
     private static void serializeExternalEmotes(){
         for(File file : Objects.requireNonNull(Client.externalEmotes.listFiles((dir, name)->name.endsWith(".json")))){
             try{
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
-                EmoteHolder emote = EmoteHolder.deserializeJson(reader);
-                EmoteHolder.addEmoteToList(emote);
+                List<EmoteHolder> emotes = EmoteHolder.deserializeJson(reader);
+                EmoteHolder.addEmoteToList(emotes);
                 reader.close();
                 File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".png").toFile();
-                if(icon.isFile()) emote.bindIcon(icon);
+                if(icon.isFile() && emotes.size() == 1) emotes.get(0).bindIcon(icon);
             }catch(Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
                 Main.log(Level.ERROR, e.getMessage());
+                if(Main.config.showDebug)e.printStackTrace();
             }
         }
 
@@ -130,7 +132,7 @@ public class Client implements ClientModInitializer {
         Path location = FabricLoader.getInstance().getGameDir().resolve("emote.json");
         try{
             BufferedReader reader = Files.newBufferedReader(location);
-            EmoteHolder emoteHolder = EmoteHolder.deserializeJson(reader);
+            EmoteHolder emoteHolder = EmoteHolder.deserializeJson(reader).get(0);
             reader.close();
             if(MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
                 PlayerEntity entity = (PlayerEntity) MinecraftClient.getInstance().getCameraEntity();
