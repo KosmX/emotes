@@ -33,6 +33,11 @@ public class ClothConfigScreen {
             }
             Main.config.enableQuark = newValue;
         }).build());
+        general.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("emotecraft.otherconfig.exportGecko"), false).setDefaultValue(false).setTooltip(new TranslatableText("emotecraft.otherconfig.exportGecko.tooltip")).setSaveConsumer(newValue->{
+            if(parent instanceof EmoteMenu){
+                ((EmoteMenu)parent).exportGeckoEmotes = newValue;
+            }
+        }).build());
 
         //Expert options
 

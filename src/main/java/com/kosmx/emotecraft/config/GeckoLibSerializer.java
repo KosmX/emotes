@@ -20,14 +20,14 @@ import java.util.List;
  * https://geckolib.com/
  */
 public class GeckoLibSerializer {
-    public static EmoteHolder serialize(JsonObject node){
+    public static List<EmoteHolder> serialize(JsonObject node){
         if(!node.get("format_version").getAsString().equals("1.8.0")){
             Main.log(Level.INFO, "Gecko lib format what?");
         }
         return readAnimations(node.get("animations").getAsJsonObject());
     }
 
-    private static EmoteHolder readAnimations(JsonObject jsonEmotes){
+    private static List<EmoteHolder> readAnimations(JsonObject jsonEmotes){
         List<EmoteHolder> emotes = new ArrayList<>();
         jsonEmotes.entrySet().forEach(stringJsonElementEntry -> {
             MutableText name = new LiteralText(stringJsonElementEntry.getKey()).formatted(Formatting.WHITE);
@@ -44,9 +44,11 @@ public class GeckoLibSerializer {
             }
             EmoteData emoteData = new EmoteData(0, length, 0, loop, returnTick, 0, true);
             keyframeSerializer(emoteData, node.get("bones").getAsJsonObject());
-            emotes.add(new EmoteHolder(emoteData, name, new LiteralText("Imported from GeckoLib").formatted(Formatting.YELLOW), (MutableText) LiteralText.EMPTY, node.hashCode()));
+            EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, new LiteralText("Imported from GeckoLib").formatted(Formatting.YELLOW), (MutableText) LiteralText.EMPTY, node.hashCode());
+            emoteHolder.isFromGeckoLib = true;
+            emotes.add(emoteHolder);
         });
-        return emotes.get(0);
+        return emotes;
     }
 
     private static void keyframeSerializer(EmoteData emoteData, JsonObject node){

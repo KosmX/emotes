@@ -10,13 +10,15 @@ import net.minecraft.text.Text;
 import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSerializer<EmoteHolder> {
+public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, JsonSerializer<EmoteHolder> {
 
-    private final int modVersion = 1;
+    private final int modVersion = 2;
     @Override
-    public EmoteHolder deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
+    public List<EmoteHolder> deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
         JsonObject node = p.getAsJsonObject();
 
         if(!node.has("emote")){
@@ -48,35 +50,37 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
             Main.log(Level.WARN, "If it is a comment, ignore the warning");
         });
         EmoteData emote = emoteDeserializer(node.getAsJsonObject("emote"));
-        return new EmoteHolder(emote, name, description, author, node.hashCode());
+        List<EmoteHolder> list = new ArrayList<>();
+        list.add(new EmoteHolder(emote, name, description, author, node.hashCode()));
+        return list;
     }
 
     private EmoteData emoteDeserializer(JsonObject node) throws JsonParseException{
-        int beginTick = 0;
+        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
         if(node.has("beginTick")){
-            beginTick = node.get("beginTick").getAsInt();
+            builder.beginTick = node.get("beginTick").getAsInt();
         }
-        int endTick = node.get("endTick").getAsInt();
-        if(endTick <= 0) throw new JsonParseException("endTick must be bigger than 0");
-        boolean isLoop = false;
-        int returnTick = 0;
+        builder.endTick = node.get("endTick").getAsInt();
+        if(builder.endTick <= 0) throw new JsonParseException("endTick must be bigger than 0");
         if(node.has("isLoop") && node.has("returnTick")){
-            isLoop = node.get("isLoop").getAsBoolean();
-            returnTick = node.get("returnTick").getAsInt();
-            if(isLoop && (returnTick > endTick || returnTick < 0))
+            builder.isLooped = node.get("isLoop").getAsBoolean();
+            builder.returnTick = node.get("returnTick").getAsInt();
+            if(builder.isLooped && (builder.returnTick > builder.endTick || builder.returnTick < 0))
                 throw new JsonParseException("return tick have to be smaller than endTick and not smaller than 0");
         }
 
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
-            if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves") || string.equals("returnTick") || string.equals("isLoop"))
+            if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves") || string.equals("returnTick") || string.equals("isLoop") || string.equals("easeBeforeKeyframe"))
                 return;
             Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
             Main.log(Level.WARN, "If it is a comment, ignore the warning");
         });
-        int resetTick = node.has("stopTick") ? node.get("stopTick").getAsInt() : endTick;
+        builder.stopTick = node.has("stopTick") ? node.get("stopTick").getAsInt() : builder.endTick;
         boolean degrees = ! node.has("degrees") || node.get("degrees").getAsBoolean();
-        EmoteData emote = new EmoteData(beginTick, endTick, resetTick, isLoop, returnTick);
+        //EmoteData emote = new EmoteData(beginTick, endTick, resetTick, isLoop, returnTick);
+        if(node.has("easeBeforeKeyframe"))builder.isEasingBefore = node.get("easeBeforeKeyframe").getAsBoolean();
+        EmoteData emote = builder.build();
         moveDeserializer(emote, node.getAsJsonArray("moves"), degrees);
         return emote;
     }
@@ -135,7 +139,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
 
     /**
      * To serialize emotes to Json.
-     * This code was not used in the mod, but I left it here for modders.
+     * This code is not used in the mod, but I left it here for modders.
      *
      * If you want to serialize an emote without EmoteHolder
      * do new EmoteHolder(emote, new LiteralText("name").formatted(Formatting.WHITE), new LiteralText("someString").formatted(Formatting.GRAY), new LiteralText("author").formatted(Formatting.GRAY), some random hash(int));
@@ -153,6 +157,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
     @Override
     public JsonElement serialize(EmoteHolder emote, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject node = new JsonObject();
+        node.addProperty("version", emote.getEmote().isEasingBefore ? 2 : 1); //to make compatible emotes. I won't do it.
         node.add("name", Text.Serializer.toJsonTree(emote.name));
         node.add("description", Text.Serializer.toJsonTree(emote.description)); // :D
         if(!emote.author.getString().equals("")){
@@ -179,6 +184,7 @@ public class EmoteSerializer implements JsonDeserializer<EmoteHolder>, JsonSeria
         node.addProperty("isLoop", emote.isInfinite);
         node.addProperty("returnTick", emote.returnToTick);
         node.addProperty("degrees", false); //No program uses degrees.
+        if(emote.isEasingBefore)node.addProperty("easeBeforeKeyframe", true);
         node.add("moves", moveSerializer(emote));
         return node;
     }

@@ -1,6 +1,7 @@
 package com.kosmx.emotecraft.config;
 
 import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import com.kosmx.emotecraft.Client;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,8 @@ public class EmoteHolder {
     private Identifier iconIdentifier = null;
     @Nullable
     public Object iconName = null; //Icon name
+
+    public boolean isFromGeckoLib = false;
 
     /**
      * was it imported by {@link com.kosmx.emotecraft.quarktool.QuarkReader}
@@ -200,16 +204,19 @@ public class EmoteHolder {
         return null;
     }
 
-    public static EmoteHolder deserializeJson(BufferedReader json) throws JsonParseException{     //throws BowlingBall XD
-        return Serializer.serializer.fromJson(json, EmoteHolder.class);
+    public static List<EmoteHolder> deserializeJson(BufferedReader json) throws JsonParseException{     //throws BowlingBall XD
+        return Serializer.serializer.fromJson(json, new TypeToken<List<EmoteHolder>>(){}.getType());
     }
 
     public static void addEmoteToList(BufferedReader json) throws JsonParseException{
-        list.add(deserializeJson(json));
+        list.addAll(deserializeJson(json));
     }
 
     public static void addEmoteToList(EmoteHolder hold){
         list.add(hold);
+    }
+    public static void addEmoteToList(List<EmoteHolder> hold){
+        list.addAll(hold);
     }
 
     public static boolean playEmote(EmoteData emote, PlayerEntity player){
