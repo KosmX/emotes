@@ -6,6 +6,8 @@
   "emotecraft.options.fastmenu3": "Щёлкните правой кнопкой мыши для очистки",
   "emotecraft.sure": "Перезаписать привязки клавиш",
   "emotecraft.sure2": "Другая эмоция связана с этой кнопкой.\nВы хотите сбросить это и установить кнопку для этой?",
+  "emotecraft.otherconfig.category.general": "Основные настройки",
+  "emotecraft.otherconfig.category.expert": "Экспертные опции",
   "emotecraft.otherconfig": "Другие параметры",
   "emotecraft.otherconfig.debug": "Отлаживать",
   "emotecraft.otherconfig.validate": "Подтвердить эмоцию",
