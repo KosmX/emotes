@@ -28,6 +28,8 @@
   "emotecraft.otherconfig.perspective": "Ativar perspectiva de 3ª pessoa enquanto usa um emote",
   "emotecraft.otherconfig.prespective_redux": "Ativar integração com o Perspective Mod Redux",
   "emotecraft.otherconfig.prespective_redux.tooltip": "ativo apenas quando o modo de 3ª pessoa estiver ativado",
+  "emotecraft.otherconfig.exportGecko": "Exportar emotes GeckoLib no formato Emotecraft",
+  "emotecraft.otherconfig.exportGecko.tooltip": "arquivos estarão em emotes/GeckoLibExport. Você pode definir nome, descrição e autor com um editor de texto",
   "emotecraft.emotelist": "Todos os emotes",
   "emotecraft.no_server": "Esse servidor não tem o Emotecraft instalado, outros jogadores não poderão ver se você usar um emote",
   "emotecraft.different_server": "Esse servidor tem uma versão diferente do Emotecraft instalada, outros jogadores poderão não ver seus emotes corretamente",

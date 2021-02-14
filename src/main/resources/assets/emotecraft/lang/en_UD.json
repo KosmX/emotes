@@ -2,5 +2,16 @@
   "emotecraft.options.options": "suoᴉʇdo ɹǝɥʇO",
   "emotecraft.options.keybind": "ǝʇoɯǝ pǝʇɔǝlǝs ǝɥʇ ʎɐld oʇ ʎǝʞ ɯoʇsnɔ ɐ ʇǝS",
   "emotecraft.options.fastmenu": "oʇ ʞɔᴉlɔ uǝɥʇ ǝʇoɯǝ uɐ ʇɔǝlǝS",
-  "emotecraft.options.fastmenu2": "˙nuǝɯ ʇsɐɟ ǝɥʇ oʇ ppɐ"
+  "emotecraft.options.fastmenu2": "˙nuǝɯ ʇsɐɟ ǝɥʇ oʇ ppɐ",
+  "emotecraft.options.fastmenu3": "ɹɐǝןɔ oʇ ʞɔıןɔ ʇɥƃıᴚ",
+  "emotecraft.sure": "puıqʎǝʞ ƃuıʇıɹʍɹǝʌO",
+  "emotecraft.sure2": "¿sıɥʇ oʇ ʎǝʞ ǝɥʇ ʇǝs puɐ ʇɐɥʇ ʇǝsǝɹ oʇ ʇuɐʍ noʎ oᗡ\n˙puıqʎǝʞ sıɥʇ sɐɥ ǝʇoɯǝ ɹǝɥʇo u∀",
+  "emotecraft.otherconfig.category.general": "suoıʇdo ɔısɐq",
+  "emotecraft.otherconfig.category.expert": "suoıʇdo ʇɹǝdxƎ",
+  "emotecraft.otherconfig": "suoıʇdo ɹǝɥʇO",
+  "emotecraft.otherconfig.debug": "ƃnqǝᗡ",
+  "emotecraft.otherconfig.validate": "ǝʇoɯǝ ǝʇɐpıןɐΛ",
+  "emotecraft.otherconfig.validate.tooltip": "ʇǝsɟɟo ɥɔnɯ ooʇ sǝʞɐɯ ʇɐɥʍ 'sǝʇoɯǝ ʍoןןɐ ʇ,uoʍ ʇI ˙ʇɐǝɥɔ oʇ ʇuɐʍ ʎpoqǝɯos ǝɹǝɥʍ 'spןɹoʍ ԀʌԀ ɹoɟ ʎןuO",
+  "emotecraft.otherconfig.validationThreshold": "pןoɥsǝɹɥʇ uoıʇɐpıןɐΛ",
+  "emotecraft.otherconfig.validationThreshold.tooltip": "ɥɔnɯ ooʇ sı ʇǝsɟɟo ɥɔnɯ ʍoɥ ʎןʇɔɐxƎ"
 }
