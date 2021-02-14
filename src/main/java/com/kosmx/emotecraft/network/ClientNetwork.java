@@ -4,6 +4,7 @@ package com.kosmx.emotecraft.network;
 import com.kosmx.emotecraft.EmotecraftCallbacks;
 import com.kosmx.emotecraft.Main;
 import com.kosmx.emotecraft.config.EmoteHolder;
+import com.kosmx.emotecraft.integration.ReplayModProxy;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.mixinInterface.IEmotecraftPresence;
 import com.kosmx.emotecraft.model.EmotePlayer;
@@ -15,6 +16,7 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -93,12 +95,18 @@ public class ClientNetwork {
     }
 
     public static void sendEmotePacket(EmoteData emote, PlayerEntity player, boolean isRepeating){
+
         try{
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
             EmotePacket emotePacket = new EmotePacket(emote, player.getUuid());
             emotePacket.isRepeat = isRepeating;
             emotePacket.write(buf, ((IEmotecraftPresence)(MinecraftClient.getInstance().getNetworkHandler())).getInstalledEmotecraft());
             ClientPlayNetworking.send(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID, buf);
+
+            //ReplayMod tweak
+            PacketByteBuf replayBuf = new PacketByteBuf(Unpooled.buffer());
+            emotePacket.write(replayBuf, MainNetwork.networkingVersion);
+            ReplayModProxy.registerPacket(ServerPlayNetworking.createS2CPacket(MainNetwork.EMOTE_PLAY_NETWORK_PACKET_ID, replayBuf));
         }
         catch (Exception e){
             Main.log(Level.ERROR, "cannot play emote reason: " + e.getMessage());
@@ -129,6 +137,11 @@ public class ClientNetwork {
         StopPacket packet = new StopPacket(MinecraftClient.getInstance().getCameraEntity().getUuid());
         packet.write(buf);
         ClientPlayNetworking.send(MainNetwork.EMOTE_STOP_NETWORK_PACKET_ID, buf);
+
+
+        PacketByteBuf replayBuf = new PacketByteBuf(Unpooled.buffer());
+        packet.write(replayBuf);
+        ReplayModProxy.registerPacket(ServerPlayNetworking.createS2CPacket(MainNetwork.EMOTE_STOP_NETWORK_PACKET_ID, replayBuf));
     }
     public static void clientReceiveStop(StopPacket stopPacket){
         EmotePlayerInterface player = (EmotePlayerInterface) MinecraftClient.getInstance().world.getPlayerByUuid(stopPacket.getPlayer());
