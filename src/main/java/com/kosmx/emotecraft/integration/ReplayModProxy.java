@@ -6,7 +6,10 @@ import net.minecraft.network.Packet;
 
 public class ReplayModProxy {
     public static void registerPacket(Packet packet){
-        if(FabricLoader.getInstance().isModLoaded("replaymod") && ReplayModRecording.instance != null && ReplayModRecording.instance.getConnectionEventHandler().getPacketListener() != null){
+        if(FabricLoader.getInstance().isModLoaded("replaymod")
+                && ReplayModRecording.instance != null
+                && ReplayModRecording.instance.getConnectionEventHandler() != null
+                && ReplayModRecording.instance.getConnectionEventHandler().getPacketListener() != null){
             ReplayModRecording.instance.getConnectionEventHandler().getPacketListener().save(packet);
         }
     }
