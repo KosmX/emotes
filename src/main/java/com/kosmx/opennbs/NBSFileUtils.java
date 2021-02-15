@@ -50,17 +50,42 @@ public class NBSFileUtils {
             songBuilder.layers.add(new Layer()); //Precreate layers for later use :)
         }
 
+        int maxLength = 0;
 
         int tick = -1;
         for(short jumpToTheNextTick = stream.readShort(); jumpToTheNextTick != 0; jumpToTheNextTick = stream.readShort()){
             tick += jumpToTheNextTick;
             for(int layer = -1, jumpToTheNextLayer = stream.readShort(); jumpToTheNextLayer != 0; jumpToTheNextLayer = stream.readShort()){
                 layer += jumpToTheNextLayer;
-                byte instrument = stream.readByte();
-                songBuilder.layers.get(layer)
+                Layer.Note note = songBuilder.layers.get(layer).addNote(tick);
+                if(note == null){
+                    throw new IOException("Creeper, Aww man"); //sry for putting this into an MC song stuff
+                }
+                note.instrument = stream.readByte();
+                note.key = stream.readByte();
+                if(version >= 4){
+                    note.velocity = stream.readByte();
+                    note.panning = stream.readByte();
+                    note.pitch = stream.readShort();
+                }
+                maxLength = Math.max(maxLength, tick);
             }
         }
+        //Part 3 :
 
+        for (Layer layer: songBuilder.layers){
+            layer.name = readString(stream);
+            layer.lock = stream.readByte();
+            layer.volume = stream.readByte();
+            layer.stereo = stream.readByte();
+        }
+        if(stream.readByte() != 0){
+            throw new IOException("NBSUtils can not handle custom instruments (yet)");
+        }
+
+        NBS song = songBuilder.build();
+        song.setLength(maxLength);
+        return song;
     }
 
     static String readString(DataInputStream stream) throws IOException {
@@ -74,5 +99,8 @@ public class NBSFileUtils {
         }
         return new String(bytes, StandardCharsets.UTF_8); //:D
     }
+
+    //public void write //TODO
+    //Emotecraft does not need to write these. so maybe later
 
 }

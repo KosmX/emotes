@@ -25,6 +25,31 @@ public class NBS {
         this.customInstruments = customInstruments;
     }
 
+    public ArrayList<Layer> getLayers() {
+        return layers;
+    }
+
+    List<Layer.Note> getNotesUntilTick(int tickFrom, int tickTo){
+        ArrayList<Layer.Note> notes = new ArrayList<>();
+        for(Layer layer:this.layers){
+            if(tickFrom > tickTo){
+                notes.addAll(layer.getNotesFrom(tickFrom, this.length));
+                notes.addAll(layer.getNotesFrom(-1, tickTo));
+            }
+            else {
+                notes.addAll(layer.getNotesFrom(tickFrom, tickTo));
+            }
+        }
+        return notes;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = (length/(int) (header.Time_signature) + 1)*header.Time_signature;
+    }
 
     public static class Builder{
         public Header header;
