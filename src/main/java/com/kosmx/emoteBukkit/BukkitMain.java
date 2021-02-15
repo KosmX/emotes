@@ -100,6 +100,8 @@ public class BukkitMain extends JavaPlugin {
                 player.sendPluginMessage(this, Stoppacket, buf.array());
                 return;
             }
+
+            packet.setPlayer(player.getUniqueId());
             for(Player otherPlayer:getServer().getOnlinePlayers()){
                 if(otherPlayer != player && otherPlayer.canSee(player)){
                     ByteBuf buf = Unpooled.buffer();
@@ -111,8 +113,8 @@ public class BukkitMain extends JavaPlugin {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Stoppacket);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, Stoppacket, (channel, player, message) -> {
             if(debug)getLogger().info("[EMOTECRAFT] streaming emote stop");
-            StopPacket packet = new StopPacket();
-            packet.read(Unpooled.wrappedBuffer(message));
+            StopPacket packet = new StopPacket(player.getUniqueId());
+            //packet.read(Unpooled.wrappedBuffer(message)); //Don't make exploitable code
             for(Player otherPlayer:getServer().getOnlinePlayers()){
                 if(otherPlayer != player && otherPlayer.canSee(player)){
                     ByteBuf buf = Unpooled.buffer();
