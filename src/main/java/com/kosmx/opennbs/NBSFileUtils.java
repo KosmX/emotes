@@ -14,7 +14,7 @@ public class NBSFileUtils {
 
     //some methods are from EmotecraftCommon. these have to be separated if I'll make a lib from this!!!
     public static NBS read(DataInputStream stream) throws IOException {
-        if(stream.readShort() != 0){
+        if(readShort(stream) != 0){
             throw new IOException("Can't read old NBS format.");
         }
         NBS.Builder songBuilder = new NBS.Builder();
@@ -22,26 +22,26 @@ public class NBSFileUtils {
         header.NBS_version = stream.readByte();
         int version = header.NBS_version; //just for faster coning
         header.Vanilla_instrument_count = stream.readByte();
-        if(version >= 3)header.Song_length = stream.readShort();
-        header.Layer_count = stream.readShort();
+        if(version >= 3)header.Song_length = readShort(stream);
+        header.Layer_count = readShort(stream);
         header.Song_name = readString(stream);
         header.Song_author = readString(stream);
         header.Song_original_author = readString(stream);
         header.Song_description = readString(stream);
-        header.Song_tempo = stream.readShort();
+        header.Song_tempo = readShort(stream);
         header.Auto_saving = stream.readByte();
         header.Auto_saving_duration = stream.readByte();
         header.Time_signature = stream.readByte();
-        header.Minutes_spent = stream.readInt();
-        header.Left_clicks = stream.readInt();
-        header.Right_clicks = stream.readInt();
-        header.Note_blocks_added = stream.readInt();
-        header.Note_blocks_removed = stream.readInt();
+        header.Minutes_spent = readInt(stream);
+        header.Left_clicks = readInt(stream);
+        header.Right_clicks = readInt(stream);
+        header.Note_blocks_added = readInt(stream);
+        header.Note_blocks_removed = readInt(stream);
         header.MIDI_Schematic_file_name = readString(stream);
         if(version >= 4){   //looping
             header.Loop_on_off = stream.readByte();
             header.Max_loop_count = stream.readByte();
-            header.Loop_start_tick = stream.readShort();
+            header.Loop_start_tick = readShort(stream);
         }
 
         //Part 2
@@ -53,9 +53,9 @@ public class NBSFileUtils {
         int maxLength = 0;
 
         int tick = -1;
-        for(short jumpToTheNextTick = stream.readShort(); jumpToTheNextTick != 0; jumpToTheNextTick = stream.readShort()){
+        for(short jumpToTheNextTick = readShort(stream); jumpToTheNextTick != 0; jumpToTheNextTick = readShort(stream)){
             tick += jumpToTheNextTick;
-            for(int layer = -1, jumpToTheNextLayer = stream.readShort(); jumpToTheNextLayer != 0; jumpToTheNextLayer = stream.readShort()){
+            for(int layer = -1, jumpToTheNextLayer = readShort(stream); jumpToTheNextLayer != 0; jumpToTheNextLayer = readShort(stream)){
                 layer += jumpToTheNextLayer;
                 Layer.Note note = songBuilder.layers.get(layer).addNote(tick);
                 if(note == null){
@@ -66,7 +66,7 @@ public class NBSFileUtils {
                 if(version >= 4){
                     note.velocity = stream.readByte();
                     note.panning = stream.readByte();
-                    note.pitch = stream.readShort();
+                    note.pitch = readShort(stream);
                 }
                 maxLength = Math.max(maxLength, tick);
             }
@@ -89,7 +89,7 @@ public class NBSFileUtils {
     }
 
     static String readString(DataInputStream stream) throws IOException {
-        int len = stream.readInt();
+        int len = readInt(stream);
         if(len < 0){
             throw new IOException("The string's length is less than zero. You wanna me to read it backwards???");
         }
@@ -98,6 +98,21 @@ public class NBSFileUtils {
             throw new IOException("Invalid string");
         }
         return new String(bytes, StandardCharsets.UTF_8); //:D
+    }
+
+    static int readInt(DataInputStream stream) throws IOException{
+        int i = 0;
+        for(int n = 0; n<4; n++){
+            i |= (stream.read() << (8*n));
+        }
+        return i;
+    }
+    static short readShort(DataInputStream stream) throws IOException{
+        short i = 0;
+        for(int n = 0; n<2; n++){
+            i |= (stream.read() << (8*n));
+        }
+        return i;
     }
 
     //public void write //TODO

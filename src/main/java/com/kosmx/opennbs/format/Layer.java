@@ -38,7 +38,7 @@ public class Layer {
      */
     public int findAtTick(int tick){
         int i = - 1;
-        if(this.notes.get(lastUsedTickPos).tick <= tick) i = lastUsedTickPos;
+        if(this.notes.size() > lastUsedTickPos + 1 && this.notes.get(lastUsedTickPos + 1).tick <= tick) i = lastUsedTickPos;
         while(this.notes.size() > i + 1 && this.notes.get(i + 1).tick <= tick){
             i++;
         }
@@ -52,11 +52,11 @@ public class Layer {
             return null;
         }
         int i = findAtTick(tick);
-        if(notes.get(i).tick == tick){
+        if(i > 0 && notes.get(i).tick == tick){
             return null;
         }
         Note note = new Note(tick);
-        notes.add(i, note);
+        notes.add(i + 1, note);
         return note;
     }
 

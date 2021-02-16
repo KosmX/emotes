@@ -18,6 +18,11 @@ public class NBS {
 
     public NBS(Header header, ArrayList<Layer> layers, ArrayList<CustomInstrument> customInstruments) {
         if(header.Layer_count != layers.size()){
+            if(layers.size() == 0){
+                for(int i = 0; i < header.Layer_count; i++){
+                    layers.add(new Layer());
+                }
+            }
             throw new IllegalArgumentException("Layer count have to be same in the header with the layers size");
         }
         this.header = header;
@@ -52,8 +57,8 @@ public class NBS {
     }
 
     public static class Builder{
-        public Header header;
-        public ArrayList<Layer> layers;
+        public Header header = new Header();
+        public ArrayList<Layer> layers = new ArrayList<>();
         public ArrayList<CustomInstrument> customInstruments;
 
         public NBS build(){

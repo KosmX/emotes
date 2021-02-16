@@ -7,6 +7,8 @@ import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.model.EmotePlayer;
 import com.kosmx.emotecraft.network.ClientNetwork;
 import com.kosmx.emotecraft.quarktool.QuarkReader;
+import com.kosmx.opennbs.NBS;
+import com.kosmx.opennbs.NBSFileUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -92,6 +94,17 @@ public class Client implements ClientModInitializer {
                 reader.close();
                 File icon = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".png").toFile();
                 if(icon.isFile() && emotes.size() == 1) emotes.get(0).bindIcon(icon);
+                File song = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".nbs").toFile();
+                if(song.isFile() && emotes.size() == 1){
+                    try {
+                        DataInputStream bis = new DataInputStream(new FileInputStream(song));
+                        emotes.get(0).getEmote().song = NBSFileUtils.read(bis);
+                    }
+                    catch (IOException exception){
+                        Main.log(Level.ERROR, "Error while reading song: " + exception.getMessage(), true);
+                        if(Main.config.showDebug) exception.printStackTrace();
+                    }
+                }
             }catch(Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
                 Main.log(Level.ERROR, e.getMessage());
