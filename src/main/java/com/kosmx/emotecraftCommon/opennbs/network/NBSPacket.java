@@ -132,6 +132,8 @@ public class NBSPacket {
                 layer.name = CommonNetwork.readString(buf);
                 locked = buf.readBoolean();
             }
+            layer.volume = buf.readByte();
+            layer.stereo = buf.readByte();
 
             int tick = -1;
             for(int step = buf.readShort(); step != 0; step = buf.readShort()){
