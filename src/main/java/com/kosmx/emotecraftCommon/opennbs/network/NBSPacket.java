@@ -126,6 +126,7 @@ public class NBSPacket {
     }
 
     void readLayersAndNotes(ByteBuf buf){
+        int length = 0;
         for(Layer layer:song.getLayers()){ //Layers are existing but not configured.
             boolean locked = false;
             if(sendExtraData){
@@ -148,9 +149,11 @@ public class NBSPacket {
                 note.velocity = buf.readByte();
                 note.panning = buf.readByte();
                 note.pitch = buf.readShort();
+                length = Math.max(length, tick);
             }
             layer.setLock(locked); //If I lock it too early, I won't be able to add the notes to the layer...
         }
+        this.song.setLength(length);
     }
 
 }

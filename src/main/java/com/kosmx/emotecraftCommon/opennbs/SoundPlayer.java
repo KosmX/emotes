@@ -37,8 +37,11 @@ public class SoundPlayer implements Tickable {
     @Override
     public void tick(){
         int newSongTick = (int) (mcTick++ * songPerMCTick);
-        if(newSongTick > song.header.Loop_start_tick){
+        if(newSongTick > song.header.Loop_start_tick && song.header.Loop_on_off()){
             newSongTick = (newSongTick - song.header.Loop_start_tick) % (song.getLength() - song.header.Loop_start_tick) + song.header.Loop_start_tick;
+        }
+        else if(newSongTick > song.getLength()){
+            this.stop();
         }
         if(newSongTick == this.soundTick){
             return; //Nothing has happened, can continue;
