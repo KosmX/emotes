@@ -9,16 +9,18 @@ import com.kosmx.emotecraft.model.EmotePlayer;
 import com.kosmx.emotecraft.network.ClientNetwork;
 import com.kosmx.emotecraft.proxy.PerspectiveReduxProxy;
 import com.kosmx.emotecraftCommon.EmoteData;
+import com.kosmx.emotecraftCommon.opennbs.SoundPlayer;
+import com.kosmx.emotecraftCommon.opennbs.format.Layer;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.MinecraftClientGame;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.options.Perspective;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -46,7 +48,7 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
             return;
         }
 
-        this.emote = new EmotePlayer(emote);
+        this.emote = new EmotePlayer(emote, this::notePlayer);
 
         if(this == MinecraftClient.getInstance().getCameraEntity() && Main.config.enablePerspective && (MinecraftClient.getInstance().options.getPerspective().isFirstPerson() || Client.isPersonRedux())){
             this.emote.perspective = MinecraftClient.getInstance().options.getPerspective();
@@ -58,6 +60,15 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements EmotePlay
             }
             else MinecraftClient.getInstance().options.setPerspective(Perspective.THIRD_PERSON_FRONT);
         }
+    }
+
+    /**
+     * Just to not make lambdas in Mixins
+     * @param note note to play
+     */
+    public void notePlayer(Layer.Note note){
+        //this.world.playSoundFromEntity(); this can't use pitch at client-side...
+        this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundPlayer.getInstrumentFromCode(note.instrument).getSound(), SoundCategory.PLAYERS, note.getVolume(), note.getPitch(), true);
     }
 
     @Override

@@ -1,7 +1,7 @@
-package com.kosmx.opennbs;
+package com.kosmx.emotecraftCommon.opennbs;
 
-import com.kosmx.opennbs.format.Header;
-import com.kosmx.opennbs.format.Layer;
+import com.kosmx.emotecraftCommon.opennbs.format.Header;
+import com.kosmx.emotecraftCommon.opennbs.format.Layer;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -10,7 +10,10 @@ import java.nio.charset.StandardCharsets;
 /**
  * R/W nbs files
  */
+
 public class NBSFileUtils {
+
+    final static int maxWorkingVersion = 5;
 
     //some methods are from EmotecraftCommon. these have to be separated if I'll make a lib from this!!!
     public static NBS read(DataInputStream stream) throws IOException {
@@ -21,6 +24,7 @@ public class NBSFileUtils {
         Header header = songBuilder.header;
         header.NBS_version = stream.readByte();
         int version = header.NBS_version; //just for faster coning
+        if(version > maxWorkingVersion) throw new IOException("Can't read newer NBS format than " + maxWorkingVersion + "."); //I'll probably run into this
         header.Vanilla_instrument_count = stream.readByte();
         if(version >= 3)header.Song_length = readShort(stream);
         header.Layer_count = readShort(stream);

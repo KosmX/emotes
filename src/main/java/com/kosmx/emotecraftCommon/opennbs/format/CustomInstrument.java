@@ -1,4 +1,4 @@
-package com.kosmx.opennbs.format;
+package com.kosmx.emotecraftCommon.opennbs.format;
 
 /**
  * IDK what to do with it...

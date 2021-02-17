@@ -1,4 +1,4 @@
-package com.kosmx.opennbs.format;
+package com.kosmx.emotecraftCommon.opennbs.format;
 
 /**
  * Sound format header. contains Name, click amount, length, everything from header

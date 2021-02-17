@@ -1,9 +1,9 @@
-package com.kosmx.opennbs.network;
+package com.kosmx.emotecraftCommon.opennbs.network;
 
 import com.kosmx.emotecraftCommon.network.CommonNetwork;
-import com.kosmx.opennbs.NBS;
-import com.kosmx.opennbs.format.Header;
-import com.kosmx.opennbs.format.Layer;
+import com.kosmx.emotecraftCommon.opennbs.NBS;
+import com.kosmx.emotecraftCommon.opennbs.format.Header;
+import com.kosmx.emotecraftCommon.opennbs.format.Layer;
 import io.netty.buffer.ByteBuf;
 
 public class NBSPacket {
@@ -16,6 +16,14 @@ public class NBSPacket {
 
     public NBSPacket(NBS song){
         this.song = song;
+    }
+
+    public NBSPacket(){
+
+    }
+
+    public NBS getSong() {
+        return song;
     }
 
     public void write(ByteBuf buf){

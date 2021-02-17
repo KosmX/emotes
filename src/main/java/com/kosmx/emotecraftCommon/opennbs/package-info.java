@@ -1,4 +1,4 @@
-package com.kosmx.opennbs;
+package com.kosmx.emotecraftCommon.opennbs;
 /*
 
 [OpenNBS](https://opennbs.org/nbs) format reader, writer and most important, Player

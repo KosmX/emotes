@@ -1,14 +1,12 @@
 package com.kosmx.emotecraft;
 
 import com.kosmx.emotecraft.config.EmoteHolder;
-import com.kosmx.emotecraft.config.Serializer;
 import com.kosmx.emotecraft.gui.ingame.FastMenuScreen;
 import com.kosmx.emotecraft.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotecraft.model.EmotePlayer;
 import com.kosmx.emotecraft.network.ClientNetwork;
 import com.kosmx.emotecraft.quarktool.QuarkReader;
-import com.kosmx.opennbs.NBS;
-import com.kosmx.opennbs.NBSFileUtils;
+import com.kosmx.emotecraftCommon.opennbs.NBSFileUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;

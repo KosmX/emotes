@@ -1,4 +1,4 @@
-package com.kosmx.opennbs.format;
+package com.kosmx.emotecraftCommon.opennbs.format;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -128,6 +128,20 @@ public class Layer {
 
         public Note(int tick) {
             this.tick = tick;
+        }
+
+        /**
+         * @return sound's pitch as a float
+         */
+        public float getPitch(){
+            return (float)Math.pow(2.0D, (double)(this.key + this.pitch/100 - 45) / 12.0D); //key 45 is F#
+        }
+
+        /**
+         * @return sound value in percents (including the channels volume)
+         */
+        public float getVolume(){
+            return this.velocity/10000f*volume; //there is why notes can't be static
         }
     }
 

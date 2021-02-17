@@ -5,9 +5,10 @@ import com.kosmx.emotecraft.math.Helper;
 import com.kosmx.emotecraft.proxy.PerspectiveReduxProxy;
 import com.kosmx.emotecraftCommon.EmoteData;
 import com.kosmx.emotecraftCommon.math.Easing;
+import com.kosmx.emotecraftCommon.opennbs.SoundPlayer;
+import com.kosmx.emotecraftCommon.opennbs.format.Layer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.options.Perspective;
@@ -26,6 +27,8 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class EmotePlayer implements Tickable {
     private final EmoteData data;
+    @Nullable
+    final SoundPlayer song;
     private boolean isRunning = true;
     private int currentTick = 0;
     private boolean isLoopStarted = false;
@@ -46,8 +49,14 @@ public class EmotePlayer implements Tickable {
      *
      * @param emote EmoteData to play
      */
-    public EmotePlayer(EmoteData emote){
+    public EmotePlayer(EmoteData emote, Consumer<Layer.Note> noteConsumer){
         this.data = emote;
+        if(emote.song != null) {
+            this.song = new SoundPlayer(emote.song, noteConsumer, 0);
+        }else {
+            this.song = null;
+        }
+
         head = new BodyPart(data.head);
         torso = new Torso(data.torso);
         rightArm = new BodyPart(data.rightArm);
@@ -67,6 +76,7 @@ public class EmotePlayer implements Tickable {
             if(currentTick >= data.stopTick){
                 this.stop();
             }
+            if(SoundPlayer.isPlayingSong(this.song))song.tick();
         }
     }
 

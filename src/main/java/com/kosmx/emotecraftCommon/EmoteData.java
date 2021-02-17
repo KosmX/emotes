@@ -1,7 +1,7 @@
 package com.kosmx.emotecraftCommon;
 
 import com.kosmx.emotecraftCommon.math.Ease;
-import com.kosmx.opennbs.NBS;
+import com.kosmx.emotecraftCommon.opennbs.NBS;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
-package com.kosmx.opennbs;
+package com.kosmx.emotecraftCommon.opennbs;
 
-import com.kosmx.opennbs.format.CustomInstrument;
-import com.kosmx.opennbs.format.Header;
-import com.kosmx.opennbs.format.Layer;
+import com.kosmx.emotecraftCommon.opennbs.format.CustomInstrument;
+import com.kosmx.emotecraftCommon.opennbs.format.Header;
+import com.kosmx.emotecraftCommon.opennbs.format.Layer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class NBS {
                     layers.add(new Layer());
                 }
             }
-            throw new IllegalArgumentException("Layer count have to be same in the header with the layers size");
+            else throw new IllegalArgumentException("Layer count have to be same in the header with the layers size");
         }
         this.header = header;
         this.layers = layers;
