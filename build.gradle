@@ -53,7 +53,7 @@ version = project.mod_version
 group = project.maven_group
 
 
-String version_name = project.version, isRelease, changes ="""Crash when connecting to a server with never Emotecraft
+String version_name = project.version, isRelease, changes ="""NBS player
 """
 
 isRelease = "release"
@@ -242,9 +242,9 @@ githubRelease {
 	owner "KosmX" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
 	repo "emotes" // by default this is set to your project name
 	tagName project.version // by default this is set to "v${project.version}"
-	targetCommitish "master" // by default this is set to "master"
+	targetCommitish "1.16" // by default this is set to "master"
 	releaseName project.version // Release title, by default this is the same as the tagName
-	body "" // by default this is empty
+	body changes // by default this is empty
 	draft false // by default this is false
 	prerelease false // by default this is false
 	releaseAssets jar, remapJar, sourcesJar // this points to which files you want to upload as assets with your release
@@ -253,7 +253,6 @@ githubRelease {
 	dryRun false // by default false; you can use this to see what actions would be taken without making a release
 	apiEndpoint "https://api.github.com" // should only change for github enterprise users
 	client // This is the okhttp client used for http requests
-	body changes
 }
 
 curseforge {
