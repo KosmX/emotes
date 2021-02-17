@@ -28,6 +28,10 @@ public class EmotePacket {
     public EmotePacket(){
     }
 
+    public void setPlayer(UUID player){
+        this.player = player;
+    }
+
     public boolean read(ByteBuf buf, float validationThreshold){
         this.version = buf.readInt();
         this.isRepeat = buf.readBoolean();

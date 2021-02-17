@@ -91,6 +91,8 @@ dependencies {
 	//Spigot stuff
 	implementation("org.spigotmc:spigot-api:${project.spigot_api}")
 
+	compileOnly files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
+	//runtime files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
 	//include(files("bendy-lib-0.0.0-dev.jar"))
 
 }

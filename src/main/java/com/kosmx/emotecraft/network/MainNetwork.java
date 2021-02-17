@@ -44,6 +44,7 @@ public class MainNetwork {
                 return;
             }
             //packet.write(buf);
+            packet.setPlayer(player.getUuid());
 
             for(ServerPlayerEntity otherPlayer : PlayerLookup.tracking(player)){
                 if(otherPlayer != player && ((IEmotecraftPresence)otherPlayer.networkHandler).getInstalledEmotecraft() != 0){
@@ -56,9 +57,9 @@ public class MainNetwork {
         });
 
         ServerPlayNetworking.registerGlobalReceiver(EMOTE_STOP_NETWORK_PACKET_ID, (server, player, handler, packetByteBuf, responseSender)->{
-            StopPacket packet = new StopPacket();
+            StopPacket packet = new StopPacket(player.getUuid());
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            packet.read(packetByteBuf);
+            //packet.read(packetByteBuf); //just the UUID but for security reasons, these are from the arguments
             packet.write(buf);
 
             for(ServerPlayerEntity otherPlayer : PlayerLookup.tracking(player)){
