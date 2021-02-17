@@ -3,6 +3,8 @@ package com.kosmx.emotecraftCommon.network;
 import com.kosmx.emotecraftCommon.CommonData;
 import com.kosmx.emotecraftCommon.EmoteData;
 import com.kosmx.emotecraftCommon.math.Easing;
+import com.kosmx.emotecraftCommon.opennbs.NBS;
+import com.kosmx.emotecraftCommon.opennbs.network.NBSPacket;
 import io.netty.buffer.ByteBuf;
 
 import java.util.List;
@@ -52,7 +54,17 @@ public class EmotePacket {
         getBodyPartInfo(buf, builder.leftArm, true);
         getBodyPartInfo(buf, builder.rightLeg, true);
         getBodyPartInfo(buf, builder.leftLeg, true);
+
         emote = builder.build();
+        if(version >= 6){
+            boolean sound = buf.readBoolean();
+            if(sound){
+                NBSPacket nbsPacket = new NBSPacket();
+                nbsPacket.read(buf);
+                emote.song = nbsPacket.getSong();
+            }
+        }
+
         return valid && emote.beginTick >= 0 && emote.beginTick < emote.endTick && (! emote.isInfinite || emote.returnToTick <= emote.endTick && emote.returnToTick >= 0);
     }
 
@@ -83,6 +95,15 @@ public class EmotePacket {
         writeBodyPartInfo(buf, emote.leftArm, true, emote);
         writeBodyPartInfo(buf, emote.rightLeg, true, emote);
         writeBodyPartInfo(buf, emote.leftLeg, true, emote);
+
+        //Just make the NBS streaming junk
+        if(version >= 6) {
+            buf.writeBoolean(emote.song != null);
+            if (emote.song != null) {
+                NBSPacket nbsPacket = new NBSPacket(emote.song);
+                nbsPacket.write(buf); //It will reworked :D
+            }
+        }
     }
 
     private void writeBodyPartInfo(ByteBuf buf, EmoteData.StateCollection part, boolean bending, EmoteData emoteData){

@@ -1,7 +1,9 @@
 package com.kosmx.emotecraftCommon;
 
 import com.kosmx.emotecraftCommon.math.Ease;
+import com.kosmx.emotecraftCommon.opennbs.NBS;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,9 @@ public class EmoteData {
     public final StateCollection rightLeg;
     public final StateCollection leftLeg;
     public final boolean isEasingBefore;
+
+    @Nullable
+    public NBS song;
 
     public static float staticThreshold = 8;
 

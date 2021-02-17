@@ -18,8 +18,15 @@ public class CommonData {
      * ver 3: network discovery
      * ver 4: not syncing head bending values
      * ver 5: boolean, easing can indicated after the move
+     * ver 6: experimental sound sync
+     *
+     * ver 7: reserved
+     *
+     * --------------------------------------
+     *
+     * ver 8: New networking
      */
-    public static final int networkingVersion = 5;
+    public static final int networkingVersion = 6;
 
     //bidirectional, Emote playing or repeating
     public static final String playEmoteID = "playemote";
