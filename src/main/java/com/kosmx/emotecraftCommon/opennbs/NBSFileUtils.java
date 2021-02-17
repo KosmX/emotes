@@ -79,7 +79,7 @@ public class NBSFileUtils {
 
         for (Layer layer: songBuilder.layers){
             layer.name = readString(stream);
-            layer.lock = stream.readByte();
+            if(version >= 4)layer.lock = stream.readByte();
             layer.volume = stream.readByte();
             layer.stereo = stream.readByte();
         }

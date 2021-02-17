@@ -38,10 +38,18 @@ public class SoundPlayer implements Tickable {
     public void tick(){
         int newSongTick = (int) (mcTick++ * songPerMCTick);
         if(newSongTick > song.header.Loop_start_tick && song.header.Loop_on_off()){
+            if(song.header.Max_loop_count != 0){
+                int loop = song.header.Max_loop_count & 0xFF; //turn it into an unsigned byte
+                if((newSongTick - song.header.Loop_start_tick) / (song.getLength() - song.header.Loop_start_tick) > loop){
+                    this.stop();
+                    return;
+                }
+            }
             newSongTick = (newSongTick - song.header.Loop_start_tick) % (song.getLength() - song.header.Loop_start_tick) + song.header.Loop_start_tick;
         }
         else if(newSongTick > song.getLength()){
             this.stop();
+            return;
         }
         if(newSongTick == this.soundTick){
             return; //Nothing has happened, can continue;

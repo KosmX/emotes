@@ -39,7 +39,7 @@ public class NBS {
         for(Layer layer:this.layers){
             if(tickFrom > tickTo){
                 notes.addAll(layer.getNotesFrom(tickFrom, this.length));
-                notes.addAll(layer.getNotesFrom(-1, tickTo));
+                notes.addAll(layer.getNotesFrom(header.Loop_on_off() ? header.Loop_start_tick -1 : -1, tickTo));
             }
             else {
                 notes.addAll(layer.getNotesFrom(tickFrom, tickTo));

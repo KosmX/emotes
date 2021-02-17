@@ -94,14 +94,15 @@ public class Client implements ClientModInitializer {
                 if(icon.isFile() && emotes.size() == 1) emotes.get(0).bindIcon(icon);
                 File song = Client.externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".nbs").toFile();
                 if(song.isFile() && emotes.size() == 1){
+                    DataInputStream bis = new DataInputStream(new FileInputStream(song));
                     try {
-                        DataInputStream bis = new DataInputStream(new FileInputStream(song));
                         emotes.get(0).getEmote().song = NBSFileUtils.read(bis);
                     }
                     catch (IOException exception){
                         Main.log(Level.ERROR, "Error while reading song: " + exception.getMessage(), true);
                         if(Main.config.showDebug) exception.printStackTrace();
                     }
+                    bis.close(); //I almost forgot this
                 }
             }catch(Exception e){
                 Main.log(Level.ERROR, "Error while importing external emote: " + file.getName() + ".", true);
