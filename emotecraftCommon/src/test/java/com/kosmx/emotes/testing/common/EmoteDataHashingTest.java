@@ -5,8 +5,6 @@ import com.kosmx.emotes.common.tools.Ease;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.Random;
 
 public class EmoteDataHashingTest {
