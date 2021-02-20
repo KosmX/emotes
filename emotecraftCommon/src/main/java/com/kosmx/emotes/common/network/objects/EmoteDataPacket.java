@@ -32,7 +32,6 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         putBoolean(buf, emote.isInfinite);
         buf.putInt(emote.returnToTick);
         putBoolean(buf, emote.isEasingBefore);
-        CommonNetwork.writeUUID(buf, emote.getEmoteUUID());
         writeBodyPartInfo(buf, emote.head, false, emote);
         writeBodyPartInfo(buf, emote.torso, true, emote);
         writeBodyPartInfo(buf, emote.rightArm, true, emote);
@@ -140,7 +139,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public int calculateSize(NetData config) {
         if(config.emoteData == null)return 0;
         //I will create less efficient loops but these will be more easily fixable
-        int size = 46;//The header makes 46 bytes IIIIBBIBLL
+        int size = 30;//The header makes 46 bytes IIIIBBIB
         size += partSize(config.emoteData.head);
         size += partSize(config.emoteData.torso);
         size += partSize(config.emoteData.rightArm);

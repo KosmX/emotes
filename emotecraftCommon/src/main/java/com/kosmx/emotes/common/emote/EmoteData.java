@@ -6,6 +6,7 @@ import com.kosmx.emotes.common.opennbs.NBS;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -31,15 +32,13 @@ public class EmoteData {
     public final StateCollection leftLeg;
     public final boolean isEasingBefore;
 
-    public final UUID emoteUUID;
-
     @Nullable
     public NBS song;
 
     public static float staticThreshold = 8;
 
 
-    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, UUID emoteUUID){
+    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore){
         this.beginTick = Math.max(beginTick, 0);
         this.endTick = Math.max(beginTick + 1, endTick);
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
@@ -52,12 +51,44 @@ public class EmoteData {
         this.leftArm = leftArm;
         this.leftLeg = leftLeg;
         this.isEasingBefore = isEasingBefore;
-        if(emoteUUID == null)throw new IllegalArgumentException("Emote UUID can't be null");
-        this.emoteUUID = emoteUUID;
     }
 
-    public UUID getEmoteUUID() {
-        return emoteUUID;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EmoteData)) return false;
+
+        EmoteData emoteData = (EmoteData) o;
+
+        if (beginTick != emoteData.beginTick) return false;
+        if (endTick != emoteData.endTick) return false;
+        if (stopTick != emoteData.stopTick) return false;
+        if (isInfinite != emoteData.isInfinite) return false;
+        if (returnToTick != emoteData.returnToTick) return false;
+        if (isEasingBefore != emoteData.isEasingBefore) return false;
+        if (!head.equals(emoteData.head)) return false;
+        if (!torso.equals(emoteData.torso)) return false;
+        if (!rightArm.equals(emoteData.rightArm)) return false;
+        if (!leftArm.equals(emoteData.leftArm)) return false;
+        if (!rightLeg.equals(emoteData.rightLeg)) return false;
+        return leftLeg.equals(emoteData.leftLeg);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = beginTick;
+        result = 31 * result + endTick;
+        result = 31 * result + stopTick;
+        result = 31 * result + (isInfinite ? 1 : 0);
+        result = 31 * result + returnToTick;
+        result = 31 * result + head.hashCode();
+        result = 31 * result + torso.hashCode();
+        result = 31 * result + rightArm.hashCode();
+        result = 31 * result + leftArm.hashCode();
+        result = 31 * result + rightLeg.hashCode();
+        result = 31 * result + leftLeg.hashCode();
+        result = 31 * result + (isEasingBefore ? 1 : 0);
+        return result;
     }
 
     public static class StateCollection {
@@ -89,6 +120,40 @@ public class EmoteData {
             this(x, y, z, pitch, yaw, roll, name, translationThreshold, true);
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof StateCollection)) return false;
+
+            StateCollection that = (StateCollection) o;
+
+            if (isBendable != that.isBendable) return false;
+            if (name != null ? !name.equals(that.name) : that.name != null) return false;
+            if (!x.equals(that.x)) return false;
+            if (!y.equals(that.y)) return false;
+            if (!z.equals(that.z)) return false;
+            if (!pitch.equals(that.pitch)) return false;
+            if (!yaw.equals(that.yaw)) return false;
+            if (!roll.equals(that.roll)) return false;
+            if (bend != null ? !bend.equals(that.bend) : that.bend != null) return false;
+            return bendDirection != null ? bendDirection.equals(that.bendDirection) : that.bendDirection == null;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = name != null ? name.hashCode() : 0;
+            result = 31 * result + x.hashCode();
+            result = 31 * result + y.hashCode();
+            result = 31 * result + z.hashCode();
+            result = 31 * result + pitch.hashCode();
+            result = 31 * result + yaw.hashCode();
+            result = 31 * result + roll.hashCode();
+            result = 31 * result + (bend != null ? bend.hashCode() : 0);
+            result = 31 * result + (bendDirection != null ? bendDirection.hashCode() : 0);
+            result = 31 * result + (isBendable ? 1 : 0);
+            return result;
+        }
+
 
         public static class State{
             public final float defaultValue;
@@ -96,6 +161,30 @@ public class EmoteData {
             public final List<KeyFrame> keyFrames = new ArrayList<>();
             public final String name;
             private final boolean isAngle;
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof State)) return false;
+
+                State state = (State) o;
+
+                if (Float.compare(state.defaultValue, defaultValue) != 0) return false;
+                if (Float.compare(state.threshold, threshold) != 0) return false;
+                if (isAngle != state.isAngle) return false;
+                if (!keyFrames.equals(state.keyFrames)) return false;
+                return Objects.equals(name, state.name);
+            }
+
+            @Override
+            public int hashCode() {
+                int result = (defaultValue != +0.0f ? Float.floatToIntBits(defaultValue) : 0);
+                result = 31 * result + (threshold != +0.0f ? Float.floatToIntBits(threshold) : 0);
+                result = 31 * result + keyFrames.hashCode();
+                result = 31 * result + (name != null ? name.hashCode() : 0);
+                result = 31 * result + (isAngle ? 1 : 0);
+                return result;
+            }
 
             /**
              * @param name Name (for import stuff)
@@ -191,10 +280,25 @@ public class EmoteData {
             this.ease = ease;
         }
 
+        @Override
+        public boolean equals(Object other) {
+            if(other instanceof KeyFrame){
+                return ((KeyFrame) other).ease == this.ease && ((KeyFrame) other).tick == this.tick && ((KeyFrame) other).value.equals(this.value);
+            }
+            else return super.equals(other);
+        }
+
         public KeyFrame(int tick, float value){
             this(tick, value, Ease.INOUTSINE);
         }
 
+        @Override
+        public int hashCode() {
+            int result = tick;
+            result = 31 * result + value.hashCode();
+            result = 31 * result + ease.hashCode();
+            return result;
+        }
     }
 
     public static class EmoteBuilder{
@@ -207,7 +311,6 @@ public class EmoteData {
         public final StateCollection leftLeg;
         public boolean isEasingBefore = false;
         public float validationThreshold = staticThreshold;
-        public UUID emoteUUID;
 
         public int beginTick;
         public int endTick;
@@ -226,7 +329,7 @@ public class EmoteData {
         }
 
         public EmoteData build(){
-            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore, emoteUUID);
+            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore);
         }
     }
 }

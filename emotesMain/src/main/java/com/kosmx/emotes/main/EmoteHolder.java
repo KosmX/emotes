@@ -6,9 +6,12 @@ import com.kosmx.emotes.Client;
 import com.kosmx.emotes.Main;
 import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.common.emote.EmoteData;
+import com.kosmx.emotes.common.tools.Pair;
 import com.kosmx.emotes.executor.EmoteInstance;
+import com.kosmx.emotes.executor.dataTypes.IIdentifier;
 import com.kosmx.emotes.executor.dataTypes.InputKey;
 import com.kosmx.emotes.executor.dataTypes.Text;
+import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.mixinInterface.EmotePlayerInterface;
 import com.kosmx.emotes.model.EmotePlayer;
 import com.kosmx.emotes.network.ClientNetwork;
@@ -47,7 +50,7 @@ public class EmoteHolder {
     @Nullable
     public NativeImageBackedTexture nativeIcon = null;
     @Nullable
-    private Identifier iconIdentifier = null;
+    private IIdentifier iconIdentifier = null;
     @Nullable
     public Object iconName = null; //Icon name
 
@@ -81,40 +84,23 @@ public class EmoteHolder {
      * Bind keys to emotes from config class
      * @param config
      */
-    public static void bindKeys(SerializableConfig config){
+    public static void bindKeys(ClientConfig config){
         config.emotesWithKey = new ArrayList<>();
         config.emotesWithHash = new ArrayList<>();
         for(EmoteHolder emote : list){
-            if(! emote.keyBinding.equals(InputUtil.UNKNOWN_KEY)){
+            if(! emote.keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey())){
                 config.emotesWithKey.add(emote);
                 config.emotesWithHash.add(new Pair<>(emote.hash, emote.keyBinding.getTranslationKey()));
             }
         }
         config.fastMenuHash = new int[8];
         for(int i = 0; i != 8; i++){
-            if(Main.config.fastMenuEmotes[i] != null){
-                Main.config.fastMenuHash[i] = Main.config.fastMenuEmotes[i].hash;
+            if(config.fastMenuEmotes[i] != null){
+                config.fastMenuHash[i] = config.fastMenuEmotes[i].hash;
             }
         }
     }
 
-    /**
-     * Play emote from keybinding (if available)
-     * @param key pressed key
-     * @return Was it success?
-     */
-    @Environment(EnvType.CLIENT)
-    public static ActionResult playEmote(InputUtil.Key key){
-        if(MinecraftClient.getInstance() != null && MinecraftClient.getInstance().getCameraEntity() != null && MinecraftClient.getInstance().getCameraEntity() instanceof ClientPlayerEntity){
-            for(EmoteHolder emote : Main.config.emotesWithKey){
-                if(emote.keyBinding.equals(key)){
-                    emote.playEmote((PlayerEntity) MinecraftClient.getInstance().getCameraEntity());
-                    return ActionResult.SUCCESS;
-                }
-            }
-        }
-        return ActionResult.PASS;
-    }
 
     /**
      * just clear the {@link EmoteHolder#list} before reimporting emotes
