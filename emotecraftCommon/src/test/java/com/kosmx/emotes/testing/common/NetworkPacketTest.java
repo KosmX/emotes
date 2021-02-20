@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Random;
 
 /**
  * Test network data sending and receiving
@@ -18,6 +19,8 @@ public class NetworkPacketTest {
     @Test
     @DisplayName("Network protocol test")
     public void netTest() throws IOException {
+        Random random = new Random();
+
         EmotePacket.Builder builder = new EmotePacket.Builder();
         Pair<EmoteData.EmoteBuilder, EmoteData.EmoteBuilder> pair = RandomEmoteData.generateEmotes();
         builder.configureToSendEmote(pair.getLeft().build());
@@ -31,6 +34,37 @@ public class NetworkPacketTest {
         Assertions.assertNotNull(data, "Data should be not null");
         Assertions.assertEquals(pair.getLeft().build(), data.emoteData, "The received data should contain the same emote");
         Assertions.assertEquals(pair.getLeft().build().hashCode(), data.emoteData.hashCode(), "The received data should contain the same emote");
+
+
+        int randID = random.nextInt();
+        builder = new EmotePacket.Builder();
+        builder.configureToSendStop(randID);
+        byteBuffer = builder.build().write();
+        bytes = byteBuffer.array();
+
+        //The array has been sent, hope, it will arrive correctly.
+        //Assume it has happened, create a new ByteBuffer and read it.
+
+        data = new EmotePacket.Builder().build().read(ByteBuffer.wrap(bytes));
+        Assertions.assertEquals(randID, data.stopEmoteID.get());
+
+        boolean shouldRemainFalse = false;
+        try {
+            builder = new EmotePacket.Builder();
+            builder.configureToSendStop(randID);
+            builder.configureToSendEmote(pair.getLeft().build());
+            byteBuffer = builder.build().write();
+            bytes = byteBuffer.array();
+
+            //The array has been sent, hope, it will arrive correctly.
+            //Assume it has happened, create a new ByteBuffer and read it.
+
+            data = new EmotePacket.Builder().build().read(ByteBuffer.wrap(bytes));
+            shouldRemainFalse = true; //That line should not bu used
+        }catch (Exception ignored){
+
+        }
+        Assertions.assertFalse(shouldRemainFalse, "Writer didn't thrown exception");
 
     }
 }

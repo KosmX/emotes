@@ -3,6 +3,7 @@ package com.kosmx.emotes.common.network.objects;
 import com.kosmx.emotes.common.network.CommonNetwork;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StopPacket extends AbstractNetworkPacket {
 
@@ -21,13 +22,13 @@ public class StopPacket extends AbstractNetworkPacket {
 
     @Override
     public boolean read(ByteBuffer buf, NetData config, int version){
-        config.stopEmoteID = CommonNetwork.readUUID(buf);
+        config.stopEmoteID = new AtomicInteger(buf.getInt());
         return true;
     }
 
     @Override
     public void write(ByteBuffer buf, NetData config){
-        CommonNetwork.writeUUID(buf, config.stopEmoteID);
+        buf.putInt(config.stopEmoteID.get());
     }
 
     @Override
@@ -37,6 +38,6 @@ public class StopPacket extends AbstractNetworkPacket {
 
     @Override
     public int calculateSize(NetData config) {
-        return 0;
+        return 4;
     }
 }

@@ -6,6 +6,7 @@ import com.kosmx.emotes.common.opennbs.NBS;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /*
  * It won't be public until a success read.....
@@ -13,7 +14,7 @@ import java.util.UUID;
 public class NetData {
     public float threshold;
     @Nullable
-    public UUID stopEmoteID = null;
+    public AtomicInteger stopEmoteID = null;
     @Nullable
     public EmoteData emoteData = null;
     public int tick = 0;

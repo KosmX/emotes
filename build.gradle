@@ -10,6 +10,8 @@ allprojects {
         sourceCompatibility = JavaVersion.toVersion(targetVersion)
         targetCompatibility = JavaVersion.toVersion(targetVersion)
 
+        options.compilerArgs << '-Xlint:unchecked'
+        options.deprecation = true	//deprecated warning on compile
         dependencies {
             // put common dependencies here
             implementation 'com.google.code.findbugs:jsr305:3.0.2'

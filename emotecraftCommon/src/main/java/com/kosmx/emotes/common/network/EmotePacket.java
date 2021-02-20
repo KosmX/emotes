@@ -170,13 +170,13 @@ public class EmotePacket {
             configureToSendEmote(emoteData, null);
         }
 
-        public void configureToSendStop(UUID emoteID, @Nullable UUID player){
+        public void configureToSendStop(int emoteID, @Nullable UUID player){
             if(data.emoteData != null)throw new IllegalArgumentException("Can't send emote and stop at the same time");
-            data.stopEmoteID = emoteID;
+            data.stopEmoteID = new AtomicInteger(emoteID);
             data.player = player;
         }
 
-        public void configureToSendStop(UUID emoteID){
+        public void configureToSendStop(int emoteID){
             configureToSendStop(emoteID, null);
         }
 
