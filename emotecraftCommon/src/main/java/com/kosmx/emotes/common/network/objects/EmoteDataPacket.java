@@ -2,7 +2,6 @@ package com.kosmx.emotes.common.network.objects;
 
 import com.kosmx.emotes.common.CommonData;
 import com.kosmx.emotes.common.emote.EmoteData;
-import com.kosmx.emotes.common.network.CommonNetwork;
 import com.kosmx.emotes.common.tools.Ease;
 
 import java.nio.ByteBuffer;
@@ -16,6 +15,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     private int version;
     public int tick = 0;
 
+    byte keyframeSize = 9;
 
     public EmoteDataPacket(){
     }
@@ -29,26 +29,26 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         buf.putInt(emote.endTick);
         buf.putInt(emote.stopTick);
         putBoolean(buf, emote.isInfinite);
-        putBoolean(buf, emote.isInfinite);
         buf.putInt(emote.returnToTick);
         putBoolean(buf, emote.isEasingBefore);
-        writeBodyPartInfo(buf, emote.head, false, emote);
-        writeBodyPartInfo(buf, emote.torso, true, emote);
-        writeBodyPartInfo(buf, emote.rightArm, true, emote);
-        writeBodyPartInfo(buf, emote.leftArm, true, emote);
-        writeBodyPartInfo(buf, emote.rightLeg, true, emote);
-        writeBodyPartInfo(buf, emote.leftLeg, true, emote);
+        buf.put(keyframeSize);
+        writeBodyPartInfo(buf, emote.head, emote);
+        writeBodyPartInfo(buf, emote.torso, emote);
+        writeBodyPartInfo(buf, emote.rightArm, emote);
+        writeBodyPartInfo(buf, emote.leftArm, emote);
+        writeBodyPartInfo(buf, emote.rightLeg, emote);
+        writeBodyPartInfo(buf, emote.leftLeg, emote);
 
     }
 
-    private void writeBodyPartInfo(ByteBuffer buf, EmoteData.StateCollection part, boolean bending, EmoteData emoteData){
+    private void writeBodyPartInfo(ByteBuffer buf, EmoteData.StateCollection part, EmoteData emoteData){
         writePartInfo(buf, part.x, emoteData);
         writePartInfo(buf, part.y, emoteData);
         writePartInfo(buf, part.z, emoteData);
         writePartInfo(buf, part.pitch, emoteData);
         writePartInfo(buf, part.yaw, emoteData);
         writePartInfo(buf, part.roll, emoteData);
-        if(bending) {
+        if(part.isBendable) {
             writePartInfo(buf, part.bendDirection, emoteData);
             writePartInfo(buf, part.bend, emoteData);
         }
@@ -69,12 +69,14 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         this.version = version;
         EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
         builder.validationThreshold = config.threshold;
+        config.tick = buf.getInt();
         builder.beginTick = buf.getInt();
         builder.endTick = buf.getInt();
         builder.stopTick = buf.getInt();
         builder.isLooped = getBoolean(buf);
         builder.returnTick = buf.getInt();
         builder.isEasingBefore = getBoolean(buf);
+        keyframeSize = buf.get();
         getBodyPartInfo(buf, builder.head, false);
         getBodyPartInfo(buf, builder.torso, true);
         getBodyPartInfo(buf, builder.rightArm, true);
@@ -107,9 +109,11 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     private void getPartInfo(ByteBuffer buf, EmoteData.StateCollection.State part){
         int len = buf.getInt();
         for(int i = 0; i < len; i++){
+            int currentPos = buf.position();
             if(! part.addKeyFrame(buf.getInt(), buf.getFloat(), Ease.getEase(buf.get()))){
                 this.valid = false;
             }
+            buf.position(currentPos + keyframeSize); //To enable other data in the future without losing compatibility
         }
     }
 
@@ -139,7 +143,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public int calculateSize(NetData config) {
         if(config.emoteData == null)return 0;
         //I will create less efficient loops but these will be more easily fixable
-        int size = 30;//The header makes 46 bytes IIIIBBIB
+        int size = 23;//The header makes 46 bytes IIIIBIBB
         size += partSize(config.emoteData.head);
         size += partSize(config.emoteData.torso);
         size += partSize(config.emoteData.rightArm);
@@ -167,6 +171,6 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         return size;
     }
     int axisSize(EmoteData.StateCollection.State axis){
-        return axis.keyFrames.size()*9 + 4;// count*IFB + I (for count)
+        return axis.keyFrames.size()*keyframeSize + 4;// count*IFB + I (for count)
     }
 }

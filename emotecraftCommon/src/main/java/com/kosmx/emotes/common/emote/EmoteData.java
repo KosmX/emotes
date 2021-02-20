@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Used to store Emote data
@@ -114,10 +113,6 @@ public class EmoteData {
             this.bendDirection = new State("axis", 0, 0, true);
             this.bend = new State("bend", 0, 0, true);
             this.isBendable = bendable;
-        }
-
-        public StateCollection(float x, float y, float z, float pitch, float yaw, float roll, String name, float translationThreshold){
-            this(x, y, z, pitch, yaw, roll, name, translationThreshold, true);
         }
 
         @Override
@@ -320,12 +315,12 @@ public class EmoteData {
 
 
         public EmoteBuilder(){
-            head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold);
-            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", validationThreshold / 8f);
-            rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold);
-            leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold);
-            leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold);
-            rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold);
+            head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold, false);
+            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", validationThreshold / 8f, true);
+            rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold, true);
+            leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold, true);
+            leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);
+            rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
         }
 
         public EmoteData build(){

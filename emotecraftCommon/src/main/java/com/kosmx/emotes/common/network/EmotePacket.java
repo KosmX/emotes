@@ -60,9 +60,9 @@ public class EmotePacket {
             }
         });
         if(sizeSum.get() > data.sizeLimit)throw new IOException("Can't send emote, packet's size is bigger than max allowed");
-        SongPacket songPacket = (SongPacket) subPackets.get(3);
+        SongPacket songPacket = (SongPacket) subPackets.get((byte)3);
         int songSize = songPacket.calculateSize(this.data) + 6;
-        if(sizeSum.get() + songSize <= data.sizeLimit){
+        if(songPacket.doWrite(this.data) && sizeSum.get() + songSize <= data.sizeLimit){
             partCount.getAndSet((byte) (partCount.get() + 1));
             sizeSum.addAndGet(songSize);
         }
@@ -70,7 +70,7 @@ public class EmotePacket {
 
         ByteBuffer buf = ByteBuffer.allocate(sizeSum.get());
 
-        buf.putInt(subPackets.get(8).getVer(data.versions));
+        buf.putInt(subPackets.get((byte)8).getVer(data.versions));
         buf.put(partCount.get());
 
         AtomicBoolean ex = new AtomicBoolean(false);
@@ -145,6 +145,11 @@ public class EmotePacket {
                     versions.put(aByte, bByte);
                 }
             });
+            data.versions = versions;
+        }
+
+        public Builder(){
+            this(new HashMap<>());
         }
 
         public EmotePacket build(){
