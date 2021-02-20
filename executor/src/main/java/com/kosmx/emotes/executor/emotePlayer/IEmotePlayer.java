@@ -1,26 +1,13 @@
 package com.kosmx.emotes.executor.emotePlayer;
 
-import com.kosmx.emotes.common.emote.EmoteData;
+public interface IEmotePlayer {
+    boolean isRunning();
 
-import javax.annotation.Nullable;
-import java.util.UUID;
+    static boolean isRunningEmote(IEmotePlayer emotePlayer){
+        return emotePlayer != null && emotePlayer.isRunning();
+    }
 
-//Every player will be IEmotePlayer
-public interface IEmotePlayer<T> {
+    void tick();
 
-    void playEmote(EmoteData emote);
-
-    @Nullable
-    T getEmote();
-
-    void resetLastUpdated();
-
-    boolean isPlayingEmote();
-
-    void stopEmote();
-
-    UUID getUUID();
-
-    boolean isMainPlayer();
-
+    boolean isLoopStarted();
 }

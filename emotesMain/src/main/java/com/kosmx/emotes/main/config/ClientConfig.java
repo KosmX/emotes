@@ -2,6 +2,7 @@ package com.kosmx.emotes.main.config;
 
 import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.common.tools.Pair;
+import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.main.EmoteHolder;
 
 import java.util.ArrayList;
@@ -38,10 +39,9 @@ public class ClientConfig extends SerializableConfig {
         for(Pair<Integer, String> pair : emotesWithHash){
             EmoteHolder emote = EmoteHolder.getEmoteFromHash(pair.getLeft());
             if(emote != null){
-                emote.keyBinding = InputUtil.fromTranslationKey(pair.getRight());
-            }else{
-                //Main.log(Level.ERROR, "Can't find emote from hash: " + pair.getLeft());
-            }
+                emote.keyBinding = EmoteInstance.instance.getDefaults().getKeyFromString(pair.getRight());
+            }//Main.log(Level.ERROR, "Can't find emote from hash: " + pair.getLeft());
+
         }
 
         EmoteHolder.bindKeys(this);

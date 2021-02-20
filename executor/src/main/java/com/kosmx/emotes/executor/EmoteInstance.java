@@ -3,6 +3,7 @@ package com.kosmx.emotes.executor;
 
 import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.executor.dataTypes.IDefaultTypes;
+import com.kosmx.emotes.executor.dataTypes.IClientMethods;
 
 import javax.annotation.Nonnull;
 
@@ -14,5 +15,9 @@ public interface EmoteInstance {
     Logger getLogger();
 
     IDefaultTypes getDefaults();
+
+    IClientMethods getClientMethods();
+
+    boolean isClient();
 
 }

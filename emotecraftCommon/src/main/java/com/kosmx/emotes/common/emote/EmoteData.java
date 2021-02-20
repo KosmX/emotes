@@ -307,10 +307,10 @@ public class EmoteData {
         public boolean isEasingBefore = false;
         public float validationThreshold = staticThreshold;
 
-        public int beginTick;
+        public int beginTick = 0;
         public int endTick;
-        public int stopTick;
-        public boolean isLooped;
+        public int stopTick = 0;
+        public boolean isLooped = false;
         public int returnTick;
 
 

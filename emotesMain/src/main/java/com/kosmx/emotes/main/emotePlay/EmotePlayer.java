@@ -7,12 +7,13 @@ import com.kosmx.emotes.common.tools.Easing;
 import com.kosmx.emotes.common.tools.MathHelper;
 import com.kosmx.emotes.common.tools.Pair;
 import com.kosmx.emotes.common.tools.Vector3;
+import com.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 // abstract to extend it in every environments
-public abstract class EmotePlayer {
+public abstract class EmotePlayer implements IEmotePlayer {
     private final EmoteData data;
     @Nullable
     final SoundPlayer song;
@@ -54,6 +55,7 @@ public abstract class EmotePlayer {
 
     protected abstract <T extends BodyPart> T partConstructor(EmoteData.StateCollection part);
 
+    @Override
     public void tick() {
         if (this.isRunning) {
             this.currentTick++;
@@ -89,6 +91,7 @@ public abstract class EmotePlayer {
      *
      * @return :D
      */
+    @Override
     public boolean isLoopStarted() {
         return isLoopStarted;
     }

@@ -1,18 +1,16 @@
 package com.kosmx.emotes.main.config;
 
 import com.google.gson.*;
-import com.kosmx.emotes.Main;
 import com.kosmx.emotes.common.emote.EmoteData;
+import com.kosmx.emotes.executor.EmoteInstance;
+import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.main.EmoteHolder;
 import com.kosmx.emotes.common.tools.Easing;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import org.apache.logging.log4j.Level;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 
 public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, JsonSerializer<EmoteHolder> {
@@ -28,27 +26,27 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
 
         int version = 1;
         if(node.has("version")) version = node.get("version").getAsInt();
-        MutableText author = (MutableText) LiteralText.EMPTY;
-        MutableText name = Text.Serializer.fromJson(node.get("name"));
+        Text author = EmoteInstance.instance.getDefaults().emptyTex();
+        Text name = EmoteInstance.instance.getDefaults().fromJson(node.get("name"));
         if(node.has("author")){
-            author = Text.Serializer.fromJson(node.get("author"));
+            author = EmoteInstance.instance.getDefaults().fromJson(node.get("author"));
         }
 
         if(modVersion < version){
-            Main.log(Level.ERROR, "Emote: " + name.getString() + " was made for a newer mod version", true);
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Emote: " + name.getString() + " was made for a newer mod version", true);
             throw new JsonParseException(name.getString() + " is version " + Integer.toString(version) + ". Emotecraft can only process version " + Integer.toString(modVersion) + ".");
         }
 
-        MutableText description = (MutableText) LiteralText.EMPTY;
+        Text description = EmoteInstance.instance.getDefaults().emptyTex();
         if(node.has("description")){
-            description = (LiteralText) Text.Serializer.fromJson(node.get("description"));
+            description = EmoteInstance.instance.getDefaults().fromJson(node.get("description"));
         }
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
             if(string.equals("author") || string.equals("comment") || string.equals("name") || string.equals("description") || string.equals("emote") || string.equals("version"))
                 return;
-            Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
-            Main.log(Level.WARN, "If it is a comment, ignore the warning");
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
         });
         EmoteData emote = emoteDeserializer(node.getAsJsonObject("emote"));
         List<EmoteHolder> list = new ArrayList<>();
@@ -74,8 +72,8 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
             String string = entry.getKey();
             if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves") || string.equals("returnTick") || string.equals("isLoop") || string.equals("easeBeforeKeyframe"))
                 return;
-            Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
-            Main.log(Level.WARN, "If it is a comment, ignore the warning");
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
         });
         builder.stopTick = node.has("stopTick") ? node.get("stopTick").getAsInt() : builder.endTick;
         boolean degrees = ! node.has("degrees") || node.get("degrees").getAsBoolean();
@@ -95,8 +93,8 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
                 String string = entry.getKey();
                 if(string.equals("tick") || string.equals("comment") || string.equals("easing") || string.equals("turn") || string.equals("head") || string.equals("torso") || string.equals("rightArm") || string.equals("leftArm") || string.equals("rightLeg") || string.equals("leftLeg"))
                     return;
-                Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
-                Main.log(Level.WARN, "If it is a comment, ignore the warning");
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
             });
             int turn = obj.has("turn") ? obj.get("turn").getAsInt() : 0;
             addBodyPartIfExists(emote.head, "head", obj, degrees, tick, easing, turn);
@@ -115,8 +113,8 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
                 String string = entry.getKey();
                 if(string.equals("x") || string.equals("y") || string.equals("z") || string.equals("pitch") || string.equals("yaw") || string.equals("roll") || string.equals("comment") || string.equals("bend") || string.equals("axis"))
                     return;
-                Main.log(Level.WARN, "Can't understadt: " + string + " : " + entry.getValue());
-                Main.log(Level.WARN, "If it is a comment, ignore the warning");
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
             });
             addPartIfExists(part.x, "x", partNode, degrees, tick, easing, turn);
             addPartIfExists(part.y, "y", partNode, degrees, tick, easing, turn);
@@ -159,10 +157,10 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
     public JsonElement serialize(EmoteHolder emote, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject node = new JsonObject();
         node.addProperty("version", emote.getEmote().isEasingBefore ? 2 : 1); //to make compatible emotes. I won't do it.
-        node.add("name", Text.Serializer.toJsonTree(emote.name));
-        node.add("description", Text.Serializer.toJsonTree(emote.description)); // :D
+        node.add("name", emote.name.toJsonTree());
+        node.add("description", emote.description.toJsonTree()); // :D
         if(!emote.author.getString().equals("")){
-            node.add("author", Text.Serializer.toJsonTree(emote.author));
+            node.add("author", emote.author.toJsonTree());
         }
         node.add("emote", emoteSerializer(emote.getEmote()));
         return node;

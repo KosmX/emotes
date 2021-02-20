@@ -2,42 +2,24 @@ package com.kosmx.emotes.main;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.kosmx.emotes.Client;
-import com.kosmx.emotes.Main;
-import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.common.emote.EmoteData;
+import com.kosmx.emotes.common.tools.MathHelper;
 import com.kosmx.emotes.common.tools.Pair;
+import com.kosmx.emotes.common.tools.Vec3d;
 import com.kosmx.emotes.executor.EmoteInstance;
-import com.kosmx.emotes.executor.dataTypes.IIdentifier;
-import com.kosmx.emotes.executor.dataTypes.InputKey;
-import com.kosmx.emotes.executor.dataTypes.Text;
+import com.kosmx.emotes.executor.dataTypes.*;
+import com.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
+import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import com.kosmx.emotes.main.config.ClientConfig;
-import com.kosmx.emotes.mixinInterface.EmotePlayerInterface;
-import com.kosmx.emotes.model.EmotePlayer;
-import com.kosmx.emotes.network.ClientNetwork;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.player.PlayerEntity;
 import com.kosmx.emotes.executor.dataTypes.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import org.apache.logging.log4j.Level;
+import com.kosmx.emotes.main.config.Serializer;
+import com.kosmx.emotes.main.emotePlay.EmotePlayer;
 
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class EmoteHolder {
     public final EmoteData emote;
@@ -48,7 +30,7 @@ public class EmoteHolder {
     public static List<EmoteHolder> list = new ArrayList<>(); // static array of all imported emotes
     public InputKey keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
-    public NativeImageBackedTexture nativeIcon = null;
+    public INativeImageBacketTexture nativeIcon = null;
     @Nullable
     private IIdentifier iconIdentifier = null;
     @Nullable
@@ -108,7 +90,7 @@ public class EmoteHolder {
     public static void clearEmotes(){
         for(EmoteHolder emoteHolder : list){
             if(emoteHolder.iconIdentifier != null){
-                MinecraftClient.getInstance().getTextureManager().destroyTexture(emoteHolder.iconIdentifier);
+                EmoteInstance.instance.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
                 assert emoteHolder.nativeIcon != null;
                 emoteHolder.nativeIcon.close();
             }
@@ -122,7 +104,7 @@ public class EmoteHolder {
      */
     public void bindIcon(Object path){
         if(path instanceof String || path instanceof File) this.iconName = path;
-        else Main.log(Level.FATAL, "Can't use " + path.getClass() + " as file");
+        else EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't use " + path.getClass() + " as file");
     }
 
     public void assignIcon(File file){
@@ -136,10 +118,10 @@ public class EmoteHolder {
     }
 
     public void assignIcon(String str){
-        assignIcon(Client.class.getResourceAsStream(str));
+        assignIcon(EmoteInstance.instance.getClientMethods().getResourceAsStream(str));
     }
 
-    public Identifier getIconIdentifier(){
+    public IIdentifier getIconIdentifier(){
         if(iconIdentifier == null && this.iconName != null){
             if(this.iconName instanceof String) assignIcon((String) this.iconName);
             else if(this.iconName instanceof File) assignIcon((File) this.iconName);
@@ -152,10 +134,10 @@ public class EmoteHolder {
             Throwable throwable = null;
 
             try{
-                NativeImage image = NativeImage.read(inputStream);
-                NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(image);
-                this.iconIdentifier = new Identifier(Main.MOD_ID, "icon" + this.hash);
-                MinecraftClient.getInstance().getTextureManager().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
+                INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
+                this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.hash);
+                //MinecraftClient.getInstance().getTextureManager().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
+                EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
                 this.nativeIcon = nativeImageBackedTexture;
             }catch(IOException e){
                 throwable = e;
@@ -168,7 +150,7 @@ public class EmoteHolder {
                 }
             }
         }catch(Throwable var){
-            Main.log(Level.ERROR, "Can't open emote icon: " + var);
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't open emote icon: " + var);
             this.iconIdentifier = null;
             this.nativeIcon = null;
         }
@@ -208,11 +190,11 @@ public class EmoteHolder {
         list.addAll(hold);
     }
 
-    public static boolean playEmote(EmoteData emote, PlayerEntity player){
+    public static boolean playEmote(EmoteData emote, IEmotePlayerEntity player){
         return playEmote(emote, player, null);
     }
 
-    public static boolean playEmote(EmoteData emote, PlayerEntity player, @Nullable EmoteHolder emoteHolder){
+    public static boolean playEmote(EmoteData emote, IEmotePlayerEntity player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
             return ClientNetwork.clientStartEmote(emote, player, emoteHolder);
         }else{
@@ -220,27 +202,26 @@ public class EmoteHolder {
         }
     }
 
-    private static boolean canPlayEmote(PlayerEntity entity){
+    private static boolean canPlayEmote(IEmotePlayerEntity entity){
         if(! canRunEmote(entity)) return false;
-        if(entity != MinecraftClient.getInstance().getCameraEntity()) return false;
-        EmotePlayerInterface target = (EmotePlayerInterface) entity;
-        return ! (EmotePlayer.isRunningEmote(target.getEmote()) && ! target.getEmote().isLoopStarted());
+        if(!entity.isMainPlayer()) return false;
+        return ! (IEmotePlayer.isRunningEmote(entity.getEmote()) && ! entity.getEmote().isLoopStarted());
     }
 
     /**
      * Check if the emote can be played.
-     * @param entity Witch entity (player)
+     * @param player Witch entity (player)
      * @return True if possible to play
      */
-    public static boolean canRunEmote(Entity entity){
-        if(! (entity instanceof AbstractClientPlayerEntity)) return false;
-        AbstractClientPlayerEntity player = (AbstractClientPlayerEntity) entity;
-        if(player.getPose() != EntityPose.STANDING) return false;
+    public static boolean canRunEmote(IEmotePlayerEntity player){
+        if(! EmoteInstance.instance.getClientMethods().isAbstractClientEntity(player)) return false;
+        if(player.isNotStanding()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
-        return ! (player.getPos().distanceTo(new Vec3d(player.prevX, MathHelper.lerp(Main.config.yRatio, player.prevY, player.getPos().getY()), player.prevZ)) > Main.config.stopThreshold);
+        Vec3d prevPos = player.getPrevPos();
+        return ! (player.getPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio, prevPos.getY(), player.getPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold);
     }
 
-    public boolean playEmote(PlayerEntity playerEntity){
+    public boolean playEmote(IEmotePlayerEntity playerEntity){
         return playEmote(this.emote, playerEntity, this);
     }
 }

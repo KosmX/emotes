@@ -3,18 +3,16 @@ package com.kosmx.emotes.main.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.kosmx.emotes.Main;
 import com.kosmx.emotes.common.emote.EmoteData;
+import com.kosmx.emotes.executor.EmoteInstance;
+import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.main.EmoteHolder;
 import com.kosmx.emotes.common.tools.Ease;
 import com.kosmx.emotes.common.tools.Easing;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.util.Formatting;
-import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Serialize movements as emotes from GeckoLib format
@@ -23,7 +21,7 @@ import java.util.List;
 public class GeckoLibSerializer {
     public static List<EmoteHolder> serialize(JsonObject node){
         if(!node.get("format_version").getAsString().equals("1.8.0")){
-            Main.log(Level.INFO, "Gecko lib format what?");
+            EmoteInstance.instance.getLogger().log(Level.INFO, "Gecko lib format what is this version?");
         }
         return readAnimations(node.get("animations").getAsJsonObject());
     }
@@ -31,21 +29,20 @@ public class GeckoLibSerializer {
     private static List<EmoteHolder> readAnimations(JsonObject jsonEmotes){
         List<EmoteHolder> emotes = new ArrayList<>();
         jsonEmotes.entrySet().forEach(stringJsonElementEntry -> {
-            MutableText name = new LiteralText(stringJsonElementEntry.getKey()).formatted(Formatting.WHITE);
+            EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
+            Text name = EmoteInstance.instance.getDefaults().textFromString(stringJsonElementEntry.getKey());
             JsonObject node = stringJsonElementEntry.getValue().getAsJsonObject();
-            int length = (int) Math.ceil(node.get("animation_length").getAsFloat() * 20);
-            boolean loop = false;
-            int returnTick = 0;
+            builder.endTick = (int) Math.ceil(node.get("animation_length").getAsFloat() * 20);
             if(node.has("loop")){
-                loop = node.get("loop").getAsJsonPrimitive().isBoolean() && node.get("loop").getAsBoolean();
-                if(!loop && node.get("loop").getAsJsonPrimitive().isString() && node.get("loop").getAsString().equals("hold_on_last_frame")){
-                    loop = true;
-                    returnTick = length;
+                builder.isLooped = node.get("loop").getAsJsonPrimitive().isBoolean() && node.get("loop").getAsBoolean();
+                if(!builder.isLooped && node.get("loop").getAsJsonPrimitive().isString() && node.get("loop").getAsString().equals("hold_on_last_frame")){
+                    builder.isLooped = true;
+                    builder.returnTick = builder.endTick;
                 }
             }
-            EmoteData emoteData = new EmoteData(0, length, 0, loop, returnTick, 0, true);
+            EmoteData emoteData = builder.build();
             keyframeSerializer(emoteData, node.get("bones").getAsJsonObject());
-            EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, new LiteralText("Imported from GeckoLib").formatted(Formatting.YELLOW), (MutableText) LiteralText.EMPTY, node.hashCode());
+            EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, EmoteInstance.instance.getDefaults().textFromString("Imported from GeckoLib"), EmoteInstance.instance.getDefaults().emptyTex(), node.hashCode());
             emoteHolder.isFromGeckoLib = true;
             emotes.add(emoteHolder);
         });
