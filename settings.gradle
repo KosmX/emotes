@@ -1,3 +1,5 @@
+//Oh, I had this before lol
+
 pluginManagement {
     repositories {
         jcenter()
@@ -8,3 +10,14 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+rootProject.name = "emotecraft"
+
+include 'emotecraftCommon'
+
+
+include 'oldJunk'
+include 'executor'
+include 'emotesMain'
+include 'fabric'
+

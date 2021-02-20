@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+}
+
+version project.mod_version
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':emotecraftCommon')
+}

@@ -1,0 +1,23 @@
+package com.kosmx.emotes.mixin;
+
+import com.kosmx.emotes.mixinInterface.IUpperPartHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.model.ModelPart;
+import org.spongepowered.asm.mixin.Mixin;
+
+@Environment(EnvType.CLIENT)
+@Mixin(ModelPart.class)
+public class UpperPartMixin implements IUpperPartHelper {
+    private boolean Emotecraft_isUpperPart = false;
+
+    @Override
+    public boolean isUpperPart(){
+        return Emotecraft_isUpperPart;
+    }
+
+    @Override
+    public void setUpperPart(boolean bl){
+        this.Emotecraft_isUpperPart = bl;
+    }
+}

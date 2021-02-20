@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+version project.mod_version
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':emotecraftCommon')
+    compile project(':executor')
+}
+
+tasks.withType(Copy){
+    eachFile{
+        rename{
+            String filename->filename = filename.toLowerCase()
+        }
+        //Rename every file to lowercase. This is essential for the translations to work
+        //Possibly creates other problems on other operating systems
+    }
+}
+
+/* This testing stuff could be useful later...
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+ */
