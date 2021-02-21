@@ -1,4 +1,4 @@
-package com.kosmx.emotes.gui.widget;
+package com.kosmx.emotes.main.screen.widget;
 
 import com.kosmx.emotes.Main;
 import com.kosmx.emotes.main.config.EmoteHolder;
@@ -111,7 +111,7 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
     private void drawTexture(MatrixStack matrices, int x, int y, int u, int v, int s){
-        drawTexture(matrices, this.x + x * this.size / 256, this.y + y * this.size / 256, s * this.size / 2, s * this.size / 2, u, v, s * 128, s * 128, 512, 512);
+        DrawableHelper.drawTexture(matrices, this.x + x * this.size / 256, this.y + y * this.size / 256, s * this.size / 2, s * this.size / 2, u, v, s * 128, s * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
@@ -175,7 +175,7 @@ public abstract class AbstractFastChooseWidget extends DrawableHelper implements
                 int iconX = (int) (((float) (x + size / 2)) + size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (y + size / 2)) + size * 0.4 * Math.cos(this.angle * 0.0174533)) - s;
                 MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
-                drawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
+                DrawableHelper.drawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             }else{
                 if(Main.config.fastMenuEmotes[id] != null){
                     drawCenteredText(matrices, textRenderer, Main.config.fastMenuEmotes[id].name, this.angle);
