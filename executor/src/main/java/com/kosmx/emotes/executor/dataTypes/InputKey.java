@@ -6,4 +6,6 @@ public interface InputKey {
     boolean equals(InputKey key);
 
     String getTranslationKey();
+
+    Text getLocalizedText();
 }

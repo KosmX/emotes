@@ -10,6 +10,7 @@ public interface IDefaultTypes {
     Text emptyTex();
     Text textFromString(String str);
     Text fromJson(JsonElement node);
+    Text newTranslationText(String key);
 
     IIdentifier newIdentifier(String namespace, String id);
 
