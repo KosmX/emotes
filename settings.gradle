@@ -20,4 +20,5 @@ include 'oldJunk'
 include 'executor'
 include 'emotesMain'
 include 'fabric'
+include 'emotesServer'
 
