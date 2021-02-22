@@ -1,6 +1,7 @@
 package com.kosmx.emotes.executor.dataTypes;
 
 import com.google.gson.JsonElement;
+import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.executor.dataTypes.other.TextFormatting;
 
 /**
@@ -12,4 +13,7 @@ public interface Text {
     JsonElement toJsonTree();
     Text formatted(TextFormatting form);
     Text append(Text text);
+    default Text append(String text){
+        return append(EmoteInstance.instance.getDefaults().textFromString(text));
+    }
 }

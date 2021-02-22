@@ -5,20 +5,24 @@ import com.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import com.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.ITextWidget;
+import com.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
 
 import java.util.function.Consumer;
 
-public abstract class AbstractScreenLogic {
-    protected abstract void init();
+public interface AbstractScreenLogic<MATRIX> extends IScreenElementLogic<MATRIX> {
 
-    abstract protected IButton newButton();
-    abstract protected ITextWidget newTextWidget();
-    abstract protected ITextInputWidget newTextInputWidget(int x, int y, int width, int height, Text title);
+    IButton newButton(int x, int y, int width, int heitht, Text msg, Consumer<IButton> pressAction);
+    ITextWidget newTextWidget();
+    ITextInputWidget newTextInputWidget(int x, int y, int width, int height, Text title);
 
-    abstract protected IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text);
+    IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text);
 
-    abstract protected void openThisScreen();
+    void openThisScreen();
 
-    abstract int getWidth();
-    abstract int getHeight();
+    int getWidth();
+    int getHeight();
+
+    void setInitialFocus(IWidget searchBox);
+
+    void setFocused(IWidget focused);
 }

@@ -22,5 +22,6 @@ public interface EmoteInstance {
     boolean isClient();
 
     Path getGameDirectory();
+    Path getConfigPath();
 
 }

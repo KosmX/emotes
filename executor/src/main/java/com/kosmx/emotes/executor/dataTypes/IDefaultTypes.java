@@ -7,6 +7,7 @@ import com.kosmx.emotes.common.CommonData;
 public interface IDefaultTypes {
     InputKey getUnknownKey();
     InputKey getKeyFromString(String str);
+    InputKey getKeyFromCode(int keyCode, int scanCode);
     Text emptyTex();
     Text textFromString(String str);
     Text fromJson(JsonElement node);

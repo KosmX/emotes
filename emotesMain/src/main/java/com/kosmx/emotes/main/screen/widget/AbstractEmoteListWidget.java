@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  *
  * @param <E>
  */
-public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.AbstractEmoteEntry, MATRIX> extends AbstractWidgetLogic<MATRIX> {
+public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.AbstractEmoteEntry, MATRIX> extends IWidgetLogic<MATRIX> {
 
     protected List<E> emotes = new ArrayList<>();
 
@@ -47,6 +47,10 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     }
     protected abstract int getRight();
 
+    protected abstract void setSelected(E entry);
+    public abstract E getSelected();
+
+    public abstract void setLeftPos(int i);
 
     /**
      * stuff to implement + override
