@@ -46,4 +46,6 @@ public class ClientConfig extends SerializableConfig {
 
         EmoteHolder.bindKeys(this);
     }
+    public boolean modAvailableAtServer = true;
+    public boolean correctServerVersion = true;
 }

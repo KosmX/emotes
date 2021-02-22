@@ -1,6 +1,7 @@
 package com.kosmx.emotes.executor.dataTypes;
 
 import com.kosmx.emotes.executor.dataTypes.screen.IScreen;
+import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,5 +15,7 @@ public interface IClientMethods {
     boolean isAbstractClientEntity(Object entity);
 
     void openScreen(IScreen screen);
+
+    IEmotePlayerEntity getMainPlayer();
 
 }
