@@ -1,5 +1,6 @@
 package com.kosmx.emotes.executor.dataTypes;
 
+import com.kosmx.emotes.executor.INetworkInstance;
 import com.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 
@@ -17,5 +18,7 @@ public interface IClientMethods {
     void openScreen(IScreen screen);
 
     IEmotePlayerEntity getMainPlayer();
+
+    INetworkInstance getServerNetworkController();
 
 }

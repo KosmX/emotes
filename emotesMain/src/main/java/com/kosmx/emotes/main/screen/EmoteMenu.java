@@ -7,6 +7,7 @@ import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.executor.dataTypes.other.TextFormatting;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
+import com.kosmx.emotes.main.ClientInit;
 import com.kosmx.emotes.main.EmoteHolder;
 import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
@@ -61,7 +62,7 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
         }
 
         this.texts = new ArrayList<>();
-        Client.initEmotes();
+        ClientInit.loadEmotes();
 
         if(this.exportGeckoEmotes){
             exportGeckoEmotes = false;

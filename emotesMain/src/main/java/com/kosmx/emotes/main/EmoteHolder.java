@@ -14,6 +14,7 @@ import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.main.config.Serializer;
 import com.kosmx.emotes.main.emotePlay.EmotePlayer;
+import com.kosmx.emotes.main.network.ClientEmotePlay;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -196,7 +197,7 @@ public class EmoteHolder {
 
     public static boolean playEmote(EmoteData emote, IEmotePlayerEntity player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
-            return ClientNetwork.clientStartEmote(emote, player, emoteHolder);
+            return ClientEmotePlay.clientStartLocalEmote(emote);
         }else{
             return false;
         }

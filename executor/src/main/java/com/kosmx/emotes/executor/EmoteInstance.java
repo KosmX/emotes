@@ -6,6 +6,7 @@ import com.kosmx.emotes.executor.dataTypes.IDefaultTypes;
 import com.kosmx.emotes.executor.dataTypes.IClientMethods;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.nio.file.Path;
 
 public interface EmoteInstance {
@@ -22,6 +23,7 @@ public interface EmoteInstance {
     boolean isClient();
 
     Path getGameDirectory();
+    File getExternalEmoteDir();
     Path getConfigPath();
 
 }
