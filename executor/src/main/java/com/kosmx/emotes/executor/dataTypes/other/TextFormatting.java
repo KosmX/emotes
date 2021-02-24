@@ -13,4 +13,8 @@ public enum TextFormatting {
     TextFormatting(char code) {
         this.code = code;
     }
+
+    public char getCode() {
+        return code;
+    }
 }

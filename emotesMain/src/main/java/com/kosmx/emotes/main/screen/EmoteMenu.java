@@ -44,7 +44,7 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
     private IButton setKeyButton;
     public boolean save = false;
     public boolean warn = false;
-    private ITextInputWidget<MATRIX> searchBox;
+    private ITextInputWidget<MATRIX, ITextInputWidget> searchBox;
     private List<PositionedText> texts = new ArrayList<>();
     private IButton resetKey;
 

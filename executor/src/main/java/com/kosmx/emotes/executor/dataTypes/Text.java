@@ -8,7 +8,6 @@ import com.kosmx.emotes.executor.dataTypes.other.TextFormatting;
  * MC text is terrible...
  */
 public interface Text {
-    void setText();
     String getString();
     JsonElement toJsonTree();
     Text formatted(TextFormatting form);

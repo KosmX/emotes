@@ -119,7 +119,7 @@ public class EmoteHolder {
     }
 
     public void assignIcon(String str){
-        assignIcon(EmoteInstance.instance.getClientMethods().getResourceAsStream(str));
+        assignIcon(EmoteHolder.class.getResourceAsStream(str));
     }
 
     public IIdentifier getIconIdentifier(){

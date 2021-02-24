@@ -46,7 +46,8 @@ minecraft {
 
 dependencies {
 
-    compile project(':emotecraftCommon')
+    //compile project(':emotecraftCommon')
+    compile project(':emotesMain')
 
 
     //to change the versions see the gradle.properties file

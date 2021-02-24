@@ -9,21 +9,21 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Path;
 
-public interface EmoteInstance {
-    EmoteInstance instance = null;
+public abstract class EmoteInstance {
+    public static EmoteInstance instance = null;
 
     @Nonnull
-    SerializableConfig config = null;
-    Logger getLogger();
+    public static SerializableConfig config = null;
+    public abstract Logger getLogger();
 
-    IDefaultTypes getDefaults();
+    public abstract IDefaultTypes getDefaults();
 
-    IClientMethods getClientMethods();
+    public abstract IClientMethods getClientMethods();
 
-    boolean isClient();
+    public abstract boolean isClient();
 
-    Path getGameDirectory();
-    File getExternalEmoteDir();
-    Path getConfigPath();
+    public abstract Path getGameDirectory();
+    public abstract File getExternalEmoteDir();
+    public abstract Path getConfigPath();
 
 }

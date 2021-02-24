@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 // abstract to extend it in every environments
-public abstract class EmotePlayer implements IEmotePlayer {
+public abstract class EmotePlayer<T> implements IEmotePlayer {
     private final EmoteData data;
     @Nullable
     final SoundPlayer song;
@@ -45,15 +45,13 @@ public abstract class EmotePlayer implements IEmotePlayer {
             this.song = null;
         }
 
-        head = partConstructor(data.head);
-        torso = partConstructor(data.torso);
-        rightArm = partConstructor(data.rightArm);
-        leftArm = partConstructor(data.leftArm);
-        rightLeg = partConstructor(data.rightLeg);
-        leftLeg = partConstructor(data.leftLeg);
+        head = new BodyPart(data.head);
+        torso = new BodyPart(data.torso);
+        rightArm = new BodyPart(data.rightArm);
+        leftArm = new BodyPart(data.leftArm);
+        rightLeg = new BodyPart(data.rightLeg);
+        leftLeg = new BodyPart(data.leftLeg);
     }
-
-    protected abstract <T extends BodyPart> T partConstructor(EmoteData.StateCollection part);
 
     @Override
     public void tick() {
@@ -86,6 +84,11 @@ public abstract class EmotePlayer implements IEmotePlayer {
         //if(this.perspective != null) MinecraftClient.getInstance().options.setPerspective(perspective); //TODO
     }
 
+    @Override
+    public boolean isRunning() {
+        return this.isRunning;
+    }
+
     /**
      * is the emote already in an infinite loop?
      *
@@ -116,16 +119,18 @@ public abstract class EmotePlayer implements IEmotePlayer {
         return data.isInfinite;
     }
 
-    public abstract class BodyPart {
-        final EmoteData.StateCollection part;
-        final Axis x;
-        final Axis y;
-        final Axis z;
-        final RotationAxis pitch;
-        final RotationAxis yaw;
-        final RotationAxis roll;
-        final RotationAxis bendAxis;
-        final RotationAxis bend;
+    protected abstract void updateBodyPart(BodyPart bodyPart, T modelPart);
+
+    public class BodyPart {
+        public final EmoteData.StateCollection part;
+        public final Axis x;
+        public final Axis y;
+        public final Axis z;
+        public final RotationAxis pitch;
+        public final RotationAxis yaw;
+        public final RotationAxis roll;
+        public final RotationAxis bendAxis;
+        public final RotationAxis bend;
 
 
         public BodyPart(EmoteData.StateCollection part) {
@@ -150,7 +155,9 @@ public abstract class EmotePlayer implements IEmotePlayer {
          * modelPart.roll = roll.getValueAtCurrentTick(modelPart.roll);
          * }
          */
-        public abstract <T> void updateBodyPart(T modelPart);
+        public void updateBodyPart(T modelPart){
+            EmotePlayer.this.updateBodyPart(this, modelPart);
+        }
 
         public Pair<Float, Float> getBend() {
             return new Pair<>(this.bendAxis.getValueAtCurrentTick(0), this.bend.getValueAtCurrentTick(0));
@@ -209,7 +216,7 @@ public abstract class EmotePlayer implements IEmotePlayer {
          * @param currentValue the Current value of the axis
          * @return value
          */
-        protected float getValueAtCurrentTick(float currentValue) {
+        public float getValueAtCurrentTick(float currentValue) {
             int pos = keyframes.findAtTick(currentTick);
             EmoteData.KeyFrame keyBefore = findBefore(pos, currentValue);
             if (isLoopStarted && keyBefore.tick < data.returnToTick) {
@@ -250,7 +257,7 @@ public abstract class EmotePlayer implements IEmotePlayer {
         }
 
         @Override
-        protected float getValueAtCurrentTick(float currentValue) {
+        public float getValueAtCurrentTick(float currentValue) {
             return MathHelper.clampToRadian(super.getValueAtCurrentTick(MathHelper.clampToRadian(currentValue)));
         }
     }

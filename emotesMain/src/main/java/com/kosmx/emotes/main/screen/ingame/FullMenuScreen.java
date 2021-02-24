@@ -18,7 +18,7 @@ import java.util.List;
  */
 public abstract class FullMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
 
-    private ITextInputWidget<MATRIX> searchBox;
+    private ITextInputWidget<MATRIX, ITextInputWidget> searchBox;
     private EmoteList emoteList;
 
     abstract public EmoteMenu<MATRIX> newEmoteMenu();
