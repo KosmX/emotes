@@ -33,4 +33,26 @@ public interface IScreenLogic<MATRIX> extends IRenderHelper<MATRIX> {
     void renderBackgroundTexture(int i);
     void renderBackground(MATRIX matrices);
     void openScreen(@Nullable IScreenLogic<MATRIX> screen);
+    default boolean onKeyPressed(int keyCode, int scanCode, int mod){
+        return false;
+    }
+    default boolean onMouseClicked(double mouseX, double mouseY, int button){
+        return false;
+    }
+    default void onRemove(){
+
+    }
+    default void tickScreen(){
+
+    }
+    default void initScreen(){
+
+    }
+    default void renderScreen(MATRIX matrices, int mouseX, int mouseY, float tickDelta){
+
+    }
+    default boolean isThisPauseScreen(){
+        return true;
+    }
+
 }

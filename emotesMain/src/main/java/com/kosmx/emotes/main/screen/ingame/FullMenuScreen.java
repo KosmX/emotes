@@ -23,7 +23,8 @@ public abstract class FullMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
 
     abstract public EmoteMenu<MATRIX> newEmoteMenu();
 
-    public void init(){
+    @Override
+    public void initScreen(){
         int x = (int) Math.min(this.getWidth() * 0.8, this.getHeight() - 60);
         this.searchBox = newTextInputWidget((this.getWidth() - x) / 2, 12, x, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
         this.searchBox.setInputListener((string)->this.emoteList.filter(string::toLowerCase));
@@ -40,12 +41,14 @@ public abstract class FullMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
 
     protected abstract EmoteList newEmoteList(int boxSize, int height, int width);
 
-    public boolean isPauseScreen(){
+    @Override
+    public boolean isThisPauseScreen(){
         return false;
     }
 
 
-    public void render(MATRIX matrices, int mouseX, int mouseY, float delta){
+    @Override
+    public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         this.renderBackgroundTexture(0);
         this.emoteList.render(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);

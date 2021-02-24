@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+/**
+ * Interface method redirections, default implementations
+ */
 public class IScreenHelperImpl extends Screen implements IScreenLogic<MatrixStack>, IDrawableImpl {
     final Screen parent;
 
@@ -87,5 +90,44 @@ public class IScreenHelperImpl extends Screen implements IScreenLogic<MatrixStac
     @Override
     public void openScreen(@Nullable IScreenLogic<MatrixStack> screen) {
         MinecraftClient.getInstance().openScreen((IScreenHelperImpl)screen);
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        this.initScreen();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return onKeyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return onMouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void removed() {
+        this.onRemove();
+        super.removed();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        this.tickScreen();
+    }
+
+    @Override
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        super.render(matrices, mouseX, mouseY, delta);
+        this.renderScreen(matrices, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return this.isThisPauseScreen();
     }
 }

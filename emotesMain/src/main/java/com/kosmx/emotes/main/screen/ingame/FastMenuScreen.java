@@ -18,8 +18,8 @@ public abstract class FastMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
     private static final Text warn_diff_emotecraft = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.different_server");
 
 
-
-    public void init(){
+    @Override
+    public void initScreen(){
         int x = (int) Math.min(this.getWidth() * 0.8, this.getHeight() * 0.8);
         this.widget = newFastMenuWidget((this.getWidth() - x) / 2, (this.getHeight() - x) / 2, x);
         addToChildren(widget);
@@ -31,13 +31,19 @@ public abstract class FastMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
     protected abstract FullMenuScreen<MATRIX> newFullScreenMenu();
 
 
-    public void render(MATRIX matrices, int mouseX, int mouseY, float delta){
+    @Override
+    public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         this.renderBackground(matrices);
         widget.render(matrices, mouseX, mouseY, delta);
         int remoteVer = ((ClientConfig)EmoteInstance.config).modAvailableAtServer ? ((ClientConfig)EmoteInstance.config).correctServerVersion ? 2 : 1 : 0;
         if(remoteVer != 2){
             drawCenteredText(matrices, remoteVer == 0 ? warn_no_emotecraft : warn_diff_emotecraft, this.getWidth()/2, this.getHeight()/24 - 1, MathHelper.colorHelper(255, 255, 255, 255));
         }
+    }
+
+    @Override
+    public boolean isThisPauseScreen() {
+        return false;
     }
 
     abstract protected FastMenuWidget newFastMenuWidget(int width, int height, int size);

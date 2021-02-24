@@ -50,7 +50,8 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
 
     public boolean exportGeckoEmotes = false;
 
-    protected void init(){
+    @Override
+    public void initScreen(){
         if(warn && ((ClientConfig)EmoteInstance.config).enableQuark){
             warn = false;
             IConfirmScreen csr = createConfigScreen((bool)->{
@@ -138,7 +139,8 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
         }
     }
 
-    public void tick(){
+    @Override
+    public void tickScreen(){
         if(activeKeyTime == 1){
             setFocusedElement(null);
         }
@@ -147,7 +149,8 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
         }
     }
 
-    public boolean mouseClicked(double mouseX, double mouseY, int button){
+    @Override
+    public boolean onMouseClicked(double mouseX, double mouseY, int button){
         if(this.activeKeyTime != 0 && emoteList.getSelected() != null){
             return setKey(EmoteInstance.instance.getDefaults().getMouseKeyFromCode(button));
         }
@@ -155,7 +158,8 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
     }
 
 
-    public void render(MATRIX matrices, int mouseX, int mouseY, float delta){
+    @Override
+    public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         this.renderBackgroundTexture(0);
         if(this.emoteList.getSelected() == null){
             this.setKeyButton.setActive(false);
@@ -211,7 +215,8 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
     }
 
 
-    public void removed(){
+    @Override
+    public void onRemove(){
         if(save){
             this.saveConfig();
         }
@@ -239,7 +244,8 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
         }
     }
 
-    public boolean keyPressed(int keyCode, int scanCode, int mod){
+    @Override
+    public boolean onKeyPressed(int keyCode, int scanCode, int mod){
         if(emoteList.getSelected() != null && activeKeyTime != 0) {
             if (keyCode == 256) {
                 return setKey(EmoteInstance.instance.getDefaults().getUnknownKey());
