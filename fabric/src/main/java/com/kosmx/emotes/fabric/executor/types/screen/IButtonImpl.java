@@ -31,6 +31,6 @@ public class IButtonImpl extends ButtonWidget implements IButton<IButtonImpl> {
 
     @Override
     public IButtonImpl get() {
-        return this;
+        return this; //Get is for getting the Widget object
     }
 }

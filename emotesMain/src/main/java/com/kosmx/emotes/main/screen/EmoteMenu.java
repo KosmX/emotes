@@ -35,7 +35,7 @@ import java.util.logging.Level;
  * onRemove
  * tick()
  */
-public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
+public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATRIX, SCREEN> {
     private int activeKeyTime = 0;
     private EmoteListWidget emoteList;
     private FastChooseWidget fastMenu;
@@ -50,13 +50,17 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
 
     public boolean exportGeckoEmotes = false;
 
+    public EmoteMenu(IScreenSlave screen) {
+        super(screen);
+    }
+
     @Override
     public void initScreen(){
         if(warn && ((ClientConfig)EmoteInstance.config).enableQuark){
             warn = false;
             IConfirmScreen csr = createConfigScreen((bool)->{
                 ((ClientConfig)EmoteInstance.config).enableQuark = bool;
-                this.openThisScreen();
+                screen.openThisScreen();
             }, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark"), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark2"));
             EmoteInstance.instance.getClientMethods().openScreen(csr);
             csr.setTimeout(56);
@@ -89,37 +93,37 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
             });
         }
 
-        this.searchBox = newTextInputWidget(this.getHeight() / 2 - (int) (this.getHeight() / 2.2 - 16) - 12, 12, (int) (this.getHeight() / 2.2 - 16), 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
+        this.searchBox = newTextInputWidget(screen.getHeight() / 2 - (int) (screen.getHeight() / 2.2 - 16) - 12, 12, (int) (screen.getHeight() / 2.2 - 16), 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
 
         this.searchBox.setInputListener((string)->this.emoteList.filter(string::toLowerCase));
-        addToChildren(searchBox);
+        screen.addToChildren(searchBox);
 
-        addToButtons(newButton(this.getHeight() / 2 - 154, this.getHeight() - 30, 150, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
+        screen.addToButtons(newButton(screen.getHeight() / 2 - 154, screen.getHeight() - 30, 150, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
 
         //this.emoteList = new EmoteListWidget(this.client, (int) (this.getHeight() / 2.2 - 16), this.getHeight(), this);
         this.emoteList = newEmoteList();
-        this.emoteList.setLeftPos(this.getHeight() / 2 - (int) (this.getHeight() / 2.2 - 16) - 12);
-        addToChildren(this.emoteList);
-        int x = Math.min(this.getHeight() / 4, (int) (this.getHeight() / 2.5));
-        this.fastMenu = newFastChooseWidghet(this.getHeight() / 2 + 2, this.getHeight() / 2 - 8, x - 7);
-        addToChildren(fastMenu);
-        addToButtons(newButton(this.getHeight() - 100, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
-        addToButtons(newButton(this.getHeight() / 2 + 10, this.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->openParent())));
-        setKeyButton = newButton(this.getHeight() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
-        addToButtons(setKeyButton);
-        resetKey = newButton(this.getHeight() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (button->{
+        this.emoteList.setLeftPos(screen.getHeight() / 2 - (int) (screen.getHeight() / 2.2 - 16) - 12);
+        screen.addToChildren(this.emoteList);
+        int x = Math.min(screen.getHeight() / 4, (int) (screen.getHeight() / 2.5));
+        this.fastMenu = newFastChooseWidghet(screen.getHeight() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
+        screen.addToChildren(fastMenu);
+        screen.addToButtons(newButton(screen.getHeight() - 100, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
+        screen.addToButtons(newButton(screen.getHeight() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
+        setKeyButton = newButton(screen.getHeight() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
+        screen.addToButtons(setKeyButton);
+        resetKey = newButton(screen.getHeight() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (button->{
             if(emoteList.getSelected() != null){
                 emoteList.getSelected().emote.keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
                 this.save = true;
             }
         }));
-        addToButtons(resetKey);
+        screen.addToButtons(resetKey);
         emoteList.setEmotes(EmoteHolder.list);
-        this.setInitialFocus(this.searchBox);
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.keybind"), this.getHeight() / 2 + 115, 40));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu"), this.getHeight() / 2 + 10 + x / 2, getHeight() / 2 - 54));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu2"), this.getHeight() / 2 + 10 + x / 2, getHeight() / 2 - 40));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), this.getHeight() / 2 + 10 + x / 2, getHeight() / 2 - 26));
+        screen.setInitialFocus(this.searchBox);
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.keybind"), screen.getHeight() / 2 + 115, 40));
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu"), screen.getHeight() / 2 + 10 + x / 2, screen.getHeight() / 2 - 54));
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu2"), screen.getHeight() / 2 + 10 + x / 2, screen.getHeight() / 2 - 40));
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), screen.getHeight() / 2 + 10 + x / 2, screen.getHeight() / 2 - 26));
     }
 
     abstract FastChooseWidget newFastChooseWidghet(int x, int y, int size);
@@ -135,7 +139,7 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
 
     public void setFocusedElement(@Nullable IWidget focused){
         if(activeKeyTime == 0){
-            this.setFocused(focused);
+            screen.setFocused(focused);
         }
     }
 
@@ -160,7 +164,7 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
 
     @Override
     public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
-        this.renderBackgroundTexture(0);
+        screen.renderBackgroundTexture(0);
         if(this.emoteList.getSelected() == null){
             this.setKeyButton.setActive(false);
             this.resetKey.setActive(false);
@@ -193,7 +197,7 @@ public abstract class EmoteMenu<MATRIX> implements IScreenLogic<MATRIX> {
             applyKey(true, emoteHolder, key);
             this.saveConfig();
         }
-        openThisScreen();
+        screen.openThisScreen();
     }
 
     private boolean applyKey(boolean force, EmoteHolder emote, InputKey key){

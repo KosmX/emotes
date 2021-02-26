@@ -2,11 +2,14 @@ package com.kosmx.emotes.fabric.executor.types.screen;
 
 import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
+import com.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
 import com.kosmx.emotes.fabric.executor.types.TextImpl;
-import com.kosmx.emotes.main.screen.IScreenLogic;
+import com.kosmx.emotes.main.screen.AbstractScreenLogic;
+import com.kosmx.emotes.main.screen.IScreenLogicHelper;
+import com.kosmx.emotes.main.screen.IScreenSlave;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -18,30 +21,43 @@ import java.util.function.Consumer;
 /**
  * Interface method redirections, default implementations
  */
-public class IScreenHelperImpl extends Screen implements IScreenLogic<MatrixStack>, IDrawableImpl {
+public class AbstractControlledModScreen extends Screen implements IScreenSlave<MatrixStack, Screen> {
     final Screen parent;
+    final AbstractScreenLogic<MatrixStack, Screen> master;
 
-    protected IScreenHelperImpl(net.minecraft.text.Text title, Screen parent) {
+
+    private int getW() {
+        return this.width;
+    }
+
+    protected AbstractControlledModScreen(net.minecraft.text.Text title, Screen parent, AbstractScreenLogic<MatrixStack, Screen> master) {
         super(title);
         this.parent = parent;
+        this.master = master;
     }
 
     @Override
-    public IButton newButton(int x, int y, int width, int heitht, Text msg, Consumer<IButton> pressAction) {
-        return new IButtonImpl(x, y, width, height, ((TextImpl) msg).get(), button -> pressAction.accept((IButton) button));
+    public Screen getScreen() {
+        return this; //This is a screen after all.
     }
 
-    @Override
-    public ITextInputWidget<MatrixStack, TextInputImpl> newTextInputWidget(int x, int y, int width, int height, Text title) {
-        return new TextInputImpl(x, y, width, height, (TextImpl) title);
-    }
+    public interface IScreenHelperImpl extends IScreenLogicHelper<MatrixStack> {
+        @Override
+        default IButton newButton(int x, int y, int width, int height, Text msg, Consumer<IButton> pressAction) {
+            return new IButtonImpl(x, y, width, height, ((TextImpl) msg).get(), button -> pressAction.accept((IButton) button));
+        }
 
-    @Override
-    public IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text) {
-        throw new IllegalArgumentException("Config screen is not coded yet...");
-        //return null; //TODO
-    }
+        @Override
+        default ITextInputWidget<MatrixStack, TextInputImpl> newTextInputWidget(int x, int y, int width, int height, Text title) {
+            return new TextInputImpl(x, y, width, height, (TextImpl) title);
+        }
 
+        @Override
+        default IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text) {
+            throw new IllegalArgumentException("Config screen is not coded yet...");
+            //return null; //TODO
+        }
+    }
     @Override
     public void openThisScreen() {
         MinecraftClient.getInstance().openScreen(this);
@@ -49,7 +65,7 @@ public class IScreenHelperImpl extends Screen implements IScreenLogic<MatrixStac
 
     @Override
     public int getWidth() {
-        return this.width;
+        return getW();
     }
 
     @Override
@@ -74,7 +90,7 @@ public class IScreenHelperImpl extends Screen implements IScreenLogic<MatrixStac
 
     @Override
     public void addToButtons(IButton button) {
-        this.buttons.add((IButtonImpl)button);
+        this.buttons.add((IButtonImpl) button);
     }
 
     @Override
@@ -88,46 +104,45 @@ public class IScreenHelperImpl extends Screen implements IScreenLogic<MatrixStac
     }
 
     @Override
-    public void openScreen(@Nullable IScreenLogic<MatrixStack> screen) {
-        MinecraftClient.getInstance().openScreen((IScreenHelperImpl)screen);
+    public void openScreen(@Nullable IScreen<Screen> screen) {
+        MinecraftClient.getInstance().openScreen(screen.getScreen());
     }
-
     @Override
-    protected void init() {
+    public void init() {
         super.init();
-        this.initScreen();
+        master.initScreen();
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return onKeyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+        return master.onKeyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return onMouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+        return master.onMouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public void removed() {
-        this.onRemove();
+        master.onRemove();
         super.removed();
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.tickScreen();
+        master.tickScreen();
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
-        this.renderScreen(matrices, mouseX, mouseY, delta);
+        master.renderScreen(matrices, mouseX, mouseY, delta);
     }
 
     @Override
     public boolean isPauseScreen() {
-        return this.isThisPauseScreen();
+        return master.isThisPauseScreen();
     }
 }

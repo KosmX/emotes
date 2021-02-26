@@ -1,10 +1,13 @@
 package com.kosmx.emotes.main.screen.ingame;
 
 import com.kosmx.emotes.executor.EmoteInstance;
+import com.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import com.kosmx.emotes.main.EmoteHolder;
+import com.kosmx.emotes.main.screen.AbstractScreenLogic;
 import com.kosmx.emotes.main.screen.EmoteMenu;
-import com.kosmx.emotes.main.screen.IScreenLogic;
+import com.kosmx.emotes.main.screen.IScreenLogicHelper;
+import com.kosmx.emotes.main.screen.IScreenSlave;
 import com.kosmx.emotes.main.screen.widget.AbstractEmoteListWidget;
 
 import java.util.List;
@@ -16,27 +19,31 @@ import java.util.List;
  * render
  * @param <MATRIX> MatrixStack
  */
-public abstract class FullMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
+public abstract class FullMenuScreenHelper<MATRIX, SCREEN> extends AbstractScreenLogic<MATRIX, SCREEN> {
 
     private ITextInputWidget<MATRIX, ITextInputWidget> searchBox;
     private EmoteList emoteList;
 
-    abstract public EmoteMenu<MATRIX> newEmoteMenu();
+    protected FullMenuScreenHelper(IScreenSlave screen) {
+        super(screen);
+    }
+
+    abstract public IScreen<SCREEN> newEmoteMenu();
 
     @Override
     public void initScreen(){
-        int x = (int) Math.min(this.getWidth() * 0.8, this.getHeight() - 60);
-        this.searchBox = newTextInputWidget((this.getWidth() - x) / 2, 12, x, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
-        this.searchBox.setInputListener((string)->this.emoteList.filter(string::toLowerCase));
-        this.emoteList = newEmoteList(x, getHeight(), getWidth());
-        this.emoteList.setLeftPos((this.getWidth() - x) / 2);
+        int x = (int) Math.min(screen.getWidth() * 0.8, screen.getHeight() - 60);
+        this.searchBox = newTextInputWidget((screen.getWidth() - x) / 2, 12, x, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
+        this.searchBox.setInputListener((string)->emoteList.filter(string::toLowerCase));
+        this.emoteList = newEmoteList(x, screen.getHeight(), screen.getWidth());
+        this.emoteList.setLeftPos((screen.getWidth() - x) / 2);
         emoteList.setEmotes(EmoteHolder.list);
-        addToChildren(searchBox);
-        addToChildren(emoteList);
-        this.setInitialFocus(this.searchBox);
-        addToButtons(newButton(this.getWidth() - 120, this.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextCancel(), (button->openScreen(null))));
-        addToButtons(newButton(this.getWidth() - 120, this.getHeight() - 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.config"), (button->openScreen(newEmoteMenu()))));
-        addButtonsToChildren();
+        screen.addToChildren(searchBox);
+        screen.addToChildren(emoteList);
+        screen.setInitialFocus(this.searchBox);
+        screen.addToButtons(newButton(screen.getWidth() - 120, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextCancel(), (button->screen.openScreen(null))));
+        screen.addToButtons(newButton(screen.getWidth() - 120, screen.getHeight() - 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.config"), (button->screen.openScreen(newEmoteMenu()))));
+        screen.addButtonsToChildren();
     }
 
     protected abstract EmoteList newEmoteList(int boxSize, int height, int width);
@@ -49,7 +56,7 @@ public abstract class FullMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
 
     @Override
     public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
-        this.renderBackgroundTexture(0);
+        screen.renderBackgroundTexture(0);
         this.emoteList.render(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
     }
@@ -80,7 +87,7 @@ public abstract class FullMenuScreen<MATRIX> implements IScreenLogic<MATRIX> {
             protected void onPressed(){
                 if(EmoteInstance.instance.getClientMethods().isAbstractClientEntity(EmoteInstance.instance.getClientMethods().getMainPlayer())){
                     this.emote.playEmote(EmoteInstance.instance.getClientMethods().getMainPlayer());
-                    openScreen(null);
+                    screen.openScreen(null);
                 }
             }
         }
