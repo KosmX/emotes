@@ -13,7 +13,7 @@ import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import com.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
 import com.kosmx.emotes.main.config.Serializer;
-import com.kosmx.emotes.main.screen.widget.AbstractEmoteListWidget;
+import com.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 import com.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 
 import javax.annotation.Nullable;
@@ -35,9 +35,9 @@ import java.util.logging.Level;
  * onRemove
  * tick()
  */
-public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATRIX, SCREEN> {
-    private int activeKeyTime = 0;
-    private EmoteListWidget emoteList;
+public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
+    protected int activeKeyTime = 0;
+    private IEmoteListWidgetHelper<MATRIX, WIDGET> emoteList;
     private FastChooseWidget fastMenu;
     //protected List<buttons> buttons is already exists
     private static final Text unboundText = EmoteInstance.instance.getDefaults().getUnknownKey().getLocalizedText();
@@ -112,8 +112,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
         setKeyButton = newButton(screen.getHeight() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
         screen.addToButtons(setKeyButton);
         resetKey = newButton(screen.getHeight() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (button->{
-            if(emoteList.getSelected() != null){
-                emoteList.getSelected().emote.keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
+            if(emoteList.getSelectedEntry() != null){
+                emoteList.getSelectedEntry().getEmote().keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
                 this.save = true;
             }
         }));
@@ -126,12 +126,12 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
         this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), screen.getHeight() / 2 + 10 + x / 2, screen.getHeight() / 2 - 26));
     }
 
-    abstract FastChooseWidget newFastChooseWidghet(int x, int y, int size);
+    protected abstract FastChooseWidget newFastChooseWidghet(int x, int y, int size);
     abstract public void openExternalEmotesDir();
     abstract public void openClothConfigScreen(); //will we use cloth or nope.
 
     private void activateKey(){
-        if(emoteList.getSelected() != null){
+        if(emoteList.getSelectedEntry() != null){
             this.setFocusedElement(setKeyButton);
             activeKeyTime = 200;
         }
@@ -155,7 +155,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
 
     @Override
     public boolean onMouseClicked(double mouseX, double mouseY, int button){
-        if(this.activeKeyTime != 0 && emoteList.getSelected() != null){
+        if(this.activeKeyTime != 0 && emoteList.getSelectedEntry() != null){
             return setKey(EmoteInstance.instance.getDefaults().getMouseKeyFromCode(button));
         }
         return false;
@@ -165,17 +165,17 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
     @Override
     public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         screen.renderBackgroundTexture(0);
-        if(this.emoteList.getSelected() == null){
+        if(this.emoteList.getSelectedEntry() == null){
             this.setKeyButton.setActive(false);
             this.resetKey.setActive(false);
         }else{
             this.setKeyButton.setActive(true);
-            this.resetKey.setActive(! this.emoteList.getSelected().emote.keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey()));
+            this.resetKey.setActive(! this.emoteList.getSelectedEntry().getEmote().keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey()));
         }
         for(PositionedText str : texts){
             str.render(matrices);
         }
-        this.emoteList.render(matrices, mouseX, mouseY, delta);
+        this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
         this.fastMenu.render(matrices, mouseX, mouseY, delta);
         updateKeyText();
@@ -183,10 +183,10 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
 
     private boolean setKey(InputKey key){
         boolean bl = false;
-        if(emoteList.getSelected() != null){
+        if(emoteList.getSelectedEntry() != null){
             bl = true;
-            if(! applyKey(false, emoteList.getSelected().emote, key)){
-                EmoteInstance.instance.getClientMethods().openScreen(createConfigScreen(aBoolean -> confirmReturn(aBoolean, emoteList.getSelected().emote, key), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.sure"), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.sure2")));
+            if(! applyKey(false, emoteList.getSelectedEntry().getEmote(), key)){
+                EmoteInstance.instance.getClientMethods().openScreen(createConfigScreen(aBoolean -> confirmReturn(aBoolean, emoteList.getSelectedEntry().getEmote(), key), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.sure"), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.sure2")));
             }
         }
         return bl;
@@ -239,8 +239,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
     }
 
     private void updateKeyText(){
-        if(emoteList.getSelected() != null){
-            Text message = emoteList.getSelected().emote.keyBinding.getLocalizedText();
+        if(emoteList.getSelectedEntry() != null){
+            Text message = emoteList.getSelectedEntry().getEmote().keyBinding.getLocalizedText();
             if(activeKeyTime != 0)
                 //message = (new LiteralText("> ")).append(message.shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW);
                 message = EmoteInstance.instance.getDefaults().textFromString("> ").append(message).formatted(TextFormatting.YELLOW).append(" <").formatted(TextFormatting.YELLOW);
@@ -250,7 +250,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
 
     @Override
     public boolean onKeyPressed(int keyCode, int scanCode, int mod){
-        if(emoteList.getSelected() != null && activeKeyTime != 0) {
+        if(emoteList.getSelectedEntry() != null && activeKeyTime != 0) {
             if (keyCode == 256) {
                 return setKey(EmoteInstance.instance.getDefaults().getUnknownKey());
             }
@@ -261,33 +261,9 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
         return false;
     }
 
-    protected abstract EmoteListWidget newEmoteList();
+    protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList();
 
-    public abstract class EmoteListWidget extends AbstractEmoteListWidget<EmoteListWidget.EmoteListEntry, MATRIX> {
-        //public EmoteListWidget(MinecraftClient minecraftClient, int width, int height, Screen screen){
-        //    super(minecraftClient, width, height , 51, height - 32, 36, screen);
-        //}
-/*
-        @Override
-        public void setEmotes(List<EmoteHolder> list){
-            for(EmoteHolder emote : list){
-                this.emotes.add(new EmoteListEntry(emote));
-            }
-            filter(()->"");
-        }
- */
-        public abstract class EmoteListEntry extends AbstractEmoteListWidget<EmoteListEntry, MATRIX>.AbstractEmoteEntry {
-            public EmoteListEntry(EmoteHolder emote) {
-                super(emote);
-            }
-
-            protected void onPressed(){        //setup screen -> select pack, play screen -> play
-                EmoteListWidget.this.setSelected(this);
-            }
-        }
-    }
-
-    protected abstract class FastChooseWidget extends AbstractFastChooseWidget<MATRIX> {
+    protected abstract class FastChooseWidget extends AbstractFastChooseWidget<MATRIX, WIDGET> {
 
         public FastChooseWidget(int x, int y, int size){
             super(x, y, size);
@@ -305,8 +281,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATR
                 element.clearEmote();
                 save = true;
                 return true;
-            }else if(emoteList.getSelected() != null){
-                element.setEmote(emoteList.getSelected().emote);
+            }else if(emoteList.getSelectedEntry() != null){
+                element.setEmote(emoteList.getSelectedEntry().getEmote());
                 save = true;
                 return true;
             }else{

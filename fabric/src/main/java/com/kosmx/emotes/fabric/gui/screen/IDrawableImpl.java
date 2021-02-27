@@ -1,4 +1,4 @@
-package com.kosmx.emotes.fabric.executor.types.screen;
+package com.kosmx.emotes.fabric.gui.screen;
 
 import com.kosmx.emotes.executor.dataTypes.IIdentifier;
 import com.kosmx.emotes.executor.dataTypes.Text;

@@ -1,4 +1,4 @@
-package com.kosmx.emotes.fabric.executor.types.screen;
+package com.kosmx.emotes.fabric.gui.screen;
 
 import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 /**
  * Interface method redirections, default implementations
  */
-public class AbstractControlledModScreen extends Screen implements IScreenSlave<MatrixStack, Screen> {
+public abstract class AbstractControlledModScreen extends Screen implements IScreenSlave<MatrixStack, Screen> {
     final Screen parent;
     final AbstractScreenLogic<MatrixStack, Screen> master;
 
@@ -30,18 +30,20 @@ public class AbstractControlledModScreen extends Screen implements IScreenSlave<
         return this.width;
     }
 
-    protected AbstractControlledModScreen(net.minecraft.text.Text title, Screen parent, AbstractScreenLogic<MatrixStack, Screen> master) {
+    protected AbstractControlledModScreen(net.minecraft.text.Text title, Screen parent) {
         super(title);
         this.parent = parent;
-        this.master = master;
+        this.master = newMaster();
     }
+
+    protected abstract AbstractScreenLogic<MatrixStack, Screen> newMaster();
 
     @Override
     public Screen getScreen() {
         return this; //This is a screen after all.
     }
 
-    public interface IScreenHelperImpl extends IScreenLogicHelper<MatrixStack> {
+    public interface IScreenHelperImpl extends IScreenLogicHelper<MatrixStack>, IDrawableImpl {
         @Override
         default IButton newButton(int x, int y, int width, int height, Text msg, Consumer<IButton> pressAction) {
             return new IButtonImpl(x, y, width, height, ((TextImpl) msg).get(), button -> pressAction.accept((IButton) button));

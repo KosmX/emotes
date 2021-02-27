@@ -18,7 +18,7 @@ import java.util.logging.Level;
  * void isMouseHover
  * @param <MATRIX>
  */
-public abstract class AbstractFastChooseWidget<MATRIX> implements IWidgetLogic<MATRIX> {
+public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidgetLogic<MATRIX, WIDGET> {
 
 
     public int x;

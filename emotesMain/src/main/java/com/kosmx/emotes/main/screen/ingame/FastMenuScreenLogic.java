@@ -5,9 +5,7 @@ import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.main.screen.AbstractScreenLogic;
-import com.kosmx.emotes.main.screen.IScreenLogicHelper;
 import com.kosmx.emotes.main.screen.IScreenSlave;
-import com.kosmx.emotes.main.screen.widget.AbstractEmoteListWidget;
 import com.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 
 /**
@@ -15,7 +13,7 @@ import com.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
  * isPauseScreen -> false
  * render
  */
-public abstract class FastMenuScreenLogic<MATRIX, SCREEN> extends AbstractScreenLogic<MATRIX, SCREEN> {
+public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
     private FastMenuWidget widget;
     private static final Text warn_no_emotecraft = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.no_server");
     private static final Text warn_diff_emotecraft = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.different_server");
@@ -55,7 +53,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN> extends AbstractScreen
 
     abstract protected FastMenuWidget newFastMenuWidget(int width, int height, int size);
 
-    private abstract class FastMenuWidget extends AbstractFastChooseWidget<MATRIX> {
+    private abstract class FastMenuWidget extends AbstractFastChooseWidget<MATRIX, WIDGET> {
 
         public FastMenuWidget(int x, int y, int size){
             super(x, y, size);

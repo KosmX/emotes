@@ -5,10 +5,8 @@ import com.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import com.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import com.kosmx.emotes.main.EmoteHolder;
 import com.kosmx.emotes.main.screen.AbstractScreenLogic;
-import com.kosmx.emotes.main.screen.EmoteMenu;
-import com.kosmx.emotes.main.screen.IScreenLogicHelper;
 import com.kosmx.emotes.main.screen.IScreenSlave;
-import com.kosmx.emotes.main.screen.widget.AbstractEmoteListWidget;
+import com.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 
 import java.util.List;
 
@@ -19,10 +17,10 @@ import java.util.List;
  * render
  * @param <MATRIX> MatrixStack
  */
-public abstract class FullMenuScreenHelper<MATRIX, SCREEN> extends AbstractScreenLogic<MATRIX, SCREEN> {
+public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
 
     private ITextInputWidget<MATRIX, ITextInputWidget> searchBox;
-    private EmoteList emoteList;
+    private IEmoteListWidgetHelper<MATRIX, WIDGET> emoteList;
 
     protected FullMenuScreenHelper(IScreenSlave screen) {
         super(screen);
@@ -46,7 +44,7 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN> extends AbstractScree
         screen.addButtonsToChildren();
     }
 
-    protected abstract EmoteList newEmoteList(int boxSize, int height, int width);
+    protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int boxSize, int height, int width);
 
     @Override
     public boolean isThisPauseScreen(){
@@ -57,39 +55,7 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN> extends AbstractScree
     @Override
     public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         screen.renderBackgroundTexture(0);
-        this.emoteList.render(matrices, mouseX, mouseY, delta);
+        this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
-    }
-
-    private abstract class EmoteList extends AbstractEmoteListWidget<EmoteList.EmoteEntry, MATRIX> {
-
-        /*
-        public EmoteList(int boxSize, int height, int width){
-            super(boxSize, height, (height - boxSize) / 2 + 10, width > (width + boxSize)/2 + 120 ? (height + boxSize) / 2 + 10 : height - 80,36);
-        }
-         */
-
-        @Override
-        public void setEmotes(List<EmoteHolder> list){
-            for(EmoteHolder emote : list){
-                this.emotes.add(new EmoteEntry(emote));
-            }
-            filter(()->"");
-        }
-
-        private class EmoteEntry extends AbstractEmoteListWidget<EmoteEntry, MATRIX>.AbstractEmoteEntry {
-
-            public EmoteEntry(EmoteHolder emote){
-                super(emote);
-            }
-
-            @Override
-            protected void onPressed(){
-                if(EmoteInstance.instance.getClientMethods().isAbstractClientEntity(EmoteInstance.instance.getClientMethods().getMainPlayer())){
-                    this.emote.playEmote(EmoteInstance.instance.getClientMethods().getMainPlayer());
-                    screen.openScreen(null);
-                }
-            }
-        }
     }
 }
