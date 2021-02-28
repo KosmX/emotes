@@ -3,6 +3,7 @@ package com.kosmx.emotes.fabric;
 import com.kosmx.emotes.common.CommonData;
 import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.fabric.executor.EmotesMain;
+import com.kosmx.emotes.main.MainLoader;
 import net.fabricmc.api.ModInitializer;
 
 import java.util.logging.Level;
@@ -15,7 +16,7 @@ public class Initializer implements ModInitializer {
     @Override
     public void onInitialize() {
         EmoteInstance.instance = new EmotesMain();
-
+        MainLoader.main(null);
     }
 
     public static void log(Level level, String msg){

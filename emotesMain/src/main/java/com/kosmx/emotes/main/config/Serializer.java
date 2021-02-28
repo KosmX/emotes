@@ -24,6 +24,7 @@ public class Serializer {
         JsonSerializer<EmoteHolder> emoteSerializer = new EmoteSerializer();
         builder.registerTypeAdapter(SerializableConfig.class, configDeserializer);
         builder.registerTypeAdapter(SerializableConfig.class, configSerializer);
+        builder.registerTypeAdapter(ClientConfig.class, configSerializer);
         builder.registerTypeAdapter(new TypeToken<List<EmoteHolder>>(){}.getType(), emoteDeserializer);
         builder.registerTypeAdapter(EmoteHolder.class, emoteSerializer);
 

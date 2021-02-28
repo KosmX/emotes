@@ -44,6 +44,6 @@ public class EmotesMain extends EmoteInstance {
 
     @Override
     public Path getConfigPath() {
-        return getGameDirectory().resolve("emotecraft.json");
+        return FabricLoader.getInstance().getConfigDir().resolve("emotecraft.json");
     }
 }

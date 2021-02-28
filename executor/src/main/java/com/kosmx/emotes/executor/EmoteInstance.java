@@ -12,7 +12,7 @@ import java.nio.file.Path;
 public abstract class EmoteInstance {
     public static EmoteInstance instance = null;
 
-    @Nonnull
+
     public static SerializableConfig config = null;
     public abstract Logger getLogger();
 

@@ -10,6 +10,7 @@ import com.kosmx.emotes.fabric.executor.types.TextImpl;
 import com.kosmx.emotes.main.screen.AbstractScreenLogic;
 import com.kosmx.emotes.main.screen.IScreenLogicHelper;
 import com.kosmx.emotes.main.screen.IScreenSlave;
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -56,8 +57,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
         @Override
         default IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text) {
-            throw new IllegalArgumentException("Config screen is not coded yet...");
-            //return null; //TODO
+            return new ConfirmScreenImpl(consumer::accept, ((TextImpl) title).get(), ((TextImpl) text).get());
         }
     }
     @Override
@@ -139,8 +139,8 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.render(matrices, mouseX, mouseY, delta);
         master.renderScreen(matrices, mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override

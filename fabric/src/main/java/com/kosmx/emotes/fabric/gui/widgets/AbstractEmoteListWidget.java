@@ -35,7 +35,14 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
         return this.width - 5;
     }
 
-    public abstract void setEmotes(List<EmoteHolder> list);
+    protected abstract E newEmoteEntry(MinecraftClient client, EmoteHolder emoteHolder);
+
+    public void setEmotes(List<EmoteHolder> list){
+        for(EmoteHolder emoteHolder:list){
+            this.emotes.add(newEmoteEntry(MinecraftClient.getInstance(), emoteHolder));
+        }
+        filter(() -> "");
+    }
 
     public void filter(Supplier<String> string){
         this.clearEntries();

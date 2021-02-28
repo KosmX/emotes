@@ -1,5 +1,6 @@
 package com.kosmx.emotes.main.screen;
 
+@SuppressWarnings("Unchecked")
 public abstract class AbstractScreenLogic<MATRIX, SCREEN> implements IScreenLogicHelper<MATRIX> {
     protected final IScreenSlave<MATRIX, SCREEN> screen;
 

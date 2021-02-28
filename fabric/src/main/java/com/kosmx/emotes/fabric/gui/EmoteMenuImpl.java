@@ -56,8 +56,8 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
         }
 
         @Override
-        protected IEmoteListWidgetHelper<MatrixStack, Element> newEmoteList() {
-            return new EmoteListImpl(MinecraftClient.getInstance(), EmoteMenuImpl.this.width, height, 51, height-32, 36, EmoteMenuImpl.this);
+        protected IEmoteListWidgetHelper<MatrixStack, Element> newEmoteList(int width, int height) {
+            return new EmoteListImpl(MinecraftClient.getInstance(), width, height, 51, height-32, 36, EmoteMenuImpl.this);
             //super(minecraftClient, width, height , 51, height - 32, 36, screen);
         }
 
@@ -65,12 +65,14 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
 
             public EmoteListImpl(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
                 super(minecraftClient, i, j, k, l, m, screen);
+
             }
 
             @Override
-            public void setEmotes(List list) {
-
+            protected EmoteListEntryImpl newEmoteEntry(MinecraftClient client, EmoteHolder emoteHolder) {
+                return new EmoteListEntryImpl(client, emoteHolder);
             }
+
             public class EmoteListEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntryImpl>{
 
                 public EmoteListEntryImpl(MinecraftClient client, EmoteHolder emote) {
@@ -79,7 +81,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
 
                 @Override
                 protected void onPressed() {
-
+                    EmoteListImpl.this.setSelected(this);
                 }
             }
         }

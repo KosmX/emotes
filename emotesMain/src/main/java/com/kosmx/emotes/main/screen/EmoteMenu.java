@@ -1,5 +1,6 @@
 package com.kosmx.emotes.main.screen;
 
+import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.common.tools.MathHelper;
 import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.executor.dataTypes.InputKey;
@@ -93,25 +94,25 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             });
         }
 
-        this.searchBox = newTextInputWidget(screen.getHeight() / 2 - (int) (screen.getHeight() / 2.2 - 16) - 12, 12, (int) (screen.getHeight() / 2.2 - 16), 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
+        this.searchBox = newTextInputWidget(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12, 12, (int) (screen.getWidth() / 2.2 - 16), 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
 
         this.searchBox.setInputListener((string)->this.emoteList.filter(string::toLowerCase));
         screen.addToChildren(searchBox);
 
-        screen.addToButtons(newButton(screen.getHeight() / 2 - 154, screen.getHeight() - 30, 150, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
 
         //this.emoteList = new EmoteListWidget(this.client, (int) (this.getHeight() / 2.2 - 16), this.getHeight(), this);
-        this.emoteList = newEmoteList();
-        this.emoteList.setLeftPos(screen.getHeight() / 2 - (int) (screen.getHeight() / 2.2 - 16) - 12);
+        this.emoteList = newEmoteList((int) (screen.getWidth()/2.2-16), screen.getHeight());
+        this.emoteList.setLeftPos(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12);
         screen.addToChildren(this.emoteList);
-        int x = Math.min(screen.getHeight() / 4, (int) (screen.getHeight() / 2.5));
-        this.fastMenu = newFastChooseWidghet(screen.getHeight() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
+        int x = Math.min(screen.getWidth() / 4, (int) (screen.getHeight() / 2.5));
+        this.fastMenu = newFastChooseWidghet(screen.getWidth() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
         screen.addToChildren(fastMenu);
-        screen.addToButtons(newButton(screen.getHeight() - 100, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
-        screen.addToButtons(newButton(screen.getHeight() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
-        setKeyButton = newButton(screen.getHeight() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
+        screen.addToButtons(newButton(screen.getWidth() - 100, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
+        screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
+        setKeyButton = newButton(screen.getWidth() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
         screen.addToButtons(setKeyButton);
-        resetKey = newButton(screen.getHeight() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (button->{
+        resetKey = newButton(screen.getWidth() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (button->{
             if(emoteList.getSelectedEntry() != null){
                 emoteList.getSelectedEntry().getEmote().keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
                 this.save = true;
@@ -120,10 +121,11 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         screen.addToButtons(resetKey);
         emoteList.setEmotes(EmoteHolder.list);
         screen.setInitialFocus(this.searchBox);
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.keybind"), screen.getHeight() / 2 + 115, 40));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu"), screen.getHeight() / 2 + 10 + x / 2, screen.getHeight() / 2 - 54));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu2"), screen.getHeight() / 2 + 10 + x / 2, screen.getHeight() / 2 - 40));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), screen.getHeight() / 2 + 10 + x / 2, screen.getHeight() / 2 - 26));
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.keybind"), screen.getWidth() / 2 + 115, 40));
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 54));
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu2"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 40));
+        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 26));
+        screen.addButtonsToChildren();
     }
 
     protected abstract FastChooseWidget newFastChooseWidghet(int x, int y, int size);
@@ -261,7 +263,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         return false;
     }
 
-    protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList();
+    protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int width, int height);
 
     protected abstract class FastChooseWidget extends AbstractFastChooseWidget<MATRIX, WIDGET> {
 
@@ -308,7 +310,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
 
         private void render(MATRIX matrixStack) {
-            textDraw(matrixStack, this.str, this.x, this.y, MathHelper.colorHelper(255, 255, 255, 255));
+            drawCenteredText(matrixStack, this.str, this.x, this.y, MathHelper.colorHelper(255, 255, 255, 255));
             //textRenderer.getClass();
         }
     }
