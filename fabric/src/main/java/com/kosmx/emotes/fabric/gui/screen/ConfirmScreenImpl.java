@@ -17,7 +17,7 @@ public class ConfirmScreenImpl extends ConfirmScreen implements IConfirmScreen<S
 
     @Override
     public void setTimeout(int timeout) {
-        this.setTimeout(timeout);
+        this.disableButtons(timeout);
     }
 
     @Override

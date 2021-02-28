@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractControlledModScreen extends Screen implements IScreenSlave<MatrixStack, Screen> {
     final Screen parent;
-    final AbstractScreenLogic<MatrixStack, Screen> master;
+    public final AbstractScreenLogic<MatrixStack, Screen> master;
 
 
     private int getW() {

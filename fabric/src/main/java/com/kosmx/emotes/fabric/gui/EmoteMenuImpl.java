@@ -17,8 +17,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
-import java.util.List;
-
 public class EmoteMenuImpl extends AbstractControlledModScreen {
 
     protected EmoteMenuImpl(Text title, Screen parent) {
@@ -52,7 +50,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
 
         @Override
         public void openClothConfigScreen() {
-            //TODO
+            MinecraftClient.getInstance().openScreen(ClothConfigScreen.getConfigScreen(EmoteMenuImpl.this));
         }
 
         @Override

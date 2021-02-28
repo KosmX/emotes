@@ -20,10 +20,7 @@ import java.util.logging.Level;
 public class ClientInit {
 
     public static void init(){
-
-    }
-    public static void loadConfig(){
-
+        loadEmotes();//:D
     }
 
 
@@ -48,7 +45,7 @@ public class ClientInit {
     }
 
     private static void serializeInternalEmotes(String name){
-        if(((ClientConfig)EmoteInstance.config).loadBuiltinEmotes){
+        if(!((ClientConfig)EmoteInstance.config).loadBuiltinEmotes){
             return;
         }
         InputStream stream = ClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json");
