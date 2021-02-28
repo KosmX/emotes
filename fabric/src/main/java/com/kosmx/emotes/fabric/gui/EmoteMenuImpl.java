@@ -14,6 +14,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 import java.util.List;
@@ -22,6 +23,10 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
 
     protected EmoteMenuImpl(Text title, Screen parent) {
         super(title, parent);
+    }
+
+    public EmoteMenuImpl(Screen parent){
+        this(new TranslatableText("emotecraft.menu"), parent);
     }
 
     @Override

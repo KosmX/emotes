@@ -22,7 +22,6 @@
       "com.kosmx.emotes.fabric.Initializer"
     ],
     "client": [
-      "com.kosmx.emotes.fabric.ClientInitializer"
     ],
     "server": [],
     "modmenu": [

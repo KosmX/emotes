@@ -15,6 +15,7 @@ public class Initializer implements ModInitializer {
     @Override
     public void onInitialize() {
         EmoteInstance.instance = new EmotesMain();
+
     }
 
     public static void log(Level level, String msg){

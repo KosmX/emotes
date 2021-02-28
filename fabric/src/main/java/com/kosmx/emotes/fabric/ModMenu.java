@@ -1,7 +1,9 @@
 package com.kosmx.emotes.fabric;
 
+import com.kosmx.emotes.fabric.gui.EmoteMenuImpl;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
+import net.minecraft.client.gui.screen.Screen;
 
 public class ModMenu implements ModMenuApi {
     /*
@@ -9,6 +11,6 @@ public class ModMenu implements ModMenuApi {
      */
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return null; //TODO
+        return (ConfigScreenFactory<Screen>) EmoteMenuImpl::new; //TODO
     }
 }
