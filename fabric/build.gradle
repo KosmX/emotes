@@ -43,11 +43,14 @@ group = project.maven_group
 minecraft {
     //accessWidener = file("src/main/resources/emotecraft.accesswidener")
 }
+configurations {
+    compileModul
+}
 
 dependencies {
-
     //compile project(':emotecraftCommon')
     compile project(':emotesMain')
+    compileModul project(':emotesMain')
 
 
     //to change the versions see the gradle.properties file
@@ -117,6 +120,9 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 jar {
+    from {
+        configurations.compileModul.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     manifest {
         attributes("Main-Class": "com.kosmx.emoteStandalone.StandaloneServer")
     }
