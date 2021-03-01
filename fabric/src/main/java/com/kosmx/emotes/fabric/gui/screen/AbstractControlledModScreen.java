@@ -26,6 +26,10 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     final Screen parent;
     public final AbstractScreenLogic<MatrixStack, Screen> master;
 
+    @Override
+    public void emotesRenderBackgroundTexture(int vOffset) {
+        super.renderBackgroundTexture(vOffset);
+    }
 
     private int getW() {
         return this.width;

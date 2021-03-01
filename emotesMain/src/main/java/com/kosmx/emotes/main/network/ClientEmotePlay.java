@@ -25,4 +25,8 @@ public class ClientEmotePlay {
         EmoteInstance.instance.getClientMethods().getMainPlayer().playEmote(emote);
         return true;
     }
+
+    public static void clientStopLocalEmote(EmoteData emoteData){
+
+    }
 }

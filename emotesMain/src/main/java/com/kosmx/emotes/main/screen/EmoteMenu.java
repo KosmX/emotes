@@ -1,6 +1,5 @@
 package com.kosmx.emotes.main.screen;
 
-import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.common.tools.MathHelper;
 import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.executor.dataTypes.InputKey;
@@ -36,6 +35,7 @@ import java.util.logging.Level;
  * onRemove
  * tick()
  */
+@SuppressWarnings("unchecked")
 public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
     protected int activeKeyTime = 0;
     private IEmoteListWidgetHelper<MATRIX, WIDGET> emoteList;
@@ -103,7 +103,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
         //this.emoteList = new EmoteListWidget(this.client, (int) (this.getHeight() / 2.2 - 16), this.getHeight(), this);
         this.emoteList = newEmoteList((int) (screen.getWidth()/2.2-16), screen.getHeight());
-        this.emoteList.setLeftPos(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12);
+        this.emoteList.emotesSetLeftPos(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12);
         screen.addToChildren(this.emoteList);
         int x = Math.min(screen.getWidth() / 4, (int) (screen.getHeight() / 2.5));
         this.fastMenu = newFastChooseWidghet(screen.getWidth() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
@@ -166,7 +166,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     @Override
     public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
-        screen.renderBackgroundTexture(0);
+        screen.emotesRenderBackgroundTexture(0);
         if(this.emoteList.getSelectedEntry() == null){
             this.setKeyButton.setActive(false);
             this.resetKey.setActive(false);

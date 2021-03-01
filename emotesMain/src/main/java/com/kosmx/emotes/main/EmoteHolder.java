@@ -13,7 +13,6 @@ import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.executor.dataTypes.Text;
 import com.kosmx.emotes.main.config.Serializer;
-import com.kosmx.emotes.main.emotePlay.EmotePlayer;
 import com.kosmx.emotes.main.network.ClientEmotePlay;
 
 import javax.annotation.Nullable;
@@ -219,7 +218,7 @@ public class EmoteHolder {
         if(player.isNotStanding()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
         Vec3d prevPos = player.getPrevPos();
-        return ! (player.getPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio, prevPos.getY(), player.getPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold);
+        return ! (player.emotesGetPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio, prevPos.getY(), player.emotesGetPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold);
     }
 
     public boolean playEmote(IEmotePlayerEntity playerEntity){

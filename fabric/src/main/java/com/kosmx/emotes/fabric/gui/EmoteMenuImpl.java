@@ -27,6 +27,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
         this(new TranslatableText("emotecraft.menu"), parent);
     }
 
+
     @Override
     protected AbstractScreenLogic<MatrixStack, Screen> newMaster() {
         return new EmoteMenuController(this);

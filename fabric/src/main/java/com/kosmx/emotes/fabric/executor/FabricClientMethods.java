@@ -19,6 +19,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import java.io.IOException;
 import java.io.InputStream;
 
+@SuppressWarnings("unchecked")
 public class FabricClientMethods implements IClientMethods {
     @Override
     public void destroyTexture(IIdentifier identifier) {

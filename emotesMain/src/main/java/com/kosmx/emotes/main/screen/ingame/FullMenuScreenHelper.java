@@ -8,8 +8,6 @@ import com.kosmx.emotes.main.screen.AbstractScreenLogic;
 import com.kosmx.emotes.main.screen.IScreenSlave;
 import com.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 
-import java.util.List;
-
 /**
  * Stuff to override/implement
  * init
@@ -17,6 +15,7 @@ import java.util.List;
  * render
  * @param <MATRIX> MatrixStack
  */
+@SuppressWarnings("unchecked")
 public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
 
     private ITextInputWidget<MATRIX, ITextInputWidget> searchBox;
@@ -34,7 +33,7 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends Abstr
         this.searchBox = newTextInputWidget((screen.getWidth() - x) / 2, 12, x, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
         this.searchBox.setInputListener((string)->emoteList.filter(string::toLowerCase));
         this.emoteList = newEmoteList(x, screen.getHeight(), screen.getWidth());
-        this.emoteList.setLeftPos((screen.getWidth() - x) / 2);
+        this.emoteList.emotesSetLeftPos((screen.getWidth() - x) / 2);
         emoteList.setEmotes(EmoteHolder.list);
         screen.addToChildren(searchBox);
         screen.addToChildren(emoteList);
@@ -54,7 +53,7 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends Abstr
 
     @Override
     public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
-        screen.renderBackgroundTexture(0);
+        screen.emotesRenderBackgroundTexture(0);
         this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
     }

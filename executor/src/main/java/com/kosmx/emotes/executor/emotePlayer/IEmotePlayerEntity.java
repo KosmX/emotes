@@ -14,8 +14,6 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > {
     @Nullable
     T getEmote();
 
-    void resetLastUpdated();
-
     boolean isPlayingEmote();
 
     void stopEmote();
@@ -26,8 +24,16 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > {
 
     boolean isNotStanding();
 
-    Vec3d getPos();
+    Vec3d emotesGetPos();
 
     Vec3d getPrevPos();
 
+    float getBodyYaw();
+    float getViewYaw();
+    void setBodyYaw(float newYaw);
+
+    void emoteTick();
+
+    default void emoteTickCallback(){}
+    default void emoteStartPlayCallback(){}
 }

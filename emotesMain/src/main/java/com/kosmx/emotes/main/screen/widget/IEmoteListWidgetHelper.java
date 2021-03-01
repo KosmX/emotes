@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  */
 public interface IEmoteListWidgetHelper<MATRIX, WIDGET> extends IWidgetLogic<MATRIX, WIDGET> {
     void filter(Supplier<String> supplier);
-    void setLeftPos(int p);
+    void emotesSetLeftPos(int p);
     IEmoteEntry getSelectedEntry();
     void renderThis(MATRIX matrices, int mouseX, int mouseY, float tickDelta);
     void setEmotes(List<EmoteHolder> emoteHolders);

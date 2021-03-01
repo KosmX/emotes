@@ -37,6 +37,11 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
 
     protected abstract E newEmoteEntry(MinecraftClient client, EmoteHolder emoteHolder);
 
+    @Override
+    public void emotesSetLeftPos(int left) {
+        this.setLeftPos(left);
+    }
+
     public void setEmotes(List<EmoteHolder> list){
         for(EmoteHolder emoteHolder:list){
             this.emotes.add(newEmoteEntry(MinecraftClient.getInstance(), emoteHolder));
