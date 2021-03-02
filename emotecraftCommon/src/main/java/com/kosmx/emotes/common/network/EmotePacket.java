@@ -49,8 +49,9 @@ public class EmotePacket {
 
     //Write packet to a new ByteBuf
     public ByteBuffer write() throws IOException {
+        if(data.purpose == 0)throw new IllegalArgumentException("Can't send packet without any purpose...");
         AtomicReference<Byte> partCount = new AtomicReference<>((byte) 0);
-        AtomicInteger sizeSum = new AtomicInteger(5); //5 bytes is the header
+        AtomicInteger sizeSum = new AtomicInteger(6); //5 bytes is the header
         subPackets.forEach((aByte, packet) -> {
             if(packet.doWrite(this.data)){
                 if(!(packet instanceof SongPacket)){
@@ -71,6 +72,7 @@ public class EmotePacket {
         ByteBuffer buf = ByteBuffer.allocate(sizeSum.get());
 
         buf.putInt(subPackets.get((byte)8).getVer(data.versions));
+        buf.put(data.purpose);
         buf.put(partCount.get());
 
         AtomicBoolean ex = new AtomicBoolean(false);
@@ -104,6 +106,7 @@ public class EmotePacket {
 
         this.version = byteBuffer.getInt();
         if(this.version > CommonData.networkingVersion)throw new IOException("Can't read newer version");
+        data.purpose = byteBuffer.get();
 
         byte count = byteBuffer.get();
 
@@ -161,7 +164,8 @@ public class EmotePacket {
         }
 
         public void configureToSendEmote(EmoteData emoteData, @Nullable UUID player){
-            if(data.stopEmoteID != null)throw new IllegalArgumentException("Can's send and stop emote at the same time");
+            if(data.purpose != 0)throw new IllegalArgumentException("Can's send and stop emote at the same time");
+            data.purpose = 1;
             data.emoteData = emoteData;
             data.player = player;
         }
@@ -171,7 +175,8 @@ public class EmotePacket {
         }
 
         public void configureToSendStop(int emoteID, @Nullable UUID player){
-            if(data.emoteData != null)throw new IllegalArgumentException("Can't send emote and stop at the same time");
+            if(data.purpose != 0)throw new IllegalArgumentException("Can't send emote and stop at the same time");
+            data.purpose = 10;
             data.stopEmoteID = new AtomicInteger(emoteID);
             data.player = player;
         }
@@ -181,6 +186,8 @@ public class EmotePacket {
         }
 
         public void configureToConfigExchange(boolean songEnabled){
+            if(data.purpose != 0)throw new IllegalArgumentException("Can't send config with emote or stop data...");
+            data.purpose = 8;
             HashMap<Byte, Byte> versions = new HashMap<>();
             EmotePacket.defaultVersions.forEach(versions::put);
             if(!songEnabled){

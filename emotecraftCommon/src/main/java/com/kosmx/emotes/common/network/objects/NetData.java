@@ -12,6 +12,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * It won't be public until a success read.....
  */
 public class NetData {
+    /**
+     * 0 - none, invalid
+     * 1 - stream emote
+     * 8 - config exchange
+     * 10 - stop
+     * //as the sub-packet ids
+     */
+    public byte purpose;
     public float threshold;
     @Nullable
     public AtomicInteger stopEmoteID = null;
@@ -33,6 +41,7 @@ public class NetData {
     public int sizeLimit = Short.MAX_VALUE;
 
     public boolean isValid(){
+        if(purpose == 0)return false;
         if(emoteData == null && !versionsUpdated && stopEmoteID == null)return false;
         if(emoteData != null && stopEmoteID != null)return false;
         //I won't simplify it because of readability
