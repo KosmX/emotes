@@ -3,7 +3,7 @@ package com.kosmx.emotes.executor.emotePlayer;
 import com.kosmx.emotes.common.tools.SetableSupplier;
 
 
-public interface IMutatedBipedModel<T> {
+public interface IMutatedBipedModel<T, E extends IEmotePlayer> {
     T getTorso();
 
     T getRightArm();
@@ -24,7 +24,7 @@ public interface IMutatedBipedModel<T> {
 
     void setLeftLeg(T part);
 
-    void setEmoteSupplier(SetableSupplier<T> emoteSupplier);
+    void setEmoteSupplier(SetableSupplier<E> emoteSupplier);
 
     SetableSupplier<T> getEmoteSupplier();
 }

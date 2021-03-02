@@ -2,9 +2,17 @@
   "required": true,
   "package": "com.kosmx.emotes.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [],
+  "mixins": [
+  ],
   "client": [
-    "EmotePlayerMixin"
+    "EmotePlayerMixin",
+    "FeatureRendererMixin",
+    "KeyEventMixin",
+    "ModelPartMixin",
+    "PlayerRendererMixin",
+    "PlayerModelMixin",
+    "HeldItemMixin",
+    "LivingEntityRenderRedirect"
   ],
   "server": [],
   "injectors": {
