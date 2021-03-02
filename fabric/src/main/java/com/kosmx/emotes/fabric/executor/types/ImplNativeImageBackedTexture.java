@@ -17,6 +17,6 @@ public class ImplNativeImageBackedTexture implements INativeImageBacketTexture {
 
     @Override
     public void close() {
-
+        nibt.close();
     }
 }

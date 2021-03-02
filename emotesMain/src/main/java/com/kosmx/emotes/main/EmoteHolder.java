@@ -136,7 +136,6 @@ public class EmoteHolder {
             try{
                 INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
                 this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.hash);
-                //MinecraftClient.getInstance().getTextureManager().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
                 EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
                 this.nativeIcon = nativeImageBackedTexture;
             }catch(IOException e){
