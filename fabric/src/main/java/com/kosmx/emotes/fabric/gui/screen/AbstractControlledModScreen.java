@@ -111,7 +111,12 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void openScreen(@Nullable IScreen<Screen> screen) {
-        MinecraftClient.getInstance().openScreen(screen.getScreen());
+        if(screen != null) {
+            MinecraftClient.getInstance().openScreen(screen.getScreen());
+        }
+        else{
+            MinecraftClient.getInstance().openScreen(null);
+        }
     }
     @Override
     public void init() {

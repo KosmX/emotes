@@ -12,7 +12,9 @@
     "PlayerRendererMixin",
     "PlayerModelMixin",
     "HeldItemMixin",
-    "LivingEntityRenderRedirect"
+    "LivingEntityRenderRedirect",
+    "ArmorFeatureRendererMixin",
+    "BipedEntityModelMixin"
   ],
   "server": [],
   "injectors": {

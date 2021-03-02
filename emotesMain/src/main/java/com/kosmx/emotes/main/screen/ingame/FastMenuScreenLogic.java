@@ -51,9 +51,9 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
         return false;
     }
 
-    abstract protected FastMenuWidget newFastMenuWidget(int width, int height, int size);
+    abstract protected FastMenuWidget newFastMenuWidget(int x, int y, int size);
 
-    private abstract class FastMenuWidget extends AbstractFastChooseWidget<MATRIX, WIDGET> {
+    protected abstract class FastMenuWidget extends AbstractFastChooseWidget<MATRIX, WIDGET> {
 
         public FastMenuWidget(int x, int y, int size){
             super(x, y, size);

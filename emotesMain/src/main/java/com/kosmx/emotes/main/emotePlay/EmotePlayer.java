@@ -99,6 +99,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         return isLoopStarted;
     }
 
+    @Override
     public EmoteData getData() {
         return data;
     }

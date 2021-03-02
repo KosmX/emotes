@@ -43,7 +43,11 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends Abstr
         screen.addButtonsToChildren();
     }
 
-    protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int boxSize, int height, int width);
+    protected IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int boxSize, int height, int width){
+        return newEmoteList(boxSize, height, (height-boxSize)/2+10, width > (width + boxSize)/2 + 120 ? (height + boxSize)/2 + 10 : height - 80, 36);
+    }
+
+    protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int boxSize, int height, int k, int l, int m);
 
     @Override
     public boolean isThisPauseScreen(){

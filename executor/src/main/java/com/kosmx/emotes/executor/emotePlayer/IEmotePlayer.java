@@ -1,5 +1,7 @@
 package com.kosmx.emotes.executor.emotePlayer;
 
+import com.kosmx.emotes.common.emote.EmoteData;
+
 public interface IEmotePlayer {
     boolean isRunning();
 
@@ -10,4 +12,6 @@ public interface IEmotePlayer {
     void tick();
 
     boolean isLoopStarted();
+
+    EmoteData getData();
 }

@@ -26,5 +26,5 @@ public interface IMutatedBipedModel<T, E extends IEmotePlayer> {
 
     void setEmoteSupplier(SetableSupplier<E> emoteSupplier);
 
-    SetableSupplier<T> getEmoteSupplier();
+    SetableSupplier<E> getEmoteSupplier();
 }

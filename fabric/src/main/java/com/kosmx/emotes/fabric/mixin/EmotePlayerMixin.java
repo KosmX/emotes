@@ -100,4 +100,10 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements IPlayerEn
     public void setBodyYaw(float newYaw) {
         this.bodyYaw = newYaw;
     }
+
+    @Override
+    public void tick() {
+        super.tick();
+        this.emoteTick();
+    }
 }

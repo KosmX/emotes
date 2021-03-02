@@ -52,7 +52,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     public void filter(Supplier<String> string){
         this.clearEntries();
         for(E emote : this.emotes){
-            if(emote.emote.name.toString().toLowerCase().contains(string.get()) || emote.emote.description.toString().toLowerCase().contains(string.get()) || emote.emote.author.toString().toLowerCase().equals(string.get())){
+            if(emote.emote.name.getString().toLowerCase().contains(string.get()) || emote.emote.description.getString().toLowerCase().contains(string.get()) || emote.emote.author.getString().toLowerCase().equals(string.get())){
                 this.addEntry(emote);
             }
         }
