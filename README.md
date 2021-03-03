@@ -4,8 +4,9 @@ I'm reimplementing the whole mod to make easier to port it to different modloade
 (It'll need mixin anyway)  
 I'll also implement a module to make possible to redirect the server communication to another server.  
 For PvP / other clients what are uses an independent server to communicate.  
-<br>
-###Modules:
+
+Modules:
+--------
 emotecraftCommon: common library used by Emotecraft, not depend on anything  
 executor: the interface what will be implemented to the modloader+MC version
 emotesMain: Main client-side logic  
@@ -13,7 +14,8 @@ emotesServer: Server-side logic
 <br>
 fabric: latest fabric implementation
 
-###Other implementation will be in a different branch/repo  
+Other implementation will be in a different branch/repo
+-
 <br>
 
 oldJunk will be deleted, but I don't want to remove it before the refracting is done
