@@ -49,7 +49,9 @@ configurations {
 
 dependencies {
     //compile project(':emotecraftCommon')
-    compile project(':emotesMain')
+    implementation project(':emotesMain')
+    implementation project(':executor')
+    implementation project(':emotecraftCommon')
     compileModul project(':emotesMain')
 
 

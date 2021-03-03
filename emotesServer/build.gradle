@@ -10,8 +10,8 @@ repositories {
 
 
 dependencies {
-    compile project(':emotecraftCommon')
-    compile project(':executor')
+    implementation project(':emotecraftCommon')
+    implementation project(':executor')
 }
 
 /*

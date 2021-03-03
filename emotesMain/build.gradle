@@ -9,8 +9,8 @@ repositories {
 }
 
 dependencies {
-    compile project(':emotecraftCommon')
-    compile project(':executor')
+    implementation project(':emotecraftCommon')
+    implementation project(':executor')
 
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 }
