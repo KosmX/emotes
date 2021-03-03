@@ -10,9 +10,9 @@ Modules:
 emotecraftCommon: common library used by Emotecraft, not depend on anything  
 executor: the interface what will be implemented to the modloader+MC version
 emotesMain: Main client-side logic  
-emotesServer: Server-side logic
+emotesServer: Server-side logic  
 <br>
-fabric: latest fabric implementation
+fabric: latest fabric implementation  
 
 Other implementation will be in a different branch/repo
 -
