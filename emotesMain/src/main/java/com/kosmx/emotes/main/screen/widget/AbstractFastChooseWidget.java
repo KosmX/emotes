@@ -16,7 +16,7 @@ import java.util.logging.Level;
  * void render(MATRIX, int mouseX, int mouseY, float delta)
  * boolean onMouseClicked
  * void isMouseHover
- * @param <MATRIX>
+ * @param <MATRIX> Minecraft's MatrixStack
  */
 public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidgetLogic<MATRIX, WIDGET> {
 

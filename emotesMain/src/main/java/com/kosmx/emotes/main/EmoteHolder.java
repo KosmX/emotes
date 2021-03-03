@@ -53,6 +53,7 @@ public class EmoteHolder {
      * @param name        Emote name
      * @param description Emote decription
      * @param author      Name of the Author
+     * @param hash        hash from the serializer
      */
     public EmoteHolder(EmoteData emote, Text name, Text description, Text author, int hash){
         this.emote = emote;
@@ -64,7 +65,7 @@ public class EmoteHolder {
 
     /**
      * Bind keys to emotes from config class
-     * @param config
+     * @param config config object
      */
     public static void bindKeys(ClientConfig config){
         config.emotesWithKey = new ArrayList<>();

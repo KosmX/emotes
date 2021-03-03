@@ -10,7 +10,7 @@ import com.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 
 /**
  * Stuff to override
- * isPauseScreen -> false
+ * isPauseScreen return false
  * render
  */
 public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {

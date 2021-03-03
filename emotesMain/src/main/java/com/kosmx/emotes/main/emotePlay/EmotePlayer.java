@@ -154,6 +154,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
          * modelPart.pitch = pitch.getValueAtCurrentTick(modelPart.pitch);
          * modelPart.yaw = yaw.getValueAtCurrentTick(modelPart.yaw);
          * modelPart.roll = roll.getValueAtCurrentTick(modelPart.roll);
+         * @param modelPart modelPart...
          * }
          */
         public void updateBodyPart(T modelPart){

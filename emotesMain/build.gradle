@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 version project.mod_version
@@ -8,9 +9,15 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    compileModule
+}
+
 dependencies {
     implementation project(':emotecraftCommon')
     implementation project(':executor')
+    compileModule project(':emotecraftCommon')
+    compileModule project(':executor')
 
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 }
@@ -22,6 +29,33 @@ tasks.withType(Copy){
         }
         //Rename every file to lowercase. This is essential for the translations to work
         //Possibly creates other problems on other operating systems
+    }
+}
+
+jar{
+    from {
+        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+java{
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing{
+    publications{
+        maven(MavenPublication) {
+            groupId = 'com.kosmx.emotes'
+            artifactId = 'emotesMain'
+            version = project.version
+
+            from components.java
+        }
+    }
+
+    repositories {
+        mavenLocal()
     }
 }
 
