@@ -1,3 +1,6 @@
+[![HitCount](http://hits.dwyl.com/kosmx/emotes.svg)](http://hits.dwyl.com/kosmx/emotes)
+
+
 WIP  
 What am I doing:  
 I'm reimplementing the whole mod to make easier to port it to different modloaders and MC versions  
