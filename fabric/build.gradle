@@ -16,7 +16,7 @@ buildscript {
 }
 
 plugins {
-    id 'fabric-loom' version '0.7-SNAPSHOT'
+    id 'fabric-loom' version '0.6-SNAPSHOT'
     id 'maven-publish'
     //publish mod to other places :D
 }
@@ -85,7 +85,6 @@ dependencies {
     //implementation("org.spigotmc:spigot-api:${project.spigot_api}")//Spigot will be a different module...
 
     //runtime files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
-    //include(files("bendy-lib-0.0.0-dev.jar"))
 
 }
 

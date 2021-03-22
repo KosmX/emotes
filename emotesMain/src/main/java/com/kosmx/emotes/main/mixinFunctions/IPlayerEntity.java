@@ -50,7 +50,9 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
 
     @Override
     default void stopEmote(){
-        this.getEmote().stop();
+        if(getEmote() != null) {
+            this.getEmote().stop();
+        }
         this.voidEmote();
     }
 

@@ -159,6 +159,7 @@ public class EmotePacket {
 
         public EmotePacket build(){
             //Make sure every packet has a version...
+            if(data.versions == null)data.versions = new HashMap<>();
             defaultVersions.forEach((aByte, bByte) -> {
                 if(!data.versions.containsKey(aByte)){
                     data.versions.put(aByte, bByte);
