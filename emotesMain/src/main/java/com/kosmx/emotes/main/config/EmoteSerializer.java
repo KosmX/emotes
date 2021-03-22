@@ -81,6 +81,9 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
         if(node.has("easeBeforeKeyframe"))builder.isEasingBefore = node.get("easeBeforeKeyframe").getAsBoolean();
         EmoteData emote = builder.build();
         moveDeserializer(emote, node.getAsJsonArray("moves"), degrees);
+
+        emote.fullyEnableParts();
+
         return emote;
     }
 

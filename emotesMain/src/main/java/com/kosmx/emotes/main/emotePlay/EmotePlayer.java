@@ -70,6 +70,11 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         }
     }
 
+    @Override
+    public int getTick() {
+        return this.currentTick;
+    }
+
     /**
      * Is emotePlayer running
      *
@@ -221,16 +226,19 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
          * @return value
          */
         public float getValueAtCurrentTick(float currentValue) {
-            int pos = keyframes.findAtTick(currentTick);
-            EmoteData.KeyFrame keyBefore = findBefore(pos, currentValue);
-            if (isLoopStarted && keyBefore.tick < data.returnToTick) {
-                keyBefore = findBefore(keyframes.findAtTick(data.endTick), currentValue);
+            if(keyframes.isEnabled) {
+                int pos = keyframes.findAtTick(currentTick);
+                EmoteData.KeyFrame keyBefore = findBefore(pos, currentValue);
+                if (isLoopStarted && keyBefore.tick < data.returnToTick) {
+                    keyBefore = findBefore(keyframes.findAtTick(data.endTick), currentValue);
+                }
+                EmoteData.KeyFrame keyAfter = findAfter(pos, currentValue);
+                if (data.isInfinite && keyAfter.tick >= data.endTick) {
+                    keyAfter = findAfter(keyframes.findAtTick(data.returnToTick - 1), currentValue);
+                }
+                return getValueFromKeyframes(keyBefore, keyAfter);
             }
-            EmoteData.KeyFrame keyAfter = findAfter(pos, currentValue);
-            if (data.isInfinite && keyAfter.tick >= data.endTick) {
-                keyAfter = findAfter(keyframes.findAtTick(data.returnToTick - 1), currentValue);
-            }
-            return getValueFromKeyframes(keyBefore, keyAfter);
+            return currentValue;
         }
 
         /**

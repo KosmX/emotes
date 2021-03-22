@@ -96,6 +96,15 @@ public class EmoteData {
         return isInfinite || tick < stopTick && tick > 0;
     }
 
+    public void fullyEnableParts(){
+        head.fullyEnablePart(false);
+        torso.fullyEnablePart(false);
+        rightArm.fullyEnablePart(false);
+        leftArm.fullyEnablePart(false);
+        rightLeg.fullyEnablePart(false);
+        leftLeg.fullyEnablePart(false);
+    }
+
     public static class StateCollection {
         public final String name;
         public final State x;
@@ -155,6 +164,18 @@ public class EmoteData {
             return result;
         }
 
+        public void fullyEnablePart(boolean always){
+            if(always || x.isEnabled || y.isEnabled || z.isEnabled || pitch.isEnabled || yaw.isEnabled || roll.isEnabled || (isBendable && bend.isEnabled || bendDirection.isEnabled)){
+                x.isEnabled = true;
+                y.isEnabled = true;
+                z.isEnabled = true;
+                pitch.isEnabled = true;
+                yaw.isEnabled = true;
+                roll.isEnabled = true;
+                bend.isEnabled = true;
+                bendDirection.isEnabled = true;
+            }
+        }
 
         public static class State{
             public final float defaultValue;
@@ -162,6 +183,7 @@ public class EmoteData {
             public final List<KeyFrame> keyFrames = new ArrayList<>();
             public final String name;
             private final boolean isAngle;
+            public boolean isEnabled = false;
 
             @Override
             public boolean equals(Object o) {
@@ -174,6 +196,7 @@ public class EmoteData {
                 if (Float.compare(state.threshold, threshold) != 0) return false;
                 if (isAngle != state.isAngle) return false;
                 if (!keyFrames.equals(state.keyFrames)) return false;
+                if (isEnabled != state.isEnabled)return false;
                 return Objects.equals(name, state.name);
             }
 
@@ -227,6 +250,7 @@ public class EmoteData {
              * @return is the keyframe valid
              */
             public boolean addKeyFrame(int tick, float value, Ease ease, int rotate, boolean degrees){
+                isEnabled = true;
                 if(degrees && this.isAngle) value *= 0.01745329251f;
                 boolean bl = this.addKeyFrame(new KeyFrame(tick, value, ease));
                 if(isAngle && rotate != 0){

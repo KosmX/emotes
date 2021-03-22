@@ -33,31 +33,31 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         putBoolean(buf, emote.isEasingBefore);
         putBoolean(buf, emote.nsfw);
         buf.put(keyframeSize);
-        writeBodyPartInfo(buf, emote.head, emote);
-        writeBodyPartInfo(buf, emote.torso, emote);
-        writeBodyPartInfo(buf, emote.rightArm, emote);
-        writeBodyPartInfo(buf, emote.leftArm, emote);
-        writeBodyPartInfo(buf, emote.rightLeg, emote);
-        writeBodyPartInfo(buf, emote.leftLeg, emote);
+        writeBodyPartInfo(buf, emote.head);
+        writeBodyPartInfo(buf, emote.torso);
+        writeBodyPartInfo(buf, emote.rightArm);
+        writeBodyPartInfo(buf, emote.leftArm);
+        writeBodyPartInfo(buf, emote.rightLeg);
+        writeBodyPartInfo(buf, emote.leftLeg);
 
     }
 
-    private void writeBodyPartInfo(ByteBuffer buf, EmoteData.StateCollection part, EmoteData emoteData){
-        writePartInfo(buf, part.x, emoteData);
-        writePartInfo(buf, part.y, emoteData);
-        writePartInfo(buf, part.z, emoteData);
-        writePartInfo(buf, part.pitch, emoteData);
-        writePartInfo(buf, part.yaw, emoteData);
-        writePartInfo(buf, part.roll, emoteData);
+    private void writeBodyPartInfo(ByteBuffer buf, EmoteData.StateCollection part){
+        writePartInfo(buf, part.x);
+        writePartInfo(buf, part.y);
+        writePartInfo(buf, part.z);
+        writePartInfo(buf, part.pitch);
+        writePartInfo(buf, part.yaw);
+        writePartInfo(buf, part.roll);
         if(part.isBendable) {
-            writePartInfo(buf, part.bendDirection, emoteData);
-            writePartInfo(buf, part.bend, emoteData);
+            writePartInfo(buf, part.bendDirection);
+            writePartInfo(buf, part.bend);
         }
     }
 
-    private void writePartInfo(ByteBuffer buf, EmoteData.StateCollection.State part, EmoteData emoteData){
+    private void writePartInfo(ByteBuffer buf, EmoteData.StateCollection.State part){
         List<EmoteData.KeyFrame> list = part.keyFrames;
-        buf.putInt(list.size());
+        buf.putInt(part.isEnabled ? list.size() : -1);
         for(EmoteData.KeyFrame move : list){
             buf.putInt(move.tick);
             buf.putFloat(move.value);
@@ -110,6 +110,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
 
     private void getPartInfo(ByteBuffer buf, EmoteData.StateCollection.State part){
         int len = buf.getInt();
+        part.isEnabled = len != -1;
         for(int i = 0; i < len; i++){
             int currentPos = buf.position();
             if(! part.addKeyFrame(buf.getInt(), buf.getFloat(), Ease.getEase(buf.get()))){
