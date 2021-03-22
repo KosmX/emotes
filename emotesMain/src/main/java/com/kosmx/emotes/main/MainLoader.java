@@ -4,12 +4,14 @@ import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.main.config.Serializer;
+import com.kosmx.emotes.main.network.ClientEmotePlay;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 
 public class MainLoader {
+    static int tick = 0;
     //The main mod-loader class
     public static void main(String[] args){
 
@@ -33,6 +35,14 @@ public class MainLoader {
         }
         if(EmoteInstance.config == null){
             EmoteInstance.config = EmoteInstance.instance.isClient() ? new ClientConfig() : new SerializableConfig();
+        }
+    }
+
+    public static void tick(){
+        if(tick++ >= 20){
+            tick=0;
+
+            ClientEmotePlay.checkQueue();
         }
     }
 }

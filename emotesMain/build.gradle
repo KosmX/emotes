@@ -50,7 +50,9 @@ publishing{
             artifactId = 'emotesMain'
             version = project.version
 
-            from components.java
+            artifactId 'emotesMain'
+            artifact jar
+            //from components.java
         }
     }
 

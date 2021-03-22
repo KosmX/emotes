@@ -54,7 +54,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Anim
         ((IUpperPartHelper) this.head).setUpperPart(true);
         ((IUpperPartHelper) this.helmet).setUpperPart(true);
 
-        mutatedTorso.addCuboid(- 4.0F, 0.0F, - 2.0F, 8, 12, 4, scale, Direction.DOWN);
+        mutatedTorso.addCuboid(- 4, 0, - 2, 8, 12, 4, scale, Direction.DOWN);
         mutatedRightLeg.addCuboid(- 2, 0, - 2, 4, 12, 4, scale, Direction.UP);
         mutatedLeftLeg.addCuboid(- 2, 0, - 2, 4, 12, 4, scale, Direction.UP);
 

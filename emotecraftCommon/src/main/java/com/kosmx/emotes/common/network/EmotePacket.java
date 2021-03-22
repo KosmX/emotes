@@ -49,7 +49,7 @@ public class EmotePacket {
 
     //Write packet to a new ByteBuf
     public ByteBuffer write() throws IOException {
-        if(data.purpose == 0)throw new IllegalArgumentException("Can't send packet without any purpose...");
+        if(data.purpose == PacketTask.UNKNOWN)throw new IllegalArgumentException("Can't send packet without any purpose...");
         AtomicReference<Byte> partCount = new AtomicReference<>((byte) 0);
         AtomicInteger sizeSum = new AtomicInteger(6); //5 bytes is the header
         subPackets.forEach((aByte, packet) -> {
@@ -72,7 +72,7 @@ public class EmotePacket {
         ByteBuffer buf = ByteBuffer.allocate(sizeSum.get());
 
         buf.putInt(subPackets.get((byte)8).getVer(data.versions));
-        buf.put(data.purpose);
+        buf.put(data.purpose.id);
         buf.put(partCount.get());
 
         AtomicBoolean ex = new AtomicBoolean(false);
@@ -106,7 +106,7 @@ public class EmotePacket {
 
         this.version = byteBuffer.getInt();
         if(this.version > CommonData.networkingVersion)throw new IOException("Can't read newer version");
-        data.purpose = byteBuffer.get();
+        data.purpose = PacketTask.getTaskFromID(byteBuffer.get());
 
         byte count = byteBuffer.get();
 
@@ -140,60 +140,86 @@ public class EmotePacket {
         /**
          * To send an emote
          */
-        public Builder(HashMap<Byte, Byte> versions){
-            data = new NetData();
-            //Make sure every packet has a version...
-            defaultVersions.forEach((aByte, bByte) -> {
-                if(!versions.containsKey(aByte)){
-                    versions.put(aByte, bByte);
-                }
-            });
+        public Builder setVersion(HashMap<Byte, Byte> versions){
             data.versions = versions;
+            return this;
+        }
+
+
+        private Builder(NetData data){
+            this.data = data;
+        }
+
+        public Builder copy(){
+            return new Builder(this.data.copy());
         }
 
         public Builder(){
-            this(new HashMap<>());
+            data = new NetData();
         }
 
         public EmotePacket build(){
+            //Make sure every packet has a version...
+            defaultVersions.forEach((aByte, bByte) -> {
+                if(!data.versions.containsKey(aByte)){
+                    data.versions.put(aByte, bByte);
+                }
+            });
             return new EmotePacket(data);
         }
 
-        public void configureToReceive(float validationThreshold){
+        public Builder configureToReceive(float validationThreshold){
             data.threshold = validationThreshold;
+            return this;
         }
 
-        public void configureToSendEmote(EmoteData emoteData, @Nullable UUID player){
-            if(data.purpose != 0)throw new IllegalArgumentException("Can's send and stop emote at the same time");
-            data.purpose = 1;
+        public Builder configureToSendEmote(EmoteData emoteData, @Nullable UUID player){
+            if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");
+            data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
             data.player = player;
+            return this;
         }
 
-        public void configureToSendEmote(EmoteData emoteData){
-            configureToSendEmote(emoteData, null);
+        public Builder configureEmoteTick(int tick){
+            this.data.tick = tick;
+            return this;
         }
 
-        public void configureToSendStop(int emoteID, @Nullable UUID player){
-            if(data.purpose != 0)throw new IllegalArgumentException("Can't send emote and stop at the same time");
-            data.purpose = 10;
+        public Builder configureTarget(@Nullable UUID target){
+            data.player = target;
+            return this;
+        }
+
+        public Builder configureToSendEmote(EmoteData emoteData){
+            return configureToSendEmote(emoteData, null);
+        }
+
+        public Builder configureToSendStop(int emoteID, @Nullable UUID player){
+            if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can't send emote and stop at the same time");
+            data.purpose = PacketTask.STOP;
             data.stopEmoteID = new AtomicInteger(emoteID);
             data.player = player;
+            return this;
         }
 
-        public void configureToSendStop(int emoteID){
-            configureToSendStop(emoteID, null);
+        public Builder configureToSendStop(int emoteID){
+            return configureToSendStop(emoteID, null);
         }
 
         public void configureToConfigExchange(boolean songEnabled){
-            if(data.purpose != 0)throw new IllegalArgumentException("Can't send config with emote or stop data...");
-            data.purpose = 8;
+            if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can't send config with emote or stop data...");
+            data.purpose = PacketTask.CONFIG;
             HashMap<Byte, Byte> versions = new HashMap<>();
             EmotePacket.defaultVersions.forEach(versions::put);
             if(!songEnabled){
                 versions.replace((byte)3, (byte)0);
             }
             this.data.versions = versions;
+        }
+
+        public void removePlayerID(){
+            this.data.player = null;
         }
 
     }

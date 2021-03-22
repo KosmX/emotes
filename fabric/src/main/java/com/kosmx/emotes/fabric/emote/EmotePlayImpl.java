@@ -8,8 +8,8 @@ import net.minecraft.client.model.ModelPart;
 import java.util.function.Consumer;
 
 public class EmotePlayImpl extends EmotePlayer<ModelPart>{
-    public EmotePlayImpl(EmoteData emote, Consumer<Layer.Note> noteConsumer) {
-        super(emote, noteConsumer);
+    public EmotePlayImpl(EmoteData emote, Consumer<Layer.Note> noteConsumer, int t) {
+        super(emote, noteConsumer, t);
     }
 
     @Override

@@ -9,13 +9,20 @@ import java.util.UUID;
 //Every player will be IEmotePlayer
 public interface IEmotePlayerEntity<T extends IEmotePlayer > {
 
-    void playEmote(EmoteData emote);
+    void init();
+
+    void playEmote(EmoteData emote, int tick);
 
     @Nullable
     T getEmote();
 
     boolean isPlayingEmote();
 
+    void stopEmote(int emoteID);
+
+    /**
+     * Use this ONLY for the main player
+     */
     void stopEmote();
 
     UUID getUUID();

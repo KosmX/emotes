@@ -21,4 +21,6 @@ public interface IClientMethods {
 
     INetworkInstance getServerNetworkController();
 
+    int getCurrentTick();
+
 }

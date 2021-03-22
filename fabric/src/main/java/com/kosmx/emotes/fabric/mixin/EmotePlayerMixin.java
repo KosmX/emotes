@@ -19,6 +19,9 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -34,8 +37,8 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements IPlayerEn
     }
 
     @Override
-    public void playEmote(EmoteData emote) {
-        this.emote = new EmotePlayImpl(emote, this::noteConsumer);
+    public void playEmote(EmoteData emote, int t) {
+        this.emote = new EmotePlayImpl(emote, this::noteConsumer, t);
     }
 
     private void noteConsumer(Layer.Note note){
@@ -53,6 +56,11 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements IPlayerEn
             return instruments[b];
         }
         return Instrument.HARP; //I don't want to crash here
+    }
+
+    @Inject(method = "<init>", at = @At(value = "TAIL"))
+    private void emote_init(ClientWorld world, GameProfile profile, CallbackInfo ci){
+        this.init();
     }
 
     @Override

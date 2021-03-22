@@ -1,6 +1,7 @@
 package com.kosmx.emotes.common.network.objects;
 
 import com.kosmx.emotes.common.emote.EmoteData;
+import com.kosmx.emotes.common.network.PacketTask;
 import com.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
@@ -19,7 +20,7 @@ public class NetData {
      * 10 - stop
      * //as the sub-packet ids
      */
-    public byte purpose;
+    public PacketTask purpose = PacketTask.UNKNOWN;
     public float threshold;
     @Nullable
     public AtomicInteger stopEmoteID = null;
@@ -41,11 +42,25 @@ public class NetData {
     public int sizeLimit = Short.MAX_VALUE;
 
     public boolean isValid(){
-        if(purpose == 0)return false;
+        if(purpose == PacketTask.UNKNOWN)return false;
         if(emoteData == null && !versionsUpdated && stopEmoteID == null)return false;
         if(emoteData != null && stopEmoteID != null)return false;
         //I won't simplify it because of readability
         return true;
     }
 
+    public NetData copy() {
+        NetData data = new NetData();
+        data.purpose = this.purpose;
+        data.threshold = threshold;
+        data.stopEmoteID = stopEmoteID != null ? new AtomicInteger(stopEmoteID.get()) : null;
+        data.tick = tick;
+        data.valid = valid;
+        data.song = song;
+        data.versionsUpdated = versionsUpdated;
+        data.versions = versions;
+        data.player = player;
+        data.sizeLimit = sizeLimit;
+        return data;
+    }
 }

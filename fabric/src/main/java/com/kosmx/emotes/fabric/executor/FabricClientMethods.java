@@ -9,7 +9,7 @@ import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import com.kosmx.emotes.fabric.emote.EmotePlayImpl;
 import com.kosmx.emotes.fabric.executor.types.IdentifierImpl;
 import com.kosmx.emotes.fabric.executor.types.ImplNativeImageBackedTexture;
-import com.kosmx.emotes.fabric.network.ClientNetworkManager;
+import com.kosmx.emotes.fabric.network.ClientNetworkInstance;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -21,6 +21,8 @@ import java.io.InputStream;
 
 @SuppressWarnings("unchecked")
 public class FabricClientMethods implements IClientMethods {
+    public static int tick = 0;
+
     @Override
     public void destroyTexture(IIdentifier identifier) {
         MinecraftClient.getInstance().getTextureManager().destroyTexture(((IdentifierImpl)identifier).get());
@@ -53,7 +55,12 @@ public class FabricClientMethods implements IClientMethods {
 
     @Override
     public INetworkInstance getServerNetworkController() {
-        return new ClientNetworkManager();//TODO Not do this junk...
+        return ClientNetworkInstance.networkInstance;
+    }
+
+    @Override
+    public int getCurrentTick() {
+        return tick;
     }
 
 }

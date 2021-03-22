@@ -1,6 +1,7 @@
 package com.kosmx.emotes.main.mixinFunctions;
 
 import com.kosmx.emotes.common.emote.EmoteData;
+import com.kosmx.emotes.common.tools.Pair;
 import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import com.kosmx.emotes.main.EmoteHolder;
@@ -8,6 +9,19 @@ import com.kosmx.emotes.main.emotePlay.EmotePlayer;
 import com.kosmx.emotes.main.network.ClientEmotePlay;
 
 public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
+
+    @Override
+    default void init(){
+        Pair<EmoteData, Integer> p = ClientEmotePlay.getEmoteForUUID(this.getUUID());
+        if(p != null){
+            this.playEmote(p.getLeft(), p.getRight());
+        }
+        if(EmoteInstance.instance.getClientMethods().getMainPlayer().isPlayingEmote()){
+
+        }
+
+    }
+
     @Override
     default boolean isPlayingEmote(){
         return EmotePlayer.isRunningEmote(this.getEmote());

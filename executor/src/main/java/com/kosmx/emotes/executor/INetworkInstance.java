@@ -1,12 +1,32 @@
 package com.kosmx.emotes.executor;
 
+import com.kosmx.emotes.common.network.EmotePacket;
+import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 /**
  * To hold information about network
  */
 public interface INetworkInstance {
-    public HashMap<Byte, Byte> getVersions();
-    public boolean sendPlayerData();
-    public void sendByteArray(byte[] bytes);
+    HashMap<Byte, Byte> getVersions();
+    void setVersions(HashMap<Byte, Byte> map);
+    boolean sendPlayerID();
+    void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException;
+    void sendMessage(byte[] bytes, @Nullable IEmotePlayerEntity target);
+    void sendConfigCallback();
+
+    /**
+     * Is the network instance active
+     * @return is this channel working
+     */
+    boolean isActive();
+
+
+    default void sendMessage(ByteBuffer byteBuffer, @Nullable IEmotePlayerEntity target){
+        sendMessage(byteBuffer.array(), target);
+    }
 }

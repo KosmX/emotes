@@ -30,6 +30,7 @@ public class EmoteData {
     public final StateCollection rightLeg;
     public final StateCollection leftLeg;
     public final boolean isEasingBefore;
+    public final boolean nsfw;
 
     @Nullable
     public NBS song;
@@ -37,7 +38,7 @@ public class EmoteData {
     public static float staticThreshold = 8;
 
 
-    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore){
+    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, boolean nsfw){
         this.beginTick = Math.max(beginTick, 0);
         this.endTick = Math.max(beginTick + 1, endTick);
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
@@ -50,6 +51,7 @@ public class EmoteData {
         this.leftArm = leftArm;
         this.leftLeg = leftLeg;
         this.isEasingBefore = isEasingBefore;
+        this.nsfw = nsfw;
     }
 
     @Override
@@ -88,6 +90,10 @@ public class EmoteData {
         result = 31 * result + leftLeg.hashCode();
         result = 31 * result + (isEasingBefore ? 1 : 0);
         return result;
+    }
+
+    public boolean isPlayingAt(int tick){
+        return isInfinite || tick < stopTick && tick > 0;
     }
 
     public static class StateCollection {
@@ -306,6 +312,7 @@ public class EmoteData {
         public final StateCollection leftLeg;
         public boolean isEasingBefore = false;
         public float validationThreshold = staticThreshold;
+        public boolean nsfw = false;
 
         public int beginTick = 0;
         public int endTick;
@@ -324,7 +331,7 @@ public class EmoteData {
         }
 
         public EmoteData build(){
-            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore);
+            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore, nsfw);
         }
     }
 }

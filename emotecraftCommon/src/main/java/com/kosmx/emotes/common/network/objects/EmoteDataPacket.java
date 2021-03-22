@@ -31,6 +31,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         putBoolean(buf, emote.isInfinite);
         buf.putInt(emote.returnToTick);
         putBoolean(buf, emote.isEasingBefore);
+        putBoolean(buf, emote.nsfw);
         buf.put(keyframeSize);
         writeBodyPartInfo(buf, emote.head, emote);
         writeBodyPartInfo(buf, emote.torso, emote);
@@ -76,6 +77,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         builder.isLooped = getBoolean(buf);
         builder.returnTick = buf.getInt();
         builder.isEasingBefore = getBoolean(buf);
+        builder.nsfw = getBoolean(buf);
         keyframeSize = buf.get();
         getBodyPartInfo(buf, builder.head, false);
         getBodyPartInfo(buf, builder.torso, true);
@@ -143,7 +145,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public int calculateSize(NetData config) {
         if(config.emoteData == null)return 0;
         //I will create less efficient loops but these will be more easily fixable
-        int size = 23;//The header makes 46 bytes IIIIBIBB
+        int size = 24;//The header makes 46 bytes IIIIBIBBB
         size += partSize(config.emoteData.head);
         size += partSize(config.emoteData.torso);
         size += partSize(config.emoteData.rightArm);

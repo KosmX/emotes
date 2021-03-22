@@ -30,13 +30,15 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
     public final BodyPart rightLeg;
     public final BodyPart leftLeg;
 
-    @Nullable
-
     /**
      *
-     * @param emote EmoteData to play
+     * @param emote emote to play
+     * @param noteConsumer {@link Layer.Note} consumer
+     * @param t begin playing from tick
      */
-    public EmotePlayer(EmoteData emote, Consumer<Layer.Note> noteConsumer) {
+    @Nullable
+    public EmotePlayer(EmoteData emote, Consumer<Layer.Note> noteConsumer, int t) {
+        this.currentTick = t;
         this.data = emote;
         if (emote.song != null) {
             this.song = new SoundPlayer(emote.song, noteConsumer, 0);
