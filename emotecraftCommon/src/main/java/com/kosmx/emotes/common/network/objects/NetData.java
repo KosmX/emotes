@@ -43,7 +43,9 @@ public class NetData {
 
     public boolean isValid(){
         if(purpose == PacketTask.UNKNOWN)return false;
-        if(emoteData == null && !versionsUpdated && stopEmoteID == null)return false;
+        if(purpose == PacketTask.STOP && stopEmoteID == null)return false;
+        if(purpose == PacketTask.STREAM && emoteData == null)return false;
+        if(purpose == PacketTask.CONFIG && !versionsUpdated)return false;
         if(emoteData != null && stopEmoteID != null)return false;
         //I won't simplify it because of readability
         return true;

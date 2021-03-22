@@ -16,8 +16,9 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
         if(p != null){
             this.playEmote(p.getLeft(), p.getRight());
         }
-        if(EmoteInstance.instance.getClientMethods().getMainPlayer().isPlayingEmote()){
-
+        if(EmoteInstance.instance.getClientMethods().getMainPlayer() != null && EmoteInstance.instance.getClientMethods().getMainPlayer().isPlayingEmote()){
+            IEmotePlayerEntity playerEntity = EmoteInstance.instance.getClientMethods().getMainPlayer();
+            ClientEmotePlay.clientRepeateLocalEmote(playerEntity.getEmote().getData(), playerEntity.getEmote().getTick(), this);
         }
 
     }

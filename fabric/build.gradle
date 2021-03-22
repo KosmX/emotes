@@ -52,6 +52,7 @@ dependencies {
     implementation project(':emotesMain')
     implementation project(':executor')
     implementation project(':emotecraftCommon')
+    implementation project(':emotesServer')
     compileModule project(':emotesMain')
     //compileModule project(':executor')
     //compileModule project(':emotecraftCommon')

@@ -119,7 +119,6 @@ public class EmotePacket {
                 subPackets.get(id).read(byteBuffer, this.data, sub_version);
                 if(byteBuffer.position() != size + currentPos){
                     byteBuffer.position(currentPos + size);
-                    //TODO warning is optional
                 }
             }
             else {
@@ -146,7 +145,7 @@ public class EmotePacket {
         }
 
 
-        private Builder(NetData data){
+        public Builder(NetData data){
             this.data = data;
         }
 
@@ -207,7 +206,7 @@ public class EmotePacket {
             return configureToSendStop(emoteID, null);
         }
 
-        public void configureToConfigExchange(boolean songEnabled){
+        public Builder configureToConfigExchange(boolean songEnabled){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can't send config with emote or stop data...");
             data.purpose = PacketTask.CONFIG;
             HashMap<Byte, Byte> versions = new HashMap<>();
@@ -216,6 +215,7 @@ public class EmotePacket {
                 versions.replace((byte)3, (byte)0);
             }
             this.data.versions = versions;
+            return this;
         }
 
         public void removePlayerID(){

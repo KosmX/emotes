@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 //Every player will be IEmotePlayer
-public interface IEmotePlayerEntity<T extends IEmotePlayer > {
+public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEntity{
 
     void init();
 
@@ -24,8 +24,6 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > {
      * Use this ONLY for the main player
      */
     void stopEmote();
-
-    UUID getUUID();
 
     boolean isMainPlayer();
 

@@ -6,7 +6,6 @@ package com.kosmx.emotes.common;
  */
 public class CommonData {
     public static boolean isLoaded = false; //to detect if the mod loads twice...
-    //public static Logger logger;//TODO remove me
 
     public static final String MOD_ID = "emotecraft";
     public static final String MOD_NAME = "Emotecraft";

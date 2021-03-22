@@ -7,10 +7,12 @@ import com.kosmx.emotes.fabric.executor.EmotesMain;
 import com.kosmx.emotes.fabric.executor.FabricClientMethods;
 import com.kosmx.emotes.fabric.gui.screen.ingame.FastChosseScreen;
 import com.kosmx.emotes.fabric.network.ClientNetworkInstance;
+import com.kosmx.emotes.fabric.network.ServerNetwork;
 import com.kosmx.emotes.main.MainLoader;
 import com.kosmx.emotes.main.network.ClientEmotePlay;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
@@ -41,6 +43,8 @@ public class Initializer implements ModInitializer {
         initKeyBinding();
 
         ClientNetworkInstance.networkInstance.init(); //init network
+
+        ServerNetwork.instance.init();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             FabricClientMethods.tick++;

@@ -18,6 +18,8 @@ dependencies {
     implementation project(':executor')
     compileModule project(':emotecraftCommon')
     compileModule project(':executor')
+    implementation project(':emotesServer')
+    compileModule project(':emotesServer')
 
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 }

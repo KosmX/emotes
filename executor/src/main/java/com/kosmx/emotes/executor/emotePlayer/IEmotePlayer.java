@@ -14,4 +14,6 @@ public interface IEmotePlayer {
     boolean isLoopStarted();
 
     EmoteData getData();
+
+    int getTick();
 }

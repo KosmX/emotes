@@ -15,7 +15,6 @@ public class DiscoveryPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean read(ByteBuffer buf, NetData data, int version){
-        //TODO this
 
         //Read these into versions
         int size = buf.getInt();

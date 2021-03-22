@@ -1,6 +1,5 @@
 package com.kosmx.emotes.fabric.network;
 
-import com.kosmx.emotes.common.CommonData;
 import com.kosmx.emotes.common.network.EmotePacket;
 import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import com.kosmx.emotes.main.network.IClientNetwork;
@@ -8,19 +7,17 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 public class ClientNetworkInstance implements IClientNetwork {
-    static final Identifier channelID = new Identifier(CommonData.MOD_ID, CommonData.playEmoteID);
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
     public void init(){
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(channelID, (client1, handler1, buf, responseSender) -> receiveMessage(buf.array())));
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, (client1, handler1, buf, responseSender) -> receiveMessage(buf.array())));
     }
 
     private boolean disableNBS = false;
@@ -48,13 +45,13 @@ public class ClientNetworkInstance implements IClientNetwork {
 
     @Override
     public boolean isActive() {
-        return ClientPlayNetworking.canSend(channelID);
+        return ClientPlayNetworking.canSend(ServerNetwork.channelID);
     }
 
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
         if(target != null){
-            ClientPlayNetworking.send(channelID, new PacketByteBuf(Unpooled.wrappedBuffer(builder.configureTarget(target.getUUID()).build().write().array())));
+            ClientPlayNetworking.send(ServerNetwork.channelID, new PacketByteBuf(Unpooled.wrappedBuffer(builder.configureTarget(target.getUUID()).build().write().array())));
         }
     }
 }
