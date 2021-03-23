@@ -8,23 +8,23 @@ public abstract class AbstractScreenLogic<MATRIX, SCREEN> implements IScreenLogi
         this.screen = screen;
     }
 
-    public boolean onKeyPressed(int keyCode, int scanCode, int mod){
+    public boolean emotes_onKeyPressed(int keyCode, int scanCode, int mod){
         return false;
     }
-    public boolean onMouseClicked(double mouseX, double mouseY, int button){
+    public boolean emotes_onMouseClicked(double mouseX, double mouseY, int button){
         return false;
     }
-    public void onRemove(){
+    public void emotes_onRemove(){
 
     }
-    public void tickScreen(){
+    public void emotes_tickScreen(){
 
     }
-    public abstract void initScreen();
-    public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float tickDelta){
+    public abstract void emotes_initScreen();
+    public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float tickDelta){
 
     }
-    public boolean isThisPauseScreen(){
+    public boolean emotes_isThisPauseScreen(){
         return true;
     }
 

@@ -118,13 +118,12 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.size && mouseY <= this.y + this.size;
     }
 
-
-    public boolean mouseClicked(double mouseX, double mouseY, int button){
+    public boolean emotes_mouseClicked(double mouseX, double mouseY, int button){
         checkHovered((int) mouseX, (int) mouseY);
         if(this.hovered && this.isValidClickButton(button)){
             FastChooseElement element = this.getActivePart((int) mouseX, (int) mouseY);
             if(element != null){
-                return onClick(element, button);
+                return EmotesOnClick(element, button);
             }
         }
         return false;
@@ -138,7 +137,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
 
     protected abstract boolean isValidClickButton(int button);
 
-    protected abstract boolean onClick(FastChooseElement element, int button);  //What DO I want to do with this element? set or play.
+    protected abstract boolean EmotesOnClick(FastChooseElement element, int button);  //What DO I want to do with this element? set or play.
 
     protected class FastChooseElement {
         private final float angle;

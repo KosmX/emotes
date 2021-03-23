@@ -28,7 +28,7 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends Abstr
     abstract public IScreen<SCREEN> newEmoteMenu();
 
     @Override
-    public void initScreen(){
+    public void emotes_initScreen(){
         int x = (int) Math.min(screen.getWidth() * 0.8, screen.getHeight() - 60);
         this.searchBox = newTextInputWidget((screen.getWidth() - x) / 2, 12, x, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
         this.searchBox.setInputListener((string)->emoteList.filter(string::toLowerCase));
@@ -50,13 +50,13 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends Abstr
     protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int boxSize, int height, int k, int l, int m);
 
     @Override
-    public boolean isThisPauseScreen(){
+    public boolean emotes_isThisPauseScreen(){
         return false;
     }
 
 
     @Override
-    public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
+    public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         screen.emotesRenderBackgroundTexture(0);
         this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);

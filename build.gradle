@@ -1,11 +1,10 @@
-
 plugins{
     id 'java'
 }
 
-
 allprojects {
     tasks.withType(JavaCompile).configureEach {
+
         def targetVersion = 8
         sourceCompatibility = JavaVersion.toVersion(targetVersion)
         targetCompatibility = JavaVersion.toVersion(targetVersion)

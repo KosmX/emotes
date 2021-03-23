@@ -56,7 +56,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     }
 
     @Override
-    public void initScreen(){
+    public void emotes_initScreen(){
         if(warn && ((ClientConfig)EmoteInstance.config).enableQuark){
             warn = false;
             IConfirmScreen csr = createConfigScreen((bool)->{
@@ -146,7 +146,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     }
 
     @Override
-    public void tickScreen(){
+    public void emotes_tickScreen(){
         if(activeKeyTime == 1){
             setFocusedElement(null);
         }
@@ -156,7 +156,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     }
 
     @Override
-    public boolean onMouseClicked(double mouseX, double mouseY, int button){
+    public boolean emotes_onMouseClicked(double mouseX, double mouseY, int button){
         if(this.activeKeyTime != 0 && emoteList.getSelectedEntry() != null){
             return setKey(EmoteInstance.instance.getDefaults().getMouseKeyFromCode(button));
         }
@@ -165,7 +165,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
 
     @Override
-    public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
+    public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         screen.emotesRenderBackgroundTexture(0);
         if(this.emoteList.getSelectedEntry() == null){
             this.setKeyButton.setActive(false);
@@ -222,7 +222,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
 
     @Override
-    public void onRemove(){
+    public void emotes_onRemove(){
         if(save){
             this.saveConfig();
         }
@@ -251,7 +251,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     }
 
     @Override
-    public boolean onKeyPressed(int keyCode, int scanCode, int mod){
+    public boolean emotes_onKeyPressed(int keyCode, int scanCode, int mod){
         if(emoteList.getSelectedEntry() != null && activeKeyTime != 0) {
             if (keyCode == 256) {
                 return setKey(EmoteInstance.instance.getDefaults().getUnknownKey());
@@ -277,7 +277,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
 
         @Override
-        protected boolean onClick(FastChooseElement element, int button){
+        protected boolean EmotesOnClick(FastChooseElement element, int button){
             if(activeKeyTime != 0) return false;
             if(button == 1){
                 element.clearEmote();

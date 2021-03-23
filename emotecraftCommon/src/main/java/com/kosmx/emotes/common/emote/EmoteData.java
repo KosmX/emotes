@@ -113,7 +113,9 @@ public class EmoteData {
         public final State pitch;
         public final State yaw;
         public final State roll;
+        @Nullable
         public final State bend;
+        @Nullable
         public final State bendDirection;
         public final boolean isBendable;
 
@@ -125,8 +127,14 @@ public class EmoteData {
             this.pitch = new State("pitch", pitch, 0, true);
             this.yaw = new State("yaw", yaw, 0, true);
             this.roll = new State("roll", roll, 0, true);
-            this.bendDirection = new State("axis", 0, 0, true);
-            this.bend = new State("bend", 0, 0, true);
+            if(bendable) {
+                this.bendDirection = new State("axis", 0, 0, true);
+                this.bend = new State("bend", 0, 0, true);
+            }
+            else {
+                this.bend = null;
+                this.bendDirection = null; //This will causes some errors, but fixes the invalid data problem
+            }
             this.isBendable = bendable;
         }
 
@@ -165,15 +173,17 @@ public class EmoteData {
         }
 
         public void fullyEnablePart(boolean always){
-            if(always || x.isEnabled || y.isEnabled || z.isEnabled || pitch.isEnabled || yaw.isEnabled || roll.isEnabled || (isBendable && bend.isEnabled || bendDirection.isEnabled)){
+            if(always || x.isEnabled || y.isEnabled || z.isEnabled || pitch.isEnabled || yaw.isEnabled || roll.isEnabled || (isBendable && (bend.isEnabled || bendDirection.isEnabled))){
                 x.isEnabled = true;
                 y.isEnabled = true;
                 z.isEnabled = true;
                 pitch.isEnabled = true;
                 yaw.isEnabled = true;
                 roll.isEnabled = true;
-                bend.isEnabled = true;
-                bendDirection.isEnabled = true;
+                if(isBendable) {
+                    bend.isEnabled = true;
+                    bendDirection.isEnabled = true;
+                }
             }
         }
 
@@ -250,7 +260,6 @@ public class EmoteData {
              * @return is the keyframe valid
              */
             public boolean addKeyFrame(int tick, float value, Ease ease, int rotate, boolean degrees){
-                isEnabled = true;
                 if(degrees && this.isAngle) value *= 0.01745329251f;
                 boolean bl = this.addKeyFrame(new KeyFrame(tick, value, ease));
                 if(isAngle && rotate != 0){
@@ -277,6 +286,7 @@ public class EmoteData {
              * @return is valid keyframe
              */
             private boolean addKeyFrame(KeyFrame keyFrame){
+                this.isEnabled = true;
                 int i = findAtTick(keyFrame.tick) + 1;
                 this.keyFrames.add(i, keyFrame);
                 return this.isAngle || !(Math.abs(this.defaultValue - keyFrame.value) > this.threshold);

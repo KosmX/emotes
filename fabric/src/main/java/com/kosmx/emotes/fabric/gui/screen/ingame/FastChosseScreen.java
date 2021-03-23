@@ -2,6 +2,7 @@ package com.kosmx.emotes.fabric.gui.screen.ingame;
 
 import com.kosmx.emotes.fabric.gui.screen.AbstractControlledModScreen;
 import com.kosmx.emotes.fabric.gui.screen.IDrawableImpl;
+import com.kosmx.emotes.fabric.gui.screen.IWidgetLogicImpl;
 import com.kosmx.emotes.main.screen.AbstractScreenLogic;
 import com.kosmx.emotes.main.screen.IScreenSlave;
 import com.kosmx.emotes.main.screen.ingame.FastMenuScreenLogic;
@@ -35,7 +36,7 @@ public class FastChosseScreen extends AbstractControlledModScreen {
         protected com.kosmx.emotes.main.screen.ingame.FastMenuScreenLogic<MatrixStack, Screen, Element>.FastMenuWidget newFastMenuWidget(int x, int y, int size) {
             return new FastMenuWidgetImpl(x, y, size);
         }
-        class FastMenuWidgetImpl extends FastMenuWidget implements IDrawableImpl, Element {
+        class FastMenuWidgetImpl extends FastMenuWidget implements IDrawableImpl, IWidgetLogicImpl {
             public FastMenuWidgetImpl(int x, int y, int size) {
                 super(x, y, size);
             }

@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 version project.mod_version
@@ -9,20 +10,15 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    compileModule
-}
-
 dependencies {
     implementation project(':emotecraftCommon')
     implementation project(':executor')
-    compileModule project(':emotecraftCommon')
-    compileModule project(':executor')
     implementation project(':emotesServer')
-    compileModule project(':emotesServer')
+
 
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 }
+
 
 tasks.withType(Copy){
     eachFile{
@@ -31,12 +27,6 @@ tasks.withType(Copy){
         }
         //Rename every file to lowercase. This is essential for the translations to work
         //Possibly creates other problems on other operating systems
-    }
-}
-
-jar{
-    from {
-        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 

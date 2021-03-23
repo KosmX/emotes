@@ -92,7 +92,7 @@ public class BendableModelPart extends MutableModelPart {
     public void bend(float a, float b){
         this.axis = a;
         this.angl = b;
-        ((BendableCuboid) this.iCuboids.get(0)).setRotationRad(a, b);
+        ((BendableCuboid) this.iCuboids.get(0)).applyBend(a, b);
     }
 
     public void bend(Pair<Float, Float> pair){

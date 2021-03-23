@@ -1,8 +1,10 @@
+
+
 plugins {
     id 'java'
 }
 
-version 'unspecified'
+version project.version
 
 repositories {
     mavenCentral()

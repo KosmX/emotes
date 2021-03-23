@@ -3,6 +3,7 @@ package com.kosmx.emotes.fabric.gui;
 import com.kosmx.emotes.fabric.executor.EmotesMain;
 import com.kosmx.emotes.fabric.gui.screen.AbstractControlledModScreen;
 import com.kosmx.emotes.fabric.gui.screen.IDrawableImpl;
+import com.kosmx.emotes.fabric.gui.screen.IWidgetLogicImpl;
 import com.kosmx.emotes.fabric.gui.widgets.AbstractEmoteListWidget;
 import com.kosmx.emotes.main.EmoteHolder;
 import com.kosmx.emotes.main.screen.AbstractScreenLogic;
@@ -72,6 +73,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
                 return new EmoteListEntryImpl(client, emoteHolder);
             }
 
+
             public class EmoteListEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntryImpl>{
 
                 public EmoteListEntryImpl(MinecraftClient client, EmoteHolder emote) {
@@ -85,7 +87,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
             }
         }
 
-        public class FastMenuImpl extends EmoteMenu<MatrixStack, Screen, Element>.FastChooseWidget implements IDrawableImpl, Element {
+        public class FastMenuImpl extends EmoteMenu<MatrixStack, Screen, Element>.FastChooseWidget implements IDrawableImpl, IWidgetLogicImpl {
 
             public FastMenuImpl(int x, int y, int size) {
                 super(x, y, size);

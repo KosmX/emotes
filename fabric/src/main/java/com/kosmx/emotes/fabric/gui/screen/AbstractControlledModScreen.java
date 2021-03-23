@@ -10,7 +10,6 @@ import com.kosmx.emotes.fabric.executor.types.TextImpl;
 import com.kosmx.emotes.main.screen.AbstractScreenLogic;
 import com.kosmx.emotes.main.screen.IScreenLogicHelper;
 import com.kosmx.emotes.main.screen.IScreenSlave;
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -121,39 +120,39 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     @Override
     public void init() {
         super.init();
-        master.initScreen();
+        master.emotes_initScreen();
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return master.onKeyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+        return master.emotes_onKeyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return master.onMouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+        return master.emotes_onMouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public void removed() {
-        master.onRemove();
+        master.emotes_onRemove();
         super.removed();
     }
 
     @Override
     public void tick() {
         super.tick();
-        master.tickScreen();
+        master.emotes_tickScreen();
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        master.renderScreen(matrices, mouseX, mouseY, delta);
+        master.emotes_renderScreen(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override
     public boolean isPauseScreen() {
-        return master.isThisPauseScreen();
+        return master.emotes_isThisPauseScreen();
     }
 }

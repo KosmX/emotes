@@ -58,10 +58,12 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     private void writePartInfo(ByteBuffer buf, EmoteData.StateCollection.State part){
         List<EmoteData.KeyFrame> list = part.keyFrames;
         buf.putInt(part.isEnabled ? list.size() : -1);
-        for(EmoteData.KeyFrame move : list){
-            buf.putInt(move.tick);
-            buf.putFloat(move.value);
-            buf.put(move.ease.getId());
+        if(part.isEnabled) {
+            for (EmoteData.KeyFrame move : list) {
+                buf.putInt(move.tick);
+                buf.putFloat(move.value);
+                buf.put(move.ease.getId());
+            }
         }
     }
 

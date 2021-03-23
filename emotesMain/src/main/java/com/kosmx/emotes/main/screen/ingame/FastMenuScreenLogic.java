@@ -24,7 +24,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
 
 
     @Override
-    public void initScreen(){
+    public void emotes_initScreen(){
         int x = (int) Math.min(screen.getWidth() * 0.8, screen.getHeight() * 0.8);
         this.widget = newFastMenuWidget((screen.getWidth() - x) / 2, (screen.getHeight() - x) / 2, x);
         screen.addToChildren(widget);
@@ -37,7 +37,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
 
 
     @Override
-    public void renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
+    public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         screen.renderBackground(matrices);
         widget.render(matrices, mouseX, mouseY, delta);
         int remoteVer = ((ClientConfig)EmoteInstance.config).modAvailableAtServer ? ((ClientConfig)EmoteInstance.config).correctServerVersion ? 2 : 1 : 0;
@@ -47,7 +47,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
     }
 
     @Override
-    public boolean isThisPauseScreen() {
+    public boolean emotes_isThisPauseScreen() {
         return false;
     }
 
@@ -70,7 +70,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
         }
 
         @Override
-        protected boolean onClick(FastChooseElement element, int button){
+        protected boolean EmotesOnClick(FastChooseElement element, int button){
             if(element.getEmote() != null){
                 boolean bl = element.getEmote().playEmote(EmoteInstance.instance.getClientMethods().getMainPlayer());
                 screen.openScreen(null);
