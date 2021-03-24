@@ -38,7 +38,6 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
      */
     @Nullable
     public EmotePlayer(EmoteData emote, Consumer<Layer.Note> noteConsumer, int t) {
-        this.currentTick = t;
         this.data = emote;
         if (emote.song != null) {
             this.song = new SoundPlayer(emote.song, noteConsumer, 0);
@@ -53,6 +52,10 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         leftArm = new BodyPart(data.leftArm);
         rightLeg = new BodyPart(data.rightLeg);
         leftLeg = new BodyPart(data.leftLeg);
+        this.currentTick = t;
+        if(isInfinite()){
+            currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
+        }
     }
 
     @Override
