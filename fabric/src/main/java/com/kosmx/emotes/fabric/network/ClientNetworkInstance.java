@@ -26,7 +26,7 @@ public class ClientNetworkInstance implements IClientNetwork {
     void receiveMessage(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
         if(buf.isDirect()){ //If the received ByteBuf is direct i have to copy that onto the heap
             byte[] bytes = new byte[buf.readableBytes()];
-            buf.getBytes(buf.readableBytes(), bytes);
+            buf.getBytes(buf.readerIndex(), bytes);
             receiveMessage(bytes);
         }
         else {

@@ -34,7 +34,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<PlayerEntity> {
         try{
             if(buf.isDirect()){
                 byte[] bytes = new byte[buf.readableBytes()];
-                buf.getBytes(buf.readableBytes(), bytes);
+                buf.getBytes(buf.readerIndex(), bytes);
                 receiveMessage(bytes, player, (INetworkInstance) handler);
             }
             else {
