@@ -3,6 +3,7 @@
   "package": "com.kosmx.emotes.fabric.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ServerPlayNetworkInstance"
   ],
   "client": [
     "EmotePlayerMixin",
