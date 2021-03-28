@@ -4,7 +4,6 @@ import com.kosmx.emotes.common.network.EmotePacket;
 import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.executor.INetworkInstance;
 import com.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
-import com.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.util.logging.Level;
 /**
  * I don't use final methods to stay compatible with Java 1.8
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
 public interface IClientNetwork extends INetworkInstance {
 
     /**
@@ -57,9 +57,11 @@ public interface IClientNetwork extends INetworkInstance {
         this.sendMessage(builder.build().write(), target);    //everything is happening on the heap, there won't be any memory leak
     }
 
+    @Deprecated
     @Override
     default void sendMessage(byte[] bytes, @Nullable IEmotePlayerEntity target){}
 
+    @Deprecated
     @Override
     default void sendMessage(ByteBuffer byteBuffer, @Nullable IEmotePlayerEntity target){
         sendMessage(byteBuffer.array(), target);

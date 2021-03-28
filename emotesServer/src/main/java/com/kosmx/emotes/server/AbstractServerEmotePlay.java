@@ -40,7 +40,7 @@ public abstract class AbstractServerEmotePlay<P> {
     protected void streamEmote(NetData data, P player, INetworkInstance instance) throws IOException{
         if(!data.valid && doValidate()){
             EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.hashCode());
-            instance.sendMessage(stopMSG.build().write(), null);
+            instance.sendMessage(stopMSG, null);
         }
         else {
             UUID target = data.player;

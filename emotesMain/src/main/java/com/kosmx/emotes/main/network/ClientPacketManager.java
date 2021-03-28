@@ -50,7 +50,7 @@ public class ClientPacketManager {
         if(defaultNetwork.isActive()){
             if(!defaultNetwork.sendPlayerID())packetBuilder.removePlayerID();
             try {
-                defaultNetwork.sendMessage(packetBuilder.build().write(), target);
+                defaultNetwork.sendMessage(packetBuilder, target);
             }
             catch (IOException exception){
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);

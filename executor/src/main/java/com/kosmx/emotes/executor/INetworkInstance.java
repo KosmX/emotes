@@ -16,6 +16,7 @@ public interface INetworkInstance {
     void setVersions(HashMap<Byte, Byte> map);
     boolean sendPlayerID();
     void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException;
+    @Deprecated
     void sendMessage(byte[] bytes, @Nullable IEmotePlayerEntity target);
     void sendConfigCallback();
 
@@ -26,6 +27,7 @@ public interface INetworkInstance {
     boolean isActive();
 
 
+    @Deprecated
     default void sendMessage(ByteBuffer byteBuffer, @Nullable IEmotePlayerEntity target){
         sendMessage(byteBuffer.array(), target);
     }
