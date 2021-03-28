@@ -87,7 +87,7 @@ public class ClientInit {
         }
 
         if(((ClientConfig)EmoteInstance.config).enableQuark){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Quark importer is active", true);
+            EmoteInstance.instance.getLogger().log(Level.INFO, "Quark importer is active", true);
             initQuarkEmotes(externalEmotes);
         }
     }

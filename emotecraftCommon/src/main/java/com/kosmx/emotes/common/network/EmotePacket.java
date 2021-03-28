@@ -6,6 +6,8 @@ import com.kosmx.emotes.common.network.objects.*;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
@@ -106,30 +108,36 @@ public class EmotePacket {
     @Nullable
     public NetData read(ByteBuffer byteBuffer) throws IOException {
 
-        this.version = byteBuffer.getInt();
-        if(this.version > CommonData.networkingVersion)throw new IOException("Can't read newer version");
-        data.purpose = PacketTask.getTaskFromID(byteBuffer.get());
+        try {
+            this.version = byteBuffer.getInt();
+            if (this.version > CommonData.networkingVersion) throw new IOException("Can't read newer version");
+            data.purpose = PacketTask.getTaskFromID(byteBuffer.get());
 
-        byte count = byteBuffer.get();
+            byte count = byteBuffer.get();
 
-        for(int i = 0; i < count; i++){
-            byte id = byteBuffer.get();
-            byte sub_version = byteBuffer.get();
-            int size = byteBuffer.getInt();
-            int currentPos = byteBuffer.position();
-            if(subPackets.containsKey(id)){
-                subPackets.get(id).read(byteBuffer, this.data, sub_version);
-                if(byteBuffer.position() != size + currentPos){
-                    byteBuffer.position(currentPos + size);
+            for (int i = 0; i < count; i++) {
+                byte id = byteBuffer.get();
+                byte sub_version = byteBuffer.get();
+                int size = byteBuffer.getInt();
+                int currentPos = byteBuffer.position();
+                if (subPackets.containsKey(id)) {
+                    subPackets.get(id).read(byteBuffer, this.data, sub_version);
+                    if (byteBuffer.position() != size + currentPos) {
+                        byteBuffer.position(currentPos + size);
+                    }
+                }
+                else {
+                    byteBuffer.position(currentPos + size);//Skip unknown sub-packets...
                 }
             }
-            else {
-                byteBuffer.position(currentPos + size);//Skip unknown sub-packets...
-            }
-        }
 
-        if(data.isValid()) return this.data;
-        else return null;
+            if (data.isValid()) return this.data;
+            else return null;
+        }
+        catch (RuntimeException e){
+            e.printStackTrace();
+            throw new IOException(e.getClass().getName() + " has occurred: " + e.getMessage());
+        }
     }
 
     /**
