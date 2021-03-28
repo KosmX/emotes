@@ -56,5 +56,13 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
         this.voidEmote();
     }
 
+    @Override
+    default void stopEmote(int emoteID){
+        if(getEmote() != null && getEmote().getData().hashCode() == emoteID){
+            this.getEmote().stop();
+        }
+        this.voidEmote();
+    }
+
     void voidEmote();
 }
