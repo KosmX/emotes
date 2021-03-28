@@ -69,7 +69,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<PlayerEntity> {
         PlayerLookup.tracking(player).forEach(serverPlayerEntity -> {
             if (serverPlayerEntity.getUuid().equals(target)) {
                 try {
-                    ServerPlayNetworking.send(serverPlayerEntity, channelID, new PacketByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write())));
+                    ServerPlayNetworking.send(serverPlayerEntity, channelID, new PacketByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
                 }
                 catch (IOException e){
                     e.printStackTrace();

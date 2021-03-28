@@ -136,7 +136,7 @@ public class EmotePacket {
         }
         catch (RuntimeException e){
             e.printStackTrace();
-            throw new IOException(e.getClass().getName() + " has occurred: " + e.getMessage());
+            throw new IOException(e.getClass().getTypeName() + " has occurred: " + e.getMessage());
         }
     }
 
