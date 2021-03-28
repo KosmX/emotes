@@ -6,6 +6,9 @@ import com.kosmx.emotes.main.network.IClientNetwork;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +20,18 @@ public class ClientNetworkInstance implements IClientNetwork {
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
     public void init(){
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, (client1, handler1, buf, responseSender) -> receiveMessage(buf.array())));
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
+    }
+
+    void receiveMessage(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
+        if(buf.isDirect()){ //If the received ByteBuf is direct i have to copy that onto the heap
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readableBytes(), bytes);
+            receiveMessage(bytes);
+        }
+        else {
+            receiveMessage(buf.array()); //if heap, I can just use it's byte-array
+        }
     }
 
     private boolean disableNBS = false;

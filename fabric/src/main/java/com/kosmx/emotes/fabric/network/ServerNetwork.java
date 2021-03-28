@@ -6,11 +6,15 @@ import com.kosmx.emotes.common.network.objects.NetData;
 import com.kosmx.emotes.executor.INetworkInstance;
 import com.kosmx.emotes.server.AbstractServerEmotePlay;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
@@ -23,13 +27,22 @@ public class ServerNetwork extends AbstractServerEmotePlay<PlayerEntity> {
     public static ServerNetwork instance = new ServerNetwork();
 
     public void init(){
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ServerPlayNetworking.registerReceiver(handler, channelID, (server1, player, handler1, buf, responseSender) -> {
-            try {
-                receiveMessage(buf.array(), player, (INetworkInstance) handler1);
-            } catch (IOException e) {
-                e.printStackTrace();
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ServerPlayNetworking.registerReceiver(handler, channelID, this::receiveMessage));
+    }
+
+    void receiveMessage(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
+        try{
+            if(buf.isDirect()){
+                byte[] bytes = new byte[buf.readableBytes()];
+                buf.getBytes(buf.readableBytes(), bytes);
+                receiveMessage(bytes, player, (INetworkInstance) handler);
             }
-        }));
+            else {
+                receiveMessage(buf.array(), player, (INetworkInstance) handler);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
