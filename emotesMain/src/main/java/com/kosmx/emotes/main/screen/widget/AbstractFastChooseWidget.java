@@ -27,7 +27,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
-    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark ? EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_dark.png") : EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_light.png");
+    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_dark.png") : EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_light.png");
 
     private AbstractFastChooseWidget(){
         elements.add( new FastChooseElement(0, 22.5f));
@@ -52,7 +52,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
     }
 
     public void drawCenteredText(MATRIX matrices, Text stringRenderable, float x, float y){
-        int c = ((ClientConfig)EmoteInstance.config).dark ? 255 : 0; //:D
+        int c = ((ClientConfig)EmoteInstance.config).dark.get() ? 255 : 0; //:D
         textDraw(matrices, stringRenderable, x - (float) textRendererGetWidth(stringRenderable) / 2, y - 2, MathHelper.colorHelper(c, c, c, 1));
     }
 
@@ -169,7 +169,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
 
         public void render(MATRIX matrices){
             IIdentifier identifier = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id].getIconIdentifier() : null;
-            if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons){
+            if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons.get()){
                 int s = size / 10;
                 int iconX = (int) (((float) (x + size / 2)) + size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (y + size / 2)) + size * 0.4 * Math.cos(this.angle * 0.0174533)) - s;

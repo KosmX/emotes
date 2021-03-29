@@ -10,16 +10,18 @@ import java.util.List;
 
 public class ClientConfig extends SerializableConfig {
 
-    public boolean dark = false;
-    public boolean enableQuark = false;
-    public boolean showIcons = true;
-    public float stopThreshold = 0.04f;
-    public float yRatio = 0.75f;
-    public boolean loadBuiltinEmotes = true;
-    public boolean enablePlayerSafety = true;
-    public boolean enablePerspective = true;
-    public boolean perspectiveReduxIntegration = true;
+    public final BooleanConfigEntry dark = new BooleanConfigEntry("dark", false, false, basics);
+    public final ConfigEntry<Boolean> enablePerspective = new BooleanConfigEntry("perspective", true, false, basics);
+    public final ConfigEntry<Boolean> loadBuiltinEmotes = new BooleanConfigEntry("loadbuiltin", "loadBuiltin", true, true, basics);
+    public final ConfigEntry<Boolean> showIcons = new BooleanConfigEntry("showicon", "showIcon", true, true, basics);
+    public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);
+    //expert
+    public final ConfigEntry<Boolean> enablePlayerSafety = new BooleanConfigEntry("playersafety", true, true, expert);
+    public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry("stophreshold", "stopThreshold", 0.04f, true, expert);
+    public final ConfigEntry<Float> yRatio = new FloatConfigEntry("yratio", "yRatio", 0.75f, true, expert);
 
+
+    //------------------------ Advanced config stuff ------------------------//
     public List<EmoteHolder> emotesWithKey = new ArrayList<>();
     public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
 

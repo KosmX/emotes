@@ -67,8 +67,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
     include "io.github.prospector:modmenu:${project.modmenu_version}"
-    modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
-    include "me.shedaniel.cloth:config-2:${project.cloth_version}"
+    //modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
+    //include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
     modImplementation "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
     include "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"

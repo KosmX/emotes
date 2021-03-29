@@ -43,7 +43,7 @@ public class QuarkReader {
             }
         }catch(QuarkParsingError e){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while importing quark at line " + i + ": " + e.message);
-            if(EmoteInstance.config.showDebug) e.printStackTrace();
+            if(EmoteInstance.config.showDebug.get()) e.printStackTrace();
         }
         try{
             if(this.animation == null){
@@ -54,7 +54,7 @@ public class QuarkReader {
             this.emote.endTick = length;
         }catch(QuarkParsingError e){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while parsing quark: " + e.getMessage());
-            if(EmoteInstance.config.showDebug) e.printStackTrace();
+            if(EmoteInstance.config.showDebug.get()) e.printStackTrace();
         }
         return this.isSuccess;
     }

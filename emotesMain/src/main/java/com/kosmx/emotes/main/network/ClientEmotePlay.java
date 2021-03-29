@@ -57,7 +57,7 @@ public class ClientEmotePlay {
 
     static void executeMessage(NetData data, IClientNetwork networkInstance) throws NullPointerException {
         if (data.purpose == null) {
-            if (EmoteInstance.config.showDebug) {
+            if (EmoteInstance.config.showDebug.get()) {
                 EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible without a purpose");
             }
         }
@@ -80,7 +80,7 @@ public class ClientEmotePlay {
                 networkInstance.setVersions(Objects.requireNonNull(data.versions));
                 break;
             case UNKNOWN:
-                if (EmoteInstance.config.showDebug) {
+                if (EmoteInstance.config.showDebug.get()) {
                     EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible unknown purpose");
                 }
                 break;

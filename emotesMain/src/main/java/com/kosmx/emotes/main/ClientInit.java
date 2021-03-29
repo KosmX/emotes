@@ -45,7 +45,7 @@ public class ClientInit {
     }
 
     private static void serializeInternalEmotes(String name){
-        if(!((ClientConfig)EmoteInstance.config).loadBuiltinEmotes){
+        if(!((ClientConfig)EmoteInstance.config).loadBuiltinEmotes.get()){
             return;
         }
         InputStream stream = ClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json");
@@ -75,18 +75,18 @@ public class ClientInit {
                     }
                     catch (IOException exception){
                         EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while reading song: " + exception.getMessage(), true);
-                        if(EmoteInstance.config.showDebug) exception.printStackTrace();
+                        if(EmoteInstance.config.showDebug.get()) exception.printStackTrace();
                     }
                     bis.close(); //I almost forgot this
                 }
             }catch(Exception e){
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while importing external emote: " + file.getName() + ".", true);
                 EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage());
-                if(EmoteInstance.config.showDebug)e.printStackTrace();
+                if(EmoteInstance.config.showDebug.get())e.printStackTrace();
             }
         }
 
-        if(((ClientConfig)EmoteInstance.config).enableQuark){
+        if(((ClientConfig)EmoteInstance.config).enableQuark.get()){
             EmoteInstance.instance.getLogger().log(Level.INFO, "Quark importer is active", true);
             initQuarkEmotes(externalEmotes);
         }
@@ -105,7 +105,7 @@ public class ClientInit {
                     if(icon.isFile()) emote.bindIcon(icon);
                 }
             }catch(Throwable e){ //try to catch everything
-                if(EmoteInstance.config.showDebug){
+                if(EmoteInstance.config.showDebug.get()){
                     EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage());
                     e.printStackTrace();
                 }

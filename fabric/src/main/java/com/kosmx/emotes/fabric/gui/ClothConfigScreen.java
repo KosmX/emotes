@@ -1,3 +1,4 @@
+/*
 package com.kosmx.emotes.fabric.gui;
 
 import com.kosmx.emotes.executor.EmoteInstance;
@@ -52,3 +53,5 @@ public class ClothConfigScreen {
         return builder.build();
     }
 }
+
+ */

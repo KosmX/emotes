@@ -38,7 +38,7 @@ public interface IClientNetwork extends INetworkInstance {
         }
         catch (Exception e){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while writing packet: " + e.getMessage(), true);
-            if(EmoteInstance.config.showDebug){
+            if(EmoteInstance.config.showDebug.get()){
                 e.printStackTrace();
             }
         }
