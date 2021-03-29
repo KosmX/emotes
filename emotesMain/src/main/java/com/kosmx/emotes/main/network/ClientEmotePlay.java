@@ -113,7 +113,7 @@ public class ClientEmotePlay {
             EmoteData emoteData = entry.emoteData;
             int tick = entry.beginTick - entry.receivedTick + EmoteInstance.instance.getClientMethods().getCurrentTick();
             queue.remove(uuid);
-            if (emoteData.isPlayingAt(tick)) return null;
+            if (!emoteData.isPlayingAt(tick)) return null;
             return new Pair<>(emoteData, tick);
         }
         return null;
