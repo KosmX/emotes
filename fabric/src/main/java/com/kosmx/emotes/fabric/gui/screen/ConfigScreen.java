@@ -50,8 +50,8 @@ public class ConfigScreen extends GameOptionsScreen {
 
     private void addConfigEntry(SerializableConfig.ConfigEntry<?> entry, ButtonListWidget options){
         if(entry instanceof SerializableConfig.BooleanConfigEntry){
-            options.addSingleOptionEntry(new BooleanOption(entry.getName(),
-                                                           new TranslatableText("emotecraft.otherconfig." + entry.getName()),
+            options.addSingleOptionEntry(new BooleanOption(new TranslatableText("emotecraft.otherconfig." + entry.getName()).getString(),
+                                                           entry.hasTooltip ? new TranslatableText("emotecraft.otherconfig." + entry.getName() + ".tooltip") : null,
                                                            gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
                                                            (gameOptions, aBoolean) -> ((SerializableConfig.BooleanConfigEntry)entry).set(aBoolean)
             ));
