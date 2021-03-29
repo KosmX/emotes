@@ -2,7 +2,7 @@ name: Crowdin Action
 
 on:
   push:
-    branches: [ 1.4 ]
+    branches: [ development ]
 
 jobs:
   synchronize-with-crowdin:
@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: crowdin action
-      uses: crowdin/github-action@1.0.17
+      uses: crowdin/github-action@1.1.0
       with:
         upload_translations: true
         download_translations: true
