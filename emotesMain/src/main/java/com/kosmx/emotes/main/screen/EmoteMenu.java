@@ -230,14 +230,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     private void saveConfig(){
         EmoteHolder.bindKeys((ClientConfig) EmoteInstance.config);
-        try{
-            BufferedWriter writer = Files.newBufferedWriter(EmoteInstance.instance.getConfigPath());
-            Serializer.serializer.toJson(EmoteInstance.config, writer);
-            writer.close();
-            //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+        Serializer.saveConfig();
     }
 
     private void updateKeyText(){
