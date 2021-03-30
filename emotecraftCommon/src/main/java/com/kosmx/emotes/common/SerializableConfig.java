@@ -31,6 +31,14 @@ public class SerializableConfig {
         expert.forEach(consumer);
     }
 
+    public void iterateGeneral(Consumer<ConfigEntry<?>> consumer){
+        basics.forEach(consumer);
+    }
+
+    public void iterateExpert(Consumer<ConfigEntry<?>> consumer){
+        expert.forEach(consumer);
+    }
+
     public static abstract class ConfigEntry<T>{
         final String name, oldConfig; //oldconfig for the old config name
         T value;
