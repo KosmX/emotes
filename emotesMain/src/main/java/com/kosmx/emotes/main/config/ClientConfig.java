@@ -17,8 +17,34 @@ public class ClientConfig extends SerializableConfig {
     public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);
     //expert
     public final ConfigEntry<Boolean> enablePlayerSafety = new BooleanConfigEntry("playersafety", true, true, expert);
-    public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry("stophreshold", "stopThreshold", 0.04f, true, expert);
-    public final ConfigEntry<Float> yRatio = new FloatConfigEntry("yratio", "yRatio", 0.75f, true, expert);
+    public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry<Float>("stopthreshold", "stopThreshold", 0.04f, true, expert, "options.generic_value", -3f, 8f, 0f){
+        @Override
+        public double getConfigVal() {
+            return Math.log(this.get());
+        }
+
+        @Override
+        public void setConfigVal(double newVal) {
+            this.set((float) Math.exp(newVal));
+        }
+
+    };
+    public final ConfigEntry<Float> yRatio = new FloatConfigEntry<Integer>("yratio", "yRatio", 0.75f, true, expert, "options.percent_value", 0, 100, 1){
+        @Override
+        public double getConfigVal() {
+            return this.get()*100f;
+        }
+
+        @Override
+        public void setConfigVal(double newVal) {
+            this.set((float) (newVal/100f));
+        }
+
+        @Override
+        public Integer getTextVal() {
+            return (int)this.getConfigVal();
+        }
+    };
 
 
     //------------------------ Advanced config stuff ------------------------//

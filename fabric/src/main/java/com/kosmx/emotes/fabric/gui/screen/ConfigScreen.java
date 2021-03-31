@@ -2,6 +2,7 @@ package com.kosmx.emotes.fabric.gui.screen;
 
 import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.executor.EmoteInstance;
+import com.kosmx.emotes.main.config.ClientConfig;
 import com.kosmx.emotes.main.config.Serializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.BooleanOption;
+import net.minecraft.client.options.DoubleOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,6 +22,9 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 
 /**
@@ -43,9 +48,12 @@ public class ConfigScreen extends GameOptionsScreen {
         //I just copy these values from VideoOptionsScreen...
         options.addSingleOptionEntry(new DummyEntry("emotecraft.otherconfig.category.general"));
 
-        EmoteInstance.config.iterate(entry -> addConfigEntry(entry, options));
+        EmoteInstance.config.iterateGeneral(entry -> addConfigEntry(entry, options));
 
         options.addSingleOptionEntry(new DummyEntry("emotecraft.otherconfig.category.expert"));
+        options.addSingleOptionEntry(new DummyEntry(""));
+
+        EmoteInstance.config.iterateExpert(entry -> addConfigEntry(entry, options));
 
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, (button) -> {
             Serializer.saveConfig();
@@ -57,10 +65,23 @@ public class ConfigScreen extends GameOptionsScreen {
 
     private void addConfigEntry(SerializableConfig.ConfigEntry<?> entry, ButtonListWidget options){
         if(entry instanceof SerializableConfig.BooleanConfigEntry){
-            options.addSingleOptionEntry(new BooleanOption(new TranslatableText("emotecraft.otherconfig." + entry.getName()).getString(),
+            options.addSingleOptionEntry(new BooleanOption("emotecraft.otherconfig." + entry.getName(),
                                                            entry.hasTooltip ? new TranslatableText("emotecraft.otherconfig." + entry.getName() + ".tooltip") : null,
                                                            gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
                                                            (gameOptions, aBoolean) -> ((SerializableConfig.BooleanConfigEntry)entry).set(aBoolean)
+            ));
+        }
+        else if(entry instanceof SerializableConfig.FloatConfigEntry){
+            SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
+            ClientConfig config = (ClientConfig) EmoteInstance.config;
+            options.addSingleOptionEntry(new DoubleOption(
+                    EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
+                    gameOptions -> floatEntry.getConfigVal(),
+                    (gameOptions, aDouble) -> floatEntry.setConfigVal(aDouble),
+                    (gameOptions, doubleOption) -> {
+                        if(floatEntry.hasTooltip) doubleOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(new TranslatableText("emotecraft.otherconfig." + entry.getName() + ".tooltip"), 200));
+                        return new TranslatableText(floatEntry.getFormatKey(), new TranslatableText("emotecraft.otherconfig." + floatEntry.getName()), floatEntry.getTextVal());
+                    }
             ));
         }
     }

@@ -85,7 +85,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
             node.addProperty(entry.getName(), ((SerializableConfig.BooleanConfigEntry) entry).get());
         }
         else if(entry instanceof SerializableConfig.FloatConfigEntry){
-            node.addProperty(entry.getName(), ((SerializableConfig.FloatConfigEntry) entry).get());
+            node.addProperty(entry.getName(), (float)((SerializableConfig.FloatConfigEntry) entry).get());
         }
     }
 
