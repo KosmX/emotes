@@ -43,5 +43,7 @@
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Author: ",
   "emotecraft.config": "Config emotes",
-  "emotecraft.blockedEmote": "You are not allowed to play this emote"
+  "emotecraft.blockedEmote": "You are not allowed to play this emote",
+  "emotecraft.resetConfig.title": "Reset every Emotecraft config",
+  "emotecraft.resetConfig.message": "Do you really want to reset the config?"
 }

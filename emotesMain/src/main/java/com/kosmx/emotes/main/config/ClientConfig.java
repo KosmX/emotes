@@ -7,6 +7,7 @@ import com.kosmx.emotes.main.EmoteHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ClientConfig extends SerializableConfig {
 
@@ -17,7 +18,7 @@ public class ClientConfig extends SerializableConfig {
     public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);
     //expert
     public final ConfigEntry<Boolean> enablePlayerSafety = new BooleanConfigEntry("playersafety", true, true, expert);
-    public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry<Float>("stopthreshold", "stopThreshold", 0.04f, true, expert, "options.generic_value", -3f, 8f, 0f){
+    public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry<Float>("stopthreshold", "stopThreshold", 0.04f, true, expert, "options.generic_value", -3.912f, 8f, 0f){
         @Override
         public double getConfigVal() {
             return Math.log(this.get());
@@ -60,7 +61,7 @@ public class ClientConfig extends SerializableConfig {
             EmoteHolder emote = EmoteHolder.getEmoteFromHash(fastMenuHash[i]);
             this.fastMenuEmotes[i] = emote;
             if(emote == null){
-                //Main.log(Level.ERROR, "Can't find emote from hash: " + fastMenuHash[i]);
+                EmoteInstance.instance.getLogger().log(Level.INFO, "Can't find emote from hash: " + fastMenuHash[i]);
             }
         }
 
@@ -68,7 +69,8 @@ public class ClientConfig extends SerializableConfig {
             EmoteHolder emote = EmoteHolder.getEmoteFromHash(pair.getLeft());
             if(emote != null){
                 emote.keyBinding = EmoteInstance.instance.getDefaults().getKeyFromString(pair.getRight());
-            }//Main.log(Level.ERROR, "Can't find emote from hash: " + pair.getLeft());
+            }
+            EmoteInstance.instance.getLogger().log(Level.INFO, "Can't find emote from hash: " + pair.getLeft());
 
         }
 

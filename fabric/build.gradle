@@ -26,9 +26,11 @@ plugins {
 //and well... serialize it
 repositories{
     mavenLocal()
-    jcenter()
     maven{
         url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
+    }
+    maven{
+        url "https://maven.terraformersmc.com/releases"
     }
 }
 
@@ -65,8 +67,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
-    include "io.github.prospector:modmenu:${project.modmenu_version}"
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    include "com.terraformersmc:modmenu:${project.modmenu_version}"
     //modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
     //include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
@@ -75,10 +77,10 @@ dependencies {
     //
     //other dependency(ies)
 
-    modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"
+    //modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"
 
 
-    compileOnly files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
+    //compileOnly files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
 
 
     //Spigot stuff

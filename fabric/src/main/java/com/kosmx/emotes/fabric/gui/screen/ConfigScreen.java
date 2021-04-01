@@ -2,19 +2,19 @@ package com.kosmx.emotes.fabric.gui.screen;
 
 import com.kosmx.emotes.common.SerializableConfig;
 import com.kosmx.emotes.executor.EmoteInstance;
-import com.kosmx.emotes.main.config.ClientConfig;
+import com.kosmx.emotes.fabric.gui.EmoteMenuImpl;
 import com.kosmx.emotes.main.config.Serializer;
+import com.kosmx.emotes.main.screen.EmoteMenu;
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.options.BooleanOption;
-import net.minecraft.client.options.DoubleOption;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.Option;
+import net.minecraft.client.options.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -22,9 +22,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 
 /**
@@ -50,12 +47,35 @@ public class ConfigScreen extends GameOptionsScreen {
 
         EmoteInstance.config.iterateGeneral(entry -> addConfigEntry(entry, options));
 
+        options.addSingleOptionEntry(new BooleanOption(
+                "emotecraft.otherconfig.exportGecko",
+                new TranslatableText("emotecraft.otherconfig.exportGecko.tooltip"),
+                gameOptions -> {
+                    if (parent instanceof EmoteMenuImpl) {
+                        return ((EmoteMenu) ((EmoteMenuImpl) parent).master).exportGeckoEmotes;
+                    }
+                    return false;
+                },
+                (gameOptions, aBoolean) -> {
+                    if (parent instanceof EmoteMenuImpl) {
+                        ((EmoteMenu) ((EmoteMenuImpl) parent).master).exportGeckoEmotes = aBoolean;
+                    }
+                }
+        ));
+
         options.addSingleOptionEntry(new DummyEntry("emotecraft.otherconfig.category.expert"));
         options.addSingleOptionEntry(new DummyEntry(""));
 
         EmoteInstance.config.iterateExpert(entry -> addConfigEntry(entry, options));
 
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, (button) -> {
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableText("controls.resetAll"), (button) -> {
+            this.client.openScreen(new ConfirmScreen(
+                    this::resetAll,
+                    new TranslatableText("emotecraft.resetConfig.title"),
+                    new TranslatableText("emotecraft.resetConfig.message")));
+        }));
+
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 27, 150, 20, ScreenTexts.DONE, (button) -> {
             Serializer.saveConfig();
             this.client.openScreen(this.parent);
         }));
@@ -73,7 +93,6 @@ public class ConfigScreen extends GameOptionsScreen {
         }
         else if(entry instanceof SerializableConfig.FloatConfigEntry){
             SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
-            ClientConfig config = (ClientConfig) EmoteInstance.config;
             options.addSingleOptionEntry(new DoubleOption(
                     EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
                     gameOptions -> floatEntry.getConfigVal(),
@@ -86,6 +105,13 @@ public class ConfigScreen extends GameOptionsScreen {
         }
     }
 
+    private void resetAll(boolean bl){
+        if(bl) {
+            EmoteInstance.config.iterate(SerializableConfig.ConfigEntry::resetToDefault);
+            this.init(); //reload screen
+        }
+        this.client.openScreen(this);
+    }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);

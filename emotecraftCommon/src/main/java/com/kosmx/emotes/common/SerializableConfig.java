@@ -42,12 +42,14 @@ public class SerializableConfig {
     public static abstract class ConfigEntry<T>{
         final String name, oldConfig; //oldconfig for the old config name
         T value;
+        final T defaultValue;
         final public boolean hasTooltip;
 
         public ConfigEntry(String name, String oldconfig, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection){
             this.name = name;
             this.oldConfig = oldconfig;
             this.hasTooltip = hasTooltip;
+            defaultValue = defVal;
             value = defVal;
             collection.add(this);
         }
@@ -70,6 +72,9 @@ public class SerializableConfig {
             return oldConfig;
         }
 
+        public void resetToDefault(){
+            this.value = this.defaultValue;
+        }
 
     }
 
