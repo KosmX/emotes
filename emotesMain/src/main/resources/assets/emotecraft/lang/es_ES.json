@@ -6,6 +6,8 @@
   "emotecraft.options.fastmenu3": "Clic derecho para borrar",
   "emotecraft.sure": "Sobrescripción de atajo",
   "emotecraft.sure2": "Un otro gesto tiene este atajo.\n¿Desea restablecer eso y establecer la tecla a esto?",
+  "emotecraft.otherconfig.category.general": "Opciones básicas",
+  "emotecraft.otherconfig.category.expert": "Opciones para expertos",
   "emotecraft.otherconfig": "Otras opciones",
   "emotecraft.otherconfig.debug": "Depuración",
   "emotecraft.otherconfig.validate": "Validar gesto",
