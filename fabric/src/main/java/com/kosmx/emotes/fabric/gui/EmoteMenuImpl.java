@@ -2,6 +2,7 @@ package com.kosmx.emotes.fabric.gui;
 
 import com.kosmx.emotes.fabric.executor.EmotesMain;
 import com.kosmx.emotes.fabric.gui.screen.AbstractControlledModScreen;
+import com.kosmx.emotes.fabric.gui.screen.ConfigScreen;
 import com.kosmx.emotes.fabric.gui.screen.IDrawableImpl;
 import com.kosmx.emotes.fabric.gui.screen.IWidgetLogicImpl;
 import com.kosmx.emotes.fabric.gui.widgets.AbstractEmoteListWidget;
@@ -52,7 +53,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
 
         @Override
         public void openClothConfigScreen() {
-            MinecraftClient.getInstance().openScreen(ClothConfigScreen.getConfigScreen(EmoteMenuImpl.this));
+            MinecraftClient.getInstance().openScreen(new ConfigScreen(EmoteMenuImpl.this));
         }
 
         @Override

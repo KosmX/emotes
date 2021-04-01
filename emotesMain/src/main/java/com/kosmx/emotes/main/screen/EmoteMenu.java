@@ -57,10 +57,10 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     @Override
     public void emotes_initScreen(){
-        if(warn && ((ClientConfig)EmoteInstance.config).enableQuark){
+        if(warn && ((ClientConfig)EmoteInstance.config).enableQuark.get()){
             warn = false;
             IConfirmScreen csr = createConfigScreen((bool)->{
-                ((ClientConfig)EmoteInstance.config).enableQuark = bool;
+                ((ClientConfig)EmoteInstance.config).enableQuark.set(bool);
                 screen.openThisScreen();
             }, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark"), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark2"));
             EmoteInstance.instance.getClientMethods().openScreen(csr);
@@ -88,7 +88,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
                         writer.close();
                     } catch (IOException e) {
                         EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't create file: " + e.getMessage(), true);
-                        if(EmoteInstance.config.showDebug) e.printStackTrace();
+                        if(EmoteInstance.config.showDebug.get()) e.printStackTrace();
                     }
                 }
             });
@@ -230,14 +230,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     private void saveConfig(){
         EmoteHolder.bindKeys((ClientConfig) EmoteInstance.config);
-        try{
-            BufferedWriter writer = Files.newBufferedWriter(EmoteInstance.instance.getConfigPath());
-            Serializer.serializer.toJson(EmoteInstance.config, writer);
-            writer.close();
-            //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
+        Serializer.saveConfig();
     }
 
     private void updateKeyText(){

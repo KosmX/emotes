@@ -1,8 +1,8 @@
 package com.kosmx.emotes.fabric;
 
 import com.kosmx.emotes.fabric.gui.EmoteMenuImpl;
-import io.github.prospector.modmenu.api.ConfigScreenFactory;
-import io.github.prospector.modmenu.api.ModMenuApi;
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.minecraft.client.gui.screen.Screen;
 
 public class ModMenu implements ModMenuApi {

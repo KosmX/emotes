@@ -8,7 +8,7 @@ public interface Logger {
      }
 
      default void log(Level level, String msg, boolean bl){
-         if(bl && EmoteInstance.config != null && EmoteInstance.config.showDebug){
+         if(bl && EmoteInstance.config != null && EmoteInstance.config.showDebug.get()){
             writeLog(level, msg);
          }
      }

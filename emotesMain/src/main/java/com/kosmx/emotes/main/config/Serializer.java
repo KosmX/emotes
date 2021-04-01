@@ -6,9 +6,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+import com.kosmx.emotes.executor.EmoteInstance;
 import com.kosmx.emotes.main.EmoteHolder;
 import com.kosmx.emotes.common.SerializableConfig;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 public class Serializer {
@@ -29,5 +33,16 @@ public class Serializer {
         builder.registerTypeAdapter(EmoteHolder.class, emoteSerializer);
 
         serializer = builder.create();
+    }
+
+    public static void saveConfig(){
+        try{
+            BufferedWriter writer = Files.newBufferedWriter(EmoteInstance.instance.getConfigPath());
+            Serializer.serializer.toJson(EmoteInstance.config, writer);
+            writer.close();
+            //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }

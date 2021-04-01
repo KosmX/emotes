@@ -40,7 +40,7 @@ public class ClientPacketManager {
                         network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
                     } catch (IOException exception) {
                         EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
-                        if(EmoteInstance.config.showDebug) {
+                        if(EmoteInstance.config.showDebug.get()) {
                             exception.printStackTrace();
                         }
                     }
@@ -54,7 +54,7 @@ public class ClientPacketManager {
             }
             catch (IOException exception){
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
-                if(EmoteInstance.config.showDebug) {
+                if(EmoteInstance.config.showDebug.get()) {
                     exception.printStackTrace();
                 }
             }
@@ -87,7 +87,7 @@ public class ClientPacketManager {
         }
         catch (IOException e){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while receiving packet: " + e.getMessage(), true);
-            if(EmoteInstance.config.showDebug) {
+            if(EmoteInstance.config.showDebug.get()) {
                 e.printStackTrace();
             }
         }
