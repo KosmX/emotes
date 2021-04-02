@@ -7,15 +7,6 @@ import io.github.kosmx.emotes.fabric.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.block.enums.Instrument;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,15 +15,24 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import java.util.UUID;
 
 //Mixin it into the player is way easier than storing it somewhere else...
-@Mixin(AbstractClientPlayerEntity.class)
-public abstract class EmotePlayerMixin extends PlayerEntity implements IPlayerEntity<ModelPart> {
-    @Shadow @Final public ClientWorld clientWorld;
+@Mixin(AbstractClientPlayer.class)
+public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<ModelPart> {
+    @Shadow @Final public ClientLevel clientLevel;
     @Nullable EmotePlayer<ModelPart> emote;
 
-    public EmotePlayerMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+    public EmotePlayerMixin(Level world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
     }
 
@@ -42,24 +42,24 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements IPlayerEn
     }
 
     private void noteConsumer(Layer.Note note){
-        this.clientWorld.playSound(this.getX(), this.getY(), this.getZ(), getInstrumentFromCode(note.instrument).getSound(), SoundCategory.PLAYERS, note.getVolume(), note.getPitch(), true);
+        this.clientLevel.playLocalSound(this.getX(), this.getY(), this.getZ(), getInstrumentFromCode(note.instrument).getSoundEvent(), SoundSource.PLAYERS, note.getVolume(), note.getPitch(), true);
     }
 
-    private static Instrument getInstrumentFromCode(byte b){
+    private static NoteBlockInstrument getInstrumentFromCode(byte b){
 
         //That is more efficient than a switch case...
-        Instrument[] instruments = {Instrument.HARP, Instrument.BASS, Instrument.BASEDRUM, Instrument.SNARE, Instrument.HAT,
-                Instrument.GUITAR, Instrument.FLUTE, Instrument.BELL, Instrument.CHIME, Instrument.XYLOPHONE,Instrument.IRON_XYLOPHONE,
-                Instrument.COW_BELL, Instrument.DIDGERIDOO, Instrument.BIT, Instrument.BANJO, Instrument.PLING};
+        NoteBlockInstrument[] instruments = {NoteBlockInstrument.HARP, NoteBlockInstrument.BASS, NoteBlockInstrument.BASEDRUM, NoteBlockInstrument.SNARE, NoteBlockInstrument.HAT,
+                NoteBlockInstrument.GUITAR, NoteBlockInstrument.FLUTE, NoteBlockInstrument.BELL, NoteBlockInstrument.CHIME, NoteBlockInstrument.XYLOPHONE,NoteBlockInstrument.IRON_XYLOPHONE,
+                NoteBlockInstrument.COW_BELL, NoteBlockInstrument.DIDGERIDOO, NoteBlockInstrument.BIT, NoteBlockInstrument.BANJO, NoteBlockInstrument.PLING};
 
         if(b >= 0 && b < instruments.length){
             return instruments[b];
         }
-        return Instrument.HARP; //I don't want to crash here
+        return NoteBlockInstrument.HARP; //I don't want to crash here
     }
 
     @Inject(method = "<init>", at = @At(value = "TAIL"))
-    private void emote_init(ClientWorld world, GameProfile profile, CallbackInfo ci){
+    private void emote_init(ClientLevel world, GameProfile profile, CallbackInfo ci){
         this.init();
     }
 
@@ -75,13 +75,13 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements IPlayerEn
     }
 
     @Override
-    public UUID getUUID() {
-        return this.getUuid();
+    public UUID emotes_getUUID() {
+        return this.getUUID();
     }
 
     @Override
     public boolean isNotStanding() {
-        return this.getPose() != EntityPose.STANDING;
+        return this.getPose() != Pose.STANDING;
     }
 
     @Override
@@ -91,22 +91,22 @@ public abstract class EmotePlayerMixin extends PlayerEntity implements IPlayerEn
 
     @Override
     public Vec3d getPrevPos() {
-        return new Vec3d(prevX, prevY, prevZ);
+        return new Vec3d(xo, yo, zo);
     }
 
     @Override
     public float getBodyYaw() {
-        return this.bodyYaw;
+        return this.yBodyRot;
     }
 
     @Override
     public float getViewYaw() {
-        return this.yaw;
+        return this.yRot;
     }
 
     @Override
     public void setBodyYaw(float newYaw) {
-        this.bodyYaw = newYaw;
+        this.yBodyRot = newYaw;
     }
 
     @Override

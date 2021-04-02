@@ -7,9 +7,9 @@ import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.fabric.network.ServerNetwork;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,9 +17,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.io.IOException;
 import java.util.HashMap;
 
-@Mixin(ServerPlayNetworkHandler.class)
+@Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements INetworkInstance {
-    @Shadow public abstract void sendPacket(Packet<?> packet);
+    @Shadow public abstract void send(Packet<?> packet);
 
     HashMap<Byte, Byte> versions = new HashMap<>();
     @Override
@@ -46,14 +46,14 @@ public abstract class ServerPlayNetworkInstance implements INetworkInstance {
 
     @Override
     public void sendMessage(byte[] bytes, @Nullable IEmotePlayerEntity target) {
-        this.sendPacket(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new PacketByteBuf(Unpooled.wrappedBuffer(bytes))));
+        this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))));
     }
 
     @Override
     public void sendConfigCallback() {
         EmotePacket.Builder builder = new EmotePacket.Builder().configureToConfigExchange(true);
         try{
-            this.sendPacket(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new PacketByteBuf(Unpooled.wrappedBuffer(builder.build().write()))));
+            this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write()))));
         }
         catch (IOException e){
             e.printStackTrace();

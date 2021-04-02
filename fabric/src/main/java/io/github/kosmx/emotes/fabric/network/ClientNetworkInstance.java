@@ -7,9 +7,9 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class ClientNetworkInstance implements IClientNetwork {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
     }
 
-    void receiveMessage(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
+    void receiveMessage(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender){
         if(buf.isDirect()){ //If the received ByteBuf is direct i have to copy that onto the heap
             byte[] bytes = new byte[buf.readableBytes()];
             buf.getBytes(buf.readerIndex(), bytes);
@@ -65,8 +65,8 @@ public class ClientNetworkInstance implements IClientNetwork {
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
         if(target != null){
-            builder.configureTarget(target.getUUID());
+            builder.configureTarget(target.emotes_getUUID());
         }
-        ClientPlayNetworking.send(ServerNetwork.channelID, new PacketByteBuf(Unpooled.wrappedBuffer(builder.build().write().array())));
+        ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write().array())));
     }
 }

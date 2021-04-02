@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.fabric.gui.screen;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
@@ -10,51 +11,50 @@ import io.github.kosmx.emotes.fabric.executor.types.TextImpl;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenLogicHelper;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * Interface method redirections, default implementations
  */
-public abstract class AbstractControlledModScreen extends Screen implements IScreenSlave<MatrixStack, Screen> {
+public abstract class AbstractControlledModScreen extends Screen implements IScreenSlave<PoseStack, Screen> {
     final Screen parent;
-    public final AbstractScreenLogic<MatrixStack, Screen> master;
+    public final AbstractScreenLogic<PoseStack, Screen> master;
 
     @Override
     public void emotesRenderBackgroundTexture(int vOffset) {
-        super.renderBackgroundTexture(vOffset);
+        super.renderDirtBackground(vOffset);
     }
 
     private int getW() {
         return this.width;
     }
 
-    protected AbstractControlledModScreen(net.minecraft.text.Text title, Screen parent) {
+    protected AbstractControlledModScreen(net.minecraft.network.chat.Component title, Screen parent) {
         super(title);
         this.parent = parent;
         this.master = newMaster();
     }
 
-    protected abstract AbstractScreenLogic<MatrixStack, Screen> newMaster();
+    protected abstract AbstractScreenLogic<PoseStack, Screen> newMaster();
 
     @Override
     public Screen getScreen() {
         return this; //This is a screen after all.
     }
 
-    public interface IScreenHelperImpl extends IScreenLogicHelper<MatrixStack>, IDrawableImpl {
+    public interface IScreenHelperImpl extends IScreenLogicHelper<PoseStack>, IDrawableImpl {
         @Override
         default IButton newButton(int x, int y, int width, int height, Text msg, Consumer<IButton> pressAction) {
             return new IButtonImpl(x, y, width, height, ((TextImpl) msg).get(), button -> pressAction.accept((IButton) button));
         }
 
         @Override
-        default ITextInputWidget<MatrixStack, TextInputImpl> newTextInputWidget(int x, int y, int width, int height, Text title) {
+        default ITextInputWidget<PoseStack, TextInputImpl> newTextInputWidget(int x, int y, int width, int height, Text title) {
             return new TextInputImpl(x, y, width, height, (TextImpl) title);
         }
 
@@ -65,7 +65,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     }
     @Override
     public void openThisScreen() {
-        MinecraftClient.getInstance().openScreen(this);
+        Minecraft.getInstance().setScreen(this);
     }
 
     @Override
@@ -80,17 +80,17 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void setInitialFocus(IWidget searchBox) {
-        this.setInitialFocus((Element) searchBox.get());
+        this.setInitialFocus((GuiEventListener) searchBox.get());
     }
 
     @Override
     public void setFocused(IWidget focused) {
-        this.setFocused((Element) focused.get());
+        this.setFocused((GuiEventListener) focused.get());
     }
 
     @Override
     public void addToChildren(IWidget widget) {
-        this.children.add((Element) widget.get());
+        this.children.add((GuiEventListener) widget.get());
     }
 
     @Override
@@ -100,7 +100,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void openParent() {
-        this.client.openScreen(this.parent);
+        this.minecraft.setScreen(this.parent);
     }
 
     @Override
@@ -111,10 +111,10 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     @Override
     public void openScreen(@Nullable IScreen<Screen> screen) {
         if(screen != null) {
-            MinecraftClient.getInstance().openScreen(screen.getScreen());
+            Minecraft.getInstance().setScreen(screen.getScreen());
         }
         else{
-            MinecraftClient.getInstance().openScreen(null);
+            Minecraft.getInstance().setScreen(null);
         }
     }
     @Override
@@ -146,7 +146,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         master.emotes_renderScreen(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }

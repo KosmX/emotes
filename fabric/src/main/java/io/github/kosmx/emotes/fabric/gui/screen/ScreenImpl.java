@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.fabric.gui.screen;
 
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 public class ScreenImpl implements IScreen<Screen> {
     final Screen MCScreen;

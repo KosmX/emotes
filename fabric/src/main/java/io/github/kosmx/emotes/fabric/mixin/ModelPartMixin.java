@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.fabric.mixin;
 
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
-import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.geom.ModelPart;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(ModelPart.class)

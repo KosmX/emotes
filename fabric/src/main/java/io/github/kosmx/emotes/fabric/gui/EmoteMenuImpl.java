@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.fabric.gui;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.fabric.executor.EmotesMain;
 import io.github.kosmx.emotes.fabric.gui.screen.AbstractControlledModScreen;
 import io.github.kosmx.emotes.fabric.gui.screen.ConfigScreen;
@@ -11,31 +12,30 @@ import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.EmoteMenu;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class EmoteMenuImpl extends AbstractControlledModScreen {
 
-    protected EmoteMenuImpl(Text title, Screen parent) {
+    protected EmoteMenuImpl(Component title, Screen parent) {
         super(title, parent);
     }
 
     public EmoteMenuImpl(Screen parent){
-        this(new TranslatableText("emotecraft.menu"), parent);
+        this(new TranslatableComponent("emotecraft.menu"), parent);
     }
 
 
     @Override
-    protected AbstractScreenLogic<MatrixStack, Screen> newMaster() {
+    protected AbstractScreenLogic<PoseStack, Screen> newMaster() {
         return new EmoteMenuController(this);
     }
 
-    public class EmoteMenuController extends EmoteMenu<MatrixStack, Screen, Element> implements IScreenHelperImpl{
+    public class EmoteMenuController extends EmoteMenu<PoseStack, Screen, GuiEventListener> implements IScreenHelperImpl{
 
         public EmoteMenuController(IScreenSlave screen) {
             super(screen);
@@ -48,36 +48,36 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
 
         @Override
         public void openExternalEmotesDir() {
-            Util.getOperatingSystem().open(EmotesMain.instance.getExternalEmoteDir());
+            Util.getPlatform().openFile(EmotesMain.instance.getExternalEmoteDir());
         }
 
         @Override
         public void openClothConfigScreen() {
-            MinecraftClient.getInstance().openScreen(new ConfigScreen(EmoteMenuImpl.this));
+            Minecraft.getInstance().setScreen(new ConfigScreen(EmoteMenuImpl.this));
         }
 
         @Override
-        protected IEmoteListWidgetHelper<MatrixStack, Element> newEmoteList(int width, int height) {
-            return new EmoteListImpl(MinecraftClient.getInstance(), width, height, 51, height-32, 36, EmoteMenuImpl.this);
+        protected IEmoteListWidgetHelper<PoseStack, GuiEventListener> newEmoteList(int width, int height) {
+            return new EmoteListImpl(Minecraft.getInstance(), width, height, 51, height-32, 36, EmoteMenuImpl.this);
             //super(minecraftClient, width, height , 51, height - 32, 36, screen);
         }
 
         public class EmoteListImpl extends AbstractEmoteListWidget<EmoteListImpl.EmoteListEntryImpl> {
 
-            public EmoteListImpl(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
+            public EmoteListImpl(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
                 super(minecraftClient, i, j, k, l, m, screen);
 
             }
 
             @Override
-            protected EmoteListEntryImpl newEmoteEntry(MinecraftClient client, EmoteHolder emoteHolder) {
+            protected EmoteListEntryImpl newEmoteEntry(Minecraft client, EmoteHolder emoteHolder) {
                 return new EmoteListEntryImpl(client, emoteHolder);
             }
 
 
             public class EmoteListEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntryImpl>{
 
-                public EmoteListEntryImpl(MinecraftClient client, EmoteHolder emote) {
+                public EmoteListEntryImpl(Minecraft client, EmoteHolder emote) {
                     super(client, emote);
                 }
 
@@ -88,14 +88,14 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
             }
         }
 
-        public class FastMenuImpl extends EmoteMenu<MatrixStack, Screen, Element>.FastChooseWidget implements IDrawableImpl, IWidgetLogicImpl {
+        public class FastMenuImpl extends EmoteMenu<PoseStack, Screen, GuiEventListener>.FastChooseWidget implements IDrawableImpl, IWidgetLogicImpl {
 
             public FastMenuImpl(int x, int y, int size) {
                 super(x, y, size);
             }
 
             @Override
-            public Element get() {
+            public GuiEventListener get() {
                 return this;
             }
 

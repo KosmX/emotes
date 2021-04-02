@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface IPlayerEntity {
 
-    UUID getUUID();
+    UUID emotes_getUUID();
 }
