@@ -14,7 +14,7 @@
     "issues": "https://discord.com/invite/f3tZu3Z",
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/emotecraft"
   },
-  "license": "MIT",
+  "license": "Creative Commons Attribution 4.0",
   "icon": "assets/emotecraft/icon.png",
   "environment": "*",
   "entrypoints": {
