@@ -11,15 +11,13 @@ allprojects {
 
         options.compilerArgs << '-Xlint:unchecked'
         options.deprecation = true	//deprecated warning on compile
+        repositories {
+            mavenCentral()
+        }
         dependencies {
             // put common dependencies here
             compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
         }
-    }
-
-    repositories {
-        jcenter()
-
     }
 
 }

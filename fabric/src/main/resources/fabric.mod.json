@@ -19,13 +19,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.kosmx.emotes.fabric.Initializer"
+      "io.github.kosmx.emotes.fabric.Initializer"
     ],
     "client": [
     ],
     "server": [],
     "modmenu": [
-      "com.kosmx.emotes.fabric.ModMenu"
+      "io.github.kosmx.emotes.fabric.ModMenu"
     ]
   },
   "mixins": [

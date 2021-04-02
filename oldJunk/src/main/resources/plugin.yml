@@ -1,3 +1,0 @@
-name: emotecraft
-main: com.kosmx.emoteBukkit.BukkitMain
-version: ${version}
