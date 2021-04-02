@@ -26,6 +26,7 @@ plugins {
 //and well... serialize it
 repositories{
     mavenLocal()
+    jcenter()
     maven{
         url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
     }
@@ -72,8 +73,8 @@ dependencies {
     //modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
     //include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
-    modImplementation "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
-    include "com.kosmx.bendylib:bendy-lib:${project.bendylib_version}"
+    modImplementation "io.github.kosmx:bendy-lib:${project.bendylib_version}"
+    include "io.github.kosmx:bendy-lib:${project.bendylib_version}"
     //
     //other dependency(ies)
 
