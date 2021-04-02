@@ -28,8 +28,6 @@ import net.minecraft.world.entity.LivingEntity;
 public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart, EmotePlayImpl> {
 
     @Shadow
-    public ModelPart torso;
-    @Shadow
     public ModelPart rightLeg;
     @Shadow
     public ModelPart rightArm;
@@ -50,9 +48,9 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
         mutatedLeftLeg = new BendableModelPart(this.leftLeg, false);
         mutatedRightArm = new BendableModelPart(this.rightArm, true);
         mutatedRightLeg = new BendableModelPart(this.rightLeg, false);
-        mutatedTorso = new BendableModelPart(this.torso, false);
+        mutatedTorso = new BendableModelPart(this.body, false);
         ((IUpperPartHelper) this.head).setUpperPart(true);
-        ((IUpperPartHelper) this.helmet).setUpperPart(true);
+        ((IUpperPartHelper) this.hat).setUpperPart(true);
 
         mutatedTorso.addCuboid(- 4, 0, - 2, 8, 12, 4, scale, Direction.DOWN);
         mutatedRightLeg.addCuboid(- 2, 0, - 2, 4, 12, 4, scale, Direction.UP);
@@ -72,7 +70,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
         this.emote = emoteSupplier;
     }
 
-    @Inject(method = "setAttributes", at = @At("RETURN"))
+    @Inject(method = "copyPropertiesTo", at = @At("RETURN"))
     private void copyMutatedAttributes(HumanoidModel<T> bipedEntityModel, CallbackInfo ci){
         if(emote != null){
             if(((IMutatedBipedModel) bipedEntityModel).getEmoteSupplier() != emote)
@@ -91,7 +89,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
 
     @Override
     public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha){
-        if(((IModelPart) this.torso).getActiveMutatedPart() == this.mutatedTorso && mutatedTorso.getEmote() != null && EmotePlayImpl.isRunningEmote(mutatedTorso.getEmote().get())){
+        if(((IModelPart) this.body).getActiveMutatedPart() == this.mutatedTorso && mutatedTorso.getEmote() != null && EmotePlayImpl.isRunningEmote(mutatedTorso.getEmote().get())){
             this.headParts().forEach((part)->{
                 if(! ((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -129,8 +127,9 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     @Shadow
     public ModelPart head;
 
-    @Shadow
-    public ModelPart helmet;
+    @Shadow public ModelPart body;
+
+    @Shadow public ModelPart hat;
 
     @Override
     public BendableModelPart getTorso(){
