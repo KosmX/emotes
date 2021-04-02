@@ -25,8 +25,6 @@
   "key.emotecraft.stop": "İfade oynatmayı durdur",
   "emotecraft.openFolder": "İfade klasörünü aç",
   "emotecraft.otherconfig.quark": "Quark Sıralandırıcısını Etkinleştir",
-  "emotecraft.quark": "Stabil olmayan özellik",
-  "emotecraft.quark2": "Quark ifade okuyucusu hiçbir şekilde stabil değil ve tam destekli değil.\nKullanımı tavsiye edilmez.Beklenmedik şekilde çalışabilir hatta veya oyundan atabilir\nGerçekten açmak istiyor musun?",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Yaratıcı: ",
   "emotecraft.config": "İfade yapılandır"

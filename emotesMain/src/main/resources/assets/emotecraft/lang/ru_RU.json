@@ -38,8 +38,6 @@
   "key.emotecraft.stop": "Остановить воспроизведение эмоции",
   "emotecraft.openFolder": "Открыть папку эмоций",
   "emotecraft.otherconfig.quark": "Включить сериализатор кварков",
-  "emotecraft.quark": "Нестабильная функция",
-  "emotecraft.quark2": "Программа чтения эмоций Quark очень нестабильна и не полностью поддерживается.\nИспользовать её не рекомендуется. Она может работать непредвиденно или даже вызвать вылет\nВы действительно хотите её включить?",
   "category.emotecraft.keybinding": "ЭмоутКрафт",
   "emotecraft.emote.author": "Автор: ",
   "emotecraft.config": "Настройка эмоций",

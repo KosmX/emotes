@@ -38,8 +38,6 @@
   "key.emotecraft.stop": "Gesztus lejátszásának leállítása",
   "emotecraft.openFolder": "Gesztusok mappájának megnyitása",
   "emotecraft.otherconfig.quark": "Quark betöltő",
-  "emotecraft.quark": "Instabil lehetőség",
-  "emotecraft.quark2": "Az importálás Quark-ból instabil és csak részlegesen támogatott.\nA használata nem ajánlott, furcsán működhet vagy akár összeomláshoz is vezethet.\nBiztosan bekapcsolod?",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Készítő: ",
   "emotecraft.config": "Gesztusok beállítása",
