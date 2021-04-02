@@ -38,8 +38,6 @@
   "key.emotecraft.stop": "Parar de executar emote",
   "emotecraft.openFolder": "Abrir pasta de emotes",
   "emotecraft.otherconfig.quark": "Ativar serializador de quark",
-  "emotecraft.quark": "Recurso instável",
-  "emotecraft.quark2": "O leitor de emotes de quark é altamente instável e não é completamente suportado.\nUsá-lo não é recomendado. Ele pode funcionar inesperadamente ou pode até causar travamento\nVocê realmente quer ligá-lo?",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
   "emotecraft.config": "Definir emotes",

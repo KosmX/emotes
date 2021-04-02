@@ -36,8 +36,6 @@
   "key.emotecraft.stop": "Parar de reproduzir gesto",
   "emotecraft.openFolder": "Abrir pasta de gestos",
   "emotecraft.otherconfig.quark": "Ativar serializador em Quark",
-  "emotecraft.quark": "Recurso instável",
-  "emotecraft.quark2": "O leitor de gestos em Quark é altamente instável e não é totalmente suportado.\nUsar isto não é recomendado e pode funcionar de forma inesperada ou até mesmo causar travamento\nVocê realmente quer ativá-lo?",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
   "emotecraft.config": "Definir gestos",
