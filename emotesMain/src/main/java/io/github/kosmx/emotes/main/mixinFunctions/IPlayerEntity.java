@@ -12,7 +12,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
 
     @Override
     default void init(){
-        Pair<EmoteData, Integer> p = ClientEmotePlay.getEmoteForUUID(this.getUUID());
+        Pair<EmoteData, Integer> p = ClientEmotePlay.getEmoteForUUID(this.emotes_getUUID());
         if(p != null){
             this.playEmote(p.getLeft(), p.getRight());
         }

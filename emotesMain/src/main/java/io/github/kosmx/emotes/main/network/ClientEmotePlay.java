@@ -30,7 +30,7 @@ public class ClientEmotePlay {
 
     public static boolean clientStartLocalEmote(EmoteData emote) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().getUUID());
+        packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
         ClientPacketManager.send(packetBuilder, null);
         EmoteInstance.instance.getClientMethods().getMainPlayer().playEmote(emote, 0);
         return true;
@@ -38,7 +38,7 @@ public class ClientEmotePlay {
 
     public static void clientRepeateLocalEmote(EmoteData emote, int tick, IPlayerEntity target){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().getUUID()).configureEmoteTick(tick);
+        packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
     }
 
@@ -50,7 +50,7 @@ public class ClientEmotePlay {
 
     public static void clientStopLocalEmote(EmoteData emoteData) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToSendStop(emoteData.hashCode(), EmoteInstance.instance.getClientMethods().getMainPlayer().getUUID());
+        packetBuilder.configureToSendStop(emoteData.hashCode(), EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
         ClientPacketManager.send(packetBuilder, null);
         EmoteInstance.instance.getClientMethods().getMainPlayer().stopEmote();
     }

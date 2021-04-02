@@ -75,7 +75,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     }
 
     @Override
-    public UUID getUUID() {
+    public UUID emotes_getUUID() {
         return this.getUUID();
     }
 

@@ -65,7 +65,7 @@ public class ClientNetworkInstance implements IClientNetwork {
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
         if(target != null){
-            builder.configureTarget(target.getUUID());
+            builder.configureTarget(target.emotes_getUUID());
         }
         ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write().array())));
     }
