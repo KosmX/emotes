@@ -10,19 +10,18 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.player.Player;
 import java.io.IOException;
 import java.util.UUID;
 
 
-public class ServerNetwork extends AbstractServerEmotePlay<PlayerEntity> {
-    public static final Identifier channelID = new Identifier(CommonData.MOD_ID, CommonData.playEmoteID);
+public class ServerNetwork extends AbstractServerEmotePlay<Player> {
+    public static final ResourceLocation channelID = new ResourceLocation(CommonData.MOD_ID, CommonData.playEmoteID);
 
     public static ServerNetwork instance = new ServerNetwork();
 
@@ -30,7 +29,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<PlayerEntity> {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ServerPlayNetworking.registerReceiver(handler, channelID, this::receiveMessage));
     }
 
-    void receiveMessage(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender){
+    void receiveMessage(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf, PacketSender responseSender){
         try{
             if(buf.isDirect()){
                 byte[] bytes = new byte[buf.readableBytes()];
@@ -46,17 +45,17 @@ public class ServerNetwork extends AbstractServerEmotePlay<PlayerEntity> {
     }
 
     @Override
-    protected UUID getUUIDFromPlayer(PlayerEntity player) {
-        return player.getUuid();
+    protected UUID getUUIDFromPlayer(Player player) {
+        return player.getUUID();
     }
 
     @Override
-    protected void sendForEveryoneElse(NetData data, PlayerEntity player) {
-        data.player = player.getUuid();
+    protected void sendForEveryoneElse(NetData data, Player player) {
+        data.player = player.getUUID();
         PlayerLookup.tracking(player).forEach(serverPlayerEntity -> {
             try {
                if(serverPlayerEntity != player){
-                   ServerPlayNetworking.send(serverPlayerEntity, channelID, new PacketByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+                   ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
                }
             }catch (IOException e){
                 e.printStackTrace();
@@ -65,11 +64,11 @@ public class ServerNetwork extends AbstractServerEmotePlay<PlayerEntity> {
     }
 
     @Override
-    protected void sendForPlayer(NetData data, PlayerEntity player, UUID target) {
+    protected void sendForPlayer(NetData data, Player player, UUID target) {
         PlayerLookup.tracking(player).forEach(serverPlayerEntity -> {
-            if (serverPlayerEntity.getUuid().equals(target)) {
+            if (serverPlayerEntity.getUUID().equals(target)) {
                 try {
-                    ServerPlayNetworking.send(serverPlayerEntity, channelID, new PacketByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+                    ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
                 }
                 catch (IOException e){
                     e.printStackTrace();

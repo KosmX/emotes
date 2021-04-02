@@ -5,16 +5,9 @@ import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import io.github.kosmx.emotes.fabric.BendableModelPart;
 import io.github.kosmx.emotes.fabric.emote.EmotePlayImpl;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.kosmx.bendylib.IModelPart;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.AnimalModel;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,10 +15,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Function;
+import net.minecraft.client.model.AgeableListModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 
 @SuppressWarnings("unchecked")
-@Mixin(BipedEntityModel.class)
-public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AnimalModel<T> implements IMutatedBipedModel<BendableModelPart, EmotePlayImpl> {
+@Mixin(HumanoidModel.class)
+public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart, EmotePlayImpl> {
 
     @Shadow
     public ModelPart torso;
@@ -45,7 +45,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Anim
     protected SetableSupplier<EmotePlayImpl> emote;
 
     @Inject(method = "<init>(Ljava/util/function/Function;FFII)V", at = @At("RETURN"))
-    private void InitInject(Function<Identifier, RenderLayer> texturedLayerFactory, float scale, float pivotY, int textureWidth, int textureHeight, CallbackInfo ci){
+    private void InitInject(Function<ResourceLocation, RenderType> texturedLayerFactory, float scale, float pivotY, int textureWidth, int textureHeight, CallbackInfo ci){
         mutatedLeftArm = new BendableModelPart(this.leftArm, true);
         mutatedLeftLeg = new BendableModelPart(this.leftLeg, false);
         mutatedRightArm = new BendableModelPart(this.rightArm, true);
@@ -73,7 +73,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Anim
     }
 
     @Inject(method = "setAttributes", at = @At("RETURN"))
-    private void copyMutatedAttributes(BipedEntityModel<T> bipedEntityModel, CallbackInfo ci){
+    private void copyMutatedAttributes(HumanoidModel<T> bipedEntityModel, CallbackInfo ci){
         if(emote != null){
             if(((IMutatedBipedModel) bipedEntityModel).getEmoteSupplier() != emote)
                 ((IMutatedBipedModel) bipedEntityModel).setEmoteSupplier(emote);
@@ -90,41 +90,41 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Anim
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha){
+    public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha){
         if(((IModelPart) this.torso).getActiveMutatedPart() == this.mutatedTorso && mutatedTorso.getEmote() != null && EmotePlayImpl.isRunningEmote(mutatedTorso.getEmote().get())){
-            this.getHeadParts().forEach((part)->{
+            this.headParts().forEach((part)->{
                 if(! ((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
             });
-            this.getBodyParts().forEach((part)->{
+            this.bodyParts().forEach((part)->{
                 if(! ((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
             });
 
             SetableSupplier<EmotePlayImpl> emoteSupplier = this.mutatedTorso.getEmote();
-            matrices.push();
+            matrices.pushPose();
             BendableModelPart.roteteMatrixStack(matrices, emoteSupplier.get().torso.getBend());
-            this.getHeadParts().forEach((part)->{
+            this.headParts().forEach((part)->{
                 if(((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
             });
-            this.getBodyParts().forEach((part)->{
+            this.bodyParts().forEach((part)->{
                 if(((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
             });
-            matrices.pop();
-        }else super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+            matrices.popPose();
+        }else super.renderToBuffer(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 
     @Shadow
-    protected abstract Iterable<ModelPart> getHeadParts();
+    protected abstract Iterable<ModelPart> headParts();
 
     @Shadow
-    protected abstract Iterable<ModelPart> getBodyParts();
+    protected abstract Iterable<ModelPart> bodyParts();
 
     @Shadow
     public ModelPart head;

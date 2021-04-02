@@ -3,13 +3,13 @@ package io.github.kosmx.emotes.fabric.executor.types;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
 
 public class IdentifierImpl implements IIdentifier {
-    final net.minecraft.util.Identifier MCIdentifier;
+    final net.minecraft.resources.ResourceLocation MCIdentifier;
 
-    public IdentifierImpl(net.minecraft.util.Identifier mcIdentifier) {
+    public IdentifierImpl(net.minecraft.resources.ResourceLocation mcIdentifier) {
         MCIdentifier = mcIdentifier;
     }
 
-    public net.minecraft.util.Identifier get(){
+    public net.minecraft.resources.ResourceLocation get(){
         return MCIdentifier;
     }
 }

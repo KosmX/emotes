@@ -1,39 +1,41 @@
 package io.github.kosmx.emotes.fabric.gui.screen.ingame;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.fabric.gui.screen.AbstractControlledModScreen;
 import io.github.kosmx.emotes.fabric.gui.screen.IDrawableImpl;
 import io.github.kosmx.emotes.fabric.gui.screen.IWidgetLogicImpl;
+import io.github.kosmx.emotes.fabric.gui.screen.ingame.FastChosseScreen.FastMenuScreenLogicImpl;
+import io.github.kosmx.emotes.fabric.gui.screen.ingame.FastChosseScreen.FastMenuScreenLogicImpl.FastMenuWidgetImpl;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.ingame.FastMenuScreenLogic;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class FastChosseScreen extends AbstractControlledModScreen {
     public FastChosseScreen(Screen parent) {
-        super(new TranslatableText("emotecraft.fastmenu"), parent);
+        super(new TranslatableComponent("emotecraft.fastmenu"), parent);
     }
 
     @Override
-    protected AbstractScreenLogic<MatrixStack, Screen> newMaster() {
+    protected AbstractScreenLogic<PoseStack, Screen> newMaster() {
         return new FastMenuScreenLogicImpl(this);
     }
 
-    class FastMenuScreenLogicImpl extends FastMenuScreenLogic<MatrixStack, Screen, Element> implements IScreenHelperImpl{
+    class FastMenuScreenLogicImpl extends FastMenuScreenLogic<PoseStack, Screen, GuiEventListener> implements IScreenHelperImpl{
 
         protected FastMenuScreenLogicImpl(IScreenSlave screen) {
             super(screen);
         }
 
         @Override
-        protected IScreenSlave<MatrixStack, Screen> newFullScreenMenu() {
+        protected IScreenSlave<PoseStack, Screen> newFullScreenMenu() {
             return new FullScreenListImpl(FastChosseScreen.this);
         }
 
         @Override
-        protected FastMenuScreenLogic<MatrixStack, Screen, Element>.FastMenuWidget newFastMenuWidget(int x, int y, int size) {
+        protected FastMenuScreenLogic<PoseStack, Screen, GuiEventListener>.FastMenuWidget newFastMenuWidget(int x, int y, int size) {
             return new FastMenuWidgetImpl(x, y, size);
         }
         class FastMenuWidgetImpl extends FastMenuWidget implements IDrawableImpl, IWidgetLogicImpl {
@@ -42,7 +44,7 @@ public class FastChosseScreen extends AbstractControlledModScreen {
             }
 
             @Override
-            public Element get() {
+            public GuiEventListener get() {
                 return this;
             }
         }

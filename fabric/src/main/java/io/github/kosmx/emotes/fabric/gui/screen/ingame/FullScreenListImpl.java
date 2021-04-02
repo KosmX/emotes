@@ -1,8 +1,10 @@
 package io.github.kosmx.emotes.fabric.gui.screen.ingame;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.fabric.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.fabric.gui.screen.AbstractControlledModScreen;
+import io.github.kosmx.emotes.fabric.gui.screen.ingame.FullScreenListImpl.FullScreenMenuImpl;
 import io.github.kosmx.emotes.fabric.gui.widgets.AbstractEmoteListWidget;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
@@ -10,23 +12,22 @@ import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.ingame.FullMenuScreenHelper;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class FullScreenListImpl extends AbstractControlledModScreen {
     protected FullScreenListImpl(Screen parent) {
-        super(new TranslatableText("emotecraft.emotelist"), parent);
+        super(new TranslatableComponent("emotecraft.emotelist"), parent);
     }
 
     @Override
-    protected AbstractScreenLogic<MatrixStack, Screen> newMaster() {
+    protected AbstractScreenLogic<PoseStack, Screen> newMaster() {
         return new FullScreenMenuImpl(this);
     }
 
-    class FullScreenMenuImpl extends FullMenuScreenHelper<MatrixStack, Screen, Element> implements IScreenHelperImpl{
+    class FullScreenMenuImpl extends FullMenuScreenHelper<PoseStack, Screen, GuiEventListener> implements IScreenHelperImpl{
 
         protected FullScreenMenuImpl(IScreenSlave screen) {
             super(screen);
@@ -38,31 +39,31 @@ public class FullScreenListImpl extends AbstractControlledModScreen {
         }
 
         @Override
-        protected IEmoteListWidgetHelper<MatrixStack, Element> newEmoteList(int boxSize, int height, int k, int l, int m) {
-            return new EmoteListFS(MinecraftClient.getInstance(), boxSize, height, k, l, m, FullScreenListImpl.this);
+        protected IEmoteListWidgetHelper<PoseStack, GuiEventListener> newEmoteList(int boxSize, int height, int k, int l, int m) {
+            return new EmoteListFS(Minecraft.getInstance(), boxSize, height, k, l, m, FullScreenListImpl.this);
         }
 
         public class EmoteListFS extends AbstractEmoteListWidget<EmoteListFS.EmotelistEntryImpl> {
 
-            public EmoteListFS(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
+            public EmoteListFS(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
                 super(minecraftClient, i, j, k, l, m, screen);
             }
 
             @Override
-            protected EmotelistEntryImpl newEmoteEntry(MinecraftClient client, EmoteHolder emoteHolder) {
+            protected EmotelistEntryImpl newEmoteEntry(Minecraft client, EmoteHolder emoteHolder) {
                 return new EmotelistEntryImpl(client, emoteHolder);
             }
 
             public class EmotelistEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmotelistEntryImpl>{
 
-                public EmotelistEntryImpl(MinecraftClient client, EmoteHolder emote) {
+                public EmotelistEntryImpl(Minecraft client, EmoteHolder emote) {
                     super(client, emote);
                 }
 
                 @Override
                 protected void onPressed() {
                     ClientEmotePlay.clientStartLocalEmote(this.getEmote());
-                    MinecraftClient.getInstance().openScreen(null);
+                    Minecraft.getInstance().setScreen(null);
                 }
             }
         }

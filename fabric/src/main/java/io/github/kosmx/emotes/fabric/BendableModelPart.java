@@ -5,16 +5,15 @@ import io.github.kosmx.emotes.common.tools.Pair;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import io.github.kosmx.emotes.fabric.emote.EmotePlayImpl;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import io.github.kosmx.bendylib.IModelPart;
 import io.github.kosmx.bendylib.MutableModelPart;
 import io.github.kosmx.bendylib.impl.BendableCuboid;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.math.Matrix4f;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.client.model.geom.ModelPart;
 
 //Until I don't have to modify bendy-lib, this will work properly
 public class BendableModelPart extends MutableModelPart {
@@ -108,14 +107,14 @@ public class BendableModelPart extends MutableModelPart {
     }
 
 
-    public static void roteteMatrixStack(MatrixStack matrices, Pair<Float, Float> pair){
+    public static void roteteMatrixStack(PoseStack matrices, Pair<Float, Float> pair){
         float offset = 0.375f;
         matrices.translate(0, offset, 0);
         float bend = pair.getRight();
         float axisf = - pair.getLeft();
         Vector3f axis = new Vector3f((float) Math.cos(axisf), 0, (float) Math.sin(axisf));
         //return this.setRotation(axis.getRadialQuaternion(bend));
-        matrices.multiply(axis.getRadialQuaternion(bend));
+        matrices.mulPose(axis.rotation(bend));
         matrices.translate(0, - offset, 0);
     }
 }

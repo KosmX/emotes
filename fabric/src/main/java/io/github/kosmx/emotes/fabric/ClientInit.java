@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.fabric;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.fabric.executor.FabricClientMethods;
 import io.github.kosmx.emotes.fabric.gui.screen.ingame.FastChosseScreen;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
@@ -8,9 +9,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 @Environment(EnvType.CLIENT)
 public class ClientInit {
 
-    static KeyBinding openMenuKey;
-    static KeyBinding stopEmote;
-    static Consumer<MinecraftClient> keyBindingFunction;
+    static KeyMapping openMenuKey;
+    static KeyMapping stopEmote;
+    static Consumer<Minecraft> keyBindingFunction;
 
     static void initClient(){
 
@@ -36,20 +36,20 @@ public class ClientInit {
     }
 
     private static void initKeyBinding(){
-        openMenuKey = new KeyBinding("key.emotecraft.fastchoose", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, "category.emotecraft.keybinding");
+        openMenuKey = new KeyMapping("key.emotecraft.fastchoose", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B, "category.emotecraft.keybinding");
         KeyBindingRegistryImpl.registerKeyBinding(openMenuKey);
 
-        stopEmote = new KeyBinding("key.emotecraft.stop", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding");
+        stopEmote = new KeyMapping("key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding");
         KeyBindingRegistryImpl.registerKeyBinding(stopEmote);
 
         keyBindingFunction = client -> {
 
-            if(openMenuKey.wasPressed()){
-                if(MinecraftClient.getInstance().player == MinecraftClient.getInstance().getCameraEntity()){
-                    MinecraftClient.getInstance().openScreen(new FastChosseScreen(null));
+            if(openMenuKey.consumeClick()){
+                if(Minecraft.getInstance().player == Minecraft.getInstance().getCameraEntity()){
+                    Minecraft.getInstance().setScreen(new FastChosseScreen(null));
                 }
             }
-            if(stopEmote.wasPressed()){
+            if(stopEmote.consumeClick()){
                 ClientEmotePlay.clientStopLocalEmote();
             }
         };

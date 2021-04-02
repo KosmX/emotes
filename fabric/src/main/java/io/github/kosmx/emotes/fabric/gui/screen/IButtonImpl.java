@@ -2,15 +2,15 @@ package io.github.kosmx.emotes.fabric.gui.screen;
 
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.fabric.executor.types.TextImpl;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 
-public class IButtonImpl extends ButtonWidget implements IButton<IButtonImpl> {
-    public IButtonImpl(int x, int y, int width, int height, Text message, PressAction onPress) {
+public class IButtonImpl extends Button implements IButton<IButtonImpl> {
+    public IButtonImpl(int x, int y, int width, int height, Component message, OnPress onPress) {
         super(x, y, width, height, message, onPress);
     }
 
-    public IButtonImpl(int x, int y, int width, int height, Text message, PressAction onPress, TooltipSupplier tooltipSupplier) {
+    public IButtonImpl(int x, int y, int width, int height, Component message, OnPress onPress, OnTooltip tooltipSupplier) {
         super(x, y, width, height, message, onPress, tooltipSupplier);
     }
 
