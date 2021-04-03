@@ -38,7 +38,15 @@ public class EmotePacket {
 
     int version;
 
-    EmotePacket(NetData data) {
+    protected EmotePacket(@Nullable NetData data) {
+        //Make sure every packet has a version...
+        if(data.versions == null)data.versions = new HashMap<>();
+        defaultVersions.forEach((aByte, bByte) -> {
+            if(!data.versions.containsKey(aByte)){
+                data.versions.put(aByte, bByte);
+            }
+        });
+
         this.data = data;
         subPackets.put(new EmoteDataPacket());
         subPackets.put(new PlayerDataPacket());
@@ -152,6 +160,9 @@ public class EmotePacket {
             return this;
         }
 
+        public NetData copyAndGetData(){
+            return data.copy();
+        }
 
         public Builder(NetData data){
             this.data = data;
@@ -166,13 +177,6 @@ public class EmotePacket {
         }
 
         public EmotePacket build(){
-            //Make sure every packet has a version...
-            if(data.versions == null)data.versions = new HashMap<>();
-            defaultVersions.forEach((aByte, bByte) -> {
-                if(!data.versions.containsKey(aByte)){
-                    data.versions.put(aByte, bByte);
-                }
-            });
             return new EmotePacket(data);
         }
 

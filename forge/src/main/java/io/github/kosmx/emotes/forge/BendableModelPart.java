@@ -1,19 +1,20 @@
-package io.github.kosmx.emotes.fabric;
+package io.github.kosmx.emotes.forge;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
+import io.github.kosmx.bendylibForge.IModelPart;
+import io.github.kosmx.bendylibForge.MutableModelPart;
+import io.github.kosmx.bendylibForge.impl.BendableCuboid;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.Pair;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
-import io.github.kosmx.emotes.fabric.emote.EmotePlayImpl;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import io.github.kosmx.bendylib.IModelPart;
-import io.github.kosmx.bendylib.MutableModelPart;
-import io.github.kosmx.bendylib.impl.BendableCuboid;
+import io.github.kosmx.emotes.forge.emote.EmotePlayImpl;
+import net.minecraft.client.model.geom.ModelPart;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.model.geom.ModelPart;
 
 //Until I don't have to modify bendy-lib, this will work properly
 public class BendableModelPart extends MutableModelPart {
@@ -58,7 +59,7 @@ public class BendableModelPart extends MutableModelPart {
 
     /**
      * This mod has always 4 priority, but not always active.
-     *
+     * lower number means higher priority
      * @return 0
      */
     @Override

@@ -25,6 +25,8 @@ configurations {
 }
 loom{
     silentMojangMappingsLicense()
+    mixinConfig "emotecraft.mixin.json"
+    mixinConfig "bendylib.mixin.json"
 }
 
 dependencies {

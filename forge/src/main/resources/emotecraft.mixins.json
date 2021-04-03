@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "io.github.kosmx.emotes.fabric.mixin",
+  "package": "io.github.kosmx.emotes.forge.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "ServerPlayNetworkInstance"
