@@ -7,6 +7,14 @@ pluginManagement {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            name = 'Shedaniel\'s maven'
+            url = 'https://maven.shedaniel.me/'
+        }
+        maven {
+            name = 'hell'
+            url = 'https://files.minecraftforge.net/maven/'
+        }
         gradlePluginPortal()
     }
 }
@@ -19,7 +27,8 @@ include 'emotecraftCommon'
 //include 'oldJunk'
 include 'executor'
 include 'emotesMain'
-include 'fabric'
 include 'emotesServer'
-//include 'forge'
+
+include 'fabric'
+include 'forge' //Forge!?
 

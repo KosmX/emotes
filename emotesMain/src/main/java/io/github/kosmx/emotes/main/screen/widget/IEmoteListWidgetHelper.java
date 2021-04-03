@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.main.screen.widget;
 
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.other.TextFormatting;
+import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.screen.IRenderHelper;
 
@@ -29,7 +29,7 @@ public interface IEmoteListWidgetHelper<MATRIX, WIDGET> extends IWidgetLogic<MAT
             textDrawWithShadow(matrices, this.getEmote().name, x + 38, y + 1, 16777215);
             textDrawWithShadow(matrices, this.getEmote().description, x + 38, y + 12, 8421504);
             if(! this.getEmote().author.getString().equals(""))
-                textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.emote.author").formatted(TextFormatting.GOLD).append(this.getEmote().author), x + 38, y + 23, 8421504);
+                textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.emote.author").formatted(EmotesTextFormatting.GOLD).append(this.getEmote().author), x + 38, y + 23, 8421504);
             if(this.getEmote().getIconIdentifier() != null){
                 renderSystemBlendColor(1, 1, 1, 1); //color4f => blendColor
                 renderBindTexture(this.getEmote().getIconIdentifier());

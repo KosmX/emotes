@@ -7,6 +7,8 @@ import io.github.kosmx.emotes.executor.dataTypes.IClientMethods;
 import io.github.kosmx.emotes.executor.dataTypes.IGetters;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public abstract class EmoteInstance {
@@ -26,6 +28,15 @@ public abstract class EmoteInstance {
 
     public abstract Path getGameDirectory();
     public abstract File getExternalEmoteDir();
-    public abstract Path getConfigPath();
+    public Path getConfigPath(){
+        if(!Files.exists(getGameDirectory().resolve("config"))){
+            try {
+                Files.createDirectories(getGameDirectory().resolve("config"));
+            }
+            catch (IOException ignore){
+            }
+        }
+        return getGameDirectory().resolve("config").resolve("emotecraft.json");
+    }
 
 }
