@@ -9,8 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.event.EventNetworkChannel;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -18,20 +16,22 @@ import java.util.HashMap;
 
 public class ClientNetworkInstance implements IClientNetwork {
 
-    public static final EventNetworkChannel channel = NetworkRegistry.newEventChannel(
+    /*public static final EventNetworkChannel channel = NetworkRegistry.newEventChannel(
             ServerNetwork.channelID,
             () -> "8",
             s -> true,
             s -> true);
 
+
+     */
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
     public void init(){
-        channel.addListener(this::receiveJunk);
         //ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
+        ServerNetwork.channel.addListener(this::receiveJunk);
     }
 
-    private void receiveJunk(NetworkEvent event){
+    private void receiveJunk(NetworkEvent.ClientCustomPayloadEvent event){
         receiveMessage(event.getPayload());
     }
 
@@ -71,7 +71,7 @@ public class ClientNetworkInstance implements IClientNetwork {
 
     @Override
     public boolean isActive() {
-        return Minecraft.getInstance().getConnection() != null && channel.isRemotePresent(Minecraft.getInstance().getConnection().getConnection());
+        return Minecraft.getInstance().getConnection() != null && ServerNetwork.channel.isRemotePresent(Minecraft.getInstance().getConnection().getConnection());
     }
 
     public static ServerboundCustomPayloadPacket newC2SEmotePacket(NetData data) throws IOException {

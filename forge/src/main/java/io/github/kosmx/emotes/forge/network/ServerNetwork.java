@@ -13,9 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkInstance;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
@@ -39,9 +37,8 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         channel.addListener(this::receiveByteBuf);
     }
 
-    @SubscribeEvent
-    private void receiveByteBuf(NetworkEvent event){
-        receiveMessage(event.getSource().get().getSender(), event.getSource().get().getSender().connection, event.getPayload());
+    public void receiveByteBuf(NetworkEvent.ServerCustomPayloadEvent event){
+        instance.receiveMessage(event.getSource().get().getSender(), event.getSource().get().getSender().connection, event.getPayload());
     }
 
     void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf){

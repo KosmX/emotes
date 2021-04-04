@@ -2,9 +2,15 @@ plugins {
     //id 'fabric-loom' version '0.6-SNAPSHOT'
     id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
     id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "architectury-plugin" version "3.0-SNAPSHOT"
     //publish mod to other places :D
 }
 
+architectury{
+    platformSetupLoomIde()
+    forge()
+}
 
 //Import jfrog keys from file (not included in the git repo :D)
 //and well... serialize it
@@ -25,7 +31,7 @@ configurations {
 }
 loom{
     silentMojangMappingsLicense()
-    mixinConfig "emotecraft.mixin.json"
+    mixinConfig "emotecraft.mixins.json"
     mixinConfig "bendylib.mixin.json"
 }
 
@@ -70,12 +76,12 @@ processResources {
     inputs.property "version", project.version
 
     from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
+        include "mods.toml"
         expand "version": project.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
+        exclude "mods.toml"
     }
 }
 
@@ -95,13 +101,21 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-jar {
-    from {
-        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    from "LICENSE"
+shadowJar{
+    configurations = [project.configurations.compileModule]
+    classifier "dev-shadow"
 }
 
+remapJar{
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier "forge"
+}
+
+jar {
+    classifier "dev"
+    from "LICENSE"
+}
 
 
 // configure the maven publication

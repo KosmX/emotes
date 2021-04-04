@@ -2,18 +2,24 @@ package io.github.kosmx.emotes.forge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.forge.executor.FabricClientMethods;
+import io.github.kosmx.emotes.forge.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.forge.gui.screen.ingame.FastChosseScreen;
 import io.github.kosmx.emotes.forge.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ExtensionPoint;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ClientInit {
 
@@ -34,6 +40,7 @@ public class ClientInit {
         });
 
          */
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (minecraft, screen) -> new EmoteMenuImpl(screen));
     }
 
     @SubscribeEvent
