@@ -1,11 +1,23 @@
 plugins {
-    id 'java-library'
+    id 'java'
     id 'maven-publish'
-
+    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
+    //id "architectury-plugin" version "3.0-SNAPSHOT"
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
+apply plugin: 'forgified-fabric-loom'
+apply plugin: "architectury-plugin"
+
 version project.mod_version
+
+architectury{
+    common()
+}
+
+loom{
+    silentMojangMappingsLicense()
+}
 
 repositories {
     mavenCentral()
@@ -18,12 +30,18 @@ configurations {
 dependencies {
     implementation project(':emotecraftCommon')
     implementation project(':executor')
+    implementation project(':emotesServer')
     compileModule project(':emotecraftCommon')
     compileModule project(':executor')
-    implementation project(':emotesServer')
     compileModule project(':emotesServer')
 
+
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
+
+    modCompileOnly("net.fabricmc:fabric-loader:${project.loader_version}")
 }
 
 
@@ -39,7 +57,13 @@ tasks.withType(Copy){
 
 shadowJar{
     configurations = [project.configurations.compileModule]
+    classifier ""
 }
+
+//remapJar{
+//    dependsOn shadowJar
+//    input.set shadowJar.archiveFile
+//}
 
 jar{
     //from {
@@ -60,7 +84,12 @@ publishing{
             artifactId = 'emotesMain'
             version = project.version
 
-            artifactId 'emotesMain'
+            //artifact(jar) {
+            //    builtBy shadowJar
+            //}
+            //artifact(remapJar) {
+            //    builtBy remapJar
+            //}
             artifact shadowJar
             artifact sourcesJar
             //from components.java

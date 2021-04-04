@@ -16,11 +16,22 @@ buildscript {
 }
 
 plugins {
-    id 'fabric-loom' version '0.6-SNAPSHOT'
+    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
+    //id "architectury-plugin" version "3.0-SNAPSHOT"
     id 'maven-publish'
     //publish mod to other places :D
 }
+apply plugin: 'forgified-fabric-loom'
+apply plugin: 'architectury-plugin'
 
+architectury{
+    platformSetupLoomIde()
+    fabric()
+}
+
+loom{
+    silentMojangMappingsLicense()
+}
 
 //Import jfrog keys from file (not included in the git repo :D)
 //and well... serialize it
@@ -48,20 +59,21 @@ configurations {
 }
 
 dependencies {
-    //compile project(':emotecraftCommon')
     implementation project(':emotesMain')
     implementation project(':executor')
     implementation project(':emotecraftCommon')
     implementation project(':emotesServer')
-    compileModule project(':emotesMain')
-    //compileModule project(':executor')
-    //compileModule project(':emotecraftCommon')
+    developmentFabric(project(path: ":emotesMain")) { transitive = false }
+    compileModule(project(':emotesMain')){ transitive = false }
+    compileModule project(':executor')
+    compileModule project(':emotecraftCommon')
+    compileModule project(':emotesServer')
 
 
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    mappings minecraft.officialMojangMappings()
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"

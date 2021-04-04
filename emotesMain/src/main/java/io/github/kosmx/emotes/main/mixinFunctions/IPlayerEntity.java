@@ -8,14 +8,13 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
+    AtomicBoolean ticked = new AtomicBoolean(false);
 
     @Override
     default void init(){
-        Pair<EmoteData, Integer> p = ClientEmotePlay.getEmoteForUUID(this.emotes_getUUID());
-        if(p != null){
-            this.playEmote(p.getLeft(), p.getRight());
-        }
         if(EmoteInstance.instance.getClientMethods().getMainPlayer() != null && EmoteInstance.instance.getClientMethods().getMainPlayer().isPlayingEmote()){
             IEmotePlayerEntity playerEntity = EmoteInstance.instance.getClientMethods().getMainPlayer();
             ClientEmotePlay.clientRepeateLocalEmote(playerEntity.getEmote().getData(), playerEntity.getEmote().getTick(), this);
@@ -35,6 +34,13 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
 
     @Override
     default void emoteTick(){
+        if(!ticked.get()){ //to solve the out-of sync issue
+            ticked.set(true);
+            Pair<EmoteData, Integer> p = ClientEmotePlay.getEmoteForUUID(this.emotes_getUUID());
+            if(p != null){
+                this.playEmote(p.getLeft(), p.getRight());
+            }
+        }
         if(isPlayingEmote()){
             setBodyYaw((getBodyYaw() * 3 + getViewYaw()) / 4);
             emoteTickCallback();
