@@ -37,7 +37,7 @@ dependencies {
 
 
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings minecraft.officialMojangMappings()
+    mappings loom.officialMojangMappings()
 
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 
@@ -60,10 +60,10 @@ shadowJar{
     classifier ""
 }
 
-remapJar{
-    dependsOn shadowJar
-    input.set shadowJar.archiveFile
-}
+//remapJar{
+//    dependsOn shadowJar
+//    input.set shadowJar.archiveFile
+//}
 
 jar{
     //from {
@@ -84,9 +84,9 @@ publishing{
             artifactId = 'emotesMain'
             version = project.version
 
-            artifact(jar) {
-                builtBy shadowJar
-            }
+            //artifact(jar) {
+            //    builtBy shadowJar
+            //}
             //artifact(remapJar) {
             //    builtBy remapJar
             //}
