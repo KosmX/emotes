@@ -2,15 +2,9 @@ plugins {
     //id 'fabric-loom' version '0.6-SNAPSHOT'
     id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
     id 'maven-publish'
-    id "com.github.johnrengelman.shadow" version "6.1.0"
-    id "architectury-plugin" version "3.0-SNAPSHOT"
-    //publish mod to other places :D
+    //id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-architectury{
-    platformSetupLoomIde()
-    forge()
-}
 
 //Import jfrog keys from file (not included in the git repo :D)
 //and well... serialize it
@@ -41,7 +35,7 @@ dependencies {
     implementation project(':executor')
     implementation project(':emotecraftCommon')
     implementation project(':emotesServer')
-    compileModule project(':emotesMain')
+    //compileModule project(':emotesMain')
     //compileModule project(':executor')
     //compileModule project(':emotecraftCommon')
 
@@ -66,12 +60,6 @@ dependencies {
 
 }
 
-tasks.withType(JavaCompile){
-    options.compilerArgs << '-Xlint:unchecked'
-    options.deprecation = true	//deprecated warning on compile
-}
-
-
 processResources {
     inputs.property "version", project.version
 
@@ -90,33 +78,27 @@ processResources {
 // this fixes some edge cases with special characters not displaying correctly
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+    it.options.encoding = "UTF-8"
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
 // If you remove this task, sources will not be generated.
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources"
     from sourceSets.main.allSource
 }
 
-shadowJar{
-    configurations = [project.configurations.compileModule]
-    classifier "dev-shadow"
-}
-
-remapJar{
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier "forge"
-}
-
 jar {
     classifier "dev"
-    from "LICENSE"
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
+    from {
+        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
-
 
 // configure the maven publication
 publishing {

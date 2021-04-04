@@ -75,7 +75,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
             }
 
 
-            public class EmoteListEntryImpl extends AbstractEmoteEntry<EmoteListEntryImpl>{
+            public class EmoteListEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntryImpl>{
 
                 public EmoteListEntryImpl(Minecraft client, EmoteHolder emote) {
                     super(client, emote);

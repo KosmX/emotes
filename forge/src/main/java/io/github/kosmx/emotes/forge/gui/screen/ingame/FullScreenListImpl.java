@@ -53,7 +53,7 @@ public class FullScreenListImpl extends AbstractControlledModScreen {
                 return new EmotelistEntryImpl(client, emoteHolder);
             }
 
-            public class EmotelistEntryImpl extends AbstractEmoteEntry<EmotelistEntryImpl>{
+            public class EmotelistEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmotelistEntryImpl>{
 
                 public EmotelistEntryImpl(Minecraft client, EmoteHolder emote) {
                     super(client, emote);
