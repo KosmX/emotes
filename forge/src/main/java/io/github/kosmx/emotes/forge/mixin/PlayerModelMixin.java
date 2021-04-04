@@ -101,13 +101,11 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
 
     @Inject(method = "setupAnim", at = @At(value = "HEAD"))
     private void setDefaultBeforeRender(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
-        setDefaultPivot();
+        setDefaultPivot(); //to not make everything wrong
     }
 
     @Inject(method = "setupAnim", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;copyFrom(Lnet/minecraft/client/model/geom/ModelPart;)V", ordinal = 0))
     private void setEmote(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
-        setDefaultPivot();  //to not make everything wrong
-        super.setupAnim(livingEntity, f, g, h, i, j);
         if(livingEntity instanceof AbstractClientPlayer && ((IEmotePlayerEntity<EmotePlayImpl>)livingEntity).isPlayingEmote()){
             EmotePlayImpl emote = ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getEmote();
             emoteSupplier.set(emote);
