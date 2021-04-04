@@ -9,18 +9,21 @@ import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@Mod.EventBusSubscriber(Dist.CLIENT)
 public class ClientInit {
 
     static KeyMapping openMenuKey;
@@ -44,12 +47,12 @@ public class ClientInit {
     }
 
     @SubscribeEvent
-    public void endClientTick(TickEvent.ClientTickEvent event){
+    public static void endClientTick(TickEvent.ClientTickEvent event){
         FabricClientMethods.tick++;
     }
 
     @SubscribeEvent
-    public void keyListenerEvent(InputEvent.KeyInputEvent event){
+    public static void keyListenerEvent(InputEvent.KeyInputEvent event){
         keyBindingFunction.accept(null);
     }
 

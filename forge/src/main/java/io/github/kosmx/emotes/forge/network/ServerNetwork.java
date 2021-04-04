@@ -37,7 +37,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         channel.addListener(this::receiveByteBuf);
     }
 
-    public void receiveByteBuf(NetworkEvent.ServerCustomPayloadEvent event){
+    public void receiveByteBuf(NetworkEvent.ClientCustomPayloadEvent event){
         instance.receiveMessage(event.getSource().get().getSender(), event.getSource().get().getSender().connection, event.getPayload());
     }
 

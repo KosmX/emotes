@@ -31,7 +31,7 @@ public class ClientNetworkInstance implements IClientNetwork {
         ServerNetwork.channel.addListener(this::receiveJunk);
     }
 
-    private void receiveJunk(NetworkEvent.ClientCustomPayloadEvent event){
+    private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
         receiveMessage(event.getPayload());
     }
 
