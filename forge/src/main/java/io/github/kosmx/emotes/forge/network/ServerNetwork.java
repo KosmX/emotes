@@ -39,6 +39,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
 
     public void receiveByteBuf(NetworkEvent.ClientCustomPayloadEvent event){
         instance.receiveMessage(event.getSource().get().getSender(), event.getSource().get().getSender().connection, event.getPayload());
+        event.getSource().get().setPacketHandled(true);//it was handled just in a bit weirder way me :D
     }
 
     void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf){

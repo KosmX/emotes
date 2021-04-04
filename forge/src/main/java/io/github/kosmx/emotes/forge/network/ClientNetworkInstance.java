@@ -33,6 +33,7 @@ public class ClientNetworkInstance implements IClientNetwork {
 
     private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
         receiveMessage(event.getPayload());
+        event.getSource().get().setPacketHandled(true);
     }
 
     void receiveMessage(FriendlyByteBuf buf){
