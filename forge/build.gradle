@@ -72,12 +72,12 @@ processResources {
     inputs.property "version", project.version
 
     from(sourceSets.main.resources.srcDirs) {
-        include "mods.toml"
+        include "META-INF/mods.toml"
         expand "version": project.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
-        exclude "mods.toml"
+        exclude "META-INF/mods.toml"
     }
 }
 
