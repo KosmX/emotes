@@ -8,6 +8,8 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,24 +18,28 @@ import java.util.HashMap;
 
 public class ClientNetworkInstance implements IClientNetwork {
 
-    /*public static final EventNetworkChannel channel = NetworkRegistry.newEventChannel(
-            ServerNetwork.channelID,
-            () -> "8",
-            s -> true,
-            s -> true);
+    boolean isRemotePresent = false;
 
-
-     */
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
     public void init(){
         //ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
         ServerNetwork.channel.addListener(this::receiveJunk);
+        ServerNetwork.channel.addListener(this::registerServerSide);
+        MinecraftForge.EVENT_BUS.addListener(this::connectServerCallback);
+    }
+
+    private void connectServerCallback(ClientPlayerNetworkEvent.LoggedInEvent event){
+        this.isRemotePresent = false;
     }
 
     private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
         receiveMessage(event.getPayload());
         event.getSource().get().setPacketHandled(true);
+    }
+
+    private void registerServerSide(NetworkEvent.ChannelRegistrationChangeEvent event){
+        this.isRemotePresent = event.getRegistrationChangeType() == NetworkEvent.RegistrationChangeType.REGISTER;
     }
 
     void receiveMessage(FriendlyByteBuf buf){
@@ -72,7 +78,10 @@ public class ClientNetworkInstance implements IClientNetwork {
 
     @Override
     public boolean isActive() {
-        return Minecraft.getInstance().getConnection() != null && ServerNetwork.channel.isRemotePresent(Minecraft.getInstance().getConnection().getConnection());
+        //return Minecraft.getInstance().getConnection() != null && ServerNetwork.channel.isRemotePresent(Minecraft.getInstance().getConnection().getConnection());
+
+        System.out.println(isRemotePresent);
+        return this.isRemotePresent;
     }
 
     public static ServerboundCustomPayloadPacket newC2SEmotePacket(NetData data) throws IOException {

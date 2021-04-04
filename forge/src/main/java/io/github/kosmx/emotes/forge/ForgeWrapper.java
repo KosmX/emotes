@@ -26,6 +26,7 @@ public class ForgeWrapper {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+
     private void setup(final FMLCommonSetupEvent event){
         MainLoader.main(new String[]{"FML"});
         if(FMLLoader.getDist() == Dist.CLIENT){
@@ -34,6 +35,4 @@ public class ForgeWrapper {
         ServerNetwork.instance.init();
 
     }
-    //This is all of my FML jobs
-
 }
