@@ -79,8 +79,6 @@ public class ClientNetworkInstance implements IClientNetwork {
     @Override
     public boolean isActive() {
         //return Minecraft.getInstance().getConnection() != null && ServerNetwork.channel.isRemotePresent(Minecraft.getInstance().getConnection().getConnection());
-
-        System.out.println(isRemotePresent);
         return this.isRemotePresent;
     }
 
