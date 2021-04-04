@@ -38,8 +38,11 @@
   "key.emotecraft.stop": "停止播放表情",
   "emotecraft.openFolder": "打开表情文件夹",
   "emotecraft.otherconfig.quark": "启用夸克序列化程序",
+  "emotecraft.otherconfig.quark.tooltip": "夸克表情读取器非常不稳定且不完全支持。\n不推荐使用。 它可能不会正常工作，甚至可能导致崩溃",
   "category.emotecraft.keybinding": "表情工艺",
   "emotecraft.emote.author": "作者： ",
   "emotecraft.config": "配置表情",
-  "emotecraft.blockedEmote": "您不允许播放此表情。"
+  "emotecraft.blockedEmote": "您不允许播放此表情。",
+  "emotecraft.resetConfig.title": "重置每一个表情工艺的设置",
+  "emotecraft.resetConfig.message": "你是否确认要重置设置？"
 }
