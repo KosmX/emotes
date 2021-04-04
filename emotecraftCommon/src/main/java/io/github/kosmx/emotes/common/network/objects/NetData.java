@@ -56,6 +56,7 @@ public class NetData {
         data.purpose = this.purpose;
         data.threshold = threshold;
         data.stopEmoteID = stopEmoteID != null ? new AtomicInteger(stopEmoteID.get()) : null;
+        data.emoteData = emoteData;
         data.tick = tick;
         data.valid = valid;
         data.song = song;

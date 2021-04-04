@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.fabric.executor.types;
 
 import com.google.gson.JsonElement;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.executor.dataTypes.other.TextFormatting;
+import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -25,7 +25,7 @@ public class TextImpl implements Text {
     }
 
     @Override
-    public Text formatted(TextFormatting form) {
+    public Text formatted(EmotesTextFormatting form) {
         return new TextImpl(this.MCText.withStyle(iFormatToFormat(form)));
     }
 
@@ -34,8 +34,8 @@ public class TextImpl implements Text {
         return new TextImpl(this.MCText.append(((TextImpl) text).MCText));
     }
 
-    protected ChatFormatting iFormatToFormat(TextFormatting textFormatting){
-        return ChatFormatting.getByCode(textFormatting.getCode());
+    protected ChatFormatting iFormatToFormat(EmotesTextFormatting emotesTextFormatting){
+        return ChatFormatting.getByCode(emotesTextFormatting.getCode());
     }
 
     public MutableComponent get(){

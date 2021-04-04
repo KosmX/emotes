@@ -1,0 +1,140 @@
+plugins {
+    //id 'fabric-loom' version '0.6-SNAPSHOT'
+    id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
+    id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "architectury-plugin" version "3.0-SNAPSHOT"
+}
+
+
+//Import jfrog keys from file (not included in the git repo :D)
+//and well... serialize it
+repositories{
+    mavenLocal()
+    //jcenter()
+}
+
+//sourceCompatibility = JavaVersion.VERSION_1_8 //These are configured by the main gralde.build (hopefully)
+//targetCompatibility = JavaVersion.VERSION_1_8
+
+archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}" //TODO what?
+version = project.mod_version
+group = project.maven_group
+
+configurations {
+    compileModule
+}
+loom{
+    silentMojangMappingsLicense()
+    mixinConfig "emotecraft.mixins.json"
+    mixinConfig "bendylib.mixin.json"
+}
+
+dependencies {
+    //compile project(':emotecraftCommon')
+    implementation project(':emotesMain')
+    implementation project(':executor')
+    implementation project(':emotecraftCommon')
+    implementation project(':emotesServer')
+    compileModule project(':emotesMain')
+    //compileModule project(':executor')
+    //compileModule project(':emotecraftCommon')
+
+
+    //to change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    mappings loom.officialMojangMappings()
+    forge "net.minecraftforge:forge:${project.minecraft_version}-36.1.4"
+    //other dependency(ies)
+
+    //modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"
+
+
+    //compileOnly files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
+
+
+    //Spigot stuff
+    //implementation("org.spigotmc:spigot-api:${project.spigot_api}")//Spigot will be a different module...
+
+    //runtime files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
+
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "mods.toml"
+        expand "version": project.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "mods.toml"
+    }
+}
+
+
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile) {
+    it.options.encoding = "UTF-8"
+}
+
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+shadowJar{
+    configurations = [project.configurations.compileModule]
+    classifier "dev-shadow"
+}
+
+remapJar{
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+    classifier "forge"
+}
+
+jar {
+    classifier "dev"
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
+    //from {
+    //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+    //}
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(jar) {
+                builtBy remapJar
+            }
+            //artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}.jar"){
+            //	builtBy remapJar
+            //}
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
+
+    // select the repositories you want to publish to
+    repositories {
+        // uncomment to publish to the local maven
+        mavenLocal()
+    }
+}

@@ -3,7 +3,8 @@
   "id": "emotecraft",
   "version": "${version}",
   "name": "Emotecraft",
-  "description": "Play emotes in Minecraft\nSpecial thanks to OrangeKale64 for creating emotes and help in the UI design",
+  "description": "Play emotes in Minecraft\nOpen the menu to setup your fast-choose wheel\n\nYou can add custom emotes, and you can play these even if nobody else has them\n\nSpecial thanks:\nOrangeKale64 for creating emotes and help in the UI design\nOrsond for inspiring me and providing CollarMC\nArchitectury for the Forge build tools",
+
   "authors": [
     "KosmX"
   ],
@@ -14,7 +15,7 @@
     "issues": "https://discord.com/invite/f3tZu3Z",
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/emotecraft"
   },
-  "license": "Creative Commons Attribution 4.0",
+  "license": "CC-BY-4.0 License",
   "icon": "assets/emotecraft/icon.png",
   "environment": "*",
   "entrypoints": {

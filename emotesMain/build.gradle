@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
@@ -8,14 +9,19 @@ version project.mod_version
 
 repositories {
     mavenCentral()
+}
 
+configurations {
+    compileModule
 }
 
 dependencies {
     implementation project(':emotecraftCommon')
     implementation project(':executor')
+    compileModule project(':emotecraftCommon')
+    compileModule project(':executor')
     implementation project(':emotesServer')
-
+    compileModule project(':emotesServer')
 
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 }
@@ -31,20 +37,32 @@ tasks.withType(Copy){
     }
 }
 
-java{
-    withJavadocJar()
-    withSourcesJar()
+shadowJar{
+    configurations = [project.configurations.compileModule]
 }
+
+jar{
+    //from {
+    //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+    //}
+}
+
+task sourcesJar(type: Jar, dependsOn: classes){
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
 
 publishing{
     publications{
         maven(MavenPublication) {
-            groupId = 'com.kosmx.emotes'
+            groupId = 'io.github.kosmx.emotes'
             artifactId = 'emotesMain'
             version = project.version
 
             artifactId 'emotesMain'
-            artifact jar
+            artifact shadowJar
+            artifact sourcesJar
             //from components.java
         }
     }

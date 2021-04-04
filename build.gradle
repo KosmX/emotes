@@ -1,5 +1,6 @@
 plugins{
     id 'java'
+    //id "com.dorongold.task-tree" version "1.5" Current version doesn't support gradle 6.8
 }
 
 allprojects {

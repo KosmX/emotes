@@ -26,10 +26,7 @@ plugins {
 //and well... serialize it
 repositories{
     mavenLocal()
-    jcenter()
-    maven{
-        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
-    }
+    //jcenter()
     maven{
         url "https://maven.terraformersmc.com/releases"
     }

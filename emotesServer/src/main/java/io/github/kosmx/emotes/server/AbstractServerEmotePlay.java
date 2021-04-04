@@ -19,8 +19,11 @@ public abstract class AbstractServerEmotePlay<P> {
 
     protected abstract UUID getUUIDFromPlayer(P player);
 
-    public void receiveMessage(byte[] bytes, P player, INetworkInstance instance) throws IOException {
-        NetData data = new EmotePacket.Builder().build().read(ByteBuffer.wrap(bytes));
+    public void receiveMessage(byte[] bytes, P player, INetworkInstance instance) throws IOException{
+        receiveMessage(new EmotePacket.Builder().build().read(ByteBuffer.wrap(bytes)), player, instance);
+    }
+
+    public void receiveMessage(NetData data, P player, INetworkInstance instance) throws IOException {
         switch (data.purpose){
             case STOP:
                 sendForEveryoneElse(data, player);

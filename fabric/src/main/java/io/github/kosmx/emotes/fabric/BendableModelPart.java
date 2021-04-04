@@ -57,13 +57,13 @@ public class BendableModelPart extends MutableModelPart {
 
 
     /**
-     * This mod has always max priority, but not always active.
+     * This mod has always 4 priority, but not always active.
      *
      * @return 0
      */
     @Override
     public int getPriority(){
-        return 0;
+        return 4;
     }
 
     public Matrix4f getMatrix4f(){
@@ -76,7 +76,7 @@ public class BendableModelPart extends MutableModelPart {
 
     @Override
     public boolean isActive(){
-        return this.emote != null && EmotePlayImpl.isRunningEmote(this.emote.get());
+        return this.emote != null && EmotePlayImpl.isRunningEmote(this.emote.get()) && angl != 0;
     }
 
     public void setEmote(@Nullable SetableSupplier<EmotePlayImpl> emote){

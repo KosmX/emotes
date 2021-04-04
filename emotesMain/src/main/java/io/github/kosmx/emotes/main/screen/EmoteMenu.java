@@ -4,7 +4,7 @@ import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.executor.dataTypes.other.TextFormatting;
+import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
 import io.github.kosmx.emotes.main.ClientInit;
@@ -238,7 +238,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             Text message = emoteList.getSelectedEntry().getEmote().keyBinding.getLocalizedText();
             if(activeKeyTime != 0)
                 //message = (new LiteralText("> ")).append(message.shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW);
-                message = EmoteInstance.instance.getDefaults().textFromString("> ").append(message).formatted(TextFormatting.YELLOW).append(" <").formatted(TextFormatting.YELLOW);
+                message = EmoteInstance.instance.getDefaults().textFromString("> ").append(message).formatted(EmotesTextFormatting.YELLOW).append(" <").formatted(EmotesTextFormatting.YELLOW);
             setKeyButton.setMessage(message);
         }
     }
