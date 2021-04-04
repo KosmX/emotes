@@ -3,6 +3,7 @@
 build/
 out/
 classes/
+.out/
 
 #IDEA
 .idea/
