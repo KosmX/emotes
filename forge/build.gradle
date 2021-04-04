@@ -1,11 +1,18 @@
 plugins {
     //id 'fabric-loom' version '0.6-SNAPSHOT'
-    id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
+    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
+    //id "architectury-plugin" version "3.0-SNAPSHOT"
     id 'maven-publish'
     id "com.github.johnrengelman.shadow" version "6.1.0"
-    id "architectury-plugin" version "3.0-SNAPSHOT"
 }
 
+apply plugin: 'forgified-fabric-loom'
+apply plugin: "architectury-plugin"
+
+architectury{
+    platformSetupLoomIde()
+    forge()
+}
 
 //Import jfrog keys from file (not included in the git repo :D)
 //and well... serialize it
@@ -31,12 +38,12 @@ loom{
 }
 
 dependencies {
-    //compile project(':emotecraftCommon')
     implementation project(':emotesMain')
     implementation project(':executor')
     implementation project(':emotecraftCommon')
     implementation project(':emotesServer')
     compileModule project(':emotesMain')
+    developmentForge(project(":emotesMain")) { transitive = false }
     //compileModule project(':executor')
     //compileModule project(':emotecraftCommon')
 
