@@ -16,7 +16,7 @@
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/emotecraft"
   },
   "license": "CC-BY-4.0 License",
-  "icon": "assets/emotecraft/icon.png",
+  "icon": "emotecraft_mod_logo.png",
   "environment": "*",
   "entrypoints": {
     "main": [
