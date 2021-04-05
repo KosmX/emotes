@@ -163,7 +163,7 @@ if(keys_imported) {
                 forgeGradleIntegration = false // ForgeJunk MOD
             }
 
-            mainArtifact("fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar") {
+            mainArtifact("forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar") {
                 //displayName = archivesBaseName
             }
         }
