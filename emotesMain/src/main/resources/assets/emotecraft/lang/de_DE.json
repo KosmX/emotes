@@ -6,6 +6,8 @@
   "emotecraft.options.fastmenu3": "Rechtsklicke, um den Emote zu entfernen",
   "emotecraft.sure": "Der Hotkey wird überschrieben",
   "emotecraft.sure2": "Ein anderer Emote hat diesen Hotkey bereits.\nMöchtest du den anderen Hotkey überschreiben?",
+  "emotecraft.otherconfig.category.general": "Grundoptionen",
+  "emotecraft.otherconfig.category.expert": "Experten-Optionen",
   "emotecraft.otherconfig": "Weitere Optionen",
   "emotecraft.otherconfig.debug": "Debugging",
   "emotecraft.otherconfig.validate": "Emote validieren",
