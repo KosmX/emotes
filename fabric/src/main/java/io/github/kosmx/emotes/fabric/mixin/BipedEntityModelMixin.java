@@ -4,7 +4,7 @@ import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import io.github.kosmx.emotes.fabric.BendableModelPart;
-import io.github.kosmx.emotes.fabric.emote.EmotePlayImpl;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.kosmx.bendylib.IModelPart;

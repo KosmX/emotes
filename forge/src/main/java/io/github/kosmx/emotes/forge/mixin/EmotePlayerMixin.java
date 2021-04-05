@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
 import io.github.kosmx.emotes.common.tools.Vec3d;
-import io.github.kosmx.emotes.forge.emote.EmotePlayImpl;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import net.minecraft.client.model.geom.ModelPart;

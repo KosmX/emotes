@@ -20,7 +20,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.kosmx.emotes.fabric.Initializer"
+      "io.github.kosmx.emotes.fabric.FabricWrapper"
     ],
     "client": [
     ],

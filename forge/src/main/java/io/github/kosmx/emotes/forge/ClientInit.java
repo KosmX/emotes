@@ -1,14 +1,13 @@
 package io.github.kosmx.emotes.forge;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.kosmx.emotes.forge.executor.FabricClientMethods;
-import io.github.kosmx.emotes.forge.gui.EmoteMenuImpl;
-import io.github.kosmx.emotes.forge.gui.screen.ingame.FastChosseScreen;
+import io.github.kosmx.emotes.forge.executor.ForgeClientMethods;
+import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
+import io.github.kosmx.emotes.arch.gui.screen.ingame.FastChosseScreen;
 import io.github.kosmx.emotes.forge.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
@@ -19,9 +18,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class ClientInit {
@@ -48,7 +45,7 @@ public class ClientInit {
 
     @SubscribeEvent
     public static void endClientTick(TickEvent.ClientTickEvent event){
-        FabricClientMethods.tick++;
+        ForgeClientMethods.tick++;
     }
 
     @SubscribeEvent

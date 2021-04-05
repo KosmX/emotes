@@ -10,7 +10,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.Pair;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
-import io.github.kosmx.emotes.forge.emote.EmotePlayImpl;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import net.minecraft.client.model.geom.ModelPart;
 
 import javax.annotation.Nonnull;
