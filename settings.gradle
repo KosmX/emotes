@@ -32,4 +32,5 @@ include 'emotesServer'
 include 'fabric'
 include 'forge' //Forge!?
 include 'archCommon'
+include 'bukkit'
 

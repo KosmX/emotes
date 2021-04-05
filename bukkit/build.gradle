@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+}
+
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+
+    maven{
+        name = "BucketMaven"
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
+    }
+}
+
+configurations {
+    compileModule
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    implementation("org.spigotmc:spigot-api:${project.spigot_api}")
+
+    implementation project(':emotecraftCommon')
+    compileModule project(':emotecraftCommon')
+}
+
+processResources{
+
+    inputs.property "version", project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include "plugin.yml"
+        expand version: project.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "plugin.yml"
+    }
+}
+
+jar{
+    from{
+        configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
+    }
+}
