@@ -19,7 +19,7 @@ plugins {
     //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
     //id "architectury-plugin" version "3.0-SNAPSHOT"
     id 'maven-publish'
-    //publish mod to other places :D
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 apply plugin: 'forgified-fabric-loom'
 apply plugin: 'architectury-plugin'
@@ -135,10 +135,21 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
+shadowJar{
+    configurations = [project.configurations.compileModule]
+    classifier "dev-shadow"
+}
+
+remapJar{
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+    classifier "fabric"
+}
+
 jar {
-    from {
-        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+    //from {
+    //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+    //}
     from "LICENSE"
 }
 
