@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.main.network;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
@@ -70,7 +71,7 @@ public class ClientPacketManager {
             if(player != null) {
                 data.player = player;
             }
-            if(data.player == null){
+            if(data.player == null && (data.purpose == PacketTask.STREAM || data.purpose == PacketTask.STOP)){
                 //this is not exactly IO but something went wrong in IO so it is IO fail
                 throw new IOException("Didn't received any player information");
             }

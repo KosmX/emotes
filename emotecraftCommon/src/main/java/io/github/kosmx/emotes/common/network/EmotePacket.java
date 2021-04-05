@@ -187,6 +187,11 @@ public class EmotePacket {
             return this;
         }
 
+        public Builder configureValidationThreshold(float t){
+            data.threshold = t;
+            return this;
+        }
+
         public Builder configureToSendEmote(EmoteData emoteData, @Nullable UUID player){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");
             data.purpose = PacketTask.STREAM;
