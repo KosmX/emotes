@@ -4,7 +4,7 @@ import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
 import io.github.kosmx.emotes.fabric.BendableModelPart;
-import io.github.kosmx.emotes.fabric.emote.EmotePlayImpl;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;

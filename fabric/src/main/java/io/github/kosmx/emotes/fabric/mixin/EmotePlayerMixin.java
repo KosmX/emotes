@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.fabric.mixin;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
 import io.github.kosmx.emotes.common.tools.Vec3d;
-import io.github.kosmx.emotes.fabric.emote.EmotePlayImpl;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import com.mojang.authlib.GameProfile;

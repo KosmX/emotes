@@ -19,7 +19,7 @@ plugins {
     //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
     //id "architectury-plugin" version "3.0-SNAPSHOT"
     id 'maven-publish'
-    //publish mod to other places :D
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 apply plugin: 'forgified-fabric-loom'
 apply plugin: 'architectury-plugin'
@@ -59,11 +59,16 @@ configurations {
 }
 
 dependencies {
-    implementation project(':emotesMain')
     implementation project(':executor')
     implementation project(':emotecraftCommon')
     implementation project(':emotesServer')
+
+    implementation(project(path: ":archCommon"))
+    implementation project(':emotesMain')
     developmentFabric(project(path: ":emotesMain")) { transitive = false }
+    developmentFabric(project(path: ":archCommon")) { transitive = false }
+
+    compileModule(project(path: ":archCommon")) { transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }
     compileModule project(':executor')
     compileModule project(':emotecraftCommon')
@@ -135,10 +140,21 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
+shadowJar{
+    configurations = [project.configurations.compileModule]
+    classifier "fabric-dev"
+}
+
+remapJar{
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+    classifier "fabric"
+}
+
 jar {
-    from {
-        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+    //from {
+    //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+    //}
     from "LICENSE"
 }
 

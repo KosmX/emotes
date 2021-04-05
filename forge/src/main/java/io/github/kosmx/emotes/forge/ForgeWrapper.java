@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.forge;
 
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.forge.executor.EmotesMain;
+import io.github.kosmx.emotes.forge.executor.ForgeEmotesMain;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
 import io.github.kosmx.emotes.main.MainLoader;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,7 +19,7 @@ public class ForgeWrapper {
 
 
     public ForgeWrapper(){
-        EmoteInstance.instance = new EmotesMain();
+        EmoteInstance.instance = new ForgeEmotesMain();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 

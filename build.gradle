@@ -3,6 +3,10 @@ plugins{
     id 'forgified-fabric-loom' version '0.6-SNAPSHOT' apply false //Forge loom :D
     id "architectury-plugin" version "3.0-SNAPSHOT"
     //id "com.dorongold.task-tree" version "1.5" Current version doesn't support gradle 6.8
+
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id "com.github.breadmoirai.github-release" version "2.2.12"
+    id "com.modrinth.minotaur" version "1.1.0"
 }
 
 
@@ -29,3 +33,146 @@ allprojects {
 }
 
 
+//---------------- Publishing ----------------
+
+boolean isRelease = false;
+String changes = "test"
+
+
+import com.modrinth.minotaur.TaskModrinthUpload
+
+//Import publishing keys from file (not included in the git repo :D)
+boolean keys_imported = new File("keys.properties").exists()
+//and well... serialize it
+
+
+if(keys_imported) {
+    file("keys.properties").withReader {
+        Properties props = new Properties()
+        props.load(it)
+        project.ext.keys = props
+    }
+
+    task publishModrinth(type: TaskModrinthUpload) {
+        if(isRelease){
+            releaseType = "release"
+        }
+        else{
+            releaseType = "beta"
+        }
+        token = project.keys.modrinth_token;
+        // Get the GitHub Access Token you got from the basics part of this tutorial.
+        projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
+        //System.out.println("Enter the version number:");
+        versionNumber = "${project.mod_version}"
+        versionName = "${project.mod_version}"
+        uploadFile = "fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar" // This links to a task that builds your mod jar and sets "uploadFile" to the mod jar.
+        additionalFiles = ["forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar"] // This links to a task that builds your mod jar and sets "uploadFile" to the mod jar.
+        //uploadFile = tasks.fabric.remapJar
+        //System.out.println("Enter the game version number: (See minotaur docs for valids)");
+        addGameVersion(project.minecraft_version);
+        changelog = changes;
+        addLoader("fabric")
+        addLoader("forge")
+        failSilently = true
+    }
+
+
+    githubRelease {
+        token project.keys.github_token // This is your personal access token with Repo permissions
+        // You get this from your user settings > developer settings > Personal Access Tokens
+        owner "KosmX"
+        // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
+        repo "emotes" // by default this is set to your project name
+        tagName project.mod_version // by default this is set to "v${project.version}"
+        targetCommitish "development" // by default this is set to "master"
+        releaseName "Emotecraft-${project.mod_version}" // Release title, by default this is the same as the tagName
+        body changes // by default this is empty
+        draft false // by default this is false
+        prerelease isRelease // by default this is false
+        releaseAssets {
+            files("fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar",
+                    "fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric-dev.jar",
+                    "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar",
+                    "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge-dev.jar")
+        }
+        // this points to which files you want to upload as assets with your release
+        //releaseAssets jar.destinationDir.listFiles
+        overwrite true // by default false; if set to true, will delete an existing release with the same tag and name
+        dryRun false // by default false; you can use this to see what actions would be taken without making a release
+        apiEndpoint "https://api.github.com" // should only change for github enterprise users
+        client // This is the okhttp client used for http requests
+    }
+
+    curseforge {
+        apiKey = project.keys.curseforge_key
+        project {
+            id = '397809' //Fabric version
+            changelogType = "markdown"
+            //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+            changelog = changes
+            if(isRelease){
+                releaseType = "release"
+            }
+            else{
+                releaseType = "beta"
+            }
+            addGameVersion project.minecraft_version
+            addGameVersion "Fabric"
+            addGameVersion "Java 8"
+            addGameVersion "Java 9"
+            addGameVersion "Java 10"
+
+
+            relations {
+                requiredDependency 'fabric-api'
+                embeddedLibrary 'modmenu'
+                //optionalDependency 'perspective-mod-redux'
+            }
+
+            options {
+                forgeGradleIntegration = false // FABRIC MOD
+            }
+
+            mainArtifact("fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar") {
+                //displayName = archivesBaseName
+            }
+        }
+    }
+    curseforge {
+        apiKey = project.keys.curseforge_key
+        project {
+            id = '403422' //Forge version
+            changelogType = "markdown"
+            //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+            changelog = changes
+            if(isRelease){
+                releaseType = "release"
+            }
+            else{
+                releaseType = "beta"
+            }
+            addGameVersion project.minecraft_version
+            addGameVersion "Forge"
+            addGameVersion "Java 8"
+            addGameVersion "Java 9"
+            addGameVersion "Java 10"
+
+
+            options {
+                forgeGradleIntegration = false // ForgeJunk MOD
+            }
+
+            mainArtifact("fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar") {
+                //displayName = archivesBaseName
+            }
+        }
+    }
+
+    task autoPublish {
+        dependsOn(':fabric:build', ':forge:build')
+        finalizedBy(tasks.githubRelease)
+        finalizedBy(publishModrinth)
+        finalizedBy(tasks.curseforge)
+    }
+}

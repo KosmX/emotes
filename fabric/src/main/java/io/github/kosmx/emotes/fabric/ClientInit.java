@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.fabric;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.kosmx.emotes.fabric.executor.FabricClientMethods;
-import io.github.kosmx.emotes.fabric.gui.screen.ingame.FastChosseScreen;
+import io.github.kosmx.emotes.arch.executor.AbstractClientMethods;
+import io.github.kosmx.emotes.arch.gui.screen.ingame.FastChosseScreen;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.fabricmc.api.EnvType;
@@ -29,7 +29,7 @@ public class ClientInit {
         ClientNetworkInstance.networkInstance.init(); //init network
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            FabricClientMethods.tick++;
+            AbstractClientMethods.tick++;
 
             keyBindingFunction.accept(client);
         });
