@@ -54,15 +54,15 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
         if(isPlayingEmote()){
             setBodyYaw((getBodyYaw() * 3 + getViewYaw()) / 4);
             emoteTickCallback();
+            if(this.isMainPlayer() && getEmote().perspective == 1 && Minecraft.getInstance().options.getCameraType() != CameraType.THIRD_PERSON_BACK){
+                this.getEmote().perspective = 0;
+            }
             if(!this.isMainPlayer() || EmoteHolder.canRunEmote(this)){
                 this.getEmote().tick();
             }
             else {
                 this.getEmote().stop();
                 ClientEmotePlay.clientStopLocalEmote(this.getEmote().getData());
-            }
-            if(this.isMainPlayer() && getEmote().perspective == 1 && Minecraft.getInstance().options.getCameraType() != CameraType.THIRD_PERSON_BACK){
-                this.getEmote().perspective = 0;
             }
         }
     }
