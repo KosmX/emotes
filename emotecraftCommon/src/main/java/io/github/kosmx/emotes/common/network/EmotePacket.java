@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.common.network.objects.*;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
@@ -133,7 +134,8 @@ public class EmotePacket {
                     }
                 }
                 else {
-                    byteBuffer.position(currentPos + size);//Skip unknown sub-packets...
+                    ((Buffer)byteBuffer).position(currentPos + size);
+                    //byteBuffer.position(currentPos + size);//Skip unknown sub-packets...
                 }
             }
 

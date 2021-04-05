@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.fabric.gui.screen.AbstractControlledModScreen;
 import io.github.kosmx.emotes.fabric.gui.screen.IDrawableImpl;
 import io.github.kosmx.emotes.fabric.gui.screen.IWidgetLogicImpl;
-import io.github.kosmx.emotes.fabric.gui.screen.ingame.FastChosseScreen.FastMenuScreenLogicImpl;
-import io.github.kosmx.emotes.fabric.gui.screen.ingame.FastChosseScreen.FastMenuScreenLogicImpl.FastMenuWidgetImpl;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.ingame.FastMenuScreenLogic;

@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.Ease;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -118,7 +119,9 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
             if(! part.addKeyFrame(buf.getInt(), buf.getFloat(), Ease.getEase(buf.get()))){
                 this.valid = false;
             }
-            buf.position(currentPos + keyframeSize); //To enable other data in the future without losing compatibility
+            ((Buffer)buf).position(currentPos + keyframeSize);
+            //ByteBuffer#position(I)V;Buffer in Java 1.8 but
+            //ByteBuffer#position(I)V;ByteBuffer in later versions
         }
     }
 
