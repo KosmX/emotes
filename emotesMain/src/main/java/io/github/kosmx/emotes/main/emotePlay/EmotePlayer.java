@@ -29,6 +29,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
     public final BodyPart leftArm;
     public final BodyPart rightLeg;
     public final BodyPart leftLeg;
+    public int perspective = 0;
 
     /**
      *
@@ -56,6 +57,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         if(isInfinite()){
             currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
         }
+        this.perspective = perspective;
     }
 
     @Override

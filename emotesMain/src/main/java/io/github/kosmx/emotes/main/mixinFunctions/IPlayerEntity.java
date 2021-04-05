@@ -5,8 +5,11 @@ import io.github.kosmx.emotes.common.tools.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -20,6 +23,13 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
             ClientEmotePlay.clientRepeateLocalEmote(playerEntity.getEmote().getData(), playerEntity.getEmote().getTick(), this);
         }
 
+    }
+
+    default void initEmotePerspective(EmotePlayer emotePlayer){
+        if(((ClientConfig)EmoteInstance.config).enablePerspective.get() && isMainPlayer() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+            emotePlayer.perspective = 1;
+            Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+        }
     }
 
     @Override
@@ -50,6 +60,9 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
             else {
                 this.getEmote().stop();
                 ClientEmotePlay.clientStopLocalEmote(this.getEmote().getData());
+            }
+            if(this.isMainPlayer() && getEmote().perspective == 1 && Minecraft.getInstance().options.getCameraType() != CameraType.THIRD_PERSON_BACK){
+                this.getEmote().perspective = 0;
             }
         }
     }

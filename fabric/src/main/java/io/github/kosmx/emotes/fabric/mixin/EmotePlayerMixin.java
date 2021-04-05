@@ -7,6 +7,8 @@ import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import com.mojang.authlib.GameProfile;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,6 +41,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     @Override
     public void playEmote(EmoteData emote, int t) {
         this.emote = new EmotePlayImpl(emote, this::noteConsumer, t);
+        this.initEmotePerspective(this.emote);
     }
 
     private void noteConsumer(Layer.Note note){
