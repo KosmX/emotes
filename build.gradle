@@ -67,7 +67,8 @@ if(keys_imported) {
         versionNumber = "${project.mod_version}"
         versionName = "${project.mod_version}"
         uploadFile = "fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar" // This links to a task that builds your mod jar and sets "uploadFile" to the mod jar.
-        additionalFiles = ["forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar"] // This links to a task that builds your mod jar and sets "uploadFile" to the mod jar.
+        additionalFiles = ["forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar",
+                           "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar"]
         //uploadFile = tasks.fabric.remapJar
         //System.out.println("Enter the game version number: (See minotaur docs for valids)");
         addGameVersion(project.minecraft_version);
@@ -94,7 +95,8 @@ if(keys_imported) {
             files("fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar",
                     "fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric-dev.jar",
                     "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar",
-                    "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge-dev.jar")
+                    "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge-dev.jar",
+                    "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar")
         }
         // this points to which files you want to upload as assets with your release
         //releaseAssets jar.destinationDir.listFiles
@@ -168,9 +170,38 @@ if(keys_imported) {
             }
         }
     }
+    curseforge {
+        apiKey = project.keys.curseforge_key
+        project {
+            id = '467254' //Bukkit plugin version
+            changelogType = "markdown"
+            //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+            changelog = changes
+            if(isRelease){
+                releaseType = "release"
+            }
+            else{
+                releaseType = "beta"
+            }
+            addGameVersion project.minecraft_version
+            //addGameVersion "Forge"
+            //addGameVersion "Java 8"
+            //addGameVersion "Java 9"
+            //addGameVersion "Java 10"
+
+
+            options {
+                forgeGradleIntegration = false // ForgeJunk MOD
+            }
+
+            mainArtifact("bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar") {
+                //displayName = archivesBaseName
+            }
+        }
+    }
 
     task autoPublish {
-        dependsOn(':fabric:build', ':forge:build')
+        dependsOn(':fabric:build', ':forge:build', ':bukkit:build')
         finalizedBy(tasks.githubRelease)
         finalizedBy(publishModrinth)
         finalizedBy(tasks.curseforge)
