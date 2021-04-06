@@ -30,8 +30,8 @@ public class BukkitWrapper extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        if(CommonData.isLoaded || checkForFabricInstance()){
-            getLogger().warning("Emotecraft is ALREADY loaded as a Fabric mod. Don't load it twice!");
+        if(CommonData.isLoaded){
+            getLogger().warning("Emotecraft is loaded multiple times, please load it only once!");
             Bukkit.getPluginManager().disablePlugin(this); //disable itself.
         }
         else {
@@ -39,11 +39,11 @@ public class BukkitWrapper extends JavaPlugin {
         }
     }
 
-    /**
+    /*
      * Weird way to check Fabric loader
      * @return is Emotecraft installed as a Fabric mod
      * (I hope, it will be idiot-proof :D
-     */
+     *
     private boolean checkForFabricInstance(){
         try{
              return (boolean) Class.forName("net.fabricmc.loader.api.FabricLoader").getMethod("isModLoaded", String.class).invoke(Class.forName("net.fabricmc.loader.api.FabricLoader").getMethod("getInstance").invoke(null), "emotecraft");
@@ -53,7 +53,7 @@ public class BukkitWrapper extends JavaPlugin {
             //If it didn't work, no problem
             return false;
         }
-    }
+    }//*/
 
     @Override
     public void onEnable() {

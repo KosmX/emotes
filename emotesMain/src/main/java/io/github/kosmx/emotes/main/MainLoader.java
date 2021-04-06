@@ -1,20 +1,27 @@
 package io.github.kosmx.emotes.main;
 
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.Serializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import net.minecraft.server.commands.EmoteCommands;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.logging.Level;
 
 public class MainLoader {
     static int tick = 0;
     //The main mod-loader class
     public static void main(String[] args){
 
+        if(CommonData.isLoaded){
+            EmoteInstance.instance.getLogger().log(Level.SEVERE, "Emotecraft is loaded multiple times, please load it only once!", true);
+        }
+        CommonData.isLoaded = true;
         Serializer.initializeSerializer();
 
         loadConfig();
