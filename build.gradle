@@ -66,9 +66,9 @@ if(keys_imported) {
         //System.out.println("Enter the version number:");
         versionNumber = "${project.mod_version}"
         versionName = "${project.mod_version}"
-        uploadFile = "fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar" // This links to a task that builds your mod jar and sets "uploadFile" to the mod jar.
-        additionalFiles = ["forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar",
-                           "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar"]
+        uploadFile = "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar"
+        additionalFiles = ["fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar",
+                           "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar"]
         //uploadFile = tasks.fabric.remapJar
         //System.out.println("Enter the game version number: (See minotaur docs for valids)");
         addGameVersion(project.minecraft_version);
