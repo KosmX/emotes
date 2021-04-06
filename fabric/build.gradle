@@ -46,7 +46,7 @@ repositories{
 //sourceCompatibility = JavaVersion.VERSION_1_8 //These are configured by the main gralde.build (hopefully)
 //targetCompatibility = JavaVersion.VERSION_1_8
 
-archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}" //TODO what?
+archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
 version = project.mod_version
 group = project.maven_group
 

@@ -71,7 +71,7 @@ public class ClientPacketManager {
             if(player != null) {
                 data.player = player;
             }
-            if(data.player == null && (data.purpose == PacketTask.STREAM || data.purpose == PacketTask.STOP)){
+            if(data.player == null && data.purpose.isEmoteStream){
                 //this is not exactly IO but something went wrong in IO so it is IO fail
                 throw new IOException("Didn't received any player information");
             }

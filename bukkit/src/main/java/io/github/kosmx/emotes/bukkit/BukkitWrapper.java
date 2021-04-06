@@ -74,7 +74,7 @@ public class BukkitWrapper extends JavaPlugin {
         try {
             NetData data = new EmotePacket.Builder().configureValidationThreshold((float) this.config.getDouble("validThreshold")).build().read(ByteBuffer.wrap(message));
             if(data == null || data.purpose == null)throw new IOException("No data received");
-            if(data.purpose == PacketTask.UNKNOWN || data.purpose == PacketTask.CONFIG){
+            if(!data.purpose.isEmoteStream){
                 if(data.purpose == PacketTask.CONFIG){
                     player_database.replace(player.getUniqueId(), 8);
                     if(debug)getLogger().info("Player " + player.getName() + " has Emotecraft installed.");
