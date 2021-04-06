@@ -36,7 +36,7 @@ allprojects {
 //---------------- Publishing ----------------
 
 boolean isRelease = false;
-String changes = "test"
+String changes = "auto 3rd person perspective when playing emote  \nBukkit plugin"
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
@@ -108,6 +108,7 @@ if(keys_imported) {
 
     curseforge {
         apiKey = project.keys.curseforge_key
+
         project {
             id = '397809' //Fabric version
             changelogType = "markdown"
@@ -140,9 +141,6 @@ if(keys_imported) {
                 //displayName = archivesBaseName
             }
         }
-    }
-    curseforge {
-        apiKey = project.keys.curseforge_key
         project {
             id = '403422' //Forge version
             changelogType = "markdown"
@@ -169,41 +167,15 @@ if(keys_imported) {
                 //displayName = archivesBaseName
             }
         }
-    }
-    curseforge {
-        apiKey = project.keys.curseforge_key
-        project {
-            id = '467254' //Bukkit plugin version
-            changelogType = "markdown"
-            //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
-            changelog = changes
-            if(isRelease){
-                releaseType = "release"
-            }
-            else{
-                releaseType = "beta"
-            }
-            addGameVersion project.minecraft_version
-            //addGameVersion "Forge"
-            //addGameVersion "Java 8"
-            //addGameVersion "Java 9"
-            //addGameVersion "Java 10"
 
 
-            options {
-                forgeGradleIntegration = false // ForgeJunk MOD
-            }
 
-            mainArtifact("bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar") {
-                //displayName = archivesBaseName
-            }
-        }
     }
 
     task autoPublish {
         dependsOn(':fabric:build', ':forge:build', ':bukkit:build')
-        finalizedBy(tasks.githubRelease)
-        finalizedBy(publishModrinth)
+        //finalizedBy(tasks.githubRelease)
+        //finalizedBy(publishModrinth)
         finalizedBy(tasks.curseforge)
     }
 }
