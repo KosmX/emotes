@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.tools.Easing;
@@ -30,7 +31,7 @@ public class GeckoLibSerializer {
         List<EmoteHolder> emotes = new ArrayList<>();
         jsonEmotes.entrySet().forEach(stringJsonElementEntry -> {
             EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
-            Text name = EmoteInstance.instance.getDefaults().textFromString(stringJsonElementEntry.getKey());
+            Text name = EmoteInstance.instance.getDefaults().textFromString(stringJsonElementEntry.getKey()).formatted(EmotesTextFormatting.WHITE);
             JsonObject node = stringJsonElementEntry.getValue().getAsJsonObject();
             builder.endTick = (int) Math.ceil(node.get("animation_length").getAsFloat() * 20);
             if(node.has("loop")){
@@ -43,7 +44,7 @@ public class GeckoLibSerializer {
             EmoteData emoteData = builder.build();
             keyframeSerializer(emoteData, node.get("bones").getAsJsonObject());
             emoteData.fullyEnableParts();
-            EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, EmoteInstance.instance.getDefaults().textFromString("Imported from GeckoLib"), EmoteInstance.instance.getDefaults().emptyTex(), node.hashCode());
+            EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, EmoteInstance.instance.getDefaults().textFromString("Imported from GeckoLib").formatted(EmotesTextFormatting.YELLOW), EmoteInstance.instance.getDefaults().emptyTex(), node.hashCode());
             emoteHolder.isFromGeckoLib = true;
             emotes.add(emoteHolder);
         });

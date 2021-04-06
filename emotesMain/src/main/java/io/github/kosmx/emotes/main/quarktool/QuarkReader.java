@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.main.quarktool;
 
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 
@@ -62,7 +63,7 @@ public class QuarkReader {
     public EmoteHolder getEmote(){
         if(isSuccess){
             //return new EmoteHolder(this.emote.build(), new LiteralText(this.name).formatted(Formatting.WHITE), new LiteralText("Imported from quark").formatted(Formatting.GRAY), new LiteralText("").formatted(Formatting.GRAY), this.hash).setQuarkEmote(true);
-            return new EmoteHolder(this.emote.build(), EmoteInstance.instance.getDefaults().textFromString(this.name), EmoteInstance.instance.getDefaults().textFromString("Imported from quark"), EmoteInstance.instance.getDefaults().emptyTex(), this.hash).setQuarkEmote(true);
+            return new EmoteHolder(this.emote.build(), EmoteInstance.instance.getDefaults().textFromString(this.name).formatted(EmotesTextFormatting.WHITE), EmoteInstance.instance.getDefaults().textFromString("Imported from quark").formatted(EmotesTextFormatting.GRAY), EmoteInstance.instance.getDefaults().emptyTex(), this.hash).setQuarkEmote(true);
         }else return null;
     }
 

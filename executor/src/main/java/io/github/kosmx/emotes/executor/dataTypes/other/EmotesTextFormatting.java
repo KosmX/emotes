@@ -5,7 +5,9 @@ package io.github.kosmx.emotes.executor.dataTypes.other;
  */
 public enum EmotesTextFormatting {
     GOLD('6'),
-    YELLOW('e')
+    YELLOW('e'),
+    WHITE('f'),
+    GRAY('7')
     ;
 
     final char code;
