@@ -105,6 +105,22 @@ public class EmoteData {
         leftLeg.fullyEnablePart(false);
     }
 
+    /**
+     * Remove unnecessary keyframes from this emote.
+     * If the keyframe before and after are the same as the currently checked, the keyframe will be removed
+     *
+     * This function WILL change the its hash, use it ONLY when importing
+     */
+    public EmoteData optimizeEmote(){
+        head.optimize(isInfinite, returnToTick);
+        torso.optimize(isInfinite, returnToTick);
+        leftArm.optimize(isInfinite, returnToTick);
+        rightArm.optimize(isInfinite, returnToTick);
+        leftLeg.optimize(isInfinite, returnToTick);
+        rightLeg.optimize(isInfinite, returnToTick);
+        return this;
+    }
+
     public static class StateCollection {
         public final String name;
         public final State x;
@@ -184,6 +200,19 @@ public class EmoteData {
                     bend.isEnabled = true;
                     bendDirection.isEnabled = true;
                 }
+            }
+        }
+
+        protected void optimize(boolean isLooped, int ret){
+            x.optimize(isLooped, ret);
+            y.optimize(isLooped, ret);
+            z.optimize(isLooped, ret);
+            pitch.optimize(isLooped, ret);
+            yaw.optimize(isLooped, ret);
+            roll.optimize(isLooped, ret);
+            if(isBendable) {
+                bend.optimize(isLooped, ret);
+                bendDirection.optimize(isLooped, ret);
             }
         }
 
@@ -301,12 +330,27 @@ public class EmoteData {
                 KeyFrame original = this.keyFrames.get(pos);
                 replace(new KeyFrame(original.tick, original.value, ease), pos);
             }
+
+            protected void optimize(boolean isLooped, int returnToTick){
+                for(int i = 1; i < this.keyFrames.size()-1; i++){
+                    if(keyFrames.get(i - 1).value != keyFrames.get(i).value){
+                        continue;
+                    }
+                    if(keyFrames.size() <= i + 1 || keyFrames.get(i).value != keyFrames.get(i+1).value){
+                        continue;
+                    }
+                    if(isLooped && keyFrames.get(i-1).tick < returnToTick && keyFrames.get(i).tick >= returnToTick){
+                        continue;
+                    }
+                    keyFrames.remove(i--);
+                }
+            }
         }
     }
     public static class KeyFrame{
 
         public final int tick;
-        public final Float value;
+        public final float value;
         public final Ease ease;
 
         public KeyFrame(int tick, float value, Ease ease){
@@ -318,7 +362,7 @@ public class EmoteData {
         @Override
         public boolean equals(Object other) {
             if(other instanceof KeyFrame){
-                return ((KeyFrame) other).ease == this.ease && ((KeyFrame) other).tick == this.tick && ((KeyFrame) other).value.equals(this.value);
+                return ((KeyFrame) other).ease == this.ease && ((KeyFrame) other).tick == this.tick && ((KeyFrame) other).value == this.value;
             }
             else return super.equals(other);
         }
@@ -330,7 +374,7 @@ public class EmoteData {
         @Override
         public int hashCode() {
             int result = tick;
-            result = 31 * result + value.hashCode();
+            result = 31 * result + Float.hashCode(value);
             result = 31 * result + ease.hashCode();
             return result;
         }

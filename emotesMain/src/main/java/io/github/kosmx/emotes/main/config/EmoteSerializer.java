@@ -50,6 +50,7 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
             EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
         });
         EmoteData emote = emoteDeserializer(node.getAsJsonObject("emote"));
+        emote.optimizeEmote();
         List<EmoteHolder> list = new ArrayList<>();
         list.add(new EmoteHolder(emote, name, description, author, node.hashCode()));
         return list;
