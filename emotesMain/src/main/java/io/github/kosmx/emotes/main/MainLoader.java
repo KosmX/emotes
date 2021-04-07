@@ -42,6 +42,11 @@ public class MainLoader {
                 exception.printStackTrace();
             }
         }
+        else {
+            EmoteInstance.config = EmoteInstance.instance.isClient() ? new ClientConfig() : new SerializableConfig();
+            EmoteInstance.instance.getLogger().log(Level.FINE, "Creating new config file for Emotecraft");
+            Serializer.saveConfig();
+        }
         if(EmoteInstance.config == null) {
             EmoteInstance.config = EmoteInstance.instance.isClient() ? new ClientConfig() : new SerializableConfig();
         }
