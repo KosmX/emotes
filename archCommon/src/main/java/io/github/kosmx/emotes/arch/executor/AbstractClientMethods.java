@@ -11,6 +11,8 @@ import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
 import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -55,4 +57,8 @@ public abstract class AbstractClientMethods implements IClientMethods {
         return tick;
     }
 
+    @Override
+    public boolean isPlayerBlocked(UUID uuid) {
+        return Minecraft.getInstance().isBlocked(uuid);
+    }
 }

@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.common.tools.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 
 import javax.annotation.Nullable;
@@ -89,12 +90,18 @@ public class ClientEmotePlay {
 
     static void receivePlayPacket(EmoteData emoteData, UUID player, int tick) {
         IEmotePlayerEntity playerEntity = EmoteInstance.instance.getGetters().getPlayerFromUUID(player);
-        if (playerEntity != null) {
-            playerEntity.playEmote(emoteData, tick);
+        if(isEmoteAllowed(emoteData, player)) {
+            if (playerEntity != null) {
+                playerEntity.playEmote(emoteData, tick);
+            }
+            else {
+                addToQueue(new QueueEntry(emoteData, tick, EmoteInstance.instance.getClientMethods().getCurrentTick()), player);
+            }
         }
-        else {
-            addToQueue(new QueueEntry(emoteData, tick, EmoteInstance.instance.getClientMethods().getCurrentTick()), player);
-        }
+    }
+
+    public static boolean isEmoteAllowed(EmoteData emoteData, UUID player) {
+        return !EmoteInstance.instance.getClientMethods().isPlayerBlocked(player) && (!emoteData.nsfw || ((ClientConfig)EmoteInstance.config).enableNSFW.get());
     }
 
     static void addToQueue(QueueEntry entry, UUID player) {

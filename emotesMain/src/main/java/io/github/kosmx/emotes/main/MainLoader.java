@@ -33,14 +33,16 @@ public class MainLoader {
     }
 
     public static void loadConfig(){
-        try {
-            BufferedReader reader = Files.newBufferedReader(EmoteInstance.instance.getConfigPath());
-            EmoteInstance.config = Serializer.serializer.fromJson(reader, SerializableConfig.class);
-            reader.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
+        if(EmoteInstance.instance.getConfigPath().toFile().isFile()) {
+            try {
+                BufferedReader reader = Files.newBufferedReader(EmoteInstance.instance.getConfigPath());
+                EmoteInstance.config = Serializer.serializer.fromJson(reader, SerializableConfig.class);
+                reader.close();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
         }
-        if(EmoteInstance.config == null){
+        if(EmoteInstance.config == null) {
             EmoteInstance.config = EmoteInstance.instance.isClient() ? new ClientConfig() : new SerializableConfig();
         }
     }

@@ -70,9 +70,13 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
                 throw new JsonParseException("return tick have to be smaller than endTick and not smaller than 0");
         }
 
+        if(node.has("nsfw")){
+            builder.nsfw = node.get("nsfw").getAsBoolean();
+        }
+
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
-            if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves") || string.equals("returnTick") || string.equals("isLoop") || string.equals("easeBeforeKeyframe"))
+            if(string.equals("beginTick") || string.equals("comment") || string.equals("endTick") || string.equals("stopTick") || string.equals("degrees") || string.equals("moves") || string.equals("returnTick") || string.equals("isLoop") || string.equals("easeBeforeKeyframe") || string.equals("nsfw"))
                 return;
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
             EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
@@ -187,6 +191,7 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
         node.addProperty("stopTick", emote.stopTick);
         node.addProperty("isLoop", emote.isInfinite);
         node.addProperty("returnTick", emote.returnToTick);
+        node.addProperty("nsfw", emote.nsfw);
         node.addProperty("degrees", false); //No program uses degrees.
         if(emote.isEasingBefore)node.addProperty("easeBeforeKeyframe", true);
         node.add("moves", moveSerializer(emote));

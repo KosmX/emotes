@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 public interface IClientMethods {
     void destroyTexture(IIdentifier identifier);
@@ -22,5 +23,7 @@ public interface IClientMethods {
     INetworkInstance getServerNetworkController();
 
     int getCurrentTick();
+
+    boolean isPlayerBlocked(UUID uuid);
 
 }
