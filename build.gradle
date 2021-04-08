@@ -174,8 +174,8 @@ if(keys_imported) {
 
     task autoPublish {
         dependsOn(':fabric:build', ':forge:build', ':bukkit:build')
-        //finalizedBy(tasks.githubRelease)
-        //finalizedBy(publishModrinth)
+        finalizedBy(tasks.githubRelease)
+        finalizedBy(publishModrinth)
         finalizedBy(tasks.curseforge)
     }
 }
