@@ -36,7 +36,7 @@ allprojects {
 //---------------- Publishing ----------------
 
 boolean isRelease = false;
-String changes = "auto 3rd person perspective when playing emote  \nBukkit plugin"
+String changes = "NSFW emote property, fixed config file creating on server-side, fixed \"player safety\""
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
