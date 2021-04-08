@@ -41,12 +41,9 @@ String changes = "NSFW emote property, fixed config file creating on server-side
 
 import com.modrinth.minotaur.TaskModrinthUpload
 
-//Import publishing keys from file (not included in the git repo :D)
-boolean keys_imported = new File("keys.properties").exists()
-//and well... serialize it
 
-
-if(keys_imported) {
+if(file("keys.properties").exists()) {
+    println("Keys file is exists, loading publish scripts")
     file("keys.properties").withReader {
         Properties props = new Properties()
         props.load(it)
@@ -178,4 +175,7 @@ if(keys_imported) {
         finalizedBy(publishModrinth)
         finalizedBy(tasks.curseforge)
     }
+}
+else {
+    println("Keys file is not exists publishing is not possible")
 }
