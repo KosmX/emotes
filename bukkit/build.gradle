@@ -36,14 +36,10 @@ processResources{
 
     inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "plugin.yml"
+    filesMatching("plugin.yml"){
         expand version: project.version
     }
 
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "plugin.yml"
-    }
 }
 
 //shadowJar{
