@@ -139,7 +139,7 @@ public class EmotePacket {
                 }
             }
 
-            if (data.isValid()) return this.data;
+            if (data.prepareAndValidate()) return this.data;
             else return null;
         }
         catch (RuntimeException e){
