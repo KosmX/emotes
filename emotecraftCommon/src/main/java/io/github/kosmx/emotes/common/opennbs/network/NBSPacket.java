@@ -158,4 +158,26 @@ public class NBSPacket {
         this.song.setLength(length);
     }
 
+    /**
+     * Warning! Works incorrectly when sending extra data
+     * @param song song to send
+     * @return estimated size
+     */
+    public static int calculateMessageSize(NBS song){
+        int size = 15;
+        //Always IBBSBBBSS
+        //extra S;string;string;string;string;BBIIIII;string
+        //I won't ever send extra
+        for(Layer layer:song.getLayers()){
+            size += getLayerMessageSize(layer);
+        }
+
+        return size;
+    }
+    public static int getLayerMessageSize(Layer layer){
+        //Layer static size BBS
+        //note size SBBBBS
+        return 4 + layer.notes.size()*8;
+    }
+
 }

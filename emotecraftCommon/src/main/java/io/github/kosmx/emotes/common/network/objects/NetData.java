@@ -28,6 +28,7 @@ public class NetData {
     public EmoteData emoteData = null;
     public int tick = 0;
     public boolean valid;
+    //Never use it permanently
     @Nullable
     public NBS song = null;
 
@@ -41,7 +42,13 @@ public class NetData {
 
     public int sizeLimit = Short.MAX_VALUE;
 
-    public boolean isValid(){
+    public boolean prepareAndValidate(){
+        if(this.song != null){
+            if(this.emoteData == null)return false;
+            this.emoteData.song = this.song;
+            this.song = null;
+        }
+
         if(purpose == PacketTask.UNKNOWN)return false;
         if(purpose == PacketTask.STOP && stopEmoteID == null)return false;
         if(purpose == PacketTask.STREAM && emoteData == null)return false;

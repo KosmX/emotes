@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import io.github.kosmx.emotes.common.opennbs.network.NBSPacket;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -11,17 +13,24 @@ public class SongPacket extends AbstractNetworkPacket{
 
     @Override
     public byte getVer() {
-        return 0; //Ver0 means NO sound //TODO enable it.
+        return 1; //Ver0 means NO sound
     }
 
     @Override
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        return false;
+        NBSPacket reader = new NBSPacket();
+        reader.read(byteBuffer);
+        config.song = reader.getSong();
+        return true;
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
-
+        if(!doWrite(config)){
+            throw new IOException("You can't write disabled or not existing NBS data");
+        }
+        NBSPacket writer = new NBSPacket(config.emoteData.song);
+        writer.write(byteBuffer);
     }
 
     @Override
@@ -31,6 +40,7 @@ public class SongPacket extends AbstractNetworkPacket{
 
     @Override
     public int calculateSize(NetData config) {
-        return 0; //uh, that won't be easy to calculate...//TODO
+        if(config.emoteData == null || config.emoteData.song == null)return 0;
+        return NBSPacket.calculateMessageSize(config.emoteData.song);
     }
 }
