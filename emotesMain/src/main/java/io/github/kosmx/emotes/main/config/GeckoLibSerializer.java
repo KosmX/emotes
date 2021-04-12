@@ -54,11 +54,19 @@ public class GeckoLibSerializer {
 
     private static void keyframeSerializer(EmoteData emoteData, JsonObject node){
         if(node.has("head"))readBone(emoteData.head, node.get("head").getAsJsonObject(), emoteData);
-        if(node.has("right_arm"))readBone(emoteData.rightArm, node.get("right_arm").getAsJsonObject(), emoteData);
-        if(node.has("left_arm"))readBone(emoteData.leftArm, node.get("left_arm").getAsJsonObject(), emoteData);
-        if(node.has("right_leg"))readBone(emoteData.rightLeg, node.get("right_leg").getAsJsonObject(), emoteData);
-        if(node.has("left_leg"))readBone(emoteData.leftLeg, node.get("left_leg").getAsJsonObject(), emoteData);
         if(node.has("body"))readBone(emoteData.torso, node.get("body").getAsJsonObject(), emoteData);
+
+        if(node.has("right_arm"))readBone(emoteData.rightArm, node.get("right_arm").getAsJsonObject(), emoteData);
+        else if(node.has("rightArm"))readBone(emoteData.rightArm, node.get("rightArm").getAsJsonObject(), emoteData);
+
+        if(node.has("left_arm"))readBone(emoteData.leftArm, node.get("left_arm").getAsJsonObject(), emoteData);
+        else if(node.has("leftArm"))readBone(emoteData.leftArm, node.get("leftArm").getAsJsonObject(), emoteData);
+
+        if(node.has("right_leg"))readBone(emoteData.rightLeg, node.get("right_leg").getAsJsonObject(), emoteData);
+        else if(node.has("rightLeg"))readBone(emoteData.rightLeg, node.get("rightLeg").getAsJsonObject(), emoteData);
+
+        if(node.has("left_leg"))readBone(emoteData.leftLeg, node.get("left_leg").getAsJsonObject(), emoteData);
+        else if(node.has("leftLeg"))readBone(emoteData.leftLeg, node.get("leftLeg").getAsJsonObject(), emoteData);
     }
 
     private static void readBone(EmoteData.StateCollection stateCollection, JsonObject node, EmoteData emoteData){
