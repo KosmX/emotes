@@ -12,7 +12,7 @@ repositories {
 
 
 dependencies {
-    implementation project(':emotecraftCommon')
+    implementation project(':emotesCommon')
     implementation project(':executor')
 }
 

@@ -1,0 +1,97 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'signing' //why not if I can?
+}
+
+group project.maven_group
+version project.mod_version
+
+//sourceCompatibility = JavaVersion.VERSION_1_8
+//targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //NONE :D
+    //I use Java 1.8 but that's okay
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+test {
+    useJUnitPlatform()
+}
+
+
+//-------- publishing --------
+
+java{
+    withSourcesJar()
+    withJavadocJar()
+}
+
+ext["signing.keyId"] = ''
+ext["signing.password"] = ''
+ext["signing.secretKeyRingFile"] = ''
+
+File secretPropsFile = project.rootProject.file('keys.properties')
+if (secretPropsFile.exists()) {
+    Properties p = new Properties()
+    new FileInputStream(secretPropsFile).withCloseable { is ->
+        p.load(is)
+    }
+    p.each { name, value ->
+        ext[name] = value
+    }
+}
+signing {
+    if (secretPropsFile.exists() && false) {
+        sign publishing.publications
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            java
+
+            pom{
+                name = "emotesApi"
+                description = "Minecraft Emotecraft api"
+                url = 'https://github.com/KosmX/emotes'
+                developers {
+                    developer {
+                        id = 'kosmx'
+                        name = 'KosmX'
+                        email = 'kosmx.mc@gmail.com'
+                    }
+                }
+
+                licenses{
+                    license{
+                        name = "CC-BY-4.0 License"
+                        url = "https://creativecommons.org/licenses/by/4.0/legalcode"
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:github.com/kosmx/emotes.git'
+                    developerConnection = 'scm:git:github.com/kosmx/emotes.git'
+                    url = 'https://github.com/KosmX/emotes'
+                }
+            }
+        }
+    }
+
+    // select the repositories you want to publish to
+    repositories {
+        // uncomment to publish to the local maven
+        mavenLocal()
+    }
+}

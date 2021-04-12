@@ -28,10 +28,10 @@ configurations {
 }
 
 dependencies {
-    implementation project(':emotecraftCommon')
+    implementation project(':emotesCommon')
     implementation project(':executor')
     implementation project(':emotesServer')
-    compileModule project(':emotecraftCommon')
+    compileModule project(':emotesCommon')
     compileModule project(':executor')
     compileModule project(':emotesServer')
 
@@ -74,7 +74,6 @@ jar{
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier "sources"
     from sourceSets.main.allSource
-    from project(':emotecraftCommon')
 }
 
 

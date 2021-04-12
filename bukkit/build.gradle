@@ -28,8 +28,8 @@ dependencies {
 
     implementation("org.spigotmc:spigot-api:${project.spigot_api}")
 
-    implementation project(':emotecraftCommon')
-    compileModule project(':emotecraftCommon')
+    implementation project(':emotesCommon')
+    compileModule project(':emotesCommon')
 }
 
 processResources{
