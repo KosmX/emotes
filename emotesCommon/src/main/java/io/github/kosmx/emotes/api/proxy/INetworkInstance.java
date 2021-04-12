@@ -20,6 +20,10 @@ import java.util.UUID;
 public interface INetworkInstance {
     /**
      * Get the version from the other side. null if default
+     * the map doesn't have to contain information about every module. these will be added automatically.
+     *
+     * do {@code HashMap#put(3, 0)} to disable sound streaming. NBS can't be optimized and often very large
+     *
      * @return maybe null
      */
     HashMap<Byte, Byte> getVersions();
