@@ -50,7 +50,7 @@ if (secretPropsFile.exists()) {
     }
 }
 signing {
-    if (secretPropsFile.exists() && false) {
+    if (secretPropsFile.exists()) {
         sign publishing.publications
     }
 }
@@ -59,7 +59,12 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             // add all the jars that should be included when publishing to maven
-            java
+
+            artifactId = 'emotesAPI'
+
+            artifact(jar)
+            artifact(sourcesJar)
+            artifact(javadocJar)
 
             pom{
                 name = "emotesApi"
