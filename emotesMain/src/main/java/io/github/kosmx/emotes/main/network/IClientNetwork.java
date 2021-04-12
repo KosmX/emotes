@@ -1,9 +1,9 @@
+/* //TODO remove me
 package io.github.kosmx.emotes.main.network;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.INetworkInstance;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -13,14 +13,14 @@ import java.util.logging.Level;
 
 /**
  * I don't use final methods to stay compatible with Java 1.8
- */
+ *
 @SuppressWarnings("DeprecatedIsStillUsed")
 public interface IClientNetwork extends INetworkInstance {
 
     /**
      * If you want the mod to send the UUID make it true
      * @return If the client will send player UUID
-     */
+     *
     @Override
     default boolean sendPlayerID(){
         return false;
@@ -28,7 +28,7 @@ public interface IClientNetwork extends INetworkInstance {
 
     /**
      * Invoke this if you want to send a config
-     */
+     *
     @Override
     default void sendConfigCallback(){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
@@ -51,19 +51,19 @@ public interface IClientNetwork extends INetworkInstance {
      * Send customizable emotePackets
      * @param builder packetBuilder
      * @param target target player
-     */
+     *
     @Override
-    default void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
+    default void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
         this.sendMessage(builder.build().write(), target);    //everything is happening on the heap, there won't be any memory leak
     }
 
     @Deprecated
     @Override
-    default void sendMessage(byte[] bytes, @Nullable IEmotePlayerEntity target){}
+    default void sendMessage(byte[] bytes, @Nullable UUID target){}
 
     @Deprecated
     @Override
-    default void sendMessage(ByteBuffer byteBuffer, @Nullable IEmotePlayerEntity target){
+    default void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target){
         sendMessage(byteBuffer.array(), target);
     }
 
@@ -71,7 +71,7 @@ public interface IClientNetwork extends INetworkInstance {
      * When you receive a message
      * @param bytes the received byte array
      * @param player if you don't use custom player identification api, null
-     */
+     *
     default void receiveMessage(byte[] bytes, UUID player){
         receiveMessage(ByteBuffer.wrap(bytes), player);
     }
@@ -84,7 +84,7 @@ public interface IClientNetwork extends INetworkInstance {
      * When you receive a message
      * @param byteBuffer the received ByteBuffer
      * @param player if you don't use custom player identification api, null
-     */
+     *
     default void receiveMessage(ByteBuffer byteBuffer, UUID player){
         ClientPacketManager.receiveMessage(byteBuffer, player, this);
     }
@@ -93,3 +93,6 @@ public interface IClientNetwork extends INetworkInstance {
     }
 
 }
+
+
+ */

@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main.network;
 
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -37,7 +38,7 @@ public class ClientEmotePlay {
         return true;
     }
 
-    public static void clientRepeateLocalEmote(EmoteData emote, int tick, IPlayerEntity target){
+    public static void clientRepeateLocalEmote(EmoteData emote, int tick, UUID target){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
@@ -56,7 +57,7 @@ public class ClientEmotePlay {
         EmoteInstance.instance.getClientMethods().getMainPlayer().stopEmote();
     }
 
-    static void executeMessage(NetData data, IClientNetwork networkInstance) throws NullPointerException {
+    static void executeMessage(NetData data, INetworkInstance networkInstance) throws NullPointerException {
         if (data.purpose == null) {
             if (EmoteInstance.config.showDebug.get()) {
                 EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible without a purpose");

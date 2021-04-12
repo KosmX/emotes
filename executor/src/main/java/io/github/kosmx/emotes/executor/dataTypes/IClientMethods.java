@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.executor.dataTypes;
 
-import io.github.kosmx.emotes.executor.INetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 

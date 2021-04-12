@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.fabric.mixin;
 
 
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.executor.INetworkInstance;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.fabric.network.ServerNetwork;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements INetworkInstance {
@@ -40,12 +41,11 @@ public abstract class ServerPlayNetworkInstance implements INetworkInstance {
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
-        sendMessage(builder.build().write(), null);
+    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
+        sendMessage(AbstractNetworkInstance.safeGetBytesFromBuffer(builder.build().write()), null);
     }
 
-    @Override
-    public void sendMessage(byte[] bytes, @Nullable IEmotePlayerEntity target) {
+    public void sendMessage(byte[] bytes, @Nullable UUID target) {
         this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))));
     }
 

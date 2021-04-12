@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.fabric.executor;
 
 import io.github.kosmx.emotes.arch.executor.AbstractClientMethods;
-import io.github.kosmx.emotes.executor.INetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
 
 public class FabricClientMethods extends AbstractClientMethods {

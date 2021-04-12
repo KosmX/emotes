@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.fabric.network;
 
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
-import io.github.kosmx.emotes.main.network.IClientNetwork;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -14,8 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
-public class ClientNetworkInstance implements IClientNetwork {
+public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
@@ -24,7 +24,7 @@ public class ClientNetworkInstance implements IClientNetwork {
     }
 
     void receiveMessage(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender){
-        if(buf.isDirect()){ //If the received ByteBuf is direct i have to copy that onto the heap
+        if(buf.isDirect() || buf.isReadOnly()){ //If the received ByteBuf is direct i have to copy that onto the heap
             byte[] bytes = new byte[buf.readableBytes()];
             buf.getBytes(buf.readerIndex(), bytes);
             receiveMessage(bytes);
@@ -63,9 +63,9 @@ public class ClientNetworkInstance implements IClientNetwork {
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
+    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
         if(target != null){
-            builder.configureTarget(target.emotes_getUUID());
+            builder.configureTarget(target);
         }
         ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write().array())));
     }

@@ -72,8 +72,9 @@ jar{
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
-    classifier = "sources"
+    classifier "sources"
     from sourceSets.main.allSource
+    from project(':emotecraftCommon')
 }
 
 

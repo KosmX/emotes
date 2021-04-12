@@ -5,4 +5,4 @@ Everything what can be done without ANY Minecraft
 <br>
 To work on Bukkit and Collar.
 
-Collar will need to include Netty
+Base api will be in this module

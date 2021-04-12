@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.server;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.executor.INetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
