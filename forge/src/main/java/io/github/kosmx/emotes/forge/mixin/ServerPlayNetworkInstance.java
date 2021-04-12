@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.forge.mixin;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;

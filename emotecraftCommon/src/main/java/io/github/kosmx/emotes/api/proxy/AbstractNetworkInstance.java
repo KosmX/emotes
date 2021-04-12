@@ -16,21 +16,6 @@ import java.util.logging.Level;
  */
 public abstract class AbstractNetworkInstance implements INetworkInstance{
 
-    /**
-     *
-     */
-    @Override
-    public void sendConfigCallback(){
-        EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.setVersion(this.getVersions());
-        try {
-            this.sendMessage(packetBuilder, null);
-        }
-        catch (Exception e){
-            EmotesProxyManager.log(Level.WARNING, "Error while writing packet: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
     /*
      * You have to implement at least one of these three functions
@@ -136,4 +121,16 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     }
 
 
+    @Override
+    public void sendConfigCallback(){
+        EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
+        packetBuilder.setVersion(this.getVersions());
+        try {
+            this.sendMessage(packetBuilder, null);
+        }
+        catch (Exception e){
+            EmotesProxyManager.log(Level.WARNING, "Error while writing packet: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

@@ -8,18 +8,21 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * //TODO
+ * Client emote proxy manager
+ * Responsible for calling proxy instances and other stuff
  */
-public class ClientPacketManager extends EmotesProxyManager {
+public final class ClientPacketManager extends EmotesProxyManager {
 
-    private final static ArrayList<INetworkInstance> networkInstances = new ArrayList<>();
-    private static final INetworkInstance defaultNetwork = (INetworkInstance) EmoteInstance.instance.getClientMethods().getServerNetworkController();
+    private static final INetworkInstance defaultNetwork = EmoteInstance.instance.getClientMethods().getServerNetworkController();
     //that casting should always work
+
+    public static void init(){
+        setManager(new ClientPacketManager()); //Some dependency injection
+    }
 
     private ClientPacketManager(){} //that is a utility class :D
 
@@ -62,13 +65,13 @@ public class ClientPacketManager extends EmotesProxyManager {
         }
     }
 
-    static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkManager){
+    static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
         try{
             NetData data = new EmotePacket.Builder().build().read(buffer);
             if(data == null){
                 throw new IOException("no valid data");
             }
-            if(player != null) {
+            if(networkInstance.trustReceivedPlayer() && player != null) {
                 data.player = player;
             }
             if(data.player == null && data.purpose.isEmoteStream){
@@ -77,7 +80,7 @@ public class ClientPacketManager extends EmotesProxyManager {
             }
 
             try {
-                ClientEmotePlay.executeMessage(data, networkManager);
+                ClientEmotePlay.executeMessage(data, networkInstance);
             }
             catch (Exception e){//I don't want to break the whole game with a bad message but I'll warn with the highest level
                 EmoteInstance.instance.getLogger().log(Level.SEVERE, "Critical error has occurred while receiving emote: " + e.getMessage(), true);
