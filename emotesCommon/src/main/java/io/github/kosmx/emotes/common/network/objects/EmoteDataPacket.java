@@ -90,12 +90,13 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         getBodyPartInfo(buf, builder.leftLeg, true);
 
         EmoteData emote = builder.build();
-        valid = valid && emote.beginTick >= 0 && emote.beginTick < emote.endTick && (! emote.isInfinite || emote.returnToTick <= emote.endTick && emote.returnToTick >= 0);
+        boolean correct = emote.beginTick >= 0 && emote.beginTick < emote.endTick && (! emote.isInfinite || emote.returnToTick <= emote.endTick && emote.returnToTick >= 0);
+        valid = valid && correct;
 
         config.emoteData = emote;
         config.valid = valid;
 
-        return true;
+        return correct;
     }
 
     private void getBodyPartInfo(ByteBuffer buf, EmoteData.StateCollection part, boolean bending){

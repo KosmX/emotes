@@ -3,6 +3,8 @@ package io.github.kosmx.emotes.server;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.executor.EmoteInstance;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
@@ -14,7 +16,7 @@ import java.util.UUID;
 public abstract class AbstractServerEmotePlay<P> {
 
     protected boolean doValidate(){
-        return false;
+        return EmoteInstance.config.validateEmote.get();
     }
 
     protected abstract UUID getUUIDFromPlayer(P player);

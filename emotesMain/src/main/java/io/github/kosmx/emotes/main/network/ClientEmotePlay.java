@@ -9,7 +9,6 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
-import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -66,7 +65,9 @@ public class ClientEmotePlay {
         switch (Objects.requireNonNull(data.purpose)) {
             case STREAM:
                 assert data.emoteData != null;
-                receivePlayPacket(data.emoteData, data.player, data.tick);
+                if(data.valid || !(((ClientConfig)EmoteInstance.config).alwaysValidate.get() || !networkInstance.safeProxy())) {
+                    receivePlayPacket(data.emoteData, data.player, data.tick);
+                }
                 break;
             case STOP:
                 IEmotePlayerEntity player = EmoteInstance.instance.getGetters().getPlayerFromUUID(data.player);
@@ -102,7 +103,8 @@ public class ClientEmotePlay {
     }
 
     public static boolean isEmoteAllowed(EmoteData emoteData, UUID player) {
-        return !EmoteInstance.instance.getClientMethods().isPlayerBlocked(player) && (!emoteData.nsfw || ((ClientConfig)EmoteInstance.config).enableNSFW.get());
+        return (((ClientConfig)EmoteInstance.config).enablePlayerSafety.get() || !EmoteInstance.instance.getClientMethods().isPlayerBlocked(player))
+                && (!emoteData.nsfw || ((ClientConfig)EmoteInstance.config).enableNSFW.get());
     }
 
     static void addToQueue(QueueEntry entry, UUID player) {

@@ -128,7 +128,9 @@ public class EmotePacket {
                 int size = byteBuffer.getInt();
                 int currentPos = byteBuffer.position();
                 if (subPackets.containsKey(id)) {
-                    subPackets.get(id).read(byteBuffer, this.data, sub_version);
+                    if(!subPackets.get(id).read(byteBuffer, this.data, sub_version)){
+                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + "sub-packet received");
+                    }
                     if (byteBuffer.position() != size + currentPos) {
                         byteBuffer.position(currentPos + size);
                     }

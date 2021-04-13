@@ -77,6 +77,15 @@ public interface INetworkInstance {
     }
 
     /**
+     * If emote validation happens (or can happen at server side)
+     * if you return false, Emotecraft will ALWAYS validate the received emote according to the use config.
+     * @return is the received is validated at server-side
+     */
+    default boolean safeProxy(){
+        return true;
+    }
+
+    /**
      * Is the other side is available
      * your send won't be invoke if you return false
      *
