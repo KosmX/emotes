@@ -72,7 +72,7 @@ public class BukkitWrapper extends JavaPlugin {
 
         if(debug) getLogger().info("[EMOTECRAFT] streaming emote");
         try {
-            NetData data = new EmotePacket.Builder().configureValidationThreshold((float) this.config.getDouble("validThreshold")).build().read(ByteBuffer.wrap(message));
+            NetData data = new EmotePacket.Builder().setThreshold((float) this.config.getDouble("validThreshold")).build().read(ByteBuffer.wrap(message));
             if(data == null || data.purpose == null)throw new IOException("No data received");
             if(!data.purpose.isEmoteStream){
                 if(data.purpose == PacketTask.CONFIG){

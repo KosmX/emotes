@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.executor.dataTypes;
 
-import io.github.kosmx.emotes.executor.INetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 
@@ -26,4 +26,9 @@ public interface IClientMethods {
 
     boolean isPlayerBlocked(UUID uuid);
 
+    int getPerspective();
+
+    void setPerspective(int p);
+
+    void sendChatMessage(Text msg);
 }

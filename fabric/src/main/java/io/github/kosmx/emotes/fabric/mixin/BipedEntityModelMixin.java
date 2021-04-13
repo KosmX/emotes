@@ -119,12 +119,6 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     }
 
     @Shadow
-    protected abstract Iterable<ModelPart> headParts();
-
-    @Shadow
-    protected abstract Iterable<ModelPart> bodyParts();
-
-    @Shadow
     public ModelPart head;
 
     @Shadow public ModelPart body;

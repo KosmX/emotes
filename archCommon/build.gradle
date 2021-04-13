@@ -29,7 +29,7 @@ configurations {
 
 dependencies {
     implementation project(':emotesMain')
-    implementation project(':emotecraftCommon')
+    implementation project(':emotesCommon')
     implementation project(':executor')
     implementation project(':emotesServer')
 

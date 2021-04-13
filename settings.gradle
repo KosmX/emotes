@@ -21,13 +21,13 @@ pluginManagement {
 
 rootProject.name = "emotecraft"
 
-include 'emotecraftCommon'
+include 'emotesCommon'
 
 
 //include 'oldJunk'
 include 'executor'
-include 'emotesMain'
 include 'emotesServer'
+include 'emotesMain'
 
 include 'fabric'
 include 'forge' //Forge!?

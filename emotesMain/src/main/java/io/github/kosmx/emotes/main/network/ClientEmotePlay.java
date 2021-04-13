@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main.network;
 
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -8,7 +9,6 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
-import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class ClientEmotePlay {
         return true;
     }
 
-    public static void clientRepeateLocalEmote(EmoteData emote, int tick, IPlayerEntity target){
+    public static void clientRepeateLocalEmote(EmoteData emote, int tick, UUID target){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
@@ -56,7 +56,7 @@ public class ClientEmotePlay {
         EmoteInstance.instance.getClientMethods().getMainPlayer().stopEmote();
     }
 
-    static void executeMessage(NetData data, IClientNetwork networkInstance) throws NullPointerException {
+    static void executeMessage(NetData data, INetworkInstance networkInstance) throws NullPointerException {
         if (data.purpose == null) {
             if (EmoteInstance.config.showDebug.get()) {
                 EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible without a purpose");
@@ -65,13 +65,18 @@ public class ClientEmotePlay {
         switch (Objects.requireNonNull(data.purpose)) {
             case STREAM:
                 assert data.emoteData != null;
-                receivePlayPacket(data.emoteData, data.player, data.tick);
+                if(data.valid || !(((ClientConfig)EmoteInstance.config).alwaysValidate.get() || !networkInstance.safeProxy())) {
+                    receivePlayPacket(data.emoteData, data.player, data.tick);
+                }
                 break;
             case STOP:
                 IEmotePlayerEntity player = EmoteInstance.instance.getGetters().getPlayerFromUUID(data.player);
                 assert data.stopEmoteID != null;
                 if(player != null) {
                     player.stopEmote(data.stopEmoteID.get());
+                    if(player.isMainPlayer()){
+                        EmoteInstance.instance.getClientMethods().sendChatMessage(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.blockedEmote"));
+                    }
                 }
                 else {
                     queue.remove(data.player);
@@ -101,7 +106,8 @@ public class ClientEmotePlay {
     }
 
     public static boolean isEmoteAllowed(EmoteData emoteData, UUID player) {
-        return !EmoteInstance.instance.getClientMethods().isPlayerBlocked(player) && (!emoteData.nsfw || ((ClientConfig)EmoteInstance.config).enableNSFW.get());
+        return (((ClientConfig)EmoteInstance.config).enablePlayerSafety.get() || !EmoteInstance.instance.getClientMethods().isPlayerBlocked(player))
+                && (!emoteData.nsfw || ((ClientConfig)EmoteInstance.config).enableNSFW.get());
     }
 
     static void addToQueue(QueueEntry entry, UUID player) {

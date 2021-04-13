@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.logging.Level;
 
+/**
+ * Emotecraft's loader
+ */
 public class MainLoader {
     static int tick = 0;
     //The main mod-loader class

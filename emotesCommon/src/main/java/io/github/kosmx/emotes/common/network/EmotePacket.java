@@ -128,7 +128,9 @@ public class EmotePacket {
                 int size = byteBuffer.getInt();
                 int currentPos = byteBuffer.position();
                 if (subPackets.containsKey(id)) {
-                    subPackets.get(id).read(byteBuffer, this.data, sub_version);
+                    if(!subPackets.get(id).read(byteBuffer, this.data, sub_version)){
+                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + "sub-packet received");
+                    }
                     if (byteBuffer.position() != size + currentPos) {
                         byteBuffer.position(currentPos + size);
                     }
@@ -178,18 +180,13 @@ public class EmotePacket {
             data = new NetData();
         }
 
-        public EmotePacket build(){
-            return new EmotePacket(data);
-        }
-
-        public Builder configureToReceive(float validationThreshold){
-            data.threshold = validationThreshold;
-            return this;
-        }
-
-        public Builder configureValidationThreshold(float t){
+        public Builder setThreshold(float t){
             data.threshold = t;
             return this;
+        }
+
+        public EmotePacket build(){
+            return new EmotePacket(data);
         }
 
         public Builder configureToSendEmote(EmoteData emoteData, @Nullable UUID player){

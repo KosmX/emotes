@@ -27,6 +27,9 @@ public class NetData {
     @Nullable
     public EmoteData emoteData = null;
     public int tick = 0;
+    /**
+     * Is the emote is valid (Not validated)
+     */
     public boolean valid;
     //Never use it permanently
     @Nullable

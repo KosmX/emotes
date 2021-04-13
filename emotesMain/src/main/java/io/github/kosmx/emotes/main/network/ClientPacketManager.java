@@ -1,25 +1,28 @@
 package io.github.kosmx.emotes.main.network;
 
+import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * //TODO
+ * Client emote proxy manager
+ * Responsible for calling proxy instances and other stuff
  */
-public class ClientPacketManager {
+public final class ClientPacketManager extends EmotesProxyManager {
 
-    private final static ArrayList<IClientNetwork> networkInstances = new ArrayList<>();
-    private static final IClientNetwork defaultNetwork = (IClientNetwork) EmoteInstance.instance.getClientMethods().getServerNetworkController();
+    private static final INetworkInstance defaultNetwork = EmoteInstance.instance.getClientMethods().getServerNetworkController();
     //that casting should always work
+
+    public static void init(){
+        setManager(new ClientPacketManager()); //Some dependency injection
+    }
 
     private ClientPacketManager(){} //that is a utility class :D
 
@@ -31,9 +34,9 @@ public class ClientPacketManager {
         return false;
     }
 
-    static void send(EmotePacket.Builder packetBuilder, IEmotePlayerEntity target){
+    static void send(EmotePacket.Builder packetBuilder, UUID target){
         if(!defaultNetwork.isActive() || useAlwaysAlt()){
-            for(IClientNetwork network:networkInstances){
+            for(INetworkInstance network:networkInstances){
                 if(network.isActive()){
                     try {
                         EmotePacket.Builder builder = packetBuilder.copy();
@@ -62,11 +65,14 @@ public class ClientPacketManager {
         }
     }
 
-    static void receiveMessage(ByteBuffer buffer, UUID player, IClientNetwork networkManager){
+    static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
         try{
-            NetData data = new EmotePacket.Builder().build().read(buffer);
+            NetData data = new EmotePacket.Builder().setThreshold(EmoteInstance.config.validThreshold.get()).build().read(buffer);
             if(data == null){
                 throw new IOException("no valid data");
+            }
+            if(!networkInstance.trustReceivedPlayer()){
+                data.player = null;
             }
             if(player != null) {
                 data.player = player;
@@ -77,7 +83,7 @@ public class ClientPacketManager {
             }
 
             try {
-                ClientEmotePlay.executeMessage(data, networkManager);
+                ClientEmotePlay.executeMessage(data, networkInstance);
             }
             catch (Exception e){//I don't want to break the whole game with a bad message but I'll warn with the highest level
                 EmoteInstance.instance.getLogger().log(Level.SEVERE, "Critical error has occurred while receiving emote: " + e.getMessage(), true);
@@ -94,4 +100,13 @@ public class ClientPacketManager {
         }
     }
 
+    @Override
+    protected void logMSG(Level level, String msg) {
+        EmoteInstance.instance.getLogger().log(level, "[emotes proxy module] " +  msg, level.intValue() >= Level.WARNING.intValue());
+    }
+
+    @Override
+    protected void dispatchReceive(ByteBuffer buffer, UUID player, INetworkInstance networkInstance) {
+        receiveMessage(buffer, player, networkInstance);
+    }
 }

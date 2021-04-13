@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.opennbs.NBSFileUtils;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.main.quarktool.QuarkReader;
 
 import java.io.*;
@@ -21,6 +22,8 @@ public class ClientInit {
 
     public static void init(){
         loadEmotes();//:D
+
+        ClientPacketManager.init(); //initialize proxy service
     }
 
 

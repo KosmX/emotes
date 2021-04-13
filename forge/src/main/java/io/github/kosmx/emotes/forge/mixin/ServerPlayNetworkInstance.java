@@ -2,8 +2,7 @@ package io.github.kosmx.emotes.forge.mixin;
 
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.executor.INetworkInstance;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -13,6 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements INetworkInstance {
@@ -37,7 +37,7 @@ public abstract class ServerPlayNetworkInstance implements INetworkInstance {
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
+    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
         //sendMessage(builder.build().write(), null);
         this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData()));
     }

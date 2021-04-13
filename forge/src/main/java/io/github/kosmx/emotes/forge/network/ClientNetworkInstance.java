@@ -1,9 +1,8 @@
 package io.github.kosmx.emotes.forge.network;
 
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
-import io.github.kosmx.emotes.main.network.IClientNetwork;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,8 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
-public class ClientNetworkInstance implements IClientNetwork {
+public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     boolean isRemotePresent = false;
 
@@ -91,9 +91,9 @@ public class ClientNetworkInstance implements IClientNetwork {
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable IEmotePlayerEntity target) throws IOException {
+    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
         if(target != null){
-            builder.configureTarget(target.emotes_getUUID());
+            builder.configureTarget(target);
         }
         Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
     }
