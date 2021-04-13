@@ -26,4 +26,9 @@ public interface IClientMethods {
 
     boolean isPlayerBlocked(UUID uuid);
 
+    int getPerspective();
+
+    void setPerspective(int p);
+
+    void sendChatMessage(Text msg);
 }

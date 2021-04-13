@@ -71,8 +71,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
     public boolean read(ByteBuffer buf, NetData config, int version){
         this.version = version;
-        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
-        builder.validationThreshold = config.threshold;
+        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(config.threshold);
         config.tick = buf.getInt();
         builder.beginTick = buf.getInt();
         builder.endTick = buf.getInt();

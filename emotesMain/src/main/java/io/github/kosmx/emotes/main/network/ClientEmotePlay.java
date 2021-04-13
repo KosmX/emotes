@@ -74,6 +74,9 @@ public class ClientEmotePlay {
                 assert data.stopEmoteID != null;
                 if(player != null) {
                     player.stopEmote(data.stopEmoteID.get());
+                    if(player.isMainPlayer()){
+                        EmoteInstance.instance.getClientMethods().sendChatMessage(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.blockedEmote"));
+                    }
                 }
                 else {
                     queue.remove(data.player);

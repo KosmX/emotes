@@ -8,13 +8,14 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
     AtomicBoolean ticked = new AtomicBoolean(false);
+
+    int FPPerspective = 0;
+    int TPBPerspective = 1;
 
     @Override
     default void init(){
@@ -26,9 +27,9 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
     }
 
     default void initEmotePerspective(EmotePlayer emotePlayer){
-        if(((ClientConfig)EmoteInstance.config).enablePerspective.get() && isMainPlayer() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON) {
+        if(((ClientConfig)EmoteInstance.config).enablePerspective.get() && isMainPlayer() && EmoteInstance.instance.getClientMethods().getPerspective() == FPPerspective) {
             emotePlayer.perspective = 1;
-            Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
+            EmoteInstance.instance.getClientMethods().setPerspective(TPBPerspective);
         }
     }
 
@@ -54,7 +55,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
         if(isPlayingEmote()){
             setBodyYaw((getBodyYaw() * 3 + getViewYaw()) / 4);
             emoteTickCallback();
-            if(this.isMainPlayer() && getEmote().perspective == 1 && Minecraft.getInstance().options.getCameraType() != CameraType.THIRD_PERSON_BACK){
+            if(this.isMainPlayer() && getEmote().perspective == 1 && EmoteInstance.instance.getClientMethods().getPerspective() != TPBPerspective){
                 this.getEmote().perspective = 0;
             }
             if(!this.isMainPlayer() || EmoteHolder.canRunEmote(this)){
@@ -71,16 +72,16 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
     default void stopEmote(){
         if(getEmote() != null) {
             this.getEmote().stop();
+            this.voidEmote();
         }
-        this.voidEmote();
     }
 
     @Override
     default void stopEmote(int emoteID){
         if(getEmote() != null && getEmote().getData().hashCode() == emoteID){
             this.getEmote().stop();
+            this.voidEmote();
         }
-        this.voidEmote();
     }
 
     void voidEmote();

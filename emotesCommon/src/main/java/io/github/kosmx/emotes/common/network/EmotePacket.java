@@ -180,18 +180,13 @@ public class EmotePacket {
             data = new NetData();
         }
 
-        public EmotePacket build(){
-            return new EmotePacket(data);
-        }
-
-        public Builder configureToReceive(float validationThreshold){
-            data.threshold = validationThreshold;
-            return this;
-        }
-
-        public Builder configureValidationThreshold(float t){
+        public Builder setThreshold(float t){
             data.threshold = t;
             return this;
+        }
+
+        public EmotePacket build(){
+            return new EmotePacket(data);
         }
 
         public Builder configureToSendEmote(EmoteData emoteData, @Nullable UUID player){

@@ -232,7 +232,6 @@ public class EmoteData {
                 State state = (State) o;
 
                 if (Float.compare(state.defaultValue, defaultValue) != 0) return false;
-                if (Float.compare(state.threshold, threshold) != 0) return false;
                 if (isAngle != state.isAngle) return false;
                 if (!keyFrames.equals(state.keyFrames)) return false;
                 if (isEnabled != state.isEnabled)return false;
@@ -242,7 +241,6 @@ public class EmoteData {
             @Override
             public int hashCode() {
                 int result = (defaultValue != +0.0f ? Float.floatToIntBits(defaultValue) : 0);
-                result = 31 * result + (threshold != +0.0f ? Float.floatToIntBits(threshold) : 0);
                 result = 31 * result + keyFrames.hashCode();
                 result = 31 * result + (name != null ? name.hashCode() : 0);
                 result = 31 * result + (isAngle ? 1 : 0);
@@ -389,7 +387,7 @@ public class EmoteData {
         public final StateCollection rightLeg;
         public final StateCollection leftLeg;
         public boolean isEasingBefore = false;
-        public float validationThreshold = staticThreshold;
+        //public float validationThreshold = staticThreshold;
         public boolean nsfw = false;
 
         public int beginTick = 0;
@@ -398,10 +396,13 @@ public class EmoteData {
         public boolean isLooped = false;
         public int returnTick;
 
-
         public EmoteBuilder(){
+            this(staticThreshold);
+        }
+
+        public EmoteBuilder(float validationThreshold){
             head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold, false);
-            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso", validationThreshold / 8f, true);
+            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso",validationThreshold / 8f, true);
             rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold, true);
             leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold, true);
             leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);

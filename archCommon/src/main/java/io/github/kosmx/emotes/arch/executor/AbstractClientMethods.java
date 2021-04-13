@@ -1,9 +1,11 @@
 package io.github.kosmx.emotes.arch.executor;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.executor.dataTypes.IClientMethods;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
 import io.github.kosmx.emotes.executor.dataTypes.INativeImageBacketTexture;
+import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -60,5 +63,20 @@ public abstract class AbstractClientMethods implements IClientMethods {
     @Override
     public boolean isPlayerBlocked(UUID uuid) {
         return Minecraft.getInstance().isBlocked(uuid);
+    }
+
+    @Override
+    public int getPerspective() {
+        return Minecraft.getInstance().options.getCameraType().ordinal();
+    }
+
+    @Override
+    public void setPerspective(int p) {
+        Minecraft.getInstance().options.setCameraType(CameraType.values()[p]);
+    }
+
+    @Override
+    public void sendChatMessage(Text msg) {
+        Minecraft.getInstance().gui.getChat().addMessage(((TextImpl)msg).get());
     }
 }
