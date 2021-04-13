@@ -78,7 +78,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * Receive message with or without the sender's identity
      *
      * You can convert Netty ByteBuf (or Minecraft's packet buffer) to bytes[] with this snippet
-     * {@code
+     * <pre>
      *      if(byteBuf.isDirect() || byteBuf.isReadOnly()){
      *          byte[] bytes = new byte[byteBuf.readableBytes()];
      *          byteBuf.getBytes(byteBuf.readerIndex(), bytes);
@@ -87,7 +87,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      *      else {
      *          return byteBuf.array();
      *      }
-     * }
+     * </pre>
      *
      * @param bytes message
      * @param player the sender player, null if unknown
