@@ -40,6 +40,7 @@ String changes = "NSFW emote property, fixed config file creating on server-side
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
+import com.modrinth.minotaur.request.VersionType
 
 
 if(file("keys.properties").exists()) {
@@ -52,10 +53,10 @@ if(file("keys.properties").exists()) {
 
     task publishModrinth(type: TaskModrinthUpload) {
         if(isRelease){
-            releaseType = "release"
+            versionType = VersionType.RELEASE
         }
         else{
-            releaseType = "beta"
+            versionType = VersionType.BETA
         }
         token = project.keys.modrinth_token;
         // Get the GitHub Access Token you got from the basics part of this tutorial.
