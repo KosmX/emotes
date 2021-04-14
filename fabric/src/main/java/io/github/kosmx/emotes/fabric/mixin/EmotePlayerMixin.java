@@ -31,6 +31,8 @@ import java.util.UUID;
 //Mixin it into the player is way easier than storing it somewhere else...
 @Mixin(AbstractClientPlayer.class)
 public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<ModelPart> {
+    int emotes_age = 0;
+
     @Shadow @Final public ClientLevel clientLevel;
     @Nullable EmotePlayer<ModelPart> emote;
 
@@ -59,6 +61,16 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
             return instruments[b];
         }
         return NoteBlockInstrument.HARP; //I don't want to crash here
+    }
+
+    @Override
+    public int emotes_getAge() {
+        return this.emotes_age;
+    }
+
+    @Override
+    public int emotes_getAndIncreaseAge() {
+        return this.emotes_age++;
     }
 
     @Override
