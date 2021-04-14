@@ -35,8 +35,8 @@ allprojects {
 
 //---------------- Publishing ----------------
 
-boolean isRelease = false;
-String changes = "NSFW emote property, fixed config file creating on server-side, fixed \"player safety\""
+boolean isRelease = true;
+String changes = "Proxy api\nnew features:\nFabric compatible Forge version\nProxy api\n\nfixes:\nEmote play synchronization\nfor more, see the commit history"
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
