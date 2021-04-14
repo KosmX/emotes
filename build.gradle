@@ -88,7 +88,7 @@ if(file("keys.properties").exists()) {
         releaseName "Emotecraft-${project.mod_version}" // Release title, by default this is the same as the tagName
         body changes // by default this is empty
         draft false // by default this is false
-        prerelease isRelease // by default this is false
+        prerelease !isRelease // by default this is false
         releaseAssets {
             files("fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar",
                     "fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric-dev.jar",
