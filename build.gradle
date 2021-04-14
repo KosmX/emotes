@@ -65,15 +65,15 @@ if(file("keys.properties").exists()) {
         versionNumber = "${project.mod_version}"
         versionName = "${project.mod_version}"
         uploadFile = "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar"
-        additionalFiles = ["fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar",
-                           "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar"]
+        additionalFiles = ["fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar",
+                           "forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"]
         //uploadFile = tasks.fabric.remapJar
         //System.out.println("Enter the game version number: (See minotaur docs for valids)");
         addGameVersion(project.minecraft_version);
         changelog = changes;
         addLoader("fabric")
         addLoader("forge")
-        failSilently = true
+        failSilently = false
     }
 
 
@@ -90,10 +90,10 @@ if(file("keys.properties").exists()) {
         draft false // by default this is false
         prerelease isRelease // by default this is false
         releaseAssets {
-            files("fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar",
-                    "fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric-dev.jar",
-                    "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar",
-                    "forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge-dev.jar",
+            files("fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar",
+                    "fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric-dev.jar",
+                    "forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar",
+                    "forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge-dev.jar",
                     "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar")
         }
         // this points to which files you want to upload as assets with your release
@@ -135,7 +135,7 @@ if(file("keys.properties").exists()) {
                 forgeGradleIntegration = false // FABRIC MOD
             }
 
-            mainArtifact("fabric/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-fabric.jar") {
+            mainArtifact("fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
                 //displayName = archivesBaseName
             }
         }
@@ -161,7 +161,7 @@ if(file("keys.properties").exists()) {
                 forgeGradleIntegration = false // ForgeJunk MOD
             }
 
-            mainArtifact("forge/build/libs/emotecraft-for-MC1.16.5-${project.mod_version}-forge.jar") {
+            mainArtifact("forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
                 //displayName = archivesBaseName
             }
         }
