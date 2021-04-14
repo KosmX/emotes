@@ -175,7 +175,7 @@ public class EmoteData {
 
         @Override
         public int hashCode() {
-            int result = name != null ? name.hashCode() : 0;
+            int result = 0;
             result = 31 * result + x.hashCode();
             result = 31 * result + y.hashCode();
             result = 31 * result + z.hashCode();
@@ -242,7 +242,6 @@ public class EmoteData {
             public int hashCode() {
                 int result = (defaultValue != +0.0f ? Float.floatToIntBits(defaultValue) : 0);
                 result = 31 * result + keyFrames.hashCode();
-                result = 31 * result + (name != null ? name.hashCode() : 0);
                 result = 31 * result + (isAngle ? 1 : 0);
                 return result;
             }
@@ -373,7 +372,7 @@ public class EmoteData {
         public int hashCode() {
             int result = tick;
             result = 31 * result + Float.hashCode(value);
-            result = 31 * result + ease.hashCode();
+            result = 31 * result + ease.getId();
             return result;
         }
     }

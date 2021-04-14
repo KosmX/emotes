@@ -61,11 +61,6 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
         return NoteBlockInstrument.HARP; //I don't want to crash here
     }
 
-    @Inject(method = "<init>", at = @At(value = "TAIL"))
-    private void emote_init(ClientLevel world, GameProfile profile, CallbackInfo ci){
-        this.init();
-    }
-
     @Override
     public void voidEmote() {
         this.emote = null;

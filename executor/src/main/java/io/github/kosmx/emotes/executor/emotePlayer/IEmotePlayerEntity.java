@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 //Every player will be IEmotePlayer
 public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEntity{
 
-    void init();
+    //void init();
 
     void playEmote(EmoteData emote, int tick);
 
