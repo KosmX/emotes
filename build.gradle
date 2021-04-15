@@ -1,6 +1,6 @@
 plugins{
     id 'java'
-    id 'forgified-fabric-loom' version '0.6-SNAPSHOT' apply false //Forge loom :D
+    id 'forgified-fabric-loom' version '0.7.0-SNAPSHOT' apply false //Forge loom :D
     id "architectury-plugin" version "3.0-SNAPSHOT"
     //id "com.dorongold.task-tree" version "1.5" Current version doesn't support gradle 6.8
 
