@@ -9,11 +9,13 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
+import java.util.function.Supplier;
+
 
 public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
 
     int FPPerspective = 0;
-    int TPBPerspective = 1;
+    Supplier<Integer> TPBPerspective = () -> (((ClientConfig)EmoteInstance.config).frontAsTPPerspective.get() ? 2 : 1);
 
     default void initEmotePlay(){
 
@@ -31,7 +33,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
     default void initEmotePerspective(EmotePlayer emotePlayer){
         if(((ClientConfig)EmoteInstance.config).enablePerspective.get() && isMainPlayer() && EmoteInstance.instance.getClientMethods().getPerspective() == FPPerspective) {
             emotePlayer.perspective = 1;
-            EmoteInstance.instance.getClientMethods().setPerspective(TPBPerspective);
+            EmoteInstance.instance.getClientMethods().setPerspective(TPBPerspective.get());
         }
     }
 
@@ -57,7 +59,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
         if(isPlayingEmote()){
             setBodyYaw((getBodyYaw() * 3 + getViewYaw()) / 4);
             emoteTickCallback();
-            if(this.isMainPlayer() && getEmote().perspective == 1 && EmoteInstance.instance.getClientMethods().getPerspective() != TPBPerspective){
+            if(this.isMainPlayer() && getEmote().perspective == 1 && EmoteInstance.instance.getClientMethods().getPerspective() != TPBPerspective.get()){
                 this.getEmote().perspective = 0;
             }
             if(!this.isMainPlayer() || EmoteHolder.canRunEmote(this)){

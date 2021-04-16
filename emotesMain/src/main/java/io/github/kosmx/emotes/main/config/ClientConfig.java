@@ -13,6 +13,7 @@ public class ClientConfig extends SerializableConfig {
 
     public final BooleanConfigEntry dark = new BooleanConfigEntry("dark", false, false, basics);
     public final ConfigEntry<Boolean> enablePerspective = new BooleanConfigEntry("perspective", true, false, basics);
+    public final BooleanConfigEntry frontAsTPPerspective = new BooleanConfigEntry("default3rdPersonFront", false, false, basics);
     public final ConfigEntry<Boolean> loadBuiltinEmotes = new BooleanConfigEntry("loadbuiltin", "loadBuiltin", true, true, basics);
     public final ConfigEntry<Boolean> showIcons = new BooleanConfigEntry("showicon", "showIcon", true, true, basics);
     public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);

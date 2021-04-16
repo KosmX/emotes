@@ -34,6 +34,7 @@
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) inappropriate content\n\nMay contain nudity, intense sexuality, violence or other potentially disturbing subject matter.",
   "emotecraft.otherconfig.alwaysValidateEmote": "Always validate received emotes",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Client side option, won't affect internal server\n\nBy default, client-side validation only happens when receiving emote from an untrusted proxy.\nUse this to always do client-side validation",
+  "emotecraft.otherconfig.default3rdPersonFront": "Use front view instead of back when playing emotes",
   "emotecraft.emotelist": "All emote",
   "emotecraft.no_server": "Server has no Emotecraft installed, others won't see if you play an emote",
   "emotecraft.different_server": "Server has a different version of Emotecraft installed, others may not see correctly your emotes",
