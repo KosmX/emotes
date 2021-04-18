@@ -36,7 +36,7 @@ allprojects {
 //---------------- Publishing ----------------
 
 boolean isRelease = true;
-String changes = "Proxy api\nnew features:\nFabric compatible Forge version\nProxy api\n\nfixes:\nEmote play synchronization\nfor more, see the commit history"
+String changes = "for changelog see [commit history](https://github.com/KosmX/emotes/commits/development)"
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
