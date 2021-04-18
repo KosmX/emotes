@@ -41,4 +41,9 @@ public class TextImpl implements Text {
     public MutableComponent get(){
         return this.MCText;
     }
+
+    @Override
+    public Text copyIt(){
+        return new TextImpl(MCText.copy());
+    }
 }

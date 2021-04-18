@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -48,6 +49,11 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private ITextInputWidget<MATRIX, ITextInputWidget> searchBox;
     private List<PositionedText> texts = new ArrayList<>();
     private IButton resetKey;
+
+    private Text resetOneText = EmoteInstance.instance.getDefaults().newTranslationText("controls.reset");
+    private Text resetAllText = EmoteInstance.instance.getDefaults().newTranslationText("controls.resetAll");
+    private boolean resetOnlySelected;
+    private int keyBindedEmotes = -1;
 
     public boolean exportGeckoEmotes = false;
 
@@ -112,12 +118,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
         setKeyButton = newButton(screen.getWidth() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
         screen.addToButtons(setKeyButton);
-        resetKey = newButton(screen.getWidth() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (button->{
-            if(emoteList.getSelectedEntry() != null){
-                emoteList.getSelectedEntry().getEmote().keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
-                this.save = true;
-            }
-        }));
+        resetKey = newButton(screen.getWidth() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (this::resetKeyAction));
         screen.addToButtons(resetKey);
         emoteList.setEmotes(EmoteHolder.list);
         screen.setInitialFocus(this.searchBox);
@@ -145,6 +146,31 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
     }
 
+    private void resetKeyAction(IButton button){
+        if(resetOnlySelected) {
+            if (emoteList.getSelectedEntry() == null) return;
+            emoteList.getSelectedEntry().getEmote().keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
+            keyBindedEmotes = -1;
+            this.save = true;
+        } else {
+            EmoteInstance.instance.getClientMethods().openScreen(
+                    createConfigScreen(
+                            aBoolean -> {
+                                if(aBoolean) {
+                                    for (EmoteHolder emote : EmoteHolder.list) {
+                                        emote.keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
+                                    }
+                                    this.saveConfig();
+                                    keyBindedEmotes = -1;
+                                }
+                                screen.openThisScreen();
+                            },
+                            EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.resetAllKeys.title"),
+                            EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.resetAllKeys.message").append(" (" + keyBindedEmotes + ")"))
+            );
+        }
+    }
+
     @Override
     public void emotes_tickScreen(){
         if(activeKeyTime == 1){
@@ -163,16 +189,41 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         return false;
     }
 
+    private void countEmotesWithKeyBind(){
+        keyBindedEmotes = 0;
+        for(EmoteHolder emoteHolder : EmoteHolder.list){
+            if(! emoteHolder.keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey())){
+                keyBindedEmotes++;
+            }
+        }
+    }
 
     @Override
     public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         screen.emotesRenderBackgroundTexture(0);
         if(this.emoteList.getSelectedEntry() == null){
             this.setKeyButton.setActive(false);
-            this.resetKey.setActive(false);
+            //this.resetKey.setActive(false);
+            resetOnlySelected = false;
         }else{
             this.setKeyButton.setActive(true);
-            this.resetKey.setActive(! this.emoteList.getSelectedEntry().getEmote().keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey()));
+            //this.resetKey.setActive(! this.emoteList.getSelectedEntry().getEmote().keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey()));
+            resetOnlySelected = ! this.emoteList.getSelectedEntry().getEmote().keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey());
+        }
+        if(resetOnlySelected){
+            this.resetKey.setActive(true);
+            this.resetKey.setMessage(resetOneText);
+        }
+        else {
+            if(keyBindedEmotes < 0) countEmotesWithKeyBind();
+            if(keyBindedEmotes > 0){
+                this.resetKey.setActive(true);
+                this.resetKey.setMessage(resetAllText.copyIt().append(" (" + keyBindedEmotes + ")"));
+            }
+            else {
+                this.resetKey.setActive(false);
+                this.resetKey.setMessage(resetOneText);
+            }
         }
         for(PositionedText str : texts){
             str.render(matrices);
@@ -215,6 +266,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         if(bl || force){
             emote.keyBinding = key;
             this.save = true;
+            keyBindedEmotes = -1; //recount needed;
         }
         this.activeKeyTime = 0;
         return bl;

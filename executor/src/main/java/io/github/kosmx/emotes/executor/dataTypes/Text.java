@@ -15,4 +15,5 @@ public interface Text {
     default Text append(String text){
         return append(EmoteInstance.instance.getDefaults().textFromString(text));
     }
+    Text copyIt();
 }
