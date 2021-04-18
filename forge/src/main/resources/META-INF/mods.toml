@@ -14,7 +14,8 @@ version="${version}"
 
 displayName="Emotecraft"
 
-displayURL="https://kosmx.gitbook.io/emotecraft/"
+#displayURL="https://kosmx.gitbook.io/emotecraft/"
+#Forge menu was always trying to open this.
 
 logoFile="emotecraft_mod_logo.png" #optional
 
