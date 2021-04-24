@@ -16,6 +16,7 @@ import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
@@ -25,6 +26,7 @@ public class ClientInit {
 
     static KeyMapping openMenuKey;
     static KeyMapping stopEmote;
+    static KeyMapping debugKey;
     static Consumer<Minecraft> keyBindingFunction;
 
     static void initClient(){
@@ -62,6 +64,12 @@ public class ClientInit {
         stopEmote = new KeyMapping("key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding");
         ClientRegistry.registerKeyBinding(stopEmote);
 
+        if(FMLLoader.getGamePath().resolve("emote.json").toFile().isFile()){ //Secret feature//
+            debugKey = new KeyMapping("key.emotecraft.debug", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O,       //I don't know why... just
+                    "category.emotecraft.keybinding");
+            ClientRegistry.registerKeyBinding(debugKey);
+        }
+
         keyBindingFunction = client -> {
 
             if(openMenuKey.consumeClick()){
@@ -71,6 +79,9 @@ public class ClientInit {
             }
             if(stopEmote.consumeClick()){
                 ClientEmotePlay.clientStopLocalEmote();
+            }
+            if(debugKey != null && debugKey.consumeClick()){
+                io.github.kosmx.emotes.main.ClientInit.playDebugEmote();
             }
         };
     }

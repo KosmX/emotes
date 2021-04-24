@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
@@ -20,6 +21,7 @@ public class ClientInit {
 
     static KeyMapping openMenuKey;
     static KeyMapping stopEmote;
+    static KeyMapping debugKey;
     static Consumer<Minecraft> keyBindingFunction;
 
     static void initClient(){
@@ -42,6 +44,11 @@ public class ClientInit {
         stopEmote = new KeyMapping("key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding");
         KeyBindingRegistryImpl.registerKeyBinding(stopEmote);
 
+        if(FabricLoader.getInstance().getGameDir().resolve("emote.json").toFile().isFile()){ //Secret feature//
+            debugKey = new KeyMapping("key.emotecraft.debug", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O,       //I don't know why... just
+                    "category.emotecraft.keybinding");
+            KeyBindingRegistryImpl.registerKeyBinding(debugKey);
+        }
         keyBindingFunction = client -> {
 
             if(openMenuKey.consumeClick()){
@@ -51,6 +58,9 @@ public class ClientInit {
             }
             if(stopEmote.consumeClick()){
                 ClientEmotePlay.clientStopLocalEmote();
+            }
+            if(debugKey != null && debugKey.consumeClick()){
+                io.github.kosmx.emotes.main.ClientInit.playDebugEmote();
             }
         };
     }

@@ -10,6 +10,7 @@ import io.github.kosmx.emotes.main.quarktool.QuarkReader;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -113,6 +114,26 @@ public class ClientInit {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    /**
+     * play the test emote
+     */
+    public static void playDebugEmote(){
+        EmoteInstance.instance.getLogger().log(Level.INFO, "Playing debug emote");
+        Path location = EmoteInstance.instance.getGameDirectory().resolve("emote.json");
+        try{
+            BufferedReader reader = Files.newBufferedReader(location);
+            EmoteHolder emoteHolder = EmoteHolder.deserializeJson(reader).get(0);
+            reader.close();
+            if(EmoteInstance.instance.getClientMethods().getMainPlayer() != null){
+                emoteHolder.playEmote(EmoteInstance.instance.getClientMethods().getMainPlayer());
+            }
+        }catch(Exception e){
+            EmoteInstance.instance.getLogger().log(Level.INFO, "Error while importing debug emote.", true);
+            EmoteInstance.instance.getLogger().log(Level.INFO, e.getMessage());
+            e.printStackTrace();
         }
     }
 }

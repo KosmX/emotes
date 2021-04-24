@@ -197,6 +197,13 @@ public class EmoteHolder {
         return playEmote(emote, player, null);
     }
 
+    /**
+     * Check if the emote can be played by the main player
+     * @param emote emote to play
+     * @param player who is the player
+     * @param emoteHolder emote holder object
+     * @return could be played
+     */
     public static boolean playEmote(EmoteData emote, IEmotePlayerEntity player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
             return ClientEmotePlay.clientStartLocalEmote(emote);
