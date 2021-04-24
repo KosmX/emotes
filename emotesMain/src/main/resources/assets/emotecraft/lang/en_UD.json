@@ -13,5 +13,12 @@
   "emotecraft.otherconfig.validate": "ǝʇoɯǝ ǝʇɐpıןɐΛ",
   "emotecraft.otherconfig.validate.tooltip": "ʇǝsɟɟo ɥɔnɯ ooʇ sǝʞɐɯ ʇɐɥʍ 'sǝʇoɯǝ ʍoןןɐ ʇ,uoʍ ʇI ˙ʇɐǝɥɔ oʇ ʇuɐʍ ʎpoqǝɯos ǝɹǝɥʍ 'spןɹoʍ ԀʌԀ ɹoɟ ʎןuO",
   "emotecraft.otherconfig.validationThreshold": "pןoɥsǝɹɥʇ uoıʇɐpıןɐΛ",
-  "emotecraft.otherconfig.validationThreshold.tooltip": "ɥɔnɯ ooʇ sı ʇǝsɟɟo ɥɔnɯ ʍoɥ ʎןʇɔɐxƎ"
+  "emotecraft.otherconfig.validationThreshold.tooltip": "ɥɔnɯ ooʇ sı ʇǝsɟɟo ɥɔnɯ ʍoɥ ʎןʇɔɐxƎ",
+  "emotecraft.otherconfig.dark": "ꞁǝǝɥʍ ǝsooɥɔ-ʇsɐɟ ʞɹɐᗡ",
+  "emotecraft.otherconfig.showicon": "sǝɯɐu ǝʇoɯǝ ɟo pɐǝʇsuᴉ suoɔᴉ ʍoɥS",
+  "emotecraft.otherconfig.showicon.tooltip": "ǝꞁqɐꞁᴉɐʌɐ ɟI",
+  "emotecraft.otherconfig.stopthreshold.tooltip": " ʎǝʞ ʎɐꞁd doʇs ǝɥʇ ǝsn ꞁꞁᴉʇs uɐɔ no⅄ ˙ǝʇoɯǝ ǝɥʇ ᵷuᴉʎɐꞁd doʇs ʇ,uoʍ noʎ 'ǝnꞁɐʌ ǝᵷɹɐꞁ ɥʇᴉʍ\n(pǝǝds ᵷuᴉʞꞁɐʍ sᴉ ᘔᘔ˙0)",
+  "emotecraft.otherconfig.yratio": "pꞁoɥsǝɹɥʇ doʇs uᴉ ǝɔuǝnꞁɟuᴉ ᵷuᴉʌoɯ sᴉxɐ ⅄",
+  "emotecraft.otherconfig.yratio.tooltip": "ǝɔuǝnꞁɟuᴉ ɹǝᵷᵷᴉq suɐǝɯ ǝnꞁɐʌ ɹǝᵷᵷᴉq",
+  "emotecraft.otherconfig.loadbuiltin": "sǝʇoɯǝ uᴉ-ʇꞁᴉnq pɐoꞀ"
 }
