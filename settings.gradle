@@ -2,6 +2,7 @@
 
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
@@ -12,9 +13,8 @@ pluginManagement {
         }
         maven {
             name = 'hell'
-            url = 'https://files.minecraftforge.net/maven/'
+            url = 'https://maven.minecraftforge.net/'
         }
-        gradlePluginPortal()
     }
 }
 
