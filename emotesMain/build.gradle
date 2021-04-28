@@ -3,11 +3,11 @@ plugins {
     id 'maven-publish'
     //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
     //id "architectury-plugin" version "3.0-SNAPSHOT"
-    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 apply plugin: 'forgified-fabric-loom'
 apply plugin: "architectury-plugin"
+apply plugin: 'com.github.johnrengelman.shadow'
 
 version project.mod_version
 
