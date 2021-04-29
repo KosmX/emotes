@@ -8,8 +8,8 @@ pluginManagement {
             url = 'https://maven.fabricmc.net/'
         }
         maven {
-            name = 'Shedaniel\'s maven'
-            url = 'https://maven.shedaniel.me/'
+            name = 'Architectury maven'
+            url = 'https://maven.architectury.dev/'
         }
         maven {
             name = 'hell'
