@@ -39,7 +39,7 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
 
-    compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
+    compileOnly "com.google.code.gson:gson:2.8.5"//That package is compiled into MC
 
     modCompileOnly("net.fabricmc:fabric-loader:${project.loader_version}")
 }
