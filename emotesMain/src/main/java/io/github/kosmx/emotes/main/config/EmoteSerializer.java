@@ -220,8 +220,10 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
         partDeserialize(node, bodyPart.pitch, bodyPart.name);
         partDeserialize(node, bodyPart.yaw, bodyPart.name);
         partDeserialize(node, bodyPart.roll, bodyPart.name);
-        partDeserialize(node, bodyPart.bend, bodyPart.name);
-        partDeserialize(node, bodyPart.bendDirection, bodyPart.name);
+        if(bodyPart.isBendable) {
+            partDeserialize(node, bodyPart.bend, bodyPart.name);
+            partDeserialize(node, bodyPart.bendDirection, bodyPart.name);
+        }
     }
 
     private static void partDeserialize(JsonArray array, EmoteData.StateCollection.State part, String parentName){
