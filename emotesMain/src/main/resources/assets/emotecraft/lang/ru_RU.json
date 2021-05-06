@@ -30,6 +30,11 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "активна только при включенном вида от третьего лица",
   "emotecraft.otherconfig.exportGecko": "Экспорт эмоции GeckoLib в формате Emotecraft",
   "emotecraft.otherconfig.exportGecko.tooltip": "файлы будут в emotes/GeckoLibExport. Вы можете поставить имя, описание и автора с помощью текстового редактора",
+  "emotecraft.otherconfig.enableNSFW": "Разрешить воспроизведение NSFW эмоций",
+  "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) неприемлемый контент\n\nМожет содержать обнажённый изображения, сцены сексуального характера, сцены насилия или другие потенциально тревожные моменты.",
+  "emotecraft.otherconfig.alwaysValidateEmote": "Всегда проверять полученные эмоции",
+  "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Вариант на стороне клиента, не повлияет на внутренний сервер\n\nПо умолчанию проверка на стороне клиента происходит только при получении эмоции от ненадежного прокси.\nИспользуйте это, чтобы всегда выполнять проверку на стороне клиента",
+  "emotecraft.otherconfig.default3rdPersonFront": "Используйте вид спереди вместо заднего при воспроизведении эмоций",
   "emotecraft.emotelist": "Все эмоции",
   "emotecraft.no_server": "На сервере не установлен Emotecraft, другие не увидят проигрываете ли вы эмоции",
   "emotecraft.different_server": "Сервер имеет другую версию Emotecraft, другие могут неправильно видеть ваши эмоции",
@@ -38,8 +43,13 @@
   "key.emotecraft.stop": "Остановить воспроизведение эмоции",
   "emotecraft.openFolder": "Открыть папку эмоций",
   "emotecraft.otherconfig.quark": "Включить сериализатор кварков",
+  "emotecraft.otherconfig.quark.tooltip": "Программа чтения эмоций Quark очень нестабильна и не полностью поддерживается.\nИспользовать не рекомендуется. Она может сработать нестабильно или даже вызвать сбой",
   "category.emotecraft.keybinding": "ЭмоутКрафт",
   "emotecraft.emote.author": "Автор: ",
   "emotecraft.config": "Настройка эмоций",
-  "emotecraft.blockedEmote": "Вы не можете воспроизвести эту эмоцию"
+  "emotecraft.blockedEmote": "Вы не можете воспроизвести эту эмоцию",
+  "emotecraft.resetConfig.title": "Сбросить каждую конфигурацию Emotecraft",
+  "emotecraft.resetConfig.message": "Вы действительно хотите сбросить конфиг?",
+  "emotecraft.resetAllKeys.title": "Сбросить все привязки клавиш для эмоций",
+  "emotecraft.resetAllKeys.message": "Вы действительно хотите сбросить все привязки клавиш для эмоций?"
 }
