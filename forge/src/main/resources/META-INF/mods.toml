@@ -21,4 +21,4 @@ logoFile="emotecraft_mod_logo.png" #optional
 
 authors="KosmX" #optional
 
-description="Play emotes in Minecraft\nOpen the menu to setup your fast-choose wheel\n\nYou can add custom emotes, and you can play these even if nobody else has them\n\nSpecial thanks:\nOrangeKale64 for creating emotes and help in the UI design\nOrsond for inspiring me and providing CollarMC (He called the mod EmoteX)\narchitectury for the Forge build tools"
+description="Play emotes in Minecraft\nOpen the menu to setup your fast-choose wheel\n\nYou can add custom emotes, and you can play these even if nobody else has them\n\nSpecial thanks:\nKale Ko for creating emotes and help in the UI design\nOrsond for inspiring me and providing CollarMC (He called the mod EmoteX)\narchitectury for the Forge build tools"
