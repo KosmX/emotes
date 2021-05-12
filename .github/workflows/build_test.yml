@@ -3,7 +3,7 @@
 
 name: Java CI with Gradle
 
-on: [pull_request, push]
+on: [pull_request]
 
 jobs:
   build:
@@ -31,7 +31,7 @@ jobs:
       with:
         name: artifacts
         path: |
-          fabric/build/libs/*-fabric.jar|
+          fabric/build/libs/*-fabric.jar
           fabric/build/libs/*-fabric-dev.jar
           forge/build/libs/*-forge.jar
           forge/build/libs/*-forge-dev.jar
