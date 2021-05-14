@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
@@ -16,7 +17,7 @@ import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
     private FastMenuWidget widget;
     private static final Text warn_no_emotecraft = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.no_server");
-    private static final Text warn_diff_emotecraft = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.different_server");
+    private static final Text warn_only_proxy = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.only_proxy");
 
     protected FastMenuScreenLogic(IScreenSlave screen) {
         super(screen);
@@ -40,9 +41,11 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
     public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
         screen.renderBackground(matrices);
         widget.render(matrices, mouseX, mouseY, delta);
-        int remoteVer = ((ClientConfig)EmoteInstance.config).modAvailableAtServer ? ((ClientConfig)EmoteInstance.config).correctServerVersion ? 2 : 1 : 0;
-        if(remoteVer != 2){
-            drawCenteredText(matrices, remoteVer == 0 ? warn_no_emotecraft : warn_diff_emotecraft, screen.getWidth()/2, screen.getHeight()/24 - 1, MathHelper.colorHelper(255, 255, 255, 255));
+        if(!((ClientConfig)EmoteInstance.config).hideWarningMessage.get()) {
+            int remoteVer = ClientPacketManager.isRemoveAvailable() ? 2 : ClientPacketManager.isAvailableProxy() ? 1 : 0;
+            if (remoteVer != 2) {
+                drawCenteredText(matrices, remoteVer == 0 ? warn_no_emotecraft : warn_only_proxy, screen.getWidth() / 2, screen.getHeight() / 24 - 1, MathHelper.colorHelper(255, 255, 255, 255));
+            }
         }
     }
 

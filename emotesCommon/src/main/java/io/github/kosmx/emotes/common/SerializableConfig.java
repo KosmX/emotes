@@ -44,17 +44,26 @@ public class SerializableConfig {
         T value;
         final T defaultValue;
         final public boolean hasTooltip;
+        final boolean isHidden;
 
-        public ConfigEntry(String name, String oldconfig, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection){
+        public ConfigEntry(String name, String oldconfig, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden){
             this.name = name;
             this.oldConfig = oldconfig;
             this.hasTooltip = hasTooltip;
             defaultValue = defVal;
             value = defVal;
             collection.add(this);
+            isHidden = hidden;
+        }
+
+        public ConfigEntry(String name, String oldconfig, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection){
+            this(name, oldconfig, defVal, hasTooltip, collection, false);
         }
         public ConfigEntry(String name, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection){
             this(name, null, defVal, hasTooltip, collection);
+        }
+        public ConfigEntry(String name, T defVal, List<ConfigEntry<?>> collection, boolean hidden){
+            this(name, null, defVal, false, collection, hidden);
         }
 
         public T get(){
@@ -76,16 +85,26 @@ public class SerializableConfig {
             this.value = this.defaultValue;
         }
 
+        public boolean showEntry(){
+            return !isHidden;
+        }
+
     }
 
     public static class BooleanConfigEntry extends ConfigEntry<Boolean>{
 
+        public BooleanConfigEntry(String name, String oldconfig, Boolean defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden) {
+            super(name, oldconfig, defVal, hasTooltip, collection, hidden);
+        }
         public BooleanConfigEntry(String name, String oldconfig, Boolean defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
             super(name, oldconfig, defVal, hasTooltip, collection);
         }
 
         public BooleanConfigEntry(String name, Boolean defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
             super(name, defVal, hasTooltip, collection);
+        }
+        public BooleanConfigEntry(String name, Boolean defVal, List<ConfigEntry<?>> collection, boolean hidden) {
+            super(name, defVal, collection, hidden);
         }
     }
 

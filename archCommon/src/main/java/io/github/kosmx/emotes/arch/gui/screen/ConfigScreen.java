@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
+import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.Serializer;
 import io.github.kosmx.emotes.main.screen.EmoteMenu;
 import net.minecraft.client.BooleanOption;
@@ -85,24 +86,26 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     private void addConfigEntry(SerializableConfig.ConfigEntry<?> entry, OptionsList options){
-        if(entry instanceof SerializableConfig.BooleanConfigEntry){
-            options.addBig(new BooleanOption("emotecraft.otherconfig." + entry.getName(),
-                                                           entry.hasTooltip ? new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip") : null,
-                                                           gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
-                                                           (gameOptions, aBoolean) -> ((SerializableConfig.BooleanConfigEntry)entry).set(aBoolean)
-            ));
-        }
-        else if(entry instanceof SerializableConfig.FloatConfigEntry){
-            SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
-            options.addBig(new ProgressOption(
-                    EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
-                    gameOptions -> floatEntry.getConfigVal(),
-                    (gameOptions, aDouble) -> floatEntry.setConfigVal(aDouble),
-                    (gameOptions, doubleOption) -> {
-                        if(floatEntry.hasTooltip) doubleOption.setTooltip(Minecraft.getInstance().font.split(new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip"), 200));
-                        return new TranslatableComponent(floatEntry.getFormatKey(), new TranslatableComponent("emotecraft.otherconfig." + floatEntry.getName()), floatEntry.getTextVal());
-                    }
-            ));
+        if(entry.showEntry() || ((ClientConfig)EmoteInstance.config).showHiddenConfig.get()) {
+            if (entry instanceof SerializableConfig.BooleanConfigEntry) {
+                options.addBig(new BooleanOption("emotecraft.otherconfig." + entry.getName(),
+                        entry.hasTooltip ? new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip") : null,
+                        gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
+                        (gameOptions, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
+                ));
+            } else if (entry instanceof SerializableConfig.FloatConfigEntry) {
+                SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
+                options.addBig(new ProgressOption(
+                        EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
+                        gameOptions -> floatEntry.getConfigVal(),
+                        (gameOptions, aDouble) -> floatEntry.setConfigVal(aDouble),
+                        (gameOptions, doubleOption) -> {
+                            if (floatEntry.hasTooltip)
+                                doubleOption.setTooltip(Minecraft.getInstance().font.split(new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip"), 200));
+                            return new TranslatableComponent(floatEntry.getFormatKey(), new TranslatableComponent("emotecraft.otherconfig." + floatEntry.getName()), floatEntry.getTextVal());
+                        }
+                ));
+            }
         }
     }
 

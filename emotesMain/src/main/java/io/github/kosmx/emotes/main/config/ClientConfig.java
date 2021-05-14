@@ -49,6 +49,8 @@ public class ClientConfig extends SerializableConfig {
             return (int)this.getConfigVal();
         }
     };
+    public final ConfigEntry<Boolean> showHiddenConfig = new BooleanConfigEntry("showHiddenConfig", false, expert, false);
+
 
 
     //------------------------ Advanced config stuff ------------------------//
@@ -79,6 +81,8 @@ public class ClientConfig extends SerializableConfig {
 
         EmoteHolder.bindKeys(this);
     }
-    public boolean modAvailableAtServer = true;
-    public boolean correctServerVersion = true;
+
+    //------------------------ Random tweak stuff ------------------------//
+
+    public final ConfigEntry<Boolean> hideWarningMessage = new BooleanConfigEntry("hideWarning", false, expert, true);
 }
