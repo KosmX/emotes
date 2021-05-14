@@ -19,6 +19,7 @@ import java.util.UUID;
 public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     boolean isRemotePresent = false;
+    private int remoteVersion = 0;
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
@@ -69,6 +70,14 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         if(map.containsKey((byte)3)){
             disableNBS = map.get((byte)3) == 0;
         }
+        if(map.containsKey((byte)8)){
+            remoteVersion = map.get((byte)8); //8x8 :D
+        }
+    }
+
+    @Override
+    public int getRemoteVersion() {
+        return remoteVersion;
     }
 
     @Override

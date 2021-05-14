@@ -17,6 +17,8 @@ import java.util.UUID;
 
 public class ClientNetworkInstance extends AbstractNetworkInstance {
 
+    private int remoteVersion = 0;
+
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
     public void init(){
@@ -50,6 +52,9 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         if(map.containsKey((byte)3)){
             disableNBS = map.get((byte)3) == 0;
         }
+        if(map.containsKey((byte)8)){
+            remoteVersion = map.get((byte)8); //8x8 :D
+        }
     }
 
     @Override
@@ -60,6 +65,11 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     @Override
     public boolean isActive() {
         return ClientPlayNetworking.canSend(ServerNetwork.channelID);
+    }
+
+    @Override
+    public int getRemoteVersion() {
+        return remoteVersion;
     }
 
     @Override

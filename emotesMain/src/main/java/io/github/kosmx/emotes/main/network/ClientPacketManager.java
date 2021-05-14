@@ -109,4 +109,17 @@ public final class ClientPacketManager extends EmotesProxyManager {
     protected void dispatchReceive(ByteBuffer buffer, UUID player, INetworkInstance networkInstance) {
         receiveMessage(buffer, player, networkInstance);
     }
+
+    public static boolean isRemoveAvailable(){
+        return defaultNetwork.isActive();
+    }
+
+    public static boolean isAvailableProxy(){
+        for(INetworkInstance instance : networkInstances){
+            if(instance.isActive()){
+                return true;
+            }
+        }
+        return false;
+    }
 }

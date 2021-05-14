@@ -40,6 +40,7 @@
   "emotecraft.emotelist": "All emote",
   "emotecraft.no_server": "Server has no Emotecraft installed, others won't see if you play an emote",
   "emotecraft.different_server": "Server has a different version of Emotecraft installed, others may not see correctly your emotes",
+  "emotecraft.only_proxy": "Only proxy streaming is available.",
   "key.emotecraft.fastchoose": "Open fast-choose wheel screen",
   "key.emotecraft.debug": "play 'experiment' emote",
   "key.emotecraft.stop": "Stop playing emote",

@@ -93,6 +93,11 @@ public interface INetworkInstance {
      */
     boolean isActive();
 
+    /**
+     * Get the remote system's version number
+     * @return remote version number. 8-255
+     */
+    int getRemoteVersion();
 
     /**
      * If {@link ByteBuffer} is wrapped, it is safe to get the array

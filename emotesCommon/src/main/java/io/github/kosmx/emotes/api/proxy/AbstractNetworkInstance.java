@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.api.proxy;
 
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 
 import javax.annotation.Nullable;
@@ -120,6 +121,14 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
         }
     }
 
+    /**
+     * Returns its own version number, as the modern networking (mostly) understand higher version messages.
+     * @return CommonData.networkingVersion;
+     */
+    @Override
+    public int getRemoteVersion() {
+        return CommonData.networkingVersion;
+    }
 
     @Override
     public void sendConfigCallback(){
