@@ -5,7 +5,7 @@ plugins {
     id 'maven-publish'
 }
 
-apply plugin: 'forgified-fabric-loom'
+apply plugin: 'dev.architectury.loom'
 apply plugin: "architectury-plugin"
 apply plugin: 'com.github.johnrengelman.shadow'
 

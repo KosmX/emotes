@@ -6,7 +6,7 @@ plugins {
     //id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-apply plugin: 'forgified-fabric-loom'
+apply plugin: 'dev.architectury.loom'
 apply plugin: "architectury-plugin"
 
 version project.mod_version
