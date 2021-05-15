@@ -1,5 +1,8 @@
 package io.github.kosmx.emotes.main.screen;
 
+import java.nio.file.Path;
+import java.util.List;
+
 @SuppressWarnings("unchecked")
 public abstract class AbstractScreenLogic<MATRIX, SCREEN> implements IScreenLogicHelper<MATRIX> {
     protected final IScreenSlave<MATRIX, SCREEN> screen;
@@ -28,4 +31,5 @@ public abstract class AbstractScreenLogic<MATRIX, SCREEN> implements IScreenLogi
         return true;
     }
 
+    public void emotes_filesDropped(List<Path> files){}
 }

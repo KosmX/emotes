@@ -19,13 +19,15 @@ import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The EmoteMenu
@@ -35,6 +37,7 @@ import java.util.logging.Level;
  * onClose - just open the parent
  * onRemove
  * tick()
+ *
  */
 @SuppressWarnings("unchecked")
 public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
@@ -57,6 +60,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     public boolean exportGeckoEmotes = false;
 
+    private ChangeListener watcher = null;
+
     public EmoteMenu(IScreenSlave screen) {
         super(screen);
     }
@@ -75,6 +80,16 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
         this.texts = new ArrayList<>();
         ClientInit.loadEmotes();
+
+        try {
+            watcher = new ChangeListener(EmoteInstance.instance.getExternalEmoteDir().toPath());
+        }
+        catch (IOException e){
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "can't watch emotes dir for changes: " +  e.getMessage());
+            if(EmoteInstance.config.showDebug.get()){
+                e.printStackTrace();
+            }
+        }
 
         if(this.exportGeckoEmotes){
             exportGeckoEmotes = false;
@@ -178,6 +193,9 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
         if(activeKeyTime != 0){
             activeKeyTime--;
+        }
+        if(watcher != null && watcher.isChanged()){
+            reload();
         }
     }
 
@@ -285,6 +303,14 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         Serializer.saveConfig();
     }
 
+    private void reload(){
+        if(this.save){
+            saveConfig();
+        }
+        ClientInit.loadEmotes();
+        emoteList.setEmotes(EmoteHolder.list);
+    }
+
     private void updateKeyText(){
         if(emoteList.getSelectedEntry() != null){
             Text message = emoteList.getSelectedEntry().getEmote().keyBinding.getLocalizedText();
@@ -306,6 +332,52 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             }
         }
         return false;
+    }
+
+    @Override
+    public void emotes_filesDropped(List<Path> paths){
+        addEmotes(paths);
+        List<Path> folders = paths.stream().filter(path -> path.toFile().isDirectory()).collect(Collectors.toList());
+        paths = new ArrayList<>();
+        for(Path folder : folders){
+            List<Path> collect = new ArrayList<>();
+            Arrays.stream(Objects.requireNonNull(folder.toFile().listFiles((dir, name) -> name.endsWith(".json")))).forEach(file -> collect.add(file.toPath()));
+            addEmotes(collect);
+        }
+    }
+
+    private void addEmotes(List<Path> emotes){
+
+        List<Path> newEmotes = emotes.stream().filter(path -> {
+            if(path.toFile().isFile() &&
+                    ( path.toFile().getName().endsWith(".png") ||
+                            path.toFile().getName().endsWith(".emote") && ((ClientConfig)EmoteInstance.config).enableQuark.get())){
+                return true; //can be an emote icon
+            }
+            try {
+                return EmoteHolder.deserializeJson(Files.newBufferedReader(path)).size() != 0;
+            }
+            catch (Exception e){
+                return false; //what is this file
+            }
+        }).collect(Collectors.toList());
+
+        Path emotesDir = EmoteInstance.instance.getExternalEmoteDir().toPath();
+        for(Path path:newEmotes){
+            try{
+                Files.copy(path, emotesDir.resolve(path.getFileName()));
+            }
+            catch (IOException e){
+                if(e instanceof FileAlreadyExistsException){
+                    EmoteInstance.instance.getLogger().log(Level.INFO, path.getFileName() + " is already in the emotes directory", true);
+                }else {
+                    EmoteInstance.instance.getLogger().log(Level.FINEST, "Unknown error while copying " + path.getFileName() + ": " + e.getMessage(), true);
+                    if(EmoteInstance.config.showDebug.get()){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int width, int height);
@@ -357,6 +429,32 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         private void render(MATRIX matrixStack) {
             drawCenteredText(matrixStack, this.str, this.x, this.y, MathHelper.colorHelper(255, 255, 255, 255));
             //textRenderer.getClass();
+        }
+    }
+
+    private static class ChangeListener implements AutoCloseable{
+        private final WatchService watcher;
+        private final Path path;
+
+        ChangeListener(Path path) throws IOException{
+            this.watcher = path.getFileSystem().newWatchService();
+            this.path = path;
+            this.path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+        }
+
+        boolean isChanged(){
+            boolean bl = false;
+            WatchKey key;
+            if((key = watcher.poll()) != null){
+                bl = key.pollEvents().size() != 0;//there is something...
+                key.reset();
+            }
+            return bl;
+        }
+
+        @Override
+        public void close() throws Exception {
+            watcher.close();
         }
     }
 }
