@@ -12,8 +12,9 @@ public class SerializableConfig {
     /**
      * changelog
      * 2 - PlayerSafetyOption
+     * 3 - Kale Ko changed a build-in emote, EmoteFixer to keep bound
      */
-    public final static int staticConfigVersion = 2;
+    public final static int staticConfigVersion = 3;
 
 
     public int configVersion; //this has a different job... not a config
