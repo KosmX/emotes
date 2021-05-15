@@ -19,12 +19,15 @@ import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The EmoteMenu
@@ -34,6 +37,7 @@ import java.util.logging.Level;
  * onClose - just open the parent
  * onRemove
  * tick()
+ *
  */
 @SuppressWarnings("unchecked")
 public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
@@ -328,6 +332,50 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             }
         }
         return false;
+    }
+
+    @Override
+    public void emotes_filesDropped(List<Path> paths){
+        addEmotes(paths);
+        List<Path> folders = paths.stream().filter(path -> path.toFile().isDirectory()).collect(Collectors.toList());
+        paths = new ArrayList<>();
+        for(Path folder : folders){
+            List<Path> collect = new ArrayList<>();
+            Arrays.stream(Objects.requireNonNull(folder.toFile().listFiles((dir, name) -> name.endsWith(".json")))).forEach(file -> collect.add(file.toPath()));
+            addEmotes(collect);
+        }
+    }
+
+    private void addEmotes(List<Path> emotes){
+
+        List<Path> newEmotes = emotes.stream().filter(path -> {
+            if(path.toFile().isFile() && path.toFile().getName().endsWith(".png")){
+                return true; //can be an emote icon
+            }
+            try {
+                return EmoteHolder.deserializeJson(Files.newBufferedReader(path)).size() != 0;
+            }
+            catch (Exception e){
+                return false; //what is this file
+            }
+        }).collect(Collectors.toList());
+
+        Path emotesDir = EmoteInstance.instance.getExternalEmoteDir().toPath();
+        for(Path path:newEmotes){
+            try{
+                Files.copy(path, emotesDir.resolve(path.getFileName()));
+            }
+            catch (IOException e){
+                if(e instanceof FileAlreadyExistsException){
+                    EmoteInstance.instance.getLogger().log(Level.INFO, path.getFileName() + " is already in the emotes directory", true);
+                }else {
+                    EmoteInstance.instance.getLogger().log(Level.FINEST, "Unknown error while copying " + path.getFileName() + ": " + e.getMessage(), true);
+                    if(EmoteInstance.config.showDebug.get()){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     protected abstract IEmoteListWidgetHelper<MATRIX, WIDGET> newEmoteList(int width, int height);

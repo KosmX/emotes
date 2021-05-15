@@ -13,6 +13,8 @@ import io.github.kosmx.emotes.main.screen.IScreenLogicHelper;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -154,5 +156,11 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     @Override
     public boolean isPauseScreen() {
         return master.emotes_isThisPauseScreen();
+    }
+
+    @Override
+    public void onFilesDrop(List<Path> list) {
+        master.emotes_filesDropped(list);
+        super.onFilesDrop(list);
     }
 }

@@ -178,6 +178,12 @@ public class EmoteHolder {
         return null;
     }
 
+    /**
+     * Deserialize helper. do not modify anything
+     * @param json json file
+     * @return EmoteList
+     * @throws JsonParseException can be an incorrect file...
+     */
     public static List<EmoteHolder> deserializeJson(BufferedReader json) throws JsonParseException{     //throws BowlingBall XD
         return Serializer.serializer.fromJson(json, new TypeToken<List<EmoteHolder>>(){}.getType());
     }
