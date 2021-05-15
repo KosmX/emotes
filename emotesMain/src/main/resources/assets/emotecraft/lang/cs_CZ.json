@@ -1,1 +1,27 @@
-{}
+{
+  "emotecraft.options.options": "Možnosti módu",
+  "emotecraft.options.keybind": "Nastavit vlastní klíč pro přehrávání vybraných emotů",
+  "emotecraft.options.fastmenu": "Vyberte emot, než klikněte pro",
+  "emotecraft.options.fastmenu2": "přidat ke kolu rychlého výběru.",
+  "emotecraft.options.fastmenu3": "Klik pravým pro vyčištění",
+  "emotecraft.otherconfig.category.general": "Základní možnosti",
+  "emotecraft.otherconfig.category.expert": "Možnosti expertu",
+  "emotecraft.otherconfig": "Ostatní možnosti",
+  "emotecraft.otherconfig.debug": "Debug",
+  "emotecraft.otherconfig.showicon.tooltip": "Pokud je k dispozici",
+  "emotecraft.otherconfig.loadbuiltin": "Načíst vestavěné emoce",
+  "emotecraft.otherconfig.loadbuiltin.tooltip": "Pokud je chcete z nějakého důvodu odstranit...",
+  "emotecraft.otherconfig.playersafety": "Povolit funkci bezpečnosti hráče",
+  "emotecraft.otherconfig.playersafety.tooltip": "nezobrazovat emoce od ztlumených hráčů (1.16.4+)",
+  "emotecraft.otherconfig.hideWarning": "Skrýt varování \"bez serveru\"",
+  "emotecraft.emotelist": "Všechny emote",
+  "emotecraft.openFolder": "Otevřít složku modifikací",
+  "category.emotecraft.keybinding": "Emotekraft",
+  "emotecraft.emote.author": "Autor: ",
+  "emotecraft.config": "Konfigurace emotů",
+  "emotecraft.blockedEmote": "Máš zakázáno hrát tomto emotů",
+  "emotecraft.resetConfig.title": "Resetovat každou konfiguraci Emotekraft",
+  "emotecraft.resetConfig.message": "Opravdu chcete resetovat nastavení?",
+  "emotecraft.resetAllKeys.title": "Resetovat všechny vazby emote",
+  "emotecraft.resetAllKeys.message": "Opravdu chcete resetovat každý emote klíč?"
+}
