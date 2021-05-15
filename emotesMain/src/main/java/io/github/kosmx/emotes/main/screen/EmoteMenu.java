@@ -349,7 +349,9 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private void addEmotes(List<Path> emotes){
 
         List<Path> newEmotes = emotes.stream().filter(path -> {
-            if(path.toFile().isFile() && path.toFile().getName().endsWith(".png")){
+            if(path.toFile().isFile() &&
+                    ( path.toFile().getName().endsWith(".png") ||
+                            path.toFile().getName().endsWith(".emote") && ((ClientConfig)EmoteInstance.config).enableQuark.get())){
                 return true; //can be an emote icon
             }
             try {
