@@ -26,8 +26,19 @@
   "emotecraft.otherconfig.playersafety": "activete super powers of portection!",
   "emotecraft.otherconfig.playersafety.tooltip": "wont let you see ohder cats dance!!! dont activeta!!!! (16.1.4.1)+",
   "emotecraft.otherconfig.perspective": "u wil see urslef!!! ((when dancing)",
+  "emotecraft.otherconfig.enableNSFW": "Du u relly want 2 se thes. NFSW, wat das it mens?",
+  "emotecraft.no_server": "Naw Emotekraft on Servr, that do not tell others I danz",
+  "key.emotecraft.fastchoose": "I want 2 danz fast",
+  "key.emotecraft.debug": "I want 2 see wath my new danz looks",
+  "key.emotecraft.stop": "Stop danz",
+  "emotecraft.openFolder": "Opn danzc foldr",
   "emotecraft.otherconfig.quark": "Eeeenabl quartz serial",
   "category.emotecraft.keybinding": "Imotcraft",
   "emotecraft.emote.author": "Autorrrrrrrrr: ",
-  "emotecraft.config": "Imotes canfing"
+  "emotecraft.config": "Imotes canfing",
+  "emotecraft.blockedEmote": "U cannt summn tat demon",
+  "emotecraft.resetConfig.title": "throw out confgs",
+  "emotecraft.resetConfig.message": "Do u want 2 trow out all opshius?",
+  "emotecraft.resetAllKeys.title": "Forget all?",
+  "emotecraft.resetAllKeys.message": "Do u want 2 froge al keyz?"
 }
