@@ -20,8 +20,7 @@ import javax.annotation.Nullable;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -57,6 +56,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     public boolean exportGeckoEmotes = false;
 
+    private ChangeListener watcher = null;
+
     public EmoteMenu(IScreenSlave screen) {
         super(screen);
     }
@@ -75,6 +76,16 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
         this.texts = new ArrayList<>();
         ClientInit.loadEmotes();
+
+        try {
+            watcher = new ChangeListener(EmoteInstance.instance.getExternalEmoteDir().toPath());
+        }
+        catch (IOException e){
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "can't watch emotes dir for changes: " +  e.getMessage());
+            if(EmoteInstance.config.showDebug.get()){
+                e.printStackTrace();
+            }
+        }
 
         if(this.exportGeckoEmotes){
             exportGeckoEmotes = false;
@@ -178,6 +189,9 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
         if(activeKeyTime != 0){
             activeKeyTime--;
+        }
+        if(watcher != null && watcher.isChanged()){
+            reload();
         }
     }
 
@@ -285,6 +299,14 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         Serializer.saveConfig();
     }
 
+    private void reload(){
+        if(this.save){
+            saveConfig();
+        }
+        ClientInit.loadEmotes();
+        emoteList.setEmotes(EmoteHolder.list);
+    }
+
     private void updateKeyText(){
         if(emoteList.getSelectedEntry() != null){
             Text message = emoteList.getSelectedEntry().getEmote().keyBinding.getLocalizedText();
@@ -357,6 +379,32 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         private void render(MATRIX matrixStack) {
             drawCenteredText(matrixStack, this.str, this.x, this.y, MathHelper.colorHelper(255, 255, 255, 255));
             //textRenderer.getClass();
+        }
+    }
+
+    private static class ChangeListener implements AutoCloseable{
+        private final WatchService watcher;
+        private final Path path;
+
+        ChangeListener(Path path) throws IOException{
+            this.watcher = path.getFileSystem().newWatchService();
+            this.path = path;
+            this.path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+        }
+
+        boolean isChanged(){
+            boolean bl = false;
+            WatchKey key;
+            if((key = watcher.poll()) != null){
+                bl = key.pollEvents().size() != 0;//there is something...
+                key.reset();
+            }
+            return bl;
+        }
+
+        @Override
+        public void close() throws Exception {
+            watcher.close();
         }
     }
 }
