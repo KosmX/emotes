@@ -24,14 +24,12 @@ public class EmoteFixer{
         currentVersion = version;
     }
 
-    public int getEmoteID(JsonElement element){
+    public int getEmoteID(JsonElement element) {
         int id = element.getAsInt();
-        if(currentVersion < SerializableConfig.staticConfigVersion) {
-            for (int i = currentVersion; i < SerializableConfig.staticConfigVersion; i++) {
-                if (getData().containsKey(i)){
-                    if(getData().get(i).containsKey(id)){
-                        id = getData().get(i).get(id);
-                    }
+        for (int i = currentVersion; i < SerializableConfig.staticConfigVersion; i++) {
+            if (getData().containsKey(i)) {
+                if (getData().get(i).containsKey(id)) {
+                    id = getData().get(i).get(id);
                 }
             }
         }
@@ -41,7 +39,7 @@ public class EmoteFixer{
     private HashMap<Integer, HashMap<Integer, Integer>> getData(){
         if(data == null){
             try{
-                InputStream stream = EmoteFixer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emoteUpgradeMap.json");
+                InputStream stream = EmoteFixer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emote_upgrade_data.json");
                 InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(streamReader);
                 data = Serializer.serializer.fromJson(reader, new TypeToken<HashMap<Integer, HashMap<Integer, Integer>>>(){}.getType());
