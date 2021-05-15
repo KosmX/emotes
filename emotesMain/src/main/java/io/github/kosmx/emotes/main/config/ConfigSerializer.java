@@ -11,7 +11,6 @@ import java.util.logging.Level;
 
 public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, JsonSerializer<SerializableConfig> {
 
-
     @Override
     public SerializableConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
         JsonObject node = json.getAsJsonObject();
@@ -51,22 +50,23 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
     }
 
     private void clientDeserialize(JsonObject node, ClientConfig config){
-        if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config);
-        if(node.has("keys")) keyBindsDeserializer(node.get("keys").getAsJsonArray(), config);
+        EmoteFixer emoteFixer = new EmoteFixer(config.configVersion);
+        if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config, emoteFixer);
+        if(node.has("keys")) keyBindsDeserializer(node.get("keys").getAsJsonArray(), config, emoteFixer);
     }
 
-    private void fastMenuDeserializer(JsonObject node, ClientConfig config){
+    private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
         for(int i = 0; i != 8; i++){
             if(node.has(Integer.toString(i))){
-                config.fastMenuHash[i] = node.get(Integer.toString(i)).getAsInt();
+                config.fastMenuHash[i] = fixer.getEmoteID(node.get(Integer.toString(i)));
             }
         }
     }
 
-    private void keyBindsDeserializer(JsonArray node, ClientConfig config){
+    private void keyBindsDeserializer(JsonArray node, ClientConfig config, EmoteFixer fixer){
         for(JsonElement object : node){
             JsonObject n = object.getAsJsonObject();
-            config.emotesWithHash.add(new Pair<>(n.get("id").getAsInt(), n.get("key").getAsString()));
+            config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
             //keyBindDeserializer(object.getAsJsonObject());
         }
     }
