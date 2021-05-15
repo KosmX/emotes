@@ -41,11 +41,11 @@ public class EmoteFixer{
     private HashMap<Integer, HashMap<Integer, Integer>> getData(){
         if(data == null){
             try{
-                InputStream stream = EmoteFixer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "emoteUpgradeMap.json");
+                InputStream stream = EmoteFixer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emoteUpgradeMap.json");
                 InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(streamReader);
                 data = Serializer.serializer.fromJson(reader, new TypeToken<HashMap<Integer, HashMap<Integer, Integer>>>(){}.getType());
-            }catch (JsonParseException e){
+            }catch (JsonParseException | NullPointerException e){
                 e.printStackTrace();
                 if(data == null){
                     data = new HashMap<>();
