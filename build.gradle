@@ -122,8 +122,8 @@ if(file("keys.properties").exists()) {
             addGameVersion project.minecraft_version
             addGameVersion "Fabric"
             addGameVersion "Java 8"
-            addGameVersion "Java 9"
-            addGameVersion "Java 10"
+            addGameVersion "Java 11"
+            addGameVersion "Java 16"
 
 
             relations {
@@ -154,8 +154,8 @@ if(file("keys.properties").exists()) {
             addGameVersion project.minecraft_version
             addGameVersion "Forge"
             addGameVersion "Java 8"
-            addGameVersion "Java 9"
-            addGameVersion "Java 10"
+            addGameVersion "Java 11"
+            addGameVersion "Java 16"
 
 
             options {
