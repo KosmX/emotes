@@ -3,6 +3,8 @@ name: Crowdin Action
 on:
   push:
     branches: [ development ]
+  schedule:
+    - cron: '42 0 * * *'
 
 jobs:
   synchronize-with-crowdin:
