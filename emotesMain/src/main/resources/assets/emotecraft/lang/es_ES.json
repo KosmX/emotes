@@ -1,5 +1,5 @@
 {
-  "emotecraft.options.options": "Otras opciones",
+  "emotecraft.options.options": "Opciones del mod",
   "emotecraft.options.keybind": "Establecer tecla para reproducir el gesto seleccionado",
   "emotecraft.options.fastmenu": "Selecciona un gesto y haga clic",
   "emotecraft.options.fastmenu2": "para agregarlo al menú rápido.",
@@ -40,12 +40,19 @@
   "emotecraft.emotelist": "Todos los gestos",
   "emotecraft.no_server": "El servidor no tiene Emotecraft instalado, otros no verán si reproduces un gesto",
   "emotecraft.different_server": "El servidor tiene una versión diferente de Emotecraft instalada, es posible que otros no vean correctamente tus gestos",
+  "emotecraft.only_proxy": "Solo está disponible la transmisión por proxy.",
   "key.emotecraft.fastchoose": "Menú rápido",
   "key.emotecraft.debug": "Reproducir gesto de depuración",
   "key.emotecraft.stop": "Parar de reproducir gesto",
   "emotecraft.openFolder": "Abrir carpeta de gestos",
   "emotecraft.otherconfig.quark": "Activar serializador quark",
+  "emotecraft.otherconfig.quark.tooltip": "El lector de gestos Quark es altamente inestable y no está totalmente soportado.\nNo se recomienda usarlo. Puede funcionar de forma inesperada o incluso puede causar un fallo",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
-  "emotecraft.config": "Configurar gestos"
+  "emotecraft.config": "Configurar gestos",
+  "emotecraft.blockedEmote": "No tienes permiso para usar este gesto",
+  "emotecraft.resetConfig.title": "Reiniciar toda la configuración de Emotecraft",
+  "emotecraft.resetConfig.message": "¿De verdad quieres reiniciar la configuración?",
+  "emotecraft.resetAllKeys.title": "Reiniciar todos los accesos rápidos",
+  "emotecraft.resetAllKeys.message": "¿De verdad quieres reiniciar todos los accesos rápidos?"
 }
