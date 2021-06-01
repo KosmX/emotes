@@ -47,7 +47,7 @@
   "emotecraft.openFolder": "Открыть папку эмоций",
   "emotecraft.otherconfig.quark": "Включить сериализатор кварков",
   "emotecraft.otherconfig.quark.tooltip": "Программа чтения эмоций Quark очень нестабильна и не полностью поддерживается.\nИспользовать не рекомендуется. Она может сработать нестабильно или даже вызвать сбой",
-  "category.emotecraft.keybinding": "ЭмоутКрафт",
+  "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Автор: ",
   "emotecraft.config": "Настройка эмоций",
   "emotecraft.blockedEmote": "Вы не можете воспроизвести эту эмоцию",
