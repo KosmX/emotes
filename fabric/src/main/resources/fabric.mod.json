@@ -33,6 +33,6 @@
   ],
   "depends": {
     "fabricloader": ">=0.9.0",
-    "fabric": ">=0.16.2"
+    "fabric": ">=0.16.4"
   }
 }
