@@ -35,7 +35,7 @@
   "emotecraft.otherconfig.alwaysValidateEmote": "Always validate received emotes",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Client side option, won't affect internal server\n\nBy default, client-side validation only happens when receiving emote from an untrusted proxy.\nUse this to always do client-side validation",
   "emotecraft.otherconfig.default3rdPersonFront": "Use front view instead of back when playing emotes",
-  "emotecraft.otherconfig.showHiddenConfig": "Show hidden config. reload required",
+  "emotecraft.otherconfig.showHiddenConfig": "Show hidden config. (reload required)",
   "emotecraft.otherconfig.hideWarning": "Hide \"no server\" warning",
   "emotecraft.emotelist": "All emote",
   "emotecraft.no_server": "Server has no Emotecraft installed, others won't see if you play an emote",
