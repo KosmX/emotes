@@ -12,7 +12,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 version project.mod_version
 
 architectury{
-    common()
+    //common() //TODO uncomment when updating Forge
 }
 
 loom{

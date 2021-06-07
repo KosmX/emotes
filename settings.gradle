@@ -29,7 +29,7 @@ include 'emotesServer'
 include 'emotesMain'
 
 include 'fabric'
-include 'forge' //Forge!?
+//include 'forge' forge not yet supports 1.17
 include 'archCommon'
 include 'bukkit'
 

@@ -12,7 +12,7 @@ apply plugin: "architectury-plugin"
 version project.mod_version
 
 architectury{
-    common()
+    //common() //TODO uncomment when updating Forge
 }
 
 loom{
