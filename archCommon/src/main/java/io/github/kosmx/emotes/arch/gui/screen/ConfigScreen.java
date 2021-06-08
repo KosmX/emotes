@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
@@ -7,7 +8,7 @@ import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.Serializer;
 import io.github.kosmx.emotes.main.screen.EmoteMenu;
-import net.minecraft.client.BooleanOption;
+import net.minecraft.client.CycleOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Option;
 import net.minecraft.client.Options;
@@ -15,6 +16,7 @@ import net.minecraft.client.ProgressOption;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.OptionsSubScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,6 +26,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -49,7 +52,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
         EmoteInstance.config.iterateGeneral(entry -> addConfigEntry(entry, options));
 
-        options.addBig(new BooleanOption(
+        options.addBig(CycleOption.createOnOff(
                 "emotecraft.otherconfig.exportGecko",
                 new TranslatableComponent("emotecraft.otherconfig.exportGecko.tooltip"),
                 gameOptions -> {
@@ -58,7 +61,7 @@ public class ConfigScreen extends OptionsSubScreen {
                     }
                     return false;
                 },
-                (gameOptions, aBoolean) -> {
+                (options, option, aBoolean) -> {
                     if (lastScreen instanceof EmoteMenuImpl) {
                         ((EmoteMenu) ((EmoteMenuImpl) lastScreen).master).exportGeckoEmotes = aBoolean;
                     }
@@ -70,28 +73,28 @@ public class ConfigScreen extends OptionsSubScreen {
 
         EmoteInstance.config.iterateExpert(entry -> addConfigEntry(entry, options));
 
-        this.addButton(new Button(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableComponent("controls.resetAll"), (button) -> {
+        this.addWidget(new Button(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableComponent("controls.resetAll"), (button) -> {
             this.minecraft.setScreen(new ConfirmScreen(
                     this::resetAll,
                     new TranslatableComponent("emotecraft.resetConfig.title"),
                     new TranslatableComponent("emotecraft.resetConfig.message")));
         }));
 
-        this.addButton(new Button(this.width / 2 - 155 + 160, this.height - 27, 150, 20, CommonComponents.GUI_DONE, (button) -> {
+        this.addWidget(new Button(this.width / 2 - 155 + 160, this.height - 27, 150, 20, CommonComponents.GUI_DONE, (button) -> {
             Serializer.saveConfig();
             this.minecraft.setScreen(this.lastScreen);
         }));
 
-        this.children.add(options);
+        this.addWidget(options);
     }
 
     private void addConfigEntry(SerializableConfig.ConfigEntry<?> entry, OptionsList options){
         if(entry.showEntry() || ((ClientConfig)EmoteInstance.config).showHiddenConfig.get()) {
             if (entry instanceof SerializableConfig.BooleanConfigEntry) {
-                options.addBig(new BooleanOption("emotecraft.otherconfig." + entry.getName(),
+                options.addBig(CycleOption.createOnOff("emotecraft.otherconfig." + entry.getName(),
                         entry.hasTooltip ? new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip") : null,
                         gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
-                        (gameOptions, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
+                        (gameOptions, option, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
                 ));
             } else if (entry instanceof SerializableConfig.FloatConfigEntry) {
                 SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
@@ -99,11 +102,10 @@ public class ConfigScreen extends OptionsSubScreen {
                         EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
                         gameOptions -> floatEntry.getConfigVal(),
                         (gameOptions, aDouble) -> floatEntry.setConfigVal(aDouble),
-                        (gameOptions, doubleOption) -> {
-                            if (floatEntry.hasTooltip)
-                                doubleOption.setTooltip(Minecraft.getInstance().font.split(new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip"), 200));
-                            return new TranslatableComponent(floatEntry.getFormatKey(), new TranslatableComponent("emotecraft.otherconfig." + floatEntry.getName()), floatEntry.getTextVal());
-                        }
+                        (gameOptions, doubleOption) -> new TranslatableComponent(floatEntry.getFormatKey(), new TranslatableComponent("emotecraft.otherconfig." + floatEntry.getName()), floatEntry.getTextVal()),
+                        minecraft -> floatEntry.hasTooltip ?
+                                Minecraft.getInstance().font.split(new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip"), 200)
+                                : ImmutableList.of()
                 ));
             }
         }
@@ -155,6 +157,11 @@ public class ConfigScreen extends OptionsSubScreen {
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             return false;
+        }
+
+        @Override
+        public void updateNarration(NarrationElementOutput narrationElementOutput) {
+            this.defaultButtonNarrationText(narrationElementOutput); //TODO test in-game
         }
     }
 }

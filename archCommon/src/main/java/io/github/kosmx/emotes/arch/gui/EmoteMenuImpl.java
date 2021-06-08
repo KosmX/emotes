@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.arch.gui.screen.AbstractControlledModScreen;
 import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
 import io.github.kosmx.emotes.arch.gui.screen.IDrawableImpl;

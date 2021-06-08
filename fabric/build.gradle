@@ -52,7 +52,7 @@ group = project.maven_group
 
 
 minecraft {
-    //accessWidener = file("src/main/resources/emotecraft.accesswidener")
+    accessWidener = file("src/main/resources/emotes.accesswidener")
 }
 configurations {
     compileModule

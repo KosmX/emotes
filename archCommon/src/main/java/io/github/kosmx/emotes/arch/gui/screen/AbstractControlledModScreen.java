@@ -11,6 +11,7 @@ import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenLogicHelper;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
@@ -92,12 +93,13 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void addToChildren(IWidget widget) {
-        this.children.add((GuiEventListener) widget.get());
+        //this.children().add((GuiEventListener) widget.get());
+        this.addWidget((GuiEventListener & NarratableEntry)widget.get());
     }
 
     @Override
     public void addToButtons(IButton button) {
-        this.buttons.add((IButtonImpl) button);
+        this.addWidget((IButtonImpl) button);
     }
 
     @Override
@@ -107,7 +109,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void addButtonsToChildren() {
-        this.children.addAll(this.buttons);
+        //this.children.addAll(this.buttons);
     }
 
     @Override

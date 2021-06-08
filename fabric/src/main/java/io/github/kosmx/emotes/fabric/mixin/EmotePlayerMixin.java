@@ -111,7 +111,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
 
     @Override
     public float getViewYaw() {
-        return this.yRot;
+        return this.yHeadRot;
     }
 
     @Override

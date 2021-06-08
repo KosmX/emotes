@@ -1,5 +1,9 @@
 package io.github.kosmx.emotes.fabric.mixin;
 
+import io.github.kosmx.bendylib.ICuboidBuilder;
+import io.github.kosmx.bendylib.ModelPartAccessor;
+import io.github.kosmx.bendylib.impl.BendableCuboid;
+import io.github.kosmx.bendylib.impl.ICuboid;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
@@ -9,7 +13,9 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,6 +23,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
 @Mixin(value = PlayerModel.class, priority = 2000)//Apply after NotEnoughAnimation's inject
@@ -34,51 +42,35 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
     @Shadow @Final public ModelPart leftPants;
     public SetableSupplier<EmotePlayImpl> emoteSupplier = new SetableSupplier<>();
     //private BendableModelPart mutatedTorso;
-    private BendableModelPart mutatedJacket;
-    private BendableModelPart mutatedRightSleeve;
-    private BendableModelPart mutatedLeftSleeve;
-    private BendableModelPart mutatedRightPantLeg;
-    private BendableModelPart mutatedLeftPantLeg;
     //private MutableModelPart head :D ... it were be funny XD
     private IMutatedBipedModel<BendableModelPart, EmotePlayImpl> thisWithMixin;
 
-
-    public PlayerModelMixin(float scale){
-        super(scale);
+    public PlayerModelMixin(ModelPart modelPart) {
+        super(modelPart);
     }
 
+    public PlayerModelMixin(ModelPart modelPart, Function<ResourceLocation, RenderType> function) {
+        super(modelPart, function);
+    }
+
+
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void initBendableStuff(float scale, boolean thinArms, CallbackInfo ci){
+    private void initBendableStuff(ModelPart modelPart, boolean bl, CallbackInfo ci){
         thisWithMixin = (IMutatedBipedModel<BendableModelPart, EmotePlayImpl>) this;
         emoteSupplier.set(null);
-        this.mutatedJacket = new BendableModelPart(this.jacket, false, emoteSupplier);
-        this.mutatedRightSleeve = new BendableModelPart(this.rightSleeve, true, emoteSupplier);
-        this.mutatedLeftSleeve = new BendableModelPart(this.leftSleeve, true, emoteSupplier);
-        this.mutatedRightPantLeg = new BendableModelPart(this.rightPants, emoteSupplier);
-        this.mutatedLeftPantLeg = new BendableModelPart(this.leftPants, emoteSupplier);
-
-        thisWithMixin.setLeftArm(new BendableModelPart(this.leftArm, true));
-        thisWithMixin.setRightArm(new BendableModelPart(this.rightArm, true));
 
         thisWithMixin.setEmoteSupplier(emoteSupplier);
 
-        thisWithMixin.setLeftLeg(new BendableModelPart(this.leftLeg, false, emoteSupplier));
-        thisWithMixin.getLeftLeg().addCuboid(- 2, 0, - 2, 4, 12, 4, scale, Direction.UP);
+        addBendMutator(this.jacket, Direction.DOWN);
+        addBendMutator(this.rightPants, Direction.UP);
+        addBendMutator(this.rightSleeve, Direction.UP);
+        addBendMutator(this.leftPants, Direction.UP);
+        addBendMutator(this.leftSleeve, Direction.UP);
 
-        mutatedJacket.addCuboid(- 4, 0, - 2, 8, 12, 4, scale + 0.25f, Direction.DOWN);
-        mutatedRightPantLeg.addCuboid(- 2, 0, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
-        mutatedLeftPantLeg.addCuboid(- 2, 0, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
-        if(thinArms){
-            thisWithMixin.getLeftArm().addCuboid(- 1, - 2, - 2, 3, 12, 4, scale, Direction.UP);
-            thisWithMixin.getRightArm().addCuboid(- 2, - 2, - 2, 3, 12, 4, scale, Direction.UP);
-            mutatedLeftSleeve.addCuboid(- 1, - 2, - 2, 3, 12, 4, scale + 0.25f, Direction.UP);
-            mutatedRightSleeve.addCuboid(- 2, - 2, - 2, 3, 12, 4, scale + 0.25f, Direction.UP);
-        }else{
-            thisWithMixin.getLeftArm().addCuboid(- 1, - 2, - 2, 4, 12, 4, scale, Direction.UP);
-            thisWithMixin.getRightArm().addCuboid(- 3, - 2, - 2, 4, 12, 4, scale, Direction.UP);
-            mutatedLeftSleeve.addCuboid(- 1, - 2, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
-            mutatedRightSleeve.addCuboid(- 3, - 2, - 2, 4, 12, 4, scale + 0.25f, Direction.UP);
-        }
+    }
+
+    private void addBendMutator(ModelPart part, Direction d){
+        ModelPartAccessor.getCuboid(part, 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(d).build(data));
     }
 
     private void setDefaultPivot(){
@@ -122,11 +114,6 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
             thisWithMixin.getRightArm().bend(emote.rightArm.getBend());
             thisWithMixin.getRightLeg().bend(emote.rightLeg.getBend());
 
-            mutatedJacket.copyBend(thisWithMixin.getTorso());
-            mutatedLeftPantLeg.copyBend(thisWithMixin.getLeftLeg());
-            mutatedRightPantLeg.copyBend(thisWithMixin.getRightLeg());
-            mutatedLeftSleeve.copyBend(thisWithMixin.getLeftArm());
-            mutatedRightSleeve.copyBend(thisWithMixin.getRightArm());
         }
         else {
             emoteSupplier.set(null);

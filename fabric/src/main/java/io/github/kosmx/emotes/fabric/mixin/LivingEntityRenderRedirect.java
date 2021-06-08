@@ -7,10 +7,7 @@ import io.github.kosmx.emotes.fabric.BendableModelPart;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -22,8 +19,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRenderRedirect<T extends Entity, M extends EntityModel<T>> extends EntityRenderer<T> implements RenderLayerParent<T, M> {
 
-    protected LivingEntityRenderRedirect(EntityRenderDispatcher dispatcher) {
-        super(dispatcher);
+    protected LivingEntityRenderRedirect(EntityRendererProvider.Context context) {
+        super(context);
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V"))

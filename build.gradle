@@ -45,7 +45,7 @@ import com.modrinth.minotaur.request.VersionType
 
 
 if(file("keys.properties").exists()) {
-    println("Keys file is exists, loading publish scripts")
+    println("Keys file exists, loading publish scripts")
     file("keys.properties").withReader {
         Properties props = new Properties()
         props.load(it)

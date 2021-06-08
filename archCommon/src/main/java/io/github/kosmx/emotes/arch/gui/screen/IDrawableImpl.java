@@ -13,7 +13,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 public interface IDrawableImpl extends IRenderHelper<PoseStack> {
     @Override
     default void renderSystemBlendColor(float r, float g, float b, float a){
-        RenderSystem.blendColor(r, g, b, a);
+        //RenderSystem.blendColor(r, g, b, a); //TODO remove
     }
 
     @Override
@@ -38,7 +38,7 @@ public interface IDrawableImpl extends IRenderHelper<PoseStack> {
 
     @Override
     default void renderBindTexture(IIdentifier texture){
-        Minecraft.getInstance().getTextureManager().bind(((IdentifierImpl)texture).get());
+        Minecraft.getInstance().getTextureManager().bindForSetup(((IdentifierImpl)texture).get());
     }
 
     @Override
