@@ -14,7 +14,7 @@ public class BendableModelPart {
     ModelPart modelPart;
 
     public BendableModelPart(ModelPart modelPart){
-
+        this.modelPart = modelPart;
     }
 
     public void bend(float a, float b){

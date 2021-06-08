@@ -9,11 +9,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.GameRenderer;
 
 public interface IDrawableImpl extends IRenderHelper<PoseStack> {
     @Override
     default void renderSystemBlendColor(float r, float g, float b, float a){
-        //RenderSystem.blendColor(r, g, b, a); //TODO remove
+        RenderSystem.setShaderColor(r, g, b, a);
     }
 
     @Override
@@ -38,7 +39,8 @@ public interface IDrawableImpl extends IRenderHelper<PoseStack> {
 
     @Override
     default void renderBindTexture(IIdentifier texture){
-        Minecraft.getInstance().getTextureManager().bindForSetup(((IdentifierImpl)texture).get());
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, ((IdentifierImpl)texture).get());
     }
 
     @Override

@@ -93,13 +93,12 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void addToChildren(IWidget widget) {
-        //this.children().add((GuiEventListener) widget.get());
         this.addWidget((GuiEventListener & NarratableEntry)widget.get());
     }
 
     @Override
     public void addToButtons(IButton button) {
-        this.addWidget((IButtonImpl) button);
+        this.addRenderableWidget((IButtonImpl) button);
     }
 
     @Override
@@ -109,7 +108,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void addButtonsToChildren() {
-        //this.children.addAll(this.buttons);
+
     }
 
     @Override

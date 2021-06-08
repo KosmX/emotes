@@ -45,14 +45,9 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
     //private MutableModelPart head :D ... it were be funny XD
     private IMutatedBipedModel<BendableModelPart, EmotePlayImpl> thisWithMixin;
 
-    public PlayerModelMixin(ModelPart modelPart) {
-        super(modelPart);
-    }
-
     public PlayerModelMixin(ModelPart modelPart, Function<ResourceLocation, RenderType> function) {
         super(modelPart, function);
     }
-
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initBendableStuff(ModelPart modelPart, boolean bl, CallbackInfo ci){
