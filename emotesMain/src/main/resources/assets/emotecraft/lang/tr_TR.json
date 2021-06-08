@@ -34,5 +34,7 @@
   "emotecraft.otherconfig.quark": "Quark Sıralandırıcısını Etkinleştir",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Yapımcı: ",
-  "emotecraft.config": "İfadeleri yapılandır"
+  "emotecraft.config": "İfadeleri yapılandır",
+  "emotecraft.resetAllKeys.title": "Tüm kısayolları sıfırla",
+  "emotecraft.resetAllKeys.message": "Tüm kısayolları sıfırlamak istediğine emin miisn?"
 }
