@@ -7,6 +7,7 @@ import io.github.kosmx.bendylib.impl.ICuboid;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
+import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import io.github.kosmx.emotes.fabric.BendableModelPart;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import net.minecraft.client.model.HumanoidModel;
@@ -62,6 +63,9 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
         addBendMutator(this.leftPants, Direction.UP);
         addBendMutator(this.leftSleeve, Direction.UP);
 
+        ((IUpperPartHelper)rightSleeve).setUpperPart(true);
+        ((IUpperPartHelper)leftSleeve).setUpperPart(true);
+
     }
 
     private void addBendMutator(ModelPart part, Direction d){
@@ -112,6 +116,11 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
         }
         else {
             emoteSupplier.set(null);
+            thisWithMixin.getTorso().bend(null);
+            thisWithMixin.getLeftArm().bend(null);
+            thisWithMixin.getRightArm().bend(null);
+            thisWithMixin.getLeftLeg().bend(null);
+            thisWithMixin.getRightLeg().bend(null);
         }
     }
 }

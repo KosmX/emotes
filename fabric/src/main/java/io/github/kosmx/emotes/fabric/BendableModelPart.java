@@ -7,6 +7,8 @@ import io.github.kosmx.bendylib.impl.BendableCuboid;
 import io.github.kosmx.emotes.common.tools.Pair;
 import net.minecraft.client.model.geom.ModelPart;
 
+import javax.annotation.Nullable;
+
 
 //Until I don't have to modify bendy-lib, this will work properly
 public class BendableModelPart {
@@ -21,8 +23,13 @@ public class BendableModelPart {
         ((BendableCuboid)ModelPartAccessor.getCuboid(modelPart, 0).getAndActivateMutator("bend")).applyBend(a, b);
     }
 
-    public void bend(Pair<Float, Float> pair){
-        this.bend(pair.getLeft(), pair.getRight());
+    public void bend(@Nullable Pair<Float, Float> pair){
+        if(pair != null) {
+            this.bend(pair.getLeft(), pair.getRight());
+        }
+        else {
+            ModelPartAccessor.getCuboid(modelPart, 0).getAndActivateMutator(null);
+        }
     }
 
 

@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.fabric.BendableModelPart;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,6 +47,10 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
         ModelPartAccessor.getCuboid(modelPart.getChild("left_arm"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data));
         ModelPartAccessor.getCuboid(modelPart.getChild("right_leg"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data));
         ModelPartAccessor.getCuboid(modelPart.getChild("left_leg"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data));
+        ((IUpperPartHelper)rightArm).setUpperPart(true);
+        ((IUpperPartHelper)leftArm).setUpperPart(true);
+        ((IUpperPartHelper)head).setUpperPart(true);
+        ((IUpperPartHelper)hat).setUpperPart(true);
     }
 
     @Override
@@ -91,12 +96,11 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
         }else super.renderToBuffer(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 
-    @Shadow
-    public ModelPart head;
-
     @Shadow public ModelPart body;
 
-    @Shadow public ModelPart hat;
+    @Shadow @Final public ModelPart head;
+
+    @Shadow @Final public ModelPart hat;
 
     @Override
     public BendableModelPart getTorso(){

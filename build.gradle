@@ -36,8 +36,8 @@ allprojects {
 
 //---------------- Publishing ----------------
 
-boolean isRelease = true;
-String changes = "for changelog see [commit history](https://github.com/KosmX/emotes/commits/development)"
+boolean isRelease = false;
+String changes = "Update to Minecraft 1.17 *rc2*"
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
@@ -63,11 +63,11 @@ if(file("keys.properties").exists()) {
         // Get the GitHub Access Token you got from the basics part of this tutorial.
         projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
         //System.out.println("Enter the version number:");
-        versionNumber = "${project.mod_version}"
-        versionName = "${project.mod_version}"
+        versionNumber = "${project.mod_version}-${project.minecraft_version}"
+        versionName = "${project.mod_version}-${project.minecraft_version}"
         uploadFile = "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar"
-        additionalFiles = ["fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar",
-                           "forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"]
+        additionalFiles = ["fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar"]
+                           //"forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"]
         //uploadFile = tasks.fabric.remapJar
         //System.out.println("Enter the game version number: (See minotaur docs for valids)");
         addGameVersion(project.minecraft_version);
@@ -84,7 +84,7 @@ if(file("keys.properties").exists()) {
         owner "KosmX"
         // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
         repo "emotes" // by default this is set to your project name
-        tagName project.mod_version // by default this is set to "v${project.version}"
+        tagName "${project.mod_version}-${project.minecraft_version}" // by default this is set to "v${project.version}"
         targetCommitish "development" // by default this is set to "master"
         releaseName "Emotecraft-${project.mod_version}" // Release title, by default this is the same as the tagName
         body changes // by default this is empty
@@ -119,7 +119,8 @@ if(file("keys.properties").exists()) {
             else{
                 releaseType = "beta"
             }
-            addGameVersion project.minecraft_version
+            //addGameVersion project.minecraft_version //TODO set it back
+            addGameVersion "1.17"
             addGameVersion "Fabric"
             addGameVersion "Java 16"
 
