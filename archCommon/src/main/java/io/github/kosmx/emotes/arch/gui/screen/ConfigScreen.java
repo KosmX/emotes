@@ -73,14 +73,14 @@ public class ConfigScreen extends OptionsSubScreen {
 
         EmoteInstance.config.iterateExpert(entry -> addConfigEntry(entry, options));
 
-        this.addWidget(new Button(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableComponent("controls.resetAll"), (button) -> {
+        this.addRenderableWidget(new Button(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableComponent("controls.resetAll"), (button) -> {
             this.minecraft.setScreen(new ConfirmScreen(
                     this::resetAll,
                     new TranslatableComponent("emotecraft.resetConfig.title"),
                     new TranslatableComponent("emotecraft.resetConfig.message")));
         }));
 
-        this.addWidget(new Button(this.width / 2 - 155 + 160, this.height - 27, 150, 20, CommonComponents.GUI_DONE, (button) -> {
+        this.addRenderableWidget(new Button(this.width / 2 - 155 + 160, this.height - 27, 150, 20, CommonComponents.GUI_DONE, (button) -> {
             Serializer.saveConfig();
             this.minecraft.setScreen(this.lastScreen);
         }));
@@ -91,12 +91,21 @@ public class ConfigScreen extends OptionsSubScreen {
     private void addConfigEntry(SerializableConfig.ConfigEntry<?> entry, OptionsList options){
         if(entry.showEntry() || ((ClientConfig)EmoteInstance.config).showHiddenConfig.get()) {
             if (entry instanceof SerializableConfig.BooleanConfigEntry) {
-                options.addBig(CycleOption.createOnOff("emotecraft.otherconfig." + entry.getName(),
-                        entry.hasTooltip ? new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip") : null,
-                        gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
-                        (gameOptions, option, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
-                ));
-            } else if (entry instanceof SerializableConfig.FloatConfigEntry) {
+                if(entry.hasTooltip) {
+                    options.addBig(CycleOption.createOnOff("emotecraft.otherconfig." + entry.getName(),
+                            new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip"),
+                            gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
+                            (gameOptions, option, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
+                    ));
+                }
+                else {
+                    options.addBig(CycleOption.createOnOff("emotecraft.otherconfig." + entry.getName(),
+                            gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
+                            (gameOptions, option, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
+                    ));
+                }
+            }
+            else if (entry instanceof SerializableConfig.FloatConfigEntry) {
                 SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
                 options.addBig(new ProgressOption(
                         EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
