@@ -32,3 +32,4 @@ keys.properties
 crowdin_old.yml
 
 *.blend1
+/.architectury-transformer/*
