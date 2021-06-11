@@ -1,9 +1,8 @@
 package io.github.kosmx.emotes.main.config;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
 

@@ -16,7 +16,7 @@ allprojects {
 
         //apply plugin: "architectury-plugin"
 
-        def targetVersion = 16
+        def targetVersion = project.java_version
         sourceCompatibility = JavaVersion.toVersion(targetVersion)
         targetCompatibility = JavaVersion.toVersion(targetVersion)
 
@@ -44,7 +44,7 @@ import com.modrinth.minotaur.TaskModrinthUpload
 import com.modrinth.minotaur.request.VersionType
 
 
-if(file("keys.properties").exists()) {
+if(file("keys.properties").exists() && false) {
     println("Keys file exists, loading publish scripts")
     file("keys.properties").withReader {
         Properties props = new Properties()

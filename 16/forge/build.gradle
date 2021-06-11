@@ -21,8 +21,7 @@ repositories{
     //jcenter()
 }
 
-//sourceCompatibility = JavaVersion.VERSION_1_8 //These are configured by the main gralde.build (hopefully)
-//targetCompatibility = JavaVersion.VERSION_1_8
+project.java
 
 archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
 version = project.mod_version
@@ -43,12 +42,12 @@ dependencies {
     implementation project(':emotesServer')
 
     implementation project(':emotesMain')
-    implementation project(':archCommon')
+    implementation project(":${project.module_name}:archCommon")
     developmentForge(project(path: ":emotesMain")) { transitive = false }
-    developmentForge(project(path: ":archCommon")) { transitive = false }
+    developmentForge(project(path: ":${project.module_name}:archCommon")) { transitive = false }
 
     compileModule(project(':emotesMain')){ transitive = false }
-    compileModule(project(':archCommon')){ transitive = false }
+    compileModule(project(":${project.module_name}:archCommon")){ transitive = false }
     compileModule project(':executor')
     compileModule project(':emotesCommon')
     compileModule project(':emotesServer')

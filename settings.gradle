@@ -28,8 +28,16 @@ include 'executor'
 include 'emotesServer'
 include 'emotesMain'
 
-include 'fabric'
-//include 'forge' forge not yet supports 1.17
-include 'archCommon'
+// Minecraft 1.16 version
+include '16:archCommon'
+include '16:fabric'
+include '16:forge'
+
+//Minecraft 1.17 version
+include '17:archCommon'
+include '17:fabric'
+//include '16:forge'
+
+//Bukkit plugin stuff
 include 'bukkit'
 

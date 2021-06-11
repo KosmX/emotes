@@ -52,7 +52,7 @@ group = project.maven_group
 
 
 minecraft {
-    accessWidener = file("src/main/resources/emotes.accesswidener")
+    //accessWidener = file("src/main/resources/emotecraft.accesswidener")
 }
 configurations {
     compileModule
@@ -63,12 +63,12 @@ dependencies {
     implementation project(':emotesCommon')
     implementation project(':emotesServer')
 
-    implementation(project(path: ":archCommon"))
+    implementation(project(path: ":${project.module_name}:archCommon"))
     implementation project(':emotesMain')
     developmentFabric(project(path: ":emotesMain")) { transitive = false }
-    developmentFabric(project(path: ":archCommon")) { transitive = false }
+    developmentFabric(project(path: ":16:archCommon")) { transitive = false }
 
-    compileModule(project(path: ":archCommon")) { transitive = false }
+    compileModule(project(path: ":${project.module_name}:archCommon")) { transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }
     compileModule project(':executor')
     compileModule project(':emotesCommon')
