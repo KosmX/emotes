@@ -3,14 +3,21 @@ plugins {
     id 'maven-publish'
     //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
     //id "architectury-plugin" version "3.0-SNAPSHOT"
+    //id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-//apply plugin: 'dev.architectury.loom'
-//apply plugin: "architectury-plugin"
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'dev.architectury.loom'
+apply plugin: "architectury-plugin"
 
 version project.mod_version
 
+architectury{
+    //common() //TODO uncomment when updating Forge
+}
+
+loom{
+    silentMojangMappingsLicense()
+}
 
 repositories {
     mavenCentral()
@@ -21,14 +28,18 @@ configurations {
 }
 
 dependencies {
+    implementation project(':emotesMain')
     implementation project(':emotesCommon')
     implementation project(':executor')
     implementation project(':emotesServer')
-    compileModule project(':emotesCommon')
-    compileModule project(':executor')
-    compileModule project(':emotesServer')
 
-    compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
+
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+
+    //compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
+
+    modCompileOnly("net.fabricmc:fabric-loader:${project.loader_version}")
 }
 
 
@@ -42,10 +53,10 @@ tasks.withType(Copy){
     }
 }
 
-shadowJar{
-    configurations = [project.configurations.compileModule]
-    classifier ""
-}
+//shadowJar{
+//    configurations = [project.configurations.compileModule]
+//    classifier ""
+//}
 
 //remapJar{
 //    dependsOn shadowJar
@@ -59,11 +70,11 @@ jar{
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
-    classifier "sources"
+    classifier = "sources"
     from sourceSets.main.allSource
 }
 
-
+/*
 publishing{
     publications{
         maven(MavenPublication) {
@@ -87,7 +98,7 @@ publishing{
         mavenLocal()
     }
 }
-
+ */
 /* This testing stuff could be useful later...
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'

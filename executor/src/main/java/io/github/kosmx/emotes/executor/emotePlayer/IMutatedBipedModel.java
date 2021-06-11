@@ -14,17 +14,13 @@ public interface IMutatedBipedModel<T, E extends IEmotePlayer> {
 
     T getLeftLeg();
 
-    void setTorso(T part);
-
-    void setRightArm(T part);
-
-    void setLeftArm(T part);
-
-    void setRightLeg(T part);
-
-    void setLeftLeg(T part);
-
     void setEmoteSupplier(SetableSupplier<E> emoteSupplier);
 
     SetableSupplier<E> getEmoteSupplier();
+
+    default void setTorso(T v){}
+    default void setRightArm(T v){}
+    default void setLeftArm(T v){}
+    default void setRightLeg(T v){}
+    default void setLeftLeg(T v){}
 }

@@ -1,36 +1,17 @@
-/*
-This build.gradle has been tweaked. Don't build other mods with this or this with the default Fabric.
- */
-
-buildscript {
-    /*repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }*/
-    dependencies {
-        //Jfrog for auto publish on jcenter
-        //classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-        //classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.4.0"
-    }
-}
-
 plugins {
+    //id 'fabric-loom' version '0.6-SNAPSHOT'
     //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
     //id "architectury-plugin" version "3.0-SNAPSHOT"
     id 'maven-publish'
 }
+
 apply plugin: 'dev.architectury.loom'
-apply plugin: 'architectury-plugin'
+apply plugin: "architectury-plugin"
 apply plugin: 'com.github.johnrengelman.shadow'
 
 architectury{
     platformSetupLoomIde()
-    fabric()
-}
-
-loom{
-    silentMojangMappingsLicense()
+    forge()
 }
 
 //Import jfrog keys from file (not included in the git repo :D)
@@ -38,24 +19,21 @@ loom{
 repositories{
     mavenLocal()
     //jcenter()
-    maven{
-        url "https://maven.terraformersmc.com/releases"
-    }
 }
 
-//sourceCompatibility = JavaVersion.VERSION_1_8 //These are configured by the main gralde.build (hopefully)
-//targetCompatibility = JavaVersion.VERSION_1_8
+project.java
 
 archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
 version = project.mod_version
 group = project.maven_group
 
-
-minecraft {
-    //accessWidener = file("src/main/resources/emotecraft.accesswidener")
-}
 configurations {
     compileModule
+}
+loom{
+    silentMojangMappingsLicense()
+    mixinConfig "emotecraft.mixins.json"
+    mixinConfig "bendylib.mixin.json"
 }
 
 dependencies {
@@ -63,33 +41,22 @@ dependencies {
     implementation project(':emotesCommon')
     implementation project(':emotesServer')
 
-    implementation(project(path: ":archCommon"))
     implementation project(':emotesMain')
-    developmentFabric(project(path: ":emotesMain")) { transitive = false }
-    developmentFabric(project(path: ":archCommon")) { transitive = false }
+    implementation project(":${project.module_name}:archCommon")
+    developmentForge(project(path: ":emotesMain")) { transitive = false }
+    developmentForge(project(path: ":${project.module_name}:archCommon")) { transitive = false }
 
-    compileModule(project(path: ":archCommon")) { transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }
+    compileModule(project(":${project.module_name}:archCommon")){ transitive = false }
     compileModule project(':executor')
     compileModule project(':emotesCommon')
     compileModule project(':emotesServer')
-
 
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     //mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-    include "com.terraformersmc:modmenu:${project.modmenu_version}"
-    //modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
-    //include "me.shedaniel.cloth:config-2:${project.cloth_version}"
-
-    modImplementation "io.github.kosmx:bendy-lib:${project.bendylib_version}"
-    include "io.github.kosmx:bendy-lib:${project.bendylib_version}"
-    //
+    forge "net.minecraftforge:forge:${project.minecraft_version}-36.1.0"
     //other dependency(ies)
 
     //modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"
@@ -105,17 +72,11 @@ dependencies {
 
 }
 
-tasks.withType(JavaCompile){
-    options.compilerArgs << '-Xlint:unchecked'
-    options.deprecation = true	//deprecated warning on compile
-}
-
-
 processResources {
     inputs.property "version", project.version
     inputs.property "description", rootProject.mod_description
 
-    filesMatching("fabric.mod.json") {
+    filesMatching("META-INF/mods.toml") {
         expand "version": project.version, "description": rootProject.mod_description
     }
 }
@@ -125,36 +86,38 @@ processResources {
 // this fixes some edge cases with special characters not displaying correctly
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+    it.options.encoding = "UTF-8"
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
 // If you remove this task, sources will not be generated.
+
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier "sources"
+    classifier = "sources"
     from sourceSets.main.allSource
 }
 
 shadowJar{
     configurations = [project.configurations.compileModule]
-    classifier "fabric-dev"
+    classifier "forge-dev"
 }
 
 remapJar{
     dependsOn shadowJar
     input.set shadowJar.archiveFile
-    classifier "fabric"
+    classifier "forge"
 }
 
 jar {
+    classifier "dev"
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
     //from {
     //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
     //}
-    from "LICENSE"
 }
-
-
 
 // configure the maven publication
 publishing {

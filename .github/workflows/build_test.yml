@@ -20,19 +20,27 @@ jobs:
       uses: gradle/wrapper-validation-action@v1
       with:
         java-version: ${{matrix.java}}
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: ${{matrix.java}}
     - name: Grant execute permission for gradlew
       if: ${{ runner.os != 'Windows' }}
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
     - name: capture build artifacts
-      if: ${{ runner.os == 'Linux' && matrix.java == '11' }}
+      if: ${{ runner.os == 'Linux' && matrix.java == '16' }}
       uses: actions/upload-artifact@v2
       with:
         name: artifacts
         path: |
-          fabric/build/libs/*-fabric.jar
-          fabric/build/libs/*-fabric-dev.jar
-          forge/build/libs/*-forge.jar
-          forge/build/libs/*-forge-dev.jar
+          17/fabric/build/libs/*-fabric.jar
+          17/fabric/build/libs/*-fabric-dev.jar
+          16/fabric/build/libs/*-fabric.jar
+          16/fabric/build/libs/*-fabric-dev.jar
+          16/forge/build/libs/*-forge.jar
+          16/forge/build/libs/*-forge-dev.jar
           bukkit/build/libs/

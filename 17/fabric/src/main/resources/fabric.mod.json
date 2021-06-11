@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "emotecraft",
+  "version": "${version}",
+  "name": "Emotecraft",
+  "description": "${description}",
+  "authors": [
+    "KosmX"
+  ],
+  "contributors": [
+    "Kale Ko"
+  ],
+  "contact": {
+    "issues": "https://discord.com/invite/f3tZu3Z",
+    "homepage": "https://kosmx.gitbook.io/emotecraft/"
+  },
+  "license": "CC-BY-4.0 License",
+  "icon": "emotecraft_mod_logo.png",
+  "environment": "*",
+  "accessWidener": "emotes.accesswidener",
+  "entrypoints": {
+    "main": [
+      "io.github.kosmx.emotes.fabric.FabricWrapper"
+    ],
+    "client": [
+    ],
+    "server": [],
+    "modmenu": [
+      "io.github.kosmx.emotes.fabric.ModMenu"
+    ]
+  },
+  "mixins": [
+    "emotecraft.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.9.0",
+    "fabric": ">=0.16.4"
+  }
+}

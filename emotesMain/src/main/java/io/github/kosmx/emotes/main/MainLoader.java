@@ -6,7 +6,6 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.Serializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import net.minecraft.server.commands.EmoteCommands;
 
 import java.io.BufferedReader;
 import java.io.IOException;

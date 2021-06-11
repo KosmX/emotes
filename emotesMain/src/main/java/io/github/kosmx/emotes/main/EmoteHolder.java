@@ -133,26 +133,21 @@ public class EmoteHolder {
         return iconIdentifier;
     }
 
-    public void assignIcon(InputStream inputStream){
-        try{
-            Throwable throwable = null;
+    public void assignIcon(InputStream inputStream) {
+        try {
 
-            try{
+            try {
                 INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
                 this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.hash);
                 EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
                 this.nativeIcon = nativeImageBackedTexture;
-            }catch(IOException e){
-                throwable = e;
-                throw e;
-            }finally{
-                try{
+            } finally {
+                try {
                     inputStream.close();
-                }catch(Throwable throwable1){
-                    if(throwable != null) throwable.addSuppressed(throwable1);
+                } catch (Throwable ignore) {
                 }
             }
-        }catch(Throwable var){
+        } catch (Throwable var) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't open emote icon: " + var);
             this.iconIdentifier = null;
             this.nativeIcon = null;

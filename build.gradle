@@ -1,7 +1,7 @@
 plugins{
     id 'java'
-    id 'dev.architectury.loom' version '0.7.2-SNAPSHOT' apply false //Forge loom :D
-    id "architectury-plugin" version "3.1-SNAPSHOT"
+    id 'dev.architectury.loom' version '0.8.0-SNAPSHOT' apply false //Forge loom :D
+    id "architectury-plugin" version "3.2-SNAPSHOT"
     id "com.github.johnrengelman.shadow" version "7.0.0" apply false
     //id "com.dorongold.task-tree" version "1.5" Current version doesn't support gradle 6.8
 
@@ -16,7 +16,7 @@ allprojects {
 
         //apply plugin: "architectury-plugin"
 
-        def targetVersion = 8
+        def targetVersion = project.java_version
         sourceCompatibility = JavaVersion.toVersion(targetVersion)
         targetCompatibility = JavaVersion.toVersion(targetVersion)
 
@@ -36,16 +36,16 @@ allprojects {
 
 //---------------- Publishing ----------------
 
-boolean isRelease = true;
-String changes = "for changelog see [commit history](https://github.com/KosmX/emotes/commits/development)"
+boolean isRelease = false;
+String changes = "Update to Minecraft 1.17 *rc2*"
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
 import com.modrinth.minotaur.request.VersionType
 
 
-if(file("keys.properties").exists()) {
-    println("Keys file is exists, loading publish scripts")
+if(file("keys.properties").exists() && false) {
+    println("Keys file exists, loading publish scripts")
     file("keys.properties").withReader {
         Properties props = new Properties()
         props.load(it)
@@ -63,17 +63,17 @@ if(file("keys.properties").exists()) {
         // Get the GitHub Access Token you got from the basics part of this tutorial.
         projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
         //System.out.println("Enter the version number:");
-        versionNumber = "${project.mod_version}"
-        versionName = "${project.mod_version}"
+        versionNumber = "${project.mod_version}-${project.minecraft_version}"
+        versionName = "${project.mod_version}-${project.minecraft_version}"
         uploadFile = "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar"
-        additionalFiles = ["fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar",
-                           "forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"]
+        additionalFiles = ["fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar"]
+                           //"forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"]
         //uploadFile = tasks.fabric.remapJar
         //System.out.println("Enter the game version number: (See minotaur docs for valids)");
         addGameVersion(project.minecraft_version);
         changelog = changes;
         addLoader("fabric")
-        addLoader("forge")
+        //addLoader("forge")
         failSilently = false
     }
 
@@ -84,7 +84,7 @@ if(file("keys.properties").exists()) {
         owner "KosmX"
         // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
         repo "emotes" // by default this is set to your project name
-        tagName project.mod_version // by default this is set to "v${project.version}"
+        tagName "${project.mod_version}-${project.minecraft_version}" // by default this is set to "v${project.version}"
         targetCommitish "development" // by default this is set to "master"
         releaseName "Emotecraft-${project.mod_version}" // Release title, by default this is the same as the tagName
         body changes // by default this is empty
@@ -93,7 +93,7 @@ if(file("keys.properties").exists()) {
         releaseAssets {
             files("fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar",
                     //"fabric/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-fabric-dev.jar",
-                    "forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar",
+                    //"forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar",
                     //"forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge-dev.jar",
                     "bukkit/build/libs/emotecraft-${project.mod_version}-bukkit.jar")
         }
@@ -119,10 +119,9 @@ if(file("keys.properties").exists()) {
             else{
                 releaseType = "beta"
             }
-            addGameVersion project.minecraft_version
+            //addGameVersion project.minecraft_version //TODO set it back
+            addGameVersion "1.17"
             addGameVersion "Fabric"
-            addGameVersion "Java 8"
-            addGameVersion "Java 11"
             addGameVersion "Java 16"
 
 
@@ -140,7 +139,7 @@ if(file("keys.properties").exists()) {
                 //displayName = archivesBaseName
             }
         }
-        project {
+        /*project {
             id = '403422' //Forge version
             changelogType = "markdown"
             //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
@@ -165,14 +164,15 @@ if(file("keys.properties").exists()) {
             mainArtifact("forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
                 //displayName = archivesBaseName
             }
-        }
+        }/**/
 
 
 
     }
 
     task autoPublish {
-        dependsOn(':fabric:build', ':forge:build', ':bukkit:build')
+        //dependsOn(':forge:build',)
+        dependsOn(':fabric:build', ':bukkit:build')
         finalizedBy(tasks.githubRelease)
         finalizedBy(publishModrinth)
         finalizedBy(tasks.curseforge)
