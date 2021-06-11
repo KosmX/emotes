@@ -36,7 +36,7 @@ loom{
 //Import jfrog keys from file (not included in the git repo :D)
 //and well... serialize it
 repositories{
-    mavenLocal()
+    //mavenLocal()
     //jcenter()
     maven{
         url "https://maven.terraformersmc.com/releases"
