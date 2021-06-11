@@ -20,6 +20,12 @@ jobs:
       uses: gradle/wrapper-validation-action@v1
       with:
         java-version: ${{matrix.java}}
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: ${{matrix.java}}
     - name: Grant execute permission for gradlew
       if: ${{ runner.os != 'Windows' }}
       run: chmod +x gradlew
