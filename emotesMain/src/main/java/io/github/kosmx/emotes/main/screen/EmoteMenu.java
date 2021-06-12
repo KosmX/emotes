@@ -341,7 +341,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         paths = new ArrayList<>();
         for(Path folder : folders){
             List<Path> collect = new ArrayList<>();
-            Arrays.stream(Objects.requireNonNull(folder.toFile().listFiles((dir, name) -> name.endsWith(".json")))).forEach(file -> collect.add(file.toPath()));
+            Arrays.stream(Objects.requireNonNull(folder.toFile().listFiles((dir, name) -> name.endsWith(".json")||name.endsWith(".png")))).forEach(file -> collect.add(file.toPath()));
             addEmotes(collect);
         }
     }
