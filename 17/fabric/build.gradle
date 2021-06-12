@@ -82,7 +82,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}"){
+        exclude group: "net.fabricmc.fabric-api"
+    }
     include "com.terraformersmc:modmenu:${project.modmenu_version}"
     //modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
     //include "me.shedaniel.cloth:config-2:${project.cloth_version}"
