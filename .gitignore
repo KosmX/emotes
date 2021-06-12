@@ -20,8 +20,8 @@ bin/
 
 #fabric
 run/
-voldemap.jar
-untitled.blend1
+
+#project junk
 quark api.txt
 icon.blend1
 blender/emote_creator - Copy.blend1
@@ -33,3 +33,4 @@ crowdin_old.yml
 
 *.blend1
 /.architectury-transformer/*
+/artifacts

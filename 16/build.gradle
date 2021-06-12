@@ -1,0 +1,21 @@
+
+task buildAll{
+    dependsOn(":${project.module_name}:fabric:build")
+    dependsOn(":${project.module_name}:forge:build")
+}
+
+task copyArtifacts{
+    dependsOn("buildAll")
+    doLast {
+        copy{
+            from "${project.projectDir}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar"
+            into "${rootProject.projectDir}/artifacts"
+        }
+
+        copy{
+            from "${project.projectDir}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
+            into "${rootProject.projectDir}/artifacts"
+        }
+    }
+}
+

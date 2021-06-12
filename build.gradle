@@ -181,3 +181,25 @@ if(file("keys.properties").exists() && false) {
 else {
     println("Keys file is not exists publishing is not possible")
 }
+
+//Build all modules task :D
+task buildAll{
+    dependsOn(':bukkit:build')
+    dependsOn(':16:buildAll', ':17:buildAll')
+}
+
+task cleanupArtifacts{
+    doLast {
+        delete "${project.projectDir}/artifacts"
+    }
+}
+
+task copyArtifacts{
+    dependsOn('cleanupArtifacts')
+    dependsOn(':bukkit:copyArtifacts')
+    dependsOn(':16:copyArtifacts', ':17:copyArtifacts')
+}
+
+clean{
+    delete "${project.projectDir}/artifacts"
+}

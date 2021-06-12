@@ -53,3 +53,14 @@ jar{
     }
     classifier "bukkit"
 }
+
+task copyArtifacts{
+    dependsOn('build')
+    doLast {
+        copy{
+            from "${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}-bukkit.jar"
+            into "${rootProject.projectDir}/artifacts"
+        }
+    }
+}
+
