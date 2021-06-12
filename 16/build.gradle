@@ -1,4 +1,6 @@
 
+apply plugin: 'com.matthewprenger.cursegradle'
+
 task buildAll{
     dependsOn(":${project.module_name}:fabric:build")
     dependsOn(":${project.module_name}:forge:build")
@@ -19,3 +21,68 @@ task copyArtifacts{
     }
 }
 
+if(file("keys.properties").exists()) {
+    curseforge {
+        apiKey = project.keys.curseforge_key
+
+        project {
+            id = '397809' //Fabric version
+            changelogType = "markdown"
+            //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+            changelog = changes
+            if (isRelease) {
+                releaseType = "release"
+            } else {
+                releaseType = "beta"
+            }
+            //addGameVersion project.minecraft_version //TODO set it back
+            addGameVersion "1.16.5"
+            addGameVersion "Fabric"
+
+
+            relations {
+                requiredDependency 'fabric-api'
+                embeddedLibrary 'modmenu'
+                //optionalDependency 'perspective-mod-redux'
+            }
+
+            options {
+                forgeGradleIntegration = false // FABRIC MOD
+            }
+
+            mainArtifact("${project.getProjectDir()}fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
+                //displayName = archivesBaseName
+            }
+        }
+        project {
+            id = '403422' //Fabric version
+            changelogType = "markdown"
+            //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
+            changelog = changes
+            if (isRelease) {
+                releaseType = "release"
+            } else {
+                releaseType = "beta"
+            }
+            //addGameVersion project.minecraft_version //TODO set it back
+            addGameVersion "1.16.5"
+            addGameVersion "Forge"
+
+
+            options {
+                forgeGradleIntegration = false // ARCHITECTURY MOD
+            }
+
+            mainArtifact("${project.getProjectDir()}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
+                //displayName = archivesBaseName
+            }
+        }
+
+    }
+
+    task publishToCF{
+        dependsOn('buildAll')
+        finalizedBy(tasks.curseforge)
+    }
+
+}
