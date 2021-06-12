@@ -1,4 +1,21 @@
 
+subprojects {
+    apply plugin: 'dev.architectury.loom'
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings loom.officialMojangMappings()
+    }
+}
+
+allprojects {
+    apply plugin: 'architectury-plugin'
+}
+
+architectury{
+    minecraft = project.minecraft_version
+}
+
+
 apply plugin: 'com.matthewprenger.cursegradle'
 
 task buildAll{
