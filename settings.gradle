@@ -11,7 +11,7 @@ pluginManagement {
             name = 'Architectury maven'
             url = 'https://maven.architectury.dev/'
         }
-        maven { url "https://repo1.maven.org/maven2/"}
+        mavenCentral()
         maven {
             name = 'hell'
             url = 'https://maven.minecraftforge.net/'
