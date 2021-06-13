@@ -16,7 +16,7 @@ pluginManagement {
             name = 'hell'
             url = 'https://maven.minecraftforge.net/'
             content{
-                excludeGroupByRegex "org.eclipse.*"
+                excludeGroupByRegex "org\\.eclipse\\.?.*"
             }
         }
     }
