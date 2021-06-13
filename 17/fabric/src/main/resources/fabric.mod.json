@@ -11,7 +11,7 @@
     "Kale Ko"
   ],
   "contact": {
-    "issues": "https://discord.com/invite/f3tZu3Z",
+    "issues": "https://github.com/KosmX/emotes/issues",
     "homepage": "https://kosmx.gitbook.io/emotecraft/"
   },
   "license": "CC-BY-4.0 License",
@@ -35,5 +35,12 @@
   "depends": {
     "fabricloader": ">=0.9.0",
     "fabric": ">=0.16.4"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/6NfdRuE"
+      }
+    }
   }
 }

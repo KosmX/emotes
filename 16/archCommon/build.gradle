@@ -6,13 +6,13 @@ plugins {
     //id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-apply plugin: 'dev.architectury.loom'
-apply plugin: "architectury-plugin"
+
 
 version project.mod_version
 
 architectury{
     common()
+    minecraft = project.minecraft_version
 }
 
 loom{
@@ -34,12 +34,12 @@ dependencies {
     implementation project(':emotesServer')
 
 
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
+    //minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    //mappings loom.officialMojangMappings()
 
     //compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 
-    modCompileOnly("net.fabricmc:fabric-loader:${project.loader_version}")
+    modImplementation("net.fabricmc:fabric-loader:${project.loader_version}")
 }
 
 

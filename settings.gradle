@@ -11,9 +11,13 @@ pluginManagement {
             name = 'Architectury maven'
             url = 'https://maven.architectury.dev/'
         }
+        mavenCentral()
         maven {
             name = 'hell'
             url = 'https://maven.minecraftforge.net/'
+            content{
+                excludeGroupByRegex "org.eclipse.*"
+            }
         }
     }
 }
@@ -29,14 +33,16 @@ include 'emotesServer'
 include 'emotesMain'
 
 // Minecraft 1.16 version
+include '16'
 include '16:archCommon'
 include '16:fabric'
 include '16:forge'
 
 //Minecraft 1.17 version
+include '17'
 include '17:archCommon'
 include '17:fabric'
-//include '16:forge'
+//include '17:forge'
 
 //Bukkit plugin stuff
 include 'bukkit'
