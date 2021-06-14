@@ -8,11 +8,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class BukkitWrapper extends JavaPlugin {
@@ -20,13 +24,14 @@ public class BukkitWrapper extends JavaPlugin {
     final static String Emotepacket = CommonData.getIDAsString(CommonData.playEmoteID);
     @Nullable
     public FileConfiguration config = null;
-    final EventListener listener = new EventListener();
+    final EventListener listener = new EventListener(this);
 
     public static boolean validate = false;
     public static boolean debug = true;
 
 
     static HashMap<UUID, Integer> player_database = new HashMap<>();
+    public static final Set<UUID> playing = new HashSet<>();
 
     @Override
     public void onLoad() {
@@ -85,6 +90,29 @@ public class BukkitWrapper extends JavaPlugin {
                     player.sendPluginMessage(this, Emotepacket, new EmotePacket.Builder().configureToSendStop(data.emoteData.hashCode(), player.getUniqueId()).build().write().array());
                 }
                 else {
+                    if(this.config.getBoolean("slownessWhilePlaying.enabled")) {
+                        if(data.emoteData != null) {
+                            if(!data.emoteData.isInfinite) {
+                                Bukkit.getScheduler().runTaskLater(this, () -> {
+                                    playing.remove(player.getUniqueId());
+                                    player.removePotionEffect(PotionEffectType.JUMP);
+                                    player.setWalkSpeed(0.2f);
+                                }, data.emoteData.endTick - data.emoteData.beginTick);
+                            }
+                            if(this.config.getBoolean("slownessWhilePlaying.disableJumping")) {
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 250, true, false));
+                            }
+                            player.setWalkSpeed((float) this.config.getDouble("slownessWhilePlaying.speed"));
+                            playing.add(player.getUniqueId());
+                        } else {
+                            if(this.config.getBoolean("slownessWhilePlaying.disableJumping")) {
+                                player.removePotionEffect(PotionEffectType.JUMP);
+                            }
+                            player.setWalkSpeed(0.2f);
+                            playing.remove(player.getUniqueId());
+                        }
+                    }
+
                     Player target = null;
                     if (data.player != null) {
                         target = getServer().getPlayer(data.player);
