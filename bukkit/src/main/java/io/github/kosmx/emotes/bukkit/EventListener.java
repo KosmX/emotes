@@ -29,7 +29,7 @@ public class EventListener implements Listener {
             }
         }
         if(plugin.isEnabled() && event.getChannel().equals(BukkitWrapper.Emotepacket)
-                && BukkitWrapper.player_database.get(event.getPlayer().getUniqueId()) == 0){
+                && BukkitWrapper.player_database.getOrDefault(event.getPlayer().getUniqueId(), 0) == 0) {
             BukkitWrapper.player_database.replace(event.getPlayer().getUniqueId(), 2);
         }
     }
