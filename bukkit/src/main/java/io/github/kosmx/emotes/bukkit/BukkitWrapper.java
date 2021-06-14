@@ -104,7 +104,7 @@ public class BukkitWrapper extends JavaPlugin {
                             }
                             player.setWalkSpeed((float) this.config.getDouble("slownessWhilePlaying.speed"));
                             playing.add(player.getUniqueId());
-                        } else {
+                        } else if(data.purpose.equals(PacketTask.STOP)) {
                             if(this.config.getBoolean("slownessWhilePlaying.disableJumping")) {
                                 player.removePotionEffect(PotionEffectType.JUMP);
                             }
