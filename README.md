@@ -8,7 +8,12 @@ git clone https://github.com/KosmX/emotes.git
 cd emotes
 ./gradlew build
 ```
-
+You can use `collectArtifacts` task to copy the mod files into an artifacts directory.  
+```bash
+./gradlew collectArtifact
+cd artifacts
+```
+  
 ### Using in your mod/modpack  
 
 `Fabric` depends on [**bendy-lib**](https://github.com/KosmX/bendy-lib), optionally [**Mod Menu**](https://github.com/TerraformersMC/ModMenu)   and FabricMC mods: **Fabric-loader**, **Fabric-API**, **Minecraft**.  
