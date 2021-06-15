@@ -54,7 +54,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         rightLeg = new BodyPart(data.rightLeg);
         leftLeg = new BodyPart(data.leftLeg);
         this.currentTick = t;
-        if(isInfinite()){
+        if(isInfinite() && t > data.returnToTick){
             currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
         }
         this.perspective = perspective;
