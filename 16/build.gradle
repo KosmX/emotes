@@ -65,6 +65,7 @@ if(keysExists) {
 
             options {
                 forgeGradleIntegration = false // FABRIC MOD
+                javaVersionAutoDetect = false // defaults to true
             }
 
             mainArtifact("${project.getProjectDir()}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
@@ -88,6 +89,7 @@ if(keysExists) {
 
             options {
                 forgeGradleIntegration = false // ARCHITECTURY MOD
+                javaVersionAutoDetect = false // defaults to true
             }
 
             mainArtifact("${project.getProjectDir()}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
