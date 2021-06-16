@@ -97,7 +97,7 @@ if(keysExists) {
         body changes // by default this is empty
         draft false // by default this is false
         prerelease !isRelease // by default this is false
-        releaseAssets = releaseArtifacts
+        //releaseAssets = releaseArtifacts
         // this points to which files you want to upload as assets with your release
         //releaseAssets jar.destinationDir.listFiles
         overwrite true // by default false; if set to true, will delete an existing release with the same tag and name
@@ -111,6 +111,14 @@ if(keysExists) {
         //dependsOn(':forge:build',)
         //dependsOn(':fabric:build', ':bukkit:build')
         dependsOn('collectArtifacts')
+
+        //Configure Modrinth and GitHub with artifacts to release
+        doFirst {
+            tasks.githubRelease.releaseAssets = releaseArtifacts
+            tasks.publishModrinth.uploadFile = releaseArtifacts.get(0)
+            tasks.publishModrinth.additionalFiles = releaseArtifacts.subList(1, releaseArtifacts.size())
+        }
+
         finalizedBy(tasks.githubRelease)
         finalizedBy(publishModrinth)
         //finalizedBy(tasks.curseforge)
@@ -148,5 +156,4 @@ task collectArtifacts{
 clean{
     delete "${project.projectDir}/artifacts"
 }
-
 
