@@ -45,7 +45,7 @@
   "key.emotecraft.debug": "включить 'отладочную' эмоцию",
   "key.emotecraft.stop": "Остановить воспроизведение эмоции",
   "emotecraft.openFolder": "Открыть папку с эмоциями",
-  "emotecraft.otherconfig.quark": "Включить сериализатор кварков",
+  "emotecraft.otherconfig.quark": "Включить десереализатор Quark",
   "emotecraft.otherconfig.quark.tooltip": "Программа для чтения эмоций формата Quark крайне нестабильна и не поддерживается полностью!\nИспользование не рекомендуется: она может работать нестабильно или даже вызвать сбой",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Автор: ",
