@@ -149,13 +149,4 @@ clean{
     delete "${project.projectDir}/artifacts"
 }
 
-task test1{
-    dependsOn('collectArtifacts')
-    //println artifacts
-    doLast {
-        artifacts = project.getProjectDir().toPath().resolve("artifacts").toFile().listFiles()
-        for(File f : artifacts.subList(1, artifacts.size())){
-            println f
-        }
-    }
-}
+
