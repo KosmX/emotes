@@ -16,7 +16,6 @@ architectury{
     minecraft = project.minecraft_version
 }
 
-
 apply plugin: 'com.matthewprenger.cursegradle'
 
 task buildAll{
@@ -39,9 +38,9 @@ task copyArtifacts{
     }
 }
 
-if(file("keys.properties").exists()) {
+if(keysExists) {
     curseforge {
-        apiKey = project.keys.curseforge_key
+        apiKey = rootProject.keys.curseforge_key
 
         project {
             id = '397809' //Fabric version
@@ -101,6 +100,12 @@ if(file("keys.properties").exists()) {
     task publishToCF{
         dependsOn('buildAll')
         finalizedBy(tasks.curseforge)
+    }
+
+    //CurseGradle... That plugin should be updated
+    task assemble{}
+    task build{
+        dependsOn('buildAll')
     }
 
 }

@@ -44,7 +44,9 @@ import com.modrinth.minotaur.request.VersionType
 
 List<File> releaseArtifacts
 
-if(file("keys.properties").exists()) {
+ext.keysExists = file("keys.properties").exists();
+
+if(keysExists) {
     println("Keys file exists, loading publish scripts")
     file("keys.properties").withReader {
         Properties props = new Properties()
@@ -113,8 +115,8 @@ if(file("keys.properties").exists()) {
         finalizedBy(publishModrinth)
         //finalizedBy(tasks.curseforge)
 
-        finalizedBy('16:publishToCF')
-        finalizedBy('17:publishToCF')
+        finalizedBy(':16:publishToCF')
+        finalizedBy(':17:publishToCF')
 
     }
 }
