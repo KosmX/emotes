@@ -35,7 +35,7 @@ allprojects {
 
 //---------------- Publishing ----------------
 
-ext.isRelease = false;
+ext.isRelease = true;
 ext.changes = "for changelog see [commit history](https://github.com/KosmX/emotes/commits/development)"
 
 

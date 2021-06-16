@@ -71,7 +71,7 @@ if(keysExists) {
                 forgeGradleIntegration = false // FABRIC MOD
             }
 
-            mainArtifact("${project.getProjectDir()}fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
+            mainArtifact("${project.getProjectDir()}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
                 //displayName = archivesBaseName
             }
         }
