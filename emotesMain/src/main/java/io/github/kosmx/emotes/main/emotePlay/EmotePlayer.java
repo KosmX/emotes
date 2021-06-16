@@ -54,7 +54,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         rightLeg = new BodyPart(data.rightLeg);
         leftLeg = new BodyPart(data.leftLeg);
         this.currentTick = t;
-        if(isInfinite()){
+        if(isInfinite() && t > data.returnToTick){
             currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
         }
         this.perspective = perspective;
@@ -217,11 +217,23 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
             if (this.keyframes.length() > pos + 1) {
                 return this.keyframes.keyFrames.get(pos + 1);
             }
-            return (currentTick >= data.endTick || this.keyframes.length() != 0) && !data.isInfinite ?
+            if(data.isInfinite){
+                return this.getLastFrame();
+            }
+            return currentTick >= data.endTick || this.keyframes.length() != 0 ?
                     new EmoteData.KeyFrame(data.stopTick, currentState) :
-                    (currentTick >= getData().beginTick) ?
+                    currentTick >= getData().beginTick ?
                             new EmoteData.KeyFrame(getData().endTick, keyframes.defaultValue) :
                             new EmoteData.KeyFrame(getData().beginTick, keyframes.defaultValue);
+        }
+
+        private EmoteData.KeyFrame getLastFrame() {
+            if(keyframes.length() > 0) {
+                return this.keyframes.keyFrames.get(this.keyframes.length() - 1);
+            }
+            else {
+                return new EmoteData.KeyFrame(getData().beginTick, keyframes.defaultValue);
+            }
         }
 
         /**
