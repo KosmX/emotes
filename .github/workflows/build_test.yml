@@ -3,7 +3,7 @@
 
 name: Java CI with Gradle
 
-on: [pull_request]
+on: [pull_request, workflow_dispatch]
 
 jobs:
   build:
@@ -30,17 +30,11 @@ jobs:
       if: ${{ runner.os != 'Windows' }}
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew collectArtifacts
     - name: capture build artifacts
       if: ${{ runner.os == 'Linux' && matrix.java == '16' }}
       uses: actions/upload-artifact@v2
       with:
         name: artifacts
         path: |
-          17/fabric/build/libs/*-fabric.jar
-          17/fabric/build/libs/*-fabric-dev.jar
-          16/fabric/build/libs/*-fabric.jar
-          16/fabric/build/libs/*-fabric-dev.jar
-          16/forge/build/libs/*-forge.jar
-          16/forge/build/libs/*-forge-dev.jar
-          bukkit/build/libs/
+          artifacts
