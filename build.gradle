@@ -121,7 +121,6 @@ if(keysExists) {
 
         finalizedBy(tasks.githubRelease)
         finalizedBy(publishModrinth)
-        //finalizedBy(tasks.curseforge)
 
         finalizedBy(':16:publishToCF')
         finalizedBy(':17:publishToCF')
