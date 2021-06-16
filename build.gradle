@@ -35,7 +35,7 @@ allprojects {
 
 //---------------- Publishing ----------------
 
-ext.isRelease = false;
+ext.isRelease = true;
 ext.changes = "for changelog see [commit history](https://github.com/KosmX/emotes/commits/development)"
 
 
@@ -44,7 +44,9 @@ import com.modrinth.minotaur.request.VersionType
 
 List<File> releaseArtifacts
 
-if(file("keys.properties").exists()) {
+ext.keysExists = file("keys.properties").exists();
+
+if(keysExists) {
     println("Keys file exists, loading publish scripts")
     file("keys.properties").withReader {
         Properties props = new Properties()
@@ -95,7 +97,7 @@ if(file("keys.properties").exists()) {
         body changes // by default this is empty
         draft false // by default this is false
         prerelease !isRelease // by default this is false
-        releaseAssets = releaseArtifacts
+        //releaseAssets = releaseArtifacts
         // this points to which files you want to upload as assets with your release
         //releaseAssets jar.destinationDir.listFiles
         overwrite true // by default false; if set to true, will delete an existing release with the same tag and name
@@ -109,12 +111,19 @@ if(file("keys.properties").exists()) {
         //dependsOn(':forge:build',)
         //dependsOn(':fabric:build', ':bukkit:build')
         dependsOn('collectArtifacts')
+
+        //Configure Modrinth and GitHub with artifacts to release
+        doFirst {
+            tasks.githubRelease.releaseAssets = releaseArtifacts
+            tasks.publishModrinth.uploadFile = releaseArtifacts.get(0)
+            tasks.publishModrinth.additionalFiles = releaseArtifacts.subList(1, releaseArtifacts.size())
+        }
+
         finalizedBy(tasks.githubRelease)
         finalizedBy(publishModrinth)
-        //finalizedBy(tasks.curseforge)
 
-        finalizedBy('16:publishToCF')
-        finalizedBy('17:publishToCF')
+        finalizedBy(':16:publishToCF')
+        finalizedBy(':17:publishToCF')
 
     }
 }
@@ -147,13 +156,3 @@ clean{
     delete "${project.projectDir}/artifacts"
 }
 
-task test1{
-    dependsOn('collectArtifacts')
-    //println artifacts
-    doLast {
-        artifacts = project.getProjectDir().toPath().resolve("artifacts").toFile().listFiles()
-        for(File f : artifacts.subList(1, artifacts.size())){
-            println f
-        }
-    }
-}

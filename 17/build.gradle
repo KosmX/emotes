@@ -41,7 +41,7 @@ task copyArtifacts{
 }
 
 
-if(file("keys.properties").exists()) {
+if(keysExists) {
     curseforge {
         apiKey = project.keys.curseforge_key
 
@@ -69,9 +69,10 @@ if(file("keys.properties").exists()) {
 
             options {
                 forgeGradleIntegration = false // FABRIC MOD
+                javaVersionAutoDetect = false // defaults to true
             }
 
-            mainArtifact("${project.getProjectDir()}fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
+            mainArtifact("${project.getProjectDir()}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
                 //displayName = archivesBaseName
             }
         }
@@ -93,6 +94,7 @@ if(file("keys.properties").exists()) {
 
             options {
                 forgeGradleIntegration = false // ARCHITECTURY MOD
+                javaVersionAutoDetect = false // defaults to true
             }
 
             mainArtifact("${project.getProjectDir()}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
@@ -107,4 +109,10 @@ if(file("keys.properties").exists()) {
         finalizedBy(tasks.curseforge)
     }
 
+
+    //CurseGradle... That plugin should be updated
+    task assemble{}
+    task build{
+        dependsOn('buildAll')
+    }
 }
