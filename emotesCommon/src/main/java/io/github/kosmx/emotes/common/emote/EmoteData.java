@@ -5,9 +5,11 @@ import io.github.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+//TODO
 /**
  * Used to store Emote data
  * Not playable, but decodeable at bukkit server
@@ -23,14 +25,31 @@ public class EmoteData {
     public final boolean isInfinite;
     //if infinite, where to return
     public final int returnToTick;
+
+    public final HashMap<String, StateCollection> bodyParts = new HashMap<>();
+    //Deprecated variables will be removed in the animation rework part.
+    @Deprecated
     public final StateCollection head;
+    @Deprecated
     public final StateCollection torso;
+    @Deprecated
     public final StateCollection rightArm;
+    @Deprecated
     public final StateCollection leftArm;
+    @Deprecated
     public final StateCollection rightLeg;
+    @Deprecated
     public final StateCollection leftLeg;
     public final boolean isEasingBefore;
     public final boolean nsfw;
+
+    //Store emote data in the emote object
+    @Nullable
+    public String name = null;
+    @Nullable
+    public String description = null;
+    @Nullable
+    public String author = null;
 
     @Nullable
     public NBS song;
@@ -44,12 +63,12 @@ public class EmoteData {
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
         this.isInfinite = isInfinite;
         this.returnToTick = returnToTick;
-        this.head = head;
-        this.torso = torso;
-        this.rightArm = rightArm;
-        this.rightLeg = rightLeg;
-        this.leftArm = leftArm;
-        this.leftLeg = leftLeg;
+        bodyParts.put("head", this.head = head);
+        bodyParts.put("body", this.torso = torso);
+        bodyParts.put("rightArm", this.rightArm = rightArm);
+        bodyParts.put("rightLeg", this.rightLeg = rightLeg);
+        bodyParts.put("leftArm", this.leftArm = leftArm);
+        bodyParts.put("leftLeg", this.leftLeg = leftLeg);
         this.isEasingBefore = isEasingBefore;
         this.nsfw = nsfw;
     }
@@ -122,6 +141,7 @@ public class EmoteData {
     }
 
     public static class StateCollection {
+        @Deprecated
         public final String name;
         public final State x;
         public final State y;
