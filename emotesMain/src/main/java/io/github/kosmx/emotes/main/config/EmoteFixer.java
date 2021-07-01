@@ -41,7 +41,7 @@ public class EmoteFixer{
                 InputStream stream = EmoteFixer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emote_upgrade_data.json");
                 InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(streamReader);
-                data = Serializer.serializer.fromJson(reader, new TypeToken<HashMap<Integer, HashMap<Integer, Integer>>>(){}.getType());
+                data = ClientSerializer.serializer.fromJson(reader, new TypeToken<HashMap<Integer, HashMap<Integer, Integer>>>(){}.getType());
             }catch (JsonParseException | NullPointerException e){
                 e.printStackTrace();
                 if(data == null){

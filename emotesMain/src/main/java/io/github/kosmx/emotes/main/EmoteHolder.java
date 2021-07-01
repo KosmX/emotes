@@ -14,7 +14,7 @@ import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.main.config.Serializer;
+import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.quarktool.QuarkReader;
 
@@ -180,7 +180,7 @@ public class EmoteHolder {
      * @throws JsonParseException can be an incorrect file...
      */
     public static List<EmoteHolder> deserializeJson(BufferedReader json) throws JsonParseException{     //throws BowlingBall XD
-        return Serializer.serializer.fromJson(json, new TypeToken<List<EmoteHolder>>(){}.getType());
+        return ClientSerializer.serializer.fromJson(json, new TypeToken<List<EmoteHolder>>(){}.getType());
     }
 
     public static void addEmoteToList(BufferedReader json) throws JsonParseException{

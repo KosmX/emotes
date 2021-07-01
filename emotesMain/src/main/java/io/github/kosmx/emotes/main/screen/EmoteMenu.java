@@ -12,22 +12,18 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
-import io.github.kosmx.emotes.main.config.Serializer;
+import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The EmoteMenu
@@ -105,7 +101,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
                     Path target = dir.toPath().resolve(emoteHolder.name.getString() + ".json");
                     try {
                         BufferedWriter writer = Files.newBufferedWriter(target);
-                        Serializer.serializer.toJson(emoteHolder, writer);
+                        ClientSerializer.serializer.toJson(emoteHolder, writer);
                         writer.close();
                     } catch (IOException e) {
                         EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't create file: " + e.getMessage(), true);
@@ -300,7 +296,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     private void saveConfig(){
         EmoteHolder.bindKeys((ClientConfig) EmoteInstance.config);
-        Serializer.saveConfig();
+        ClientSerializer.saveConfig();
     }
 
     private void reload(){
