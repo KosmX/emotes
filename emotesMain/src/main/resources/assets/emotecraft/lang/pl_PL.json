@@ -1,1 +1,20 @@
-{}
+{
+  "emotecraft.options.options": "Opcje moda",
+  "emotecraft.options.keybind": "Ustaw niestandardowy klawisz, aby odtworzyć wybraną emotkę",
+  "emotecraft.options.fastmenu": "Wybierz emotkę, a następnie kliknij na",
+  "emotecraft.options.fastmenu2": "koło szybkiego wyboru, by ją dodać.",
+  "emotecraft.options.fastmenu3": "Prawy przycisk myszy, by usunąć",
+  "emotecraft.sure": "Nadpisywanie skrótu klawiszowego",
+  "emotecraft.sure2": "Inna emotka ma ten skrót klawiszowy.\nCzy chcesz go zresetować i ustawić do tej emotki?",
+  "emotecraft.otherconfig.category.general": "Opcje podstawowe",
+  "emotecraft.otherconfig.category.expert": "Opcje zaawansowane",
+  "emotecraft.otherconfig": "Inne opcje",
+  "emotecraft.otherconfig.debug": "Debugowanie",
+  "emotecraft.emotelist": "Wszystkie emotki",
+  "key.emotecraft.stop": "Zatrzymaj odtwarzanie emotki",
+  "emotecraft.openFolder": "Otwórz folder z emotkami",
+  "emotecraft.otherconfig.quark": "Włącz quark deserializer",
+  "category.emotecraft.keybinding": "Emotecraft",
+  "emotecraft.emote.author": "Autor: ",
+  "emotecraft.config": "Konfiguruj emotki"
+}
