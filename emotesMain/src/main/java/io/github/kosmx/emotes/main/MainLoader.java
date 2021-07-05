@@ -29,7 +29,7 @@ public class MainLoader {
         //This data is available at server-side.
         Serializer.INSTANCE = EmoteInstance.instance.isClient() ? new ClientSerializer() : new Serializer();
 
-        loadConfig();
+        EmoteInstance.config = Serializer.getConfig();
 
         //TODO init server networking
         if(EmoteInstance.instance.isClient()) {
@@ -37,25 +37,6 @@ public class MainLoader {
         }
     }
 
-    public static void loadConfig(){
-        if(EmoteInstance.instance.getConfigPath().toFile().isFile()) {
-            try {
-                BufferedReader reader = Files.newBufferedReader(EmoteInstance.instance.getConfigPath());
-                EmoteInstance.config = ClientSerializer.serializer.fromJson(reader, SerializableConfig.class);
-                reader.close();
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        }
-        else {
-            EmoteInstance.config = EmoteInstance.instance.isClient() ? new ClientConfig() : new SerializableConfig();
-            EmoteInstance.instance.getLogger().log(Level.FINE, "Creating new config file for Emotecraft");
-            ClientSerializer.saveConfig();
-        }
-        if(EmoteInstance.config == null) {
-            EmoteInstance.config = EmoteInstance.instance.isClient() ? new ClientConfig() : new SerializableConfig();
-        }
-    }
 
     public static void tick(){
         if(tick++ >= 20){

@@ -37,9 +37,13 @@ public class Serializer {
     }
 
     public static void saveConfig(){
+        saveConfig(EmoteInstance.config);
+    }
+
+    public static void saveConfig(SerializableConfig config){
         try{
             BufferedWriter writer = Files.newBufferedWriter(EmoteInstance.instance.getConfigPath());
-            serializer.toJson(EmoteInstance.config, writer);
+            serializer.toJson(config, writer);
             writer.close();
             //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
         }catch(IOException e){
@@ -47,6 +51,19 @@ public class Serializer {
         }
     }
 
+    /**
+     * Reads the config from ~/config/emotecraft.json or yaml
+     * @return config
+     */
+    public static SerializableConfig getConfig(){
+        return INSTANCE.readConfig(EmoteInstance.instance.getConfigPath());
+    }
+
+    /**
+     * Reads the config and creates a new file, if needed
+     * @param path config path
+     * @return config
+     */
     protected SerializableConfig readConfig(Path path){
         if(path.toFile().isFile()){
             BufferedReader reader = null;
@@ -60,8 +77,21 @@ public class Serializer {
                 e.printStackTrace();
             }
         }
+        else{
+            try{
+                BufferedWriter writer = Files.newBufferedWriter(path);
+                SerializableConfig config = readConfig((BufferedReader) null);
+                saveConfig(config);
+                return config;
+            }
+            catch (IOException e){
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to create config file: " + e.getMessage(), true);
+                e.printStackTrace();
+            }
+        }
         return readConfig((BufferedReader) null);
     }
+
     protected SerializableConfig readConfig(BufferedReader reader) throws JsonSyntaxException, JsonIOException{
         if(reader != null) return serializer.fromJson(reader, SerializableConfig.class);
         return new SerializableConfig();
