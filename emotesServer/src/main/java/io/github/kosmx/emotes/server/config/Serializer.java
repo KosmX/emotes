@@ -1,17 +1,18 @@
 package io.github.kosmx.emotes.server.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 
+import javax.annotation.Nullable;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Serializer {
     public static Gson serializer;
@@ -44,5 +45,25 @@ public class Serializer {
         }catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    protected SerializableConfig readConfig(Path path){
+        if(path.toFile().isFile()){
+            BufferedReader reader = null;
+            try{
+                reader = Files.newBufferedReader(path);
+                SerializableConfig config = readConfig(reader);
+                reader.close();
+                return config;
+            }catch (IOException | JsonParseException e){
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to read config: " + e.getMessage(), true);
+                e.printStackTrace();
+            }
+        }
+        return readConfig((BufferedReader) null);
+    }
+    protected SerializableConfig readConfig(BufferedReader reader) throws JsonSyntaxException, JsonIOException{
+        if(reader != null) return serializer.fromJson(reader, SerializableConfig.class);
+        return new SerializableConfig();
     }
 }
