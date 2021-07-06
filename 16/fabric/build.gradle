@@ -22,13 +22,6 @@ loom{
 
 //Import jfrog keys from file (not included in the git repo :D)
 //and well... serialize it
-repositories{
-    mavenLocal()
-    //jcenter()
-    maven{
-        url "https://maven.terraformersmc.com/releases"
-    }
-}
 
 //sourceCompatibility = JavaVersion.VERSION_1_8 //These are configured by the main gralde.build (hopefully)
 //targetCompatibility = JavaVersion.VERSION_1_8
