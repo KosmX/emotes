@@ -12,6 +12,14 @@ plugins{
 
 
 allprojects {
+
+    repositories {
+        maven{
+            name = "TerraformersMC archive"
+            url = 'https://raw.githubusercontent.com/TerraformersMC/Archive/main/releases'
+        }
+    }
+
     tasks.withType(JavaCompile).configureEach {
 
         //apply plugin: "architectury-plugin"

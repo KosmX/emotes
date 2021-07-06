@@ -16,12 +16,6 @@ loom{
     silentMojangMappingsLicense()
 }
 
-repositories{
-    //mavenLocal()
-    maven{
-        url "https://maven.terraformersmc.com/releases"
-    }
-}
 
 
 archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
