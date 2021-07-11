@@ -69,7 +69,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
     }
 
     private void addBendMutator(ModelPart part, Direction d){
-        ModelPartAccessor.getCuboid(part, 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(d).build(data));
+        ModelPartAccessor.optionalGetCuboid(part, 0).ifPresent(mutableCuboid ->mutableCuboid.registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(d).build(data)));
     }
 
     private void setDefaultPivot(){
