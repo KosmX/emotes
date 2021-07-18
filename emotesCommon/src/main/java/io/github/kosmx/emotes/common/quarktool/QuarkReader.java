@@ -1,15 +1,12 @@
-package io.github.kosmx.emotes.main.quarktool;
+package io.github.kosmx.emotes.common.quarktool;
 
-import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
-import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.Source;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class QuarkReader {
@@ -25,7 +22,7 @@ public class QuarkReader {
     private int hash;
     private Playable animation;
 
-    public boolean deserialize(BufferedReader reader, String name){
+    public void deserialize(BufferedReader reader, String name) throws QuarkParsingError{
         this.name = name;
         List<List<String>> strings = new ArrayList<>();
         Stream<String> stream = reader.lines();
@@ -34,40 +31,34 @@ public class QuarkReader {
         }));
         this.hash = strings.hashCode();
         int i = 0;
-        try{
-            while(i < strings.size()){
-                if(strings.get(i).size() == 0 || strings.get(i).get(0).charAt(0) == '#'){
-                    i++;
-                    continue;
-                }
-                i = getMethod(strings.get(i), i, strings);
+        while(i < strings.size()){
+            if(strings.get(i).size() == 0 || strings.get(i).get(0).charAt(0) == '#'){
+                i++;
+                continue;
             }
-        }catch(QuarkParsingError e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while importing quark at line " + i + ": " + e.message);
-            if(EmoteInstance.config.showDebug.get()) e.printStackTrace();
+            i = getMethod(strings.get(i), i, strings);
         }
-        try{
-            if(this.animation == null){
-                throw new QuarkParsingError();
-            }
-            int length = this.animation.playForward(0);
-            this.isSuccess = true;
-            this.emote.endTick = length;
-        }catch(QuarkParsingError e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while parsing quark: " + e.getMessage());
-            if(EmoteInstance.config.showDebug.get()) e.printStackTrace();
+        if(this.animation == null){
+            throw new QuarkParsingError();
         }
-        return this.isSuccess;
+        int length = this.animation.playForward(0);
+        this.isSuccess = true;
+        this.emote.endTick = length;
     }
 
-    public EmoteHolder getEmote(){
+    public EmoteData getEmote(){
         if(isSuccess){
-            //return new EmoteHolder(this.emote.build(), new LiteralText(this.name).formatted(Formatting.WHITE), new LiteralText("Imported from quark").formatted(Formatting.GRAY), new LiteralText("").formatted(Formatting.GRAY), this.hash).setQuarkEmote(true);
-            return new EmoteHolder(this.emote.build().optimizeEmote(),
+            /*return new EmoteHolder(this.emote.build().optimizeEmote(),
                                    EmoteInstance.instance.getDefaults().textFromString(this.name).formatted(EmotesTextFormatting.WHITE),
                                    EmoteInstance.instance.getDefaults().textFromString("Imported from quark").formatted(EmotesTextFormatting.GRAY),
                                    EmoteInstance.instance.getDefaults().emptyTex(),
                                    this.hash).setQuarkEmote(true);
+
+             */
+            emote.emoteSource = Source.QUARK;
+            return emote.build()
+                    .setName("{\"color\":\"white\",\"text\":\"" + this.name + "\"}")
+                    .setDescription("{\"color\":\"gray\",\"text\":\"Imported from quark\"}");
         }else return null;
     }
 

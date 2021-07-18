@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.quarktool;
+package io.github.kosmx.emotes.common.quarktool;
 
 public class Pause implements Playable {
     private final int len;

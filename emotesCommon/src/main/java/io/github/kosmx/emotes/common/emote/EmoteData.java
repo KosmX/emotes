@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +13,8 @@ import java.util.Objects;
 //TODO
 /**
  * Used to store Emote data
- * Not playable, but decodeable at bukkit server
  */
-public class EmoteData {
+public final class EmoteData {
     //Time, while the player can move to the beginning pose
 
     public static final StateCollection.State EMPTY_STATE = new StateCollection.State("empty", 0, 0, false);
@@ -55,9 +55,13 @@ public class EmoteData {
     public NBS song;
 
     public static float staticThreshold = 8;
+    public final Source source;
+
+    @Nullable
+    ByteBuffer iconData;
 
 
-    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, boolean nsfw){
+    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, boolean nsfw, Source source){
         this.beginTick = Math.max(beginTick, 0);
         this.endTick = Math.max(beginTick + 1, endTick);
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
@@ -71,6 +75,8 @@ public class EmoteData {
         bodyParts.put("leftLeg", this.leftLeg = leftLeg);
         this.isEasingBefore = isEasingBefore;
         this.nsfw = nsfw;
+        assert source != null;
+        this.source = source;
     }
 
     @Override
@@ -92,6 +98,19 @@ public class EmoteData {
         if (!leftArm.equals(emoteData.leftArm)) return false;
         if (!rightLeg.equals(emoteData.rightLeg)) return false;
         return leftLeg.equals(emoteData.leftLeg);
+    }
+
+    public EmoteData setDescription(String s){
+        description = s;
+        return this;
+    }
+    public EmoteData setName(String s){
+        name = s;
+        return this;
+    }
+    public EmoteData setAuthor(String s){
+        author = s;
+        return this;
     }
 
     @Override
@@ -414,6 +433,7 @@ public class EmoteData {
         public int stopTick = 0;
         public boolean isLooped = false;
         public int returnTick;
+        public Source emoteSource = null;
 
         public EmoteBuilder(){
             this(staticThreshold);
@@ -429,7 +449,7 @@ public class EmoteData {
         }
 
         public EmoteData build(){
-            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore, nsfw);
+            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore, nsfw, emoteSource);
         }
     }
 }

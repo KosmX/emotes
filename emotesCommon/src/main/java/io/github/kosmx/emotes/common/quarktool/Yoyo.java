@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.quarktool;
+package io.github.kosmx.emotes.common.quarktool;
 
 public class Yoyo extends Repeat {
     public Yoyo(Playable parent, int delay, int count) throws QuarkParsingError{

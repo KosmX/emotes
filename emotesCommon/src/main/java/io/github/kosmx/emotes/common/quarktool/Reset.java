@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.quarktool;
+package io.github.kosmx.emotes.common.quarktool;
 
 import io.github.kosmx.emotes.common.tools.Ease;
 

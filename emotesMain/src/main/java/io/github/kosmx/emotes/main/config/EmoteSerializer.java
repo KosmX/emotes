@@ -6,7 +6,7 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.tools.Easing;
-import io.github.kosmx.emotes.main.quarktool.QuarkReader;
+import io.github.kosmx.emotes.common.quarktool.QuarkReader;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

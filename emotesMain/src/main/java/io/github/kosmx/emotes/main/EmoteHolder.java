@@ -16,7 +16,7 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import io.github.kosmx.emotes.main.quarktool.QuarkReader;
+import io.github.kosmx.emotes.common.quarktool.QuarkReader;
 
 import javax.annotation.Nullable;
 import java.io.*;

@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.quarktool;
+package io.github.kosmx.emotes.common.quarktool;
 
 public class Pauseable implements Playable {
     private final Playable playable;
