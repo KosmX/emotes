@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /*
  * It won't be public until a success read.....
  */
-public class NetData {
+public final class NetData {
     /**
      * 0 - none, invalid
      * 1 - stream emote
