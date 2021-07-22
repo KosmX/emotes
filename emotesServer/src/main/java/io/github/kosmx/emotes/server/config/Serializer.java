@@ -3,7 +3,9 @@ package io.github.kosmx.emotes.server.config;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
@@ -32,8 +34,12 @@ public class Serializer {
     protected void registerTypeAdapters(GsonBuilder builder){
         JsonDeserializer<SerializableConfig> configSerializer = new ConfigSerializer();
         JsonSerializer<SerializableConfig> configDeserializer = new ConfigSerializer();
+        JsonDeserializer<List<EmoteData>> emoteDeserializer = new EmoteSerializer();
+        JsonSerializer<EmoteData> emoteSerializer = new EmoteSerializer();
         builder.registerTypeAdapter(SerializableConfig.class, configDeserializer);
         builder.registerTypeAdapter(SerializableConfig.class, configSerializer);
+        builder.registerTypeAdapter(new TypeToken<List<EmoteData>>(){}.getType(), emoteDeserializer);
+        builder.registerTypeAdapter(EmoteData.class, emoteSerializer);
     }
 
     public static void saveConfig(){

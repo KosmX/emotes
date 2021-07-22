@@ -19,12 +19,8 @@ public class ClientSerializer extends Serializer {
 
         JsonDeserializer<SerializableConfig> configSerializer = new ClientConfigSerializer();
         JsonSerializer<SerializableConfig> configDeserializer = new ClientConfigSerializer();
-        JsonDeserializer<List<EmoteHolder>> emoteDeserializer = new EmoteSerializer();
-        JsonSerializer<EmoteHolder> emoteSerializer = new EmoteSerializer();
         builder.registerTypeAdapter(ClientConfig.class, configDeserializer);
         builder.registerTypeAdapter(ClientConfig.class, configSerializer);
-        builder.registerTypeAdapter(new TypeToken<List<EmoteHolder>>(){}.getType(), emoteDeserializer);
-        builder.registerTypeAdapter(EmoteHolder.class, emoteSerializer);
     }
 
     @Override
