@@ -7,5 +7,6 @@ public enum Source {
     JSON_EMOTECRAFT,
     JSON_MC_ANIM,
     QUARK,
-    BINARY
+    BINARY,
+    UNKNOWN
 }
