@@ -4,15 +4,17 @@ package io.github.kosmx.emotes.server.serializer;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 import io.github.kosmx.emotes.server.serializer.type.IReader;
+import io.github.kosmx.emotes.server.serializer.type.JsonEmoteWrapper;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class UniversalEmoteSerializer {
     public static String binaryExtension = "mcemote";
-    public static List<IReader> readers = new ArrayList<>();
+    public static List<IReader> readers = Arrays.asList(new IReader[]{new JsonEmoteWrapper()});
 
 
     /**

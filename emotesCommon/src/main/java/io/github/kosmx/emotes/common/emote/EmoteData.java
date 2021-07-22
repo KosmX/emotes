@@ -435,17 +435,18 @@ public final class EmoteData {
         public int returnTick;
         public Source emoteSource = null;
 
-        public EmoteBuilder(){
-            this(staticThreshold);
+        public EmoteBuilder(Source source){
+            this(staticThreshold, source);
         }
 
-        public EmoteBuilder(float validationThreshold){
+        public EmoteBuilder(float validationThreshold, Source source){
             head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold, false);
             torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso",validationThreshold / 8f, true);
             rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold, true);
             leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold, true);
             leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);
             rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
+            this.emoteSource = source;
         }
 
         public EmoteData build(){

@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.server.serializer;
 
 import com.google.gson.*;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.Source;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.common.tools.Easing;
 import io.github.kosmx.emotes.common.quarktool.QuarkReader;
