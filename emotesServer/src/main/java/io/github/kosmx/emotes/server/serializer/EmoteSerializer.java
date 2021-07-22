@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.config;
+package io.github.kosmx.emotes.server.serializer;
 
 import com.google.gson.*;
 import io.github.kosmx.emotes.common.emote.EmoteData;

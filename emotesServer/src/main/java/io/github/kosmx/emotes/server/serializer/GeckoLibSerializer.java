@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.config;
+package io.github.kosmx.emotes.server.serializer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -8,7 +8,6 @@ import io.github.kosmx.emotes.common.emote.Source;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
-import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.tools.Easing;
 

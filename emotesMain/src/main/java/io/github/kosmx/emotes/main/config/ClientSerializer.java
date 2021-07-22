@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
 import java.io.BufferedReader;
 import java.util.List;
