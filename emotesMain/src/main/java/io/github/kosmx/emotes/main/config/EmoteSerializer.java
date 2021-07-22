@@ -3,22 +3,21 @@ package io.github.kosmx.emotes.main.config;
 import com.google.gson.*;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.tools.Easing;
 import io.github.kosmx.emotes.common.quarktool.QuarkReader;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 
 
-public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, JsonSerializer<EmoteHolder> {
+public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonSerializer<EmoteData> {
 
     private final int modVersion = 2;
     @Override
-    public List<EmoteHolder> deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
+    public List<EmoteData> deserialize(JsonElement p, Type typeOf, JsonDeserializationContext ctxt) throws JsonParseException{
         JsonObject node = p.getAsJsonObject();
 
         if(!node.has("emote")){
@@ -27,20 +26,23 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
 
         int version = 1;
         if(node.has("version")) version = node.get("version").getAsInt();
-        Text author = EmoteInstance.instance.getDefaults().emptyTex();
-        Text name = EmoteInstance.instance.getDefaults().fromJson(node.get("name"));
+        //Text author = EmoteInstance.instance.getDefaults().emptyTex();
+        EmoteData emote = emoteDeserializer(node.getAsJsonObject("emote"));
+
+
+        //Text name = EmoteInstance.instance.getDefaults().fromJson(node.get("name"));
+        emote.name = node.get("name").toString();
         if(node.has("author")){
-            author = EmoteInstance.instance.getDefaults().fromJson(node.get("author"));
+            emote.author = node.get("author").toString();
         }
 
         if(modVersion < version){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Emote: " + name.getString() + " was made for a newer mod version", true);
-            throw new JsonParseException(name.getString() + " is version " + Integer.toString(version) + ". Emotecraft can only process version " + Integer.toString(modVersion) + ".");
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Emote: " + emote.name + " was made for a newer mod version", true);
+            throw new JsonParseException(emote.name + " is version " + Integer.toString(version) + ". Emotecraft can only process version " + Integer.toString(modVersion) + ".");
         }
 
-        Text description = EmoteInstance.instance.getDefaults().emptyTex();
         if(node.has("description")){
-            description = EmoteInstance.instance.getDefaults().fromJson(node.get("description"));
+            emote.description = node.get("description").toString();
         }
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
@@ -49,10 +51,10 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
             EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
         });
-        EmoteData emote = emoteDeserializer(node.getAsJsonObject("emote"));
+
         emote.optimizeEmote();
-        List<EmoteHolder> list = new ArrayList<>();
-        list.add(new EmoteHolder(emote, name, description, author, node.hashCode()));
+        List<EmoteData> list = new ArrayList<>();
+        list.add(emote);
         return list;
     }
 
@@ -156,23 +158,27 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
      * or use {@link EmoteSerializer#emoteSerializer(EmoteData)}
      *
      *
-     * @param emote source EmoteHolder
+     * @param emote source EmoteData
      * @param typeOfSrc idk
      * @param context :)
      * @return :D
      * Sorry for these really... useful comments
      */
     @Override
-    public JsonElement serialize(EmoteHolder emote, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(EmoteData emote, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject node = new JsonObject();
-        node.addProperty("version", emote.getEmote().isEasingBefore ? 2 : 1); //to make compatible emotes. I won't do it.
-        node.add("name", emote.name.toJsonTree());
-        node.add("description", emote.description.toJsonTree()); // :D
-        if(!emote.author.getString().equals("")){
-            node.add("author", emote.author.toJsonTree());
+        node.addProperty("version", emote.isEasingBefore ? 2 : 1); //to make compatible emotes. I won't do it.
+        node.add("name", asJson(emote.name));
+        node.add("description", asJson(emote.description)); // :D
+        if(emote.author != null){
+            node.add("author", asJson(emote.author));
         }
-        node.add("emote", emoteSerializer(emote.getEmote()));
+        node.add("emote", emoteSerializer(emote));
         return node;
+    }
+
+    public static JsonElement asJson(String str){
+        return new JsonParser().parse(str);
     }
 
     /**
@@ -200,12 +206,12 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteHolder>>, Jso
 
     public static JsonArray moveSerializer(EmoteData emote){
         JsonArray node = new JsonArray();
-        bodyPartDeserializer(node, emote.head);
-        bodyPartDeserializer(node, emote.torso);
-        bodyPartDeserializer(node, emote.rightArm);
-        bodyPartDeserializer(node, emote.leftArm);
-        bodyPartDeserializer(node, emote.rightLeg);
-        bodyPartDeserializer(node, emote.leftLeg);
+        emote.bodyParts.forEach(new BiConsumer<String, EmoteData.StateCollection>() {
+            @Override
+            public void accept(String s, EmoteData.StateCollection stateCollection) {
+                bodyPartDeserializer(node, stateCollection);
+            }
+        });
         return node;
     }
 

@@ -1,7 +1,5 @@
 package io.github.kosmx.emotes.main;
 
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.Pair;
@@ -14,22 +12,25 @@ import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import io.github.kosmx.emotes.common.quarktool.QuarkReader;
 
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+/**
+ * Class to store an emote and create renderable texts
+ */
 public class EmoteHolder {
     public final EmoteData emote;
     public final Text name;
     public final Text description;
     public final Text author;
-    public final int hash; // The emote's identifier hash
+
+    public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static List<EmoteHolder> list = new ArrayList<>(); // static array of all imported emotes
     public InputKey keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
@@ -41,29 +42,35 @@ public class EmoteHolder {
 
     public boolean isFromGeckoLib = false;
 
-    /**
-     * was it imported by {@link QuarkReader}
-     */
     public boolean isQuarkEmote = false;
 
-    public EmoteHolder setQuarkEmote(boolean bl){
-        this.isQuarkEmote = bl;
-        return this;
+    /**
+     * Create cache from emote data
+     * @param emote emote
+     */
+    public EmoteHolder(EmoteData emote) {
+        this.emote = emote;
+        this.name = EmoteInstance.instance.getDefaults().fromJson(emote.name);
+        this.description = EmoteInstance.instance.getDefaults().fromJson(emote.description);
+        this.author = EmoteInstance.instance.getDefaults().fromJson(emote.author);
     }
 
     /**
+     *
+     * Emote params are stored in the data {@link EmoteData}
+     *
      * @param emote       {@link EmoteData}
      * @param name        Emote name
      * @param description Emote decription
      * @param author      Name of the Author
      * @param hash        hash from the serializer
      */
+    @Deprecated
     public EmoteHolder(EmoteData emote, Text name, Text description, Text author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;
         this.description = description;
-        this.hash = hash;
     }
 
     /**
@@ -76,13 +83,13 @@ public class EmoteHolder {
         for(EmoteHolder emote : list){
             if(! emote.keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey())){
                 config.emotesWithKey.add(emote);
-                config.emotesWithHash.add(new Pair<>(emote.hash, emote.keyBinding.getTranslationKey()));
+                config.emotesWithHash.add(new Pair<>(emote.getHash(), emote.keyBinding.getTranslationKey()));
             }
         }
         config.fastMenuHash = new int[8];
         for(int i = 0; i != 8; i++){
             if(config.fastMenuEmotes[i] != null){
-                config.fastMenuHash[i] = config.fastMenuEmotes[i].hash;
+                config.fastMenuHash[i] = config.fastMenuEmotes[i].getHash();
             }
         }
     }
@@ -138,7 +145,7 @@ public class EmoteHolder {
 
             try {
                 INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
-                this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.hash);
+                this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.getHash());
                 EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
                 this.nativeIcon = nativeImageBackedTexture;
             } finally {
@@ -166,32 +173,22 @@ public class EmoteHolder {
 
     public static EmoteHolder getEmoteFromHash(int hash){
         for(EmoteHolder emote : list){
-            if(emote.hash == hash){
+            if(emote.getHash() == hash){
                 return emote;
             }
         }
         return null;
     }
 
-    /**
-     * Deserialize helper. do not modify anything
-     * @param json json file
-     * @return EmoteList
-     * @throws JsonParseException can be an incorrect file...
-     */
-    public static List<EmoteHolder> deserializeJson(BufferedReader json) throws JsonParseException{     //throws BowlingBall XD
-        return ClientSerializer.serializer.fromJson(json, new TypeToken<List<EmoteHolder>>(){}.getType());
+    public static void addEmoteToList(List<EmoteData> emotes){
+        for(EmoteData emote : emotes){
+            EmoteHolder.list.add(new EmoteHolder(emote));
+        }
     }
 
-    public static void addEmoteToList(BufferedReader json) throws JsonParseException{
-        list.addAll(deserializeJson(json));
-    }
-
+    @Deprecated
     public static void addEmoteToList(EmoteHolder hold){
         list.add(hold);
-    }
-    public static void addEmoteToList(List<EmoteHolder> hold){
-        list.addAll(hold);
     }
 
     public static boolean playEmote(EmoteData emote, IEmotePlayerEntity player){
@@ -234,6 +231,12 @@ public class EmoteHolder {
 
     public boolean playEmote(IEmotePlayerEntity playerEntity){
         return playEmote(this.emote, playerEntity, this);
+    }
+
+    public int getHash() {
+        if(hash == null)
+            hash = new AtomicInteger(this.emote.hashCode());
+        return hash.get();
     }
 }
 
