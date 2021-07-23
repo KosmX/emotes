@@ -5,7 +5,7 @@ import io.github.kosmx.emotes.common.opennbs.SoundPlayer;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
 import io.github.kosmx.emotes.common.tools.Easing;
 import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.common.tools.Pair;
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.Vector3;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 

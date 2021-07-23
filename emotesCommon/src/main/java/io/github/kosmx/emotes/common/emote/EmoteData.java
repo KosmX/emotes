@@ -58,7 +58,7 @@ public final class EmoteData {
     public final Source source;
 
     @Nullable
-    ByteBuffer iconData;
+    public ByteBuffer iconData;
 
 
     private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, boolean nsfw, Source source){
@@ -433,7 +433,7 @@ public final class EmoteData {
         public int stopTick = 0;
         public boolean isLooped = false;
         public int returnTick;
-        public Source emoteSource = null;
+        final Source emoteSource;
 
         public EmoteBuilder(Source source){
             this(staticThreshold, source);

@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.main;
 
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.common.tools.Pair;
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.Vec3d;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;

@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.server.config;
 
 import com.google.gson.*;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.common.tools.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 
 import java.lang.reflect.Type;

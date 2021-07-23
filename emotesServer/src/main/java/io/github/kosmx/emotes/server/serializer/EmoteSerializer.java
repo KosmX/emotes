@@ -60,7 +60,7 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
     }
 
     private EmoteData emoteDeserializer(JsonObject node) throws JsonParseException{
-        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
+        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(Source.JSON_EMOTECRAFT);
         if(node.has("beginTick")){
             builder.beginTick = node.get("beginTick").getAsInt();
         }

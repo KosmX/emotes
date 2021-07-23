@@ -5,15 +5,14 @@ import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.server.config.Serializer;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 public class JsonEmoteWrapper implements ISerializer {
 
     @Override
-    public List<EmoteData> read(BufferedReader reader, String filename) throws EmoteSerializerException {
+    public List<EmoteData> read(InputStream inputStream, String filename) throws EmoteSerializerException {
+        BufferedReader reader = streamReader(inputStream);
         try{
             return Serializer.serializer.fromJson(reader, new TypeToken<List<EmoteData>>(){}.getType());
         }catch (JsonParseException e){
@@ -22,7 +21,8 @@ public class JsonEmoteWrapper implements ISerializer {
     }
 
     @Override
-    public void write(EmoteData emote, BufferedWriter bufferedWriter) throws IOException {
+    public void write(EmoteData emote, OutputStream outputStream) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
         Serializer.serializer.toJson(emote, bufferedWriter);
     }
 

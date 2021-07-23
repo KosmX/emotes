@@ -4,7 +4,8 @@ import io.github.kosmx.emotes.common.emote.EmoteData;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public interface ISerializer extends IReader {
-    void write(EmoteData emote, BufferedWriter writer) throws IOException;
+    void write(EmoteData emote, OutputStream writer) throws IOException;
 }

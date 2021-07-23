@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class QuarkReader {
-    private final EmoteData.EmoteBuilder emote = new EmoteData.EmoteBuilder();
+    private final EmoteData.EmoteBuilder emote = new EmoteData.EmoteBuilder(Source.QUARK);
     private boolean isSuccess = false;
     private String name;
     final PartMap head = new PartMap(emote.head);
@@ -19,7 +19,6 @@ public class QuarkReader {
     final PartMap leftLeg = new PartMap(emote.leftLeg);
     final PartMap rightArm = new PartMap(emote.rightArm);
     final PartMap leftArm = new PartMap(emote.leftArm);
-    private int hash;
     private Playable animation;
 
     public void deserialize(BufferedReader reader, String name) throws QuarkParsingError{
@@ -29,7 +28,6 @@ public class QuarkReader {
         stream.forEach((s->{
             strings.add(read(s.replaceAll("\t", "")));
         }));
-        this.hash = strings.hashCode();
         int i = 0;
         while(i < strings.size()){
             if(strings.get(i).size() == 0 || strings.get(i).get(0).charAt(0) == '#'){
@@ -55,7 +53,6 @@ public class QuarkReader {
                                    this.hash).setQuarkEmote(true);
 
              */
-            emote.emoteSource = Source.QUARK;
             return emote.build()
                     .setName("{\"color\":\"white\",\"text\":\"" + this.name + "\"}")
                     .setDescription("{\"color\":\"gray\",\"text\":\"Imported from quark\"}");

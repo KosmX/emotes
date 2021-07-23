@@ -8,7 +8,7 @@ import io.github.kosmx.emotes.server.serializer.type.JsonEmoteWrapper;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,17 +19,17 @@ public class UniversalEmoteSerializer {
 
     /**
      * Read an emote file
-     * @param bufferedReader binary reader. No physical file needed
+     * @param inputStream binary reader. No physical file needed
      * @param filename filename. can be null
      * @param format lowercase format string
      * @return List of reader emotes.
      * @throws EmoteSerializerException If the file is not valid or cannot be readed.
      */
-    public static List<EmoteData> readData(BufferedReader bufferedReader,@Nullable String filename, String format) throws EmoteSerializerException {
+    public static List<EmoteData> readData(InputStream inputStream, @Nullable String filename, String format) throws EmoteSerializerException {
         for(IReader reader : readers){
             if(reader.getFormatExtension().equals(format)){
                 try {
-                    return reader.read(bufferedReader, filename);
+                    return reader.read(inputStream, filename);
                 }
                 catch (EmoteSerializerException e){
                     throw e; //We don't need to catch it.
@@ -44,14 +44,14 @@ public class UniversalEmoteSerializer {
 
     /**
      * Read a file with a not known extension
-     * @param bufferedReader binary file reader
+     * @param inputStream binary file reader
      * @param filename filename. can NOT be null if no format parameter is supplied. {@link UniversalEmoteSerializer#readData(BufferedReader, String, String)}
      * @return list of emotes
      * @throws EmoteSerializerException exception if something goes wrong
      */
-    public static List<EmoteData> readData(BufferedReader bufferedReader, String filename) throws EmoteSerializerException{
+    public static List<EmoteData> readData(InputStream inputStream, String filename) throws EmoteSerializerException{
         if(filename == null || filename.equals(""))throw new IllegalArgumentException("filename can not be null if no format type was given");
         String format = filename.substring(filename.lastIndexOf(".")).toLowerCase();
-        return readData(bufferedReader, filename, format);
+        return readData(inputStream, filename, format);
     }
 }

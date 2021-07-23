@@ -30,8 +30,7 @@ public class GeckoLibSerializer {
     private static List<EmoteData> readAnimations(JsonObject jsonEmotes){
         List<EmoteData> emotes = new ArrayList<>();
         jsonEmotes.entrySet().forEach(stringJsonElementEntry -> {
-            EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
-            builder.emoteSource = Source.JSON_MC_ANIM;
+            EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(Source.JSON_MC_ANIM);
             Text name = EmoteInstance.instance.getDefaults().textFromString(stringJsonElementEntry.getKey()).formatted(EmotesTextFormatting.WHITE);
             JsonObject node = stringJsonElementEntry.getValue().getAsJsonObject();
             builder.endTick = (int) Math.ceil(node.get("animation_length").getAsFloat() * 20);

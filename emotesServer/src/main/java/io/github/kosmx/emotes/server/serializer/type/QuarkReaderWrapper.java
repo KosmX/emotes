@@ -5,13 +5,15 @@ import io.github.kosmx.emotes.common.quarktool.QuarkParsingError;
 import io.github.kosmx.emotes.common.quarktool.QuarkReader;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuarkReaderWrapper implements IReader {
     @Override
-    public List<EmoteData> read(BufferedReader reader, String filename) throws EmoteSerializerException {
+    public List<EmoteData> read(InputStream inputStream, String filename) throws EmoteSerializerException {
         QuarkReader quarkReader = new QuarkReader();
+        BufferedReader reader = streamReader(inputStream);
         try {
             quarkReader.deserialize(reader, filename);
             ArrayList<EmoteData> list = new ArrayList();

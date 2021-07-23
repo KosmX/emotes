@@ -31,6 +31,10 @@ public class EmotePacket {
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new SongPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new EmoteHeaderPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new EmoteIconPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
     }
 
     public final NetHashMap subPackets = new NetHashMap();
@@ -54,6 +58,8 @@ public class EmotePacket {
         subPackets.put(new StopPacket());
         subPackets.put(new DiscoveryPacket());
         subPackets.put(new SongPacket());
+        subPackets.put(new EmoteHeaderPacket());
+        subPackets.put(new EmoteIconPacket());
     }
 
     //Write packet to a new ByteBuf
@@ -194,6 +200,13 @@ public class EmotePacket {
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
             data.player = player;
+            return this;
+        }
+
+        public Builder configureToSaveEmote(EmoteData emoteData){
+            if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("already configured?!");
+            data.purpose = PacketTask.FILE;
+            data.emoteData = emoteData;
             return this;
         }
 
