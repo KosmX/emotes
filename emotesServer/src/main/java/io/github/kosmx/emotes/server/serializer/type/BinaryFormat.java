@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.server.serializer.type;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -39,8 +40,8 @@ public class BinaryFormat implements ISerializer{
     }
 
     @Override
-    public String getFormatExtension() {
-        return UniversalEmoteSerializer.binaryExtension;
+    public EmoteFormat getFormatType() {
+        return EmoteFormat.BINARY;
     }
 
     private ByteBuffer readFromIStream(InputStream stream) throws IOException {

@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.common.quarktool;
 
 import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.Source;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class QuarkReader {
-    private final EmoteData.EmoteBuilder emote = new EmoteData.EmoteBuilder(Source.QUARK);
+    private final EmoteData.EmoteBuilder emote = new EmoteData.EmoteBuilder(EmoteFormat.QUARK);
     private boolean isSuccess = false;
     private String name;
     final PartMap head = new PartMap(emote.head);

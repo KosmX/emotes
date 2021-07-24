@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.Source;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
@@ -30,7 +30,7 @@ public class GeckoLibSerializer {
     private static List<EmoteData> readAnimations(JsonObject jsonEmotes){
         List<EmoteData> emotes = new ArrayList<>();
         jsonEmotes.entrySet().forEach(stringJsonElementEntry -> {
-            EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(Source.JSON_MC_ANIM);
+            EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(EmoteFormat.JSON_MC_ANIM);
             Text name = EmoteInstance.instance.getDefaults().textFromString(stringJsonElementEntry.getKey()).formatted(EmotesTextFormatting.WHITE);
             JsonObject node = stringJsonElementEntry.getValue().getAsJsonObject();
             builder.endTick = (int) Math.ceil(node.get("animation_length").getAsFloat() * 20);

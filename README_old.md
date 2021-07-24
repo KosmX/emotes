@@ -3,7 +3,7 @@
 
 ##
 Minecraft mod to add emotes to the game like in Bedrock Edition...
-Just it's open source and free unlike that :D
+Just it's open emoteFormat and free unlike that :D
 ## Minecraft emotes
 
 [User manual](https://kosmx.gitbook.io/emotecraft/)  

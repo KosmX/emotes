@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.server.serializer;
 
 import com.google.gson.*;
 import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.Source;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.common.tools.Easing;
 import io.github.kosmx.emotes.common.quarktool.QuarkReader;
@@ -60,7 +60,7 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
     }
 
     private EmoteData emoteDeserializer(JsonObject node) throws JsonParseException{
-        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(Source.JSON_EMOTECRAFT);
+        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(EmoteFormat.JSON_EMOTECRAFT);
         if(node.has("beginTick")){
             builder.beginTick = node.get("beginTick").getAsInt();
         }

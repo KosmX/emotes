@@ -55,13 +55,13 @@ public final class EmoteData {
     public NBS song;
 
     public static float staticThreshold = 8;
-    public final Source source;
+    public final EmoteFormat emoteFormat;
 
     @Nullable
     public ByteBuffer iconData;
 
 
-    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, boolean nsfw, Source source){
+    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, boolean nsfw, EmoteFormat emoteFormat){
         this.beginTick = Math.max(beginTick, 0);
         this.endTick = Math.max(beginTick + 1, endTick);
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
@@ -75,8 +75,8 @@ public final class EmoteData {
         bodyParts.put("leftLeg", this.leftLeg = leftLeg);
         this.isEasingBefore = isEasingBefore;
         this.nsfw = nsfw;
-        assert source != null;
-        this.source = source;
+        assert emoteFormat != null;
+        this.emoteFormat = emoteFormat;
     }
 
     @Override
@@ -433,24 +433,24 @@ public final class EmoteData {
         public int stopTick = 0;
         public boolean isLooped = false;
         public int returnTick;
-        final Source emoteSource;
+        final EmoteFormat emoteEmoteFormat;
 
-        public EmoteBuilder(Source source){
+        public EmoteBuilder(EmoteFormat source){
             this(staticThreshold, source);
         }
 
-        public EmoteBuilder(float validationThreshold, Source source){
+        public EmoteBuilder(float validationThreshold, EmoteFormat emoteFormat){
             head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold, false);
             torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso",validationThreshold / 8f, true);
             rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold, true);
             leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold, true);
             leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);
             rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
-            this.emoteSource = source;
+            this.emoteEmoteFormat = emoteFormat;
         }
 
         public EmoteData build(){
-            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore, nsfw, emoteSource);
+            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, head, torso, rightArm, leftArm, rightLeg, leftLeg, isEasingBefore, nsfw, emoteEmoteFormat);
         }
     }
 }

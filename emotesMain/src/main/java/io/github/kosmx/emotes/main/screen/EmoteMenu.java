@@ -15,6 +15,7 @@ import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
 import javax.annotation.Nullable;
 import java.io.BufferedWriter;
@@ -351,7 +352,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
                 return true; //can be an emote icon
             }
             try {
-                return EmoteHolder.deserializeJson(Files.newBufferedReader(path)).size() != 0;
+                return UniversalEmoteSerializer.readData(Files.newInputStream(path), path.getFileName().toString()).size() != 0;
             }
             catch (Exception e){
                 return false; //what is this file
