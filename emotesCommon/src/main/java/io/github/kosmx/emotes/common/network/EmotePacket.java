@@ -135,7 +135,7 @@ public class EmotePacket {
                 int currentPos = byteBuffer.position();
                 if (subPackets.containsKey(id)) {
                     if(!subPackets.get(id).read(byteBuffer, this.data, sub_version)){
-                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + "sub-packet received");
+                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + " sub-packet received");
                     }
                     if (byteBuffer.position() != size + currentPos) {
                         byteBuffer.position(currentPos + size);
@@ -206,6 +206,7 @@ public class EmotePacket {
         public Builder configureToSaveEmote(EmoteData emoteData){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("already configured?!");
             data.purpose = PacketTask.FILE;
+            data.sizeLimit = Integer.MAX_VALUE;
             data.emoteData = emoteData;
             return this;
         }

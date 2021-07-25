@@ -60,6 +60,8 @@ public final class EmoteData {
     @Nullable
     public ByteBuffer iconData;
 
+    public boolean isBuiltin = false;
+
 
     private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, StateCollection head, StateCollection torso, StateCollection rightArm, StateCollection leftArm, StateCollection rightLeg, StateCollection leftLeg, boolean isEasingBefore, boolean nsfw, EmoteFormat emoteFormat){
         this.beginTick = Math.max(beginTick, 0);

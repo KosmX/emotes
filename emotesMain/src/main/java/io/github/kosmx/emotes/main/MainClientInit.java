@@ -59,6 +59,7 @@ public class MainClientInit {
             InputStream stream = MainClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json");
             List<EmoteData> emotes = UniversalEmoteSerializer.readData(stream, null, "json");
             EmoteData emote = emotes.get(0);
+            emote.isBuiltin = true;
             InputStream iconStream = MainClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
             if(iconStream != null) {
                 emote.iconData = MathHelper.readFromIStream(iconStream);
@@ -75,7 +76,7 @@ public class MainClientInit {
         for(File file : Objects.requireNonNull(EmoteInstance.instance.getExternalEmoteDir().listFiles((dir, name)->name.endsWith(".json")))){
             serializeExternalEmote(file);
         }
-        for(File file : Objects.requireNonNull(EmoteInstance.instance.getExternalEmoteDir().listFiles((dir, name)->name.endsWith(".mcemote")))){
+        for(File file : Objects.requireNonNull(EmoteInstance.instance.getExternalEmoteDir().listFiles((dir, name)->name.endsWith("." + EmoteFormat.BINARY.getExtension())))){
             serializeExternalEmote(file);
         }
 

@@ -55,6 +55,7 @@ public class MathHelper {
         for(Pair<Integer, byte[]> i:listOfBites){
             byteBuffer.put(i.getRight(), 0, i.getLeft());
         }
+        byteBuffer.position(0); //set position to 0, we'll read it
         return byteBuffer;
     }
 }

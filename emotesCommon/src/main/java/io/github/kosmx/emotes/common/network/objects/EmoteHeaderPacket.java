@@ -19,10 +19,10 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        config.emoteData.name = readString(byteBuffer);
-        config.emoteData.description = readString(byteBuffer);
-        config.emoteData.author = readString(byteBuffer);
-        return false;
+        config.name = readString(byteBuffer);
+        config.description = readString(byteBuffer);
+        config.author = readString(byteBuffer);
+        return true;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.purpose.exchangeHeader;
+        return config.emoteData != null && config.purpose.exchangeHeader;
     }
 
     @Override

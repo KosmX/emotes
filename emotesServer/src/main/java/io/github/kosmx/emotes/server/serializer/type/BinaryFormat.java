@@ -6,14 +6,11 @@ import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,6 +21,7 @@ public class BinaryFormat implements ISerializer{
             NetData data = new EmotePacket.Builder().build().read(MathHelper.readFromIStream(stream));
             if(data.purpose != PacketTask.FILE) throw new EmoteSerializerException("Binary emote is invalid", getFormatExtension());
             List<EmoteData> list = new ArrayList<>(1);
+            assert data.emoteData != null;
             list.add(data.emoteData);
             return list;
         }catch (IOException | NullPointerException exception){

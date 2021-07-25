@@ -6,7 +6,6 @@ import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.server.serializer.type.*;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -51,7 +50,7 @@ public class UniversalEmoteSerializer {
      */
     public static List<EmoteData> readData(InputStream inputStream, String filename) throws EmoteSerializerException{
         if(filename == null || filename.equals(""))throw new IllegalArgumentException("filename can not be null if no format type was given");
-        String format = filename.substring(filename.lastIndexOf(".")).toLowerCase();
+        String format = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
         return readData(inputStream, filename, format);
     }
 
