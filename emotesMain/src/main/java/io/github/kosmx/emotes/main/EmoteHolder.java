@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main;
 
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.api.Pair;
@@ -18,6 +19,7 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -37,8 +39,6 @@ public class EmoteHolder {
     public INativeImageBacketTexture nativeIcon = null;
     @Nullable
     private IIdentifier iconIdentifier = null;
-    @Nullable
-    public Object iconName = null; //Icon name
 
     public boolean isFromGeckoLib = false;
 
@@ -109,33 +109,18 @@ public class EmoteHolder {
         list = new ArrayList<>();
     }
 
-    /**
-     *
-     * @param path try to import emote icon
-     */
-    public void bindIcon(Object path){
-        if(path instanceof String || path instanceof File) this.iconName = path;
-        else EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't use " + path.getClass() + " as file");
-    }
-
-    public void assignIcon(File file){
-        if(file.isFile()){
-            try{
-                assignIcon(new FileInputStream(file));
-            }catch(FileNotFoundException e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void assignIcon(String str){
-        assignIcon(EmoteHolder.class.getResourceAsStream(str));
-    }
-
     public IIdentifier getIconIdentifier(){
-        if(iconIdentifier == null && this.iconName != null){
-            if(this.iconName instanceof String) assignIcon((String) this.iconName);
-            else if(this.iconName instanceof File) assignIcon((File) this.iconName);
+        if(iconIdentifier == null && this.emote.iconData != null){
+            try {
+                InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer(this.emote.iconData)));
+                assignIcon(stream);
+                stream.close();
+            }catch (IOException | NullPointerException e){
+                e.printStackTrace();
+                if(!((ClientConfig)EmoteInstance.config).neverRemoveBadIcon.get()){
+                    this.emote.iconData = null;
+                }
+            }
         }
         return iconIdentifier;
     }
@@ -143,17 +128,11 @@ public class EmoteHolder {
     public void assignIcon(InputStream inputStream) {
         try {
 
-            try {
-                INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
-                this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.getHash());
-                EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
-                this.nativeIcon = nativeImageBackedTexture;
-            } finally {
-                try {
-                    inputStream.close();
-                } catch (Throwable ignore) {
-                }
-            }
+            INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
+            this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.getHash());
+            EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
+            this.nativeIcon = nativeImageBackedTexture;
+
         } catch (Throwable var) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't open emote icon: " + var);
             this.iconIdentifier = null;

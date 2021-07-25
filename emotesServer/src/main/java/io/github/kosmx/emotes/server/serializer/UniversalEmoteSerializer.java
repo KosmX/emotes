@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.server.serializer.type.*;
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,5 +53,23 @@ public class UniversalEmoteSerializer {
         if(filename == null || filename.equals(""))throw new IllegalArgumentException("filename can not be null if no format type was given");
         String format = filename.substring(filename.lastIndexOf(".")).toLowerCase();
         return readData(inputStream, filename, format);
+    }
+
+    /**
+     * Write emote into an OStream
+     * @param stream output stream
+     * @param emote emote
+     * @param format target format. See {@link EmoteFormat}
+     * @throws EmoteSerializerException this is a dangerous task, can go wrong
+     */
+    public static void writeEmoteData(OutputStream stream, EmoteData emote, EmoteFormat format) throws EmoteSerializerException{
+        for(IReader writerCandidate:readers){
+            if(writerCandidate instanceof ISerializer && writerCandidate.getFormatType() == format){
+                ISerializer serializer = (ISerializer) writerCandidate;
+                serializer.write(emote, stream);
+                return;
+            }
+        }
+        throw new EmoteSerializerException("No writer has been found for Format: " + format.toString(), format.getExtension());
     }
 }

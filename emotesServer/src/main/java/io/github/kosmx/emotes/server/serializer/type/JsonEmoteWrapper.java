@@ -22,9 +22,13 @@ public class JsonEmoteWrapper implements ISerializer {
     }
 
     @Override
-    public void write(EmoteData emote, OutputStream outputStream) throws IOException {
-        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
-        Serializer.serializer.toJson(emote, bufferedWriter);
+    public void write(EmoteData emote, OutputStream outputStream) throws EmoteSerializerException {
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+            Serializer.serializer.toJson(emote, bufferedWriter);
+        }catch (Exception e){
+            throw new EmoteSerializerException("Exception has occurred", this.getFormatExtension(), e);
+        }
     }
 
     @Override
