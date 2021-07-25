@@ -32,14 +32,9 @@ public class Serializer {
     }
 
     protected void registerTypeAdapters(GsonBuilder builder){
-        JsonDeserializer<SerializableConfig> configSerializer = new ConfigSerializer();
-        JsonSerializer<SerializableConfig> configDeserializer = new ConfigSerializer();
-        JsonDeserializer<List<EmoteData>> emoteDeserializer = new EmoteSerializer();
-        JsonSerializer<EmoteData> emoteSerializer = new EmoteSerializer();
-        builder.registerTypeAdapter(SerializableConfig.class, configDeserializer);
-        builder.registerTypeAdapter(SerializableConfig.class, configSerializer);
-        builder.registerTypeAdapter(new TypeToken<List<EmoteData>>(){}.getType(), emoteDeserializer);
-        builder.registerTypeAdapter(EmoteData.class, emoteSerializer);
+        builder.registerTypeAdapter(SerializableConfig.class, new ConfigSerializer());
+        builder.registerTypeAdapter(new TypeToken<List<EmoteData>>(){}.getType(), new EmoteSerializer());
+        builder.registerTypeAdapter(EmoteData.class, new EmoteSerializer());
     }
 
     public static void saveConfig(){

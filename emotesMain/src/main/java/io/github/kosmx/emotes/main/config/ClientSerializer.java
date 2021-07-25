@@ -5,6 +5,7 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
@@ -16,11 +17,8 @@ public class ClientSerializer extends Serializer {
 
     @Override
     public void registerTypeAdapters(GsonBuilder builder){
-
-        JsonDeserializer<SerializableConfig> configSerializer = new ClientConfigSerializer();
-        JsonSerializer<SerializableConfig> configDeserializer = new ClientConfigSerializer();
-        builder.registerTypeAdapter(ClientConfig.class, configDeserializer);
-        builder.registerTypeAdapter(ClientConfig.class, configSerializer);
+        super.registerTypeAdapters(builder);
+        builder.registerTypeAdapter(ClientConfig.class, new ClientConfigSerializer());
     }
 
     @Override
