@@ -49,22 +49,6 @@ public class ConfigScreen extends OptionsSubScreen {
 
         EmoteInstance.config.iterateGeneral(entry -> addConfigEntry(entry, options));
 
-        options.addBig(new BooleanOption(
-                "emotecraft.otherconfig.exportGecko",
-                new TranslatableComponent("emotecraft.otherconfig.exportGecko.tooltip"),
-                gameOptions -> {
-                    if (lastScreen instanceof EmoteMenuImpl) {
-                        return ((EmoteMenu) ((EmoteMenuImpl) lastScreen).master).exportGeckoEmotes;
-                    }
-                    return false;
-                },
-                (gameOptions, aBoolean) -> {
-                    if (lastScreen instanceof EmoteMenuImpl) {
-                        ((EmoteMenu) ((EmoteMenuImpl) lastScreen).master).exportGeckoEmotes = aBoolean;
-                    }
-                }
-        ));
-
         options.addBig(new DummyEntry("emotecraft.otherconfig.category.expert"));
         options.addBig(new DummyEntry(""));
 

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.arch.executor.AbstractClientMethods;
 import io.github.kosmx.emotes.arch.gui.screen.ingame.FastChosseScreen;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
+import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -60,7 +61,7 @@ public class ClientInit {
                 ClientEmotePlay.clientStopLocalEmote();
             }
             if(debugKey != null && debugKey.consumeClick()){
-                io.github.kosmx.emotes.main.ClientInit.playDebugEmote();
+                MainClientInit.playDebugEmote();
             }
         };
     }

@@ -1,16 +1,11 @@
 package io.github.kosmx.emotes.main;
 
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.server.config.Serializer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.logging.Level;
 
 /**
@@ -33,7 +28,7 @@ public class MainLoader {
 
         //TODO init server networking
         if(EmoteInstance.instance.isClient()) {
-            ClientInit.init();
+            MainClientInit.init();
         }
     }
 

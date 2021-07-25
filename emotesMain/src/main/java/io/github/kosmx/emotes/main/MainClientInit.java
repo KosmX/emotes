@@ -8,7 +8,6 @@ import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
-import io.github.kosmx.emotes.common.quarktool.QuarkReader;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 
@@ -23,7 +22,7 @@ import java.util.logging.Level;
  * Initializing client and other load stuff...
  *
  */
-public class ClientInit {
+public class MainClientInit {
 
     public static void init(){
         loadEmotes();//:D
@@ -57,10 +56,10 @@ public class ClientInit {
             return;
         }
         try {
-            InputStream stream = ClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json");
+            InputStream stream = MainClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json");
             List<EmoteData> emotes = UniversalEmoteSerializer.readData(stream, null, "json");
             EmoteData emote = emotes.get(0);
-            InputStream iconStream = ClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
+            InputStream iconStream = MainClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
             if(iconStream != null) {
                 emote.iconData = MathHelper.readFromIStream(iconStream);
                 iconStream.close();

@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
+import java.io.PrintStream;
+
 public class EmoteSerializerException extends RuntimeException{
     final String type;
     final Exception internalException;
@@ -20,5 +22,14 @@ public class EmoteSerializerException extends RuntimeException{
 
     public Exception getInternalException() {
         return internalException;
+    }
+
+    @Override
+    public void printStackTrace(PrintStream s) {
+        super.printStackTrace(s);
+        if(internalException != null){
+            s.println("Internal error:");
+            internalException.printStackTrace(s);
+        }
     }
 }

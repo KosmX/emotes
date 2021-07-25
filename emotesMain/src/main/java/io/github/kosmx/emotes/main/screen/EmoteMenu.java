@@ -7,7 +7,7 @@ import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
-import io.github.kosmx.emotes.main.ClientInit;
+import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
@@ -76,7 +76,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
 
         this.texts = new ArrayList<>();
-        ClientInit.loadEmotes();
+        MainClientInit.loadEmotes();
 
         try {
             watcher = new ChangeListener(EmoteInstance.instance.getExternalEmoteDir().toPath());
@@ -127,6 +127,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         this.fastMenu = newFastChooseWidghet(screen.getWidth() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
         screen.addToChildren(fastMenu);
         screen.addToButtons(newButton(screen.getWidth() - 100, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
+        screen.addToButtons(newButton(screen.getWidth() - 100, 26, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.export"), (button->openExportMenuScreen())));
         screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
         setKeyButton = newButton(screen.getWidth() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
         screen.addToButtons(setKeyButton);
@@ -144,6 +145,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     protected abstract FastChooseWidget newFastChooseWidghet(int x, int y, int size);
     abstract public void openExternalEmotesDir();
     abstract public void openClothConfigScreen(); //will we use cloth or nope.
+    abstract public void openExportMenuScreen();
 
     private void activateKey(){
         if(emoteList.getSelectedEntry() != null){
@@ -304,7 +306,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         if(this.save){
             saveConfig();
         }
-        ClientInit.loadEmotes();
+        MainClientInit.loadEmotes();
         emoteList.setEmotes(EmoteHolder.list);
     }
 

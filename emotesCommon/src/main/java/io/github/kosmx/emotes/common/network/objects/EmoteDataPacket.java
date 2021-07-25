@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.tools.Ease;
 
 import java.nio.Buffer;
@@ -71,7 +72,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
     public boolean read(ByteBuffer buf, NetData config, int version){
         this.version = version;
-        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(config.threshold);
+        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(config.threshold, EmoteFormat.BINARY);
         config.tick = buf.getInt();
         builder.beginTick = buf.getInt();
         builder.endTick = buf.getInt();
