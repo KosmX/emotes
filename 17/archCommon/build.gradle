@@ -9,7 +9,8 @@ plugins {
 version project.mod_version
 
 architectury{
-    //common() //TODO uncomment when updating Forge
+    injectInjectables = false
+    common(false) //TODO update Forge
 }
 
 loom{
@@ -64,7 +65,7 @@ jar{
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
-    classifier = "sources"
+    classifier "sources"
     from sourceSets.main.allSource
 }
 
