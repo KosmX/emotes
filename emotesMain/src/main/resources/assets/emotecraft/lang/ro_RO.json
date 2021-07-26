@@ -28,8 +28,6 @@
   "emotecraft.otherconfig.perspective": "Activează perspectiva de la persoana a treia în timp ce folosești emoții",
   "emotecraft.otherconfig.prespective_redux": "Activați integrarea Perspective Mod Redux",
   "emotecraft.otherconfig.prespective_redux.tooltip": "activ numai când este activată perspectiva de la a treia persoană",
-  "emotecraft.otherconfig.exportGecko": "Exportă emoțiile GeckoLib în format Emotecraft",
-  "emotecraft.otherconfig.exportGecko.tooltip": "fisierele vor fi in emotes/GeckoLibExport. Poti seta numele, descrierea si autorul cu un editor de text",
   "emotecraft.otherconfig.enableNSFW": "Permite emoțiilor NSFW să fie redate",
   "emotecraft.otherconfig.enableNSFW.tooltip": "Conținut nepotrivit NSFW (fără siguranță pentru muncă)\n\nPoate conține nuditate, sexualitate intensă, violență sau alte subiecte potențial deranjante.",
   "emotecraft.otherconfig.alwaysValidateEmote": "Validați întotdeauna emoțiile primite",

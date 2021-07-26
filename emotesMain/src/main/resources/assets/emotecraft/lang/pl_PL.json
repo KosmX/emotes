@@ -25,8 +25,6 @@
   "emotecraft.otherconfig.perspective": "Włącz perspektywę trzeciej osoby podczas wywoływania reakcji",
   "emotecraft.otherconfig.prespective_redux": "Włącz integrację Perspective Mod Redux",
   "emotecraft.otherconfig.prespective_redux.tooltip": "aktywne tylko, gdy włączona jest perspektywa trzeciej osoby",
-  "emotecraft.otherconfig.exportGecko": "Eksportuj reakcje GeckoLib do formatu Emotecraft",
-  "emotecraft.otherconfig.exportGecko.tooltip": "pliki znajdą się w emotes/GeckoLibExport. Możesz ustawić nazwę, opis oraz autora poprzez edytor tekstu",
   "emotecraft.otherconfig.enableNSFW": "Zezwalaj na nieprzyzwoite reakcje",
   "emotecraft.otherconfig.hideWarning": "Ukryj ostrzeżenie \"brak serwera\"",
   "emotecraft.emotelist": "Wszystkie reakcje",
