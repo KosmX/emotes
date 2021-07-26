@@ -28,8 +28,6 @@
   "emotecraft.otherconfig.perspective": "감정표현을 할 때 3인칭 시점으로 전환",
   "emotecraft.otherconfig.prespective_redux": "Perspective Mod Redux 통합 켜기",
   "emotecraft.otherconfig.prespective_redux.tooltip": "3인칭 시점이 켜진 경우에만 활성화",
-  "emotecraft.otherconfig.exportGecko": "GeckoLib 감정표현을 Emotecraft 형식으로 내보내기",
-  "emotecraft.otherconfig.exportGecko.tooltip": "파일은 emotes/GeckoLibExport에 위치. 텍스트 편집기로 이름, 설명, 제작자를 설정할 수 있음",
   "emotecraft.otherconfig.enableNSFW": "NSFW 감정표현 재생 허용",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) 부적절한 콘텐츠\n\n과도한 노출, 성적 행위, 폭력 또는 기타 잠재적으로 좋지 않은 콘텐츠가 포함되어 있을 수 있습니다.",
   "emotecraft.otherconfig.alwaysValidateEmote": "수신한 감정표현 항상 확인",

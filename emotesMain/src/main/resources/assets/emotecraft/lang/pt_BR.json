@@ -28,8 +28,6 @@
   "emotecraft.otherconfig.perspective": "Ativar perspectiva de 3ª pessoa enquanto usa um emote",
   "emotecraft.otherconfig.prespective_redux": "Ativar integração com o Perspective Mod Redux",
   "emotecraft.otherconfig.prespective_redux.tooltip": "ativo apenas quando o modo de 3ª pessoa estiver ativado",
-  "emotecraft.otherconfig.exportGecko": "Exportar emotes GeckoLib no formato Emotecraft",
-  "emotecraft.otherconfig.exportGecko.tooltip": "arquivos estarão em emotes/GeckoLibExport. Você pode definir nome, descrição e autor com um editor de texto",
   "emotecraft.otherconfig.enableNSFW": "Permitir que emotes NSFW sejam reproduzidos",
   "emotecraft.otherconfig.enableNSFW.tooltip": "Conteúdo NSFW (não seguro para o trabalho) inapropriado\n\nPode conter nudez, sexualidade intensa, violência ou outro assunto potencialmente perturbador.",
   "emotecraft.otherconfig.alwaysValidateEmote": "Sempre validar emotes recebidos",

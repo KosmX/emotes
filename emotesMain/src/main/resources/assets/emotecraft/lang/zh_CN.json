@@ -28,8 +28,6 @@
   "emotecraft.otherconfig.perspective": "当播放一个表情时自动切换至第三人称视角",
   "emotecraft.otherconfig.prespective_redux": "启用Perspective Mod Redux模组的集成",
   "emotecraft.otherconfig.prespective_redux.tooltip": "仅在第三人称视角时激活",
-  "emotecraft.otherconfig.exportGecko": "以表情工艺的格式导出GeckoLib的表情",
-  "emotecraft.otherconfig.exportGecko.tooltip": "文件将会导出在 emotes/GeckoLibExport 中。您可以用文本编辑器设置名称、描述和作者",
   "emotecraft.otherconfig.enableNSFW": "允许播放NSFW表情",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW（工作时间不适宜查看）存在不雅内容\n\n可能包含裸体、激烈的性行为、暴力或其他可能令人不安的主题。",
   "emotecraft.otherconfig.alwaysValidateEmote": "总是验证接受到的表情",

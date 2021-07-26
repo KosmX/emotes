@@ -28,8 +28,6 @@
   "emotecraft.otherconfig.perspective": "Külső nézet engedélyezése gesztus lejátszása közben",
   "emotecraft.otherconfig.prespective_redux": "Perspective Mod Redux támogatás engedélyezése",
   "emotecraft.otherconfig.prespective_redux.tooltip": "csak akkor ha a külső nézet engedélyezve van",
-  "emotecraft.otherconfig.exportGecko": "GeckoLib gesztusok exportálása Emotecraft formátumban",
-  "emotecraft.otherconfig.exportGecko.tooltip": "a fájlokat az emotes/GeckoLibExport mappában találod. A nevet, leírást és szerzőt szövegszerkesztővel szerkesztheted",
   "emotecraft.emotelist": "Összes mozdulat",
   "emotecraft.no_server": "A szerveren nincs Emotecraft telepítve, mások nem fogják látni a lejátszott gesztusaid",
   "emotecraft.different_server": "A szerverre más verziójú Emotecraft van telepítve, a többiek lehet hogy hibásan fogják látni a gesztusaid",
