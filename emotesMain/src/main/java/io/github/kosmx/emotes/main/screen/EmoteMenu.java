@@ -55,8 +55,6 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private boolean resetOnlySelected;
     private int keyBindedEmotes = -1;
 
-    public boolean exportGeckoEmotes = false;
-
     private ChangeListener watcher = null;
 
     public EmoteMenu(IScreenSlave screen) {
@@ -88,30 +86,6 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             }
         }
 
-        if(this.exportGeckoEmotes){
-            exportGeckoEmotes = false;
-            EmoteHolder.list.forEach(emoteHolder -> {
-                if(emoteHolder.isFromGeckoLib){
-                    File dir = EmoteInstance.instance.getGameDirectory().resolve("emotes").resolve("GeckoLibExport").toFile();
-                    if(!dir.isDirectory()){
-                        if(!dir.mkdirs()){
-                            EmoteInstance.instance.getLogger().log(Level.WARNING, "can't create directory for exporting emotes");
-                            return;
-                        }
-                    }
-                    Path target = dir.toPath().resolve(emoteHolder.name.getString() + ".json");
-                    try {
-                        BufferedWriter writer = Files.newBufferedWriter(target);
-                        ClientSerializer.serializer.toJson(emoteHolder, writer);
-                        writer.close();
-                    } catch (IOException e) {
-                        EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't create file: " + e.getMessage(), true);
-                        if(EmoteInstance.config.showDebug.get()) e.printStackTrace();
-                    }
-                }
-            });
-        }
-
         this.searchBox = newTextInputWidget(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12, 12, (int) (screen.getWidth() / 2.2 - 16), 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
 
         this.searchBox.setInputListener((string)->this.emoteList.filter(string::toLowerCase));
@@ -127,7 +101,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         this.fastMenu = newFastChooseWidghet(screen.getWidth() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
         screen.addToChildren(fastMenu);
         screen.addToButtons(newButton(screen.getWidth() - 100, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
-        screen.addToButtons(newButton(screen.getWidth() - 100, 26, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.export"), (button->openExportMenuScreen())));
+        screen.addToButtons(newButton(screen.getWidth() - 200, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.export"), (button->openExportMenuScreen())));
         screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
         setKeyButton = newButton(screen.getWidth() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
         screen.addToButtons(setKeyButton);

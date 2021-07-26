@@ -54,5 +54,8 @@
   "emotecraft.resetConfig.title": "Reset every Emotecraft config",
   "emotecraft.resetConfig.message": "Do you really want to reset the config?",
   "emotecraft.resetAllKeys.title": "Reset all emote keybinding",
-  "emotecraft.resetAllKeys.message": "Do you really want to reset every emote keybinding?"
+  "emotecraft.resetAllKeys.message": "Do you really want to reset every emote keybinding?",
+  "emotecraft.options.export": "Export menu",
+  "emotecraft.exportjson": "Export emotes in Json",
+  "emotecraft.exportbin": "Export in .emotecraft binary"
 }

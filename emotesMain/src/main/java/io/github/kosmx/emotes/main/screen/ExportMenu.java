@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Level;
 
 public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATRIX, SCREEN> {
     protected ExportMenu(IScreenSlave screen) {
@@ -21,12 +22,12 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
     @Override
     public void emotes_initScreen() {
         int h = 10;
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 150, 20,
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportjson"), //TODO translation key
                 iButton -> {
                     this.saveAllJson();
                 }));
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 150, 20,
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportbin"), //TODO translation key
                 iButton -> {
                     this.saveAllBinary();
@@ -48,6 +49,7 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
             if(emote.isBuiltin && !((ClientConfig)EmoteInstance.config).exportBuiltin.get()){
                 continue;
             }
+            EmoteInstance.instance.getLogger().log(Level.FINER, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
             try{
                 Path exportDir = EmoteInstance.instance.getExternalEmoteDir().toPath().resolve(format.getExtension() + "_export");
                 if(!exportDir.toFile().isDirectory()){
