@@ -42,11 +42,11 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
 
     @Inject(method = "<init>(Lnet/minecraft/client/model/geom/ModelPart;Ljava/util/function/Function;)V", at = @At("RETURN"))
     private void initBend(ModelPart modelPart, Function<ResourceLocation, RenderType> function, CallbackInfo ci){
-        ModelPartAccessor.getCuboid(modelPart.getChild("body"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.DOWN).build(data));
-        ModelPartAccessor.getCuboid(modelPart.getChild("right_arm"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data));
-        ModelPartAccessor.getCuboid(modelPart.getChild("left_arm"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data));
-        ModelPartAccessor.getCuboid(modelPart.getChild("right_leg"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data));
-        ModelPartAccessor.getCuboid(modelPart.getChild("left_leg"), 0).registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data));
+        ModelPartAccessor.optionalGetCuboid(modelPart.getChild("body"), 0).ifPresent(mutableModelPart -> mutableModelPart.registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.DOWN).build(data)));
+        ModelPartAccessor.optionalGetCuboid(modelPart.getChild("right_arm"), 0).ifPresent(mutableModelPart -> mutableModelPart.registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data)));
+        ModelPartAccessor.optionalGetCuboid(modelPart.getChild("left_arm"), 0).ifPresent(mutableModelPart -> mutableModelPart.registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data)));
+        ModelPartAccessor.optionalGetCuboid(modelPart.getChild("right_leg"), 0).ifPresent(mutableModelPart -> mutableModelPart.registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data)));
+        ModelPartAccessor.optionalGetCuboid(modelPart.getChild("left_leg"), 0).ifPresent(mutableModelPart -> mutableModelPart.registerMutator("bend", data -> new BendableCuboid.Builder().setDirection(Direction.UP).build(data)));
         ((IUpperPartHelper)rightArm).setUpperPart(true);
         ((IUpperPartHelper)leftArm).setUpperPart(true);
         ((IUpperPartHelper)head).setUpperPart(true);

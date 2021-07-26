@@ -3,11 +3,13 @@ package io.github.kosmx.emotes.fabric;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import io.github.kosmx.bendylib.ModelPartAccessor;
+import io.github.kosmx.bendylib.MutableCuboid;
 import io.github.kosmx.bendylib.impl.BendableCuboid;
 import io.github.kosmx.emotes.api.Pair;
 import net.minecraft.client.model.geom.ModelPart;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 
 //Until I don't have to modify bendy-lib, this will work properly
@@ -20,7 +22,7 @@ public class BendableModelPart {
     }
 
     public void bend(float a, float b){
-        ((BendableCuboid)ModelPartAccessor.getCuboid(modelPart, 0).getAndActivateMutator("bend")).applyBend(a, b);
+        ModelPartAccessor.optionalGetCuboid(modelPart, 0).ifPresent(mutableCuboid -> ((BendableCuboid)mutableCuboid.getAndActivateMutator("bend")).applyBend(a, b));
     }
 
     public void bend(@Nullable Pair<Float, Float> pair){
@@ -28,7 +30,8 @@ public class BendableModelPart {
             this.bend(pair.getLeft(), pair.getRight());
         }
         else {
-            ModelPartAccessor.getCuboid(modelPart, 0).getAndActivateMutator(null);
+            //ModelPartAccessor.getCuboid(modelPart, 0).getAndActivateMutator(null);
+            ModelPartAccessor.optionalGetCuboid(modelPart, 0).ifPresent(mutableCuboid -> mutableCuboid.getAndActivateMutator(null));
         }
     }
 
