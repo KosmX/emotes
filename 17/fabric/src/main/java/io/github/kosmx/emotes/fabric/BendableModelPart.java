@@ -5,7 +5,7 @@ import com.mojang.math.Vector3f;
 import io.github.kosmx.bendylib.ModelPartAccessor;
 import io.github.kosmx.bendylib.MutableCuboid;
 import io.github.kosmx.bendylib.impl.BendableCuboid;
-import io.github.kosmx.emotes.common.tools.Pair;
+import io.github.kosmx.emotes.api.Pair;
 import net.minecraft.client.model.geom.ModelPart;
 
 import javax.annotation.Nullable;

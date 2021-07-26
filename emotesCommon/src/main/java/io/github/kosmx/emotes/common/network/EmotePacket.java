@@ -31,6 +31,10 @@ public class EmotePacket {
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new SongPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new EmoteHeaderPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new EmoteIconPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
     }
 
     public final NetHashMap subPackets = new NetHashMap();
@@ -54,6 +58,8 @@ public class EmotePacket {
         subPackets.put(new StopPacket());
         subPackets.put(new DiscoveryPacket());
         subPackets.put(new SongPacket());
+        subPackets.put(new EmoteHeaderPacket());
+        subPackets.put(new EmoteIconPacket());
     }
 
     //Write packet to a new ByteBuf
@@ -129,7 +135,7 @@ public class EmotePacket {
                 int currentPos = byteBuffer.position();
                 if (subPackets.containsKey(id)) {
                     if(!subPackets.get(id).read(byteBuffer, this.data, sub_version)){
-                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + "sub-packet received");
+                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + " sub-packet received");
                     }
                     if (byteBuffer.position() != size + currentPos) {
                         byteBuffer.position(currentPos + size);
@@ -194,6 +200,14 @@ public class EmotePacket {
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
             data.player = player;
+            return this;
+        }
+
+        public Builder configureToSaveEmote(EmoteData emoteData){
+            if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("already configured?!");
+            data.purpose = PacketTask.FILE;
+            data.sizeLimit = Integer.MAX_VALUE;
+            data.emoteData = emoteData;
             return this;
         }
 

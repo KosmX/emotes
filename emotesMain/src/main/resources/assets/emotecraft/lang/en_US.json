@@ -28,8 +28,6 @@
   "emotecraft.otherconfig.perspective": "Enable 3rd person perspective while playing an emote",
   "emotecraft.otherconfig.prespective_redux": "Enable Perspective Mod Redux integration",
   "emotecraft.otherconfig.prespective_redux.tooltip": "only active when 3rd person perspective is enabled",
-  "emotecraft.otherconfig.exportGecko": "Export GeckoLib emotes in Emotecraft format",
-  "emotecraft.otherconfig.exportGecko.tooltip": "files will be in emotes/GeckoLibExport. You can set name, description and author with a text editor",
   "emotecraft.otherconfig.enableNSFW": "Allow NSFW emotes to be played",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) inappropriate content\n\nMay contain nudity, intense sexuality, violence or other potentially disturbing subject matter.",
   "emotecraft.otherconfig.alwaysValidateEmote": "Always validate received emotes",
@@ -54,5 +52,8 @@
   "emotecraft.resetConfig.title": "Reset every Emotecraft config",
   "emotecraft.resetConfig.message": "Do you really want to reset the config?",
   "emotecraft.resetAllKeys.title": "Reset all emote keybinding",
-  "emotecraft.resetAllKeys.message": "Do you really want to reset every emote keybinding?"
+  "emotecraft.resetAllKeys.message": "Do you really want to reset every emote keybinding?",
+  "emotecraft.options.export": "Export menu",
+  "emotecraft.exportjson": "Export emotes in Json",
+  "emotecraft.exportbin": "Export in .emotecraft binary"
 }

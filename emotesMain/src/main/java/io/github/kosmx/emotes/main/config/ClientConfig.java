@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.main.config;
 
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.common.tools.Pair;
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 
@@ -50,6 +50,8 @@ public class ClientConfig extends SerializableConfig {
         }
     };
     public final ConfigEntry<Boolean> showHiddenConfig = new BooleanConfigEntry("showHiddenConfig", false, expert, false);
+    public final ConfigEntry<Boolean> neverRemoveBadIcon = new BooleanConfigEntry("neverRemoveBadIcon", false, expert, true);
+    public final ConfigEntry<Boolean> exportBuiltin = new BooleanConfigEntry("exportBuiltin", false, expert, true);
 
 
 

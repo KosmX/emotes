@@ -1,8 +1,9 @@
 package io.github.kosmx.emotes.testing.common;
 
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.tools.Ease;
-import io.github.kosmx.emotes.common.tools.Pair;
+import io.github.kosmx.emotes.api.Pair;
 
 import java.util.Random;
 
@@ -15,8 +16,8 @@ public class RandomEmoteData {
         Random random = new Random();
         int length = random.nextInt()%1000 + 2000; //make some useable values
 
-        EmoteData.EmoteBuilder builder1 = new EmoteData.EmoteBuilder();
-        EmoteData.EmoteBuilder builder2 = new EmoteData.EmoteBuilder();
+        EmoteData.EmoteBuilder builder1 = new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN);
+        EmoteData.EmoteBuilder builder2 = new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN);
         builder1.endTick = length;
         builder2.endTick = length;
 

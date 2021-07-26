@@ -6,7 +6,7 @@ import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.main.config.ClientConfig;
-import io.github.kosmx.emotes.main.config.Serializer;
+import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.screen.EmoteMenu;
 import net.minecraft.client.CycleOption;
 import net.minecraft.client.Minecraft;
@@ -26,7 +26,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import java.util.List;
-import java.util.function.Function;
 
 
 /**
@@ -52,22 +51,6 @@ public class ConfigScreen extends OptionsSubScreen {
 
         EmoteInstance.config.iterateGeneral(entry -> addConfigEntry(entry, options));
 
-        options.addBig(CycleOption.createOnOff(
-                "emotecraft.otherconfig.exportGecko",
-                new TranslatableComponent("emotecraft.otherconfig.exportGecko.tooltip"),
-                gameOptions -> {
-                    if (lastScreen instanceof EmoteMenuImpl) {
-                        return ((EmoteMenu) ((EmoteMenuImpl) lastScreen).master).exportGeckoEmotes;
-                    }
-                    return false;
-                },
-                (options, option, aBoolean) -> {
-                    if (lastScreen instanceof EmoteMenuImpl) {
-                        ((EmoteMenu) ((EmoteMenuImpl) lastScreen).master).exportGeckoEmotes = aBoolean;
-                    }
-                }
-        ));
-
         options.addBig(new DummyEntry("emotecraft.otherconfig.category.expert"));
         options.addBig(new DummyEntry(""));
 
@@ -81,7 +64,7 @@ public class ConfigScreen extends OptionsSubScreen {
         }));
 
         this.addRenderableWidget(new Button(this.width / 2 - 155 + 160, this.height - 27, 150, 20, CommonComponents.GUI_DONE, (button) -> {
-            Serializer.saveConfig();
+            ClientSerializer.saveConfig();
             this.minecraft.setScreen(this.lastScreen);
         }));
 

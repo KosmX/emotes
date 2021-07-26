@@ -2,8 +2,10 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.tools.Ease;
 
+import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -69,9 +71,9 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     }
 
     @Override
-    public boolean read(ByteBuffer buf, NetData config, int version){
+    public boolean read(ByteBuffer buf, NetData config, int version) throws IOException {
         this.version = version;
-        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(config.threshold);
+        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(config.threshold, EmoteFormat.BINARY);
         config.tick = buf.getInt();
         builder.beginTick = buf.getInt();
         builder.endTick = buf.getInt();
@@ -81,6 +83,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         builder.isEasingBefore = getBoolean(buf);
         builder.nsfw = getBoolean(buf);
         keyframeSize = buf.get();
+        if(!(keyframeSize > 0)) throw new IOException("keyframe size must be greater than 0, current: " + keyframeSize);
         getBodyPartInfo(buf, builder.head, false);
         getBodyPartInfo(buf, builder.torso, true);
         getBodyPartInfo(buf, builder.rightArm, true);

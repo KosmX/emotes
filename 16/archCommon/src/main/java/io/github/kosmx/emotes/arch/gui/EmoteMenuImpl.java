@@ -1,10 +1,7 @@
 package io.github.kosmx.emotes.arch.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.kosmx.emotes.arch.gui.screen.AbstractControlledModScreen;
-import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
-import io.github.kosmx.emotes.arch.gui.screen.IDrawableImpl;
-import io.github.kosmx.emotes.arch.gui.screen.IWidgetLogicImpl;
+import io.github.kosmx.emotes.arch.gui.screen.*;
 import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -54,6 +51,11 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
         @Override
         public void openClothConfigScreen() {
             Minecraft.getInstance().setScreen(new ConfigScreen(EmoteMenuImpl.this));
+        }
+
+        @Override
+        public void openExportMenuScreen() {
+            Minecraft.getInstance().setScreen(new ExportMenuScreenImpl(EmoteMenuImpl.this));
         }
 
         @Override

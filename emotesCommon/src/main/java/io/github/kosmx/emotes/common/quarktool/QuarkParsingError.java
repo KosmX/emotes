@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.quarktool;
+package io.github.kosmx.emotes.common.quarktool;
 
 public class QuarkParsingError extends Exception {
     final String message;

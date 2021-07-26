@@ -1,13 +1,13 @@
-package io.github.kosmx.emotes.main.config;
+package io.github.kosmx.emotes.server.serializer;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
-import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.tools.Easing;
 
@@ -20,17 +20,17 @@ import java.util.logging.Level;
  * https://geckolib.com/
  */
 public class GeckoLibSerializer {
-    public static List<EmoteHolder> serialize(JsonObject node){
+    public static List<EmoteData> serialize(JsonObject node){
         if(!node.get("format_version").getAsString().equals("1.8.0")){
             EmoteInstance.instance.getLogger().log(Level.INFO, "Gecko lib format what is this version?");
         }
         return readAnimations(node.get("animations").getAsJsonObject());
     }
 
-    private static List<EmoteHolder> readAnimations(JsonObject jsonEmotes){
-        List<EmoteHolder> emotes = new ArrayList<>();
+    private static List<EmoteData> readAnimations(JsonObject jsonEmotes){
+        List<EmoteData> emotes = new ArrayList<>();
         jsonEmotes.entrySet().forEach(stringJsonElementEntry -> {
-            EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder();
+            EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(EmoteFormat.JSON_MC_ANIM);
             Text name = EmoteInstance.instance.getDefaults().textFromString(stringJsonElementEntry.getKey()).formatted(EmotesTextFormatting.WHITE);
             JsonObject node = stringJsonElementEntry.getValue().getAsJsonObject();
             builder.endTick = (int) Math.ceil(node.get("animation_length").getAsFloat() * 20);
@@ -45,9 +45,12 @@ public class GeckoLibSerializer {
             keyframeSerializer(emoteData, node.get("bones").getAsJsonObject());
             emoteData.fullyEnableParts();
             emoteData.optimizeEmote();
-            EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, EmoteInstance.instance.getDefaults().textFromString("Imported from GeckoLib").formatted(EmotesTextFormatting.YELLOW), EmoteInstance.instance.getDefaults().emptyTex(), node.hashCode());
-            emoteHolder.isFromGeckoLib = true;
-            emotes.add(emoteHolder);
+            emoteData.name = name.toJsonTree().toString();
+            emoteData.description = EmoteInstance.instance.getDefaults().textFromString("").formatted(EmotesTextFormatting.YELLOW).toString();
+
+            //EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, EmoteInstance.instance.getDefaults().textFromString("").formatted(EmotesTextFormatting.YELLOW), EmoteInstance.instance.getDefaults().emptyTex(), node.hashCode());
+            //emoteHolder.isFromGeckoLib = true;
+            emotes.add(emoteData);
         });
         return emotes;
     }

@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /*
  * It won't be public until a success read.....
  */
-public class NetData {
+public final class NetData {
     /**
      * 0 - none, invalid
      * 1 - stream emote
@@ -45,11 +46,23 @@ public class NetData {
 
     public int sizeLimit = Short.MAX_VALUE;
 
+    @Nullable
+    public ByteBuffer iconData = null;
+    public String name;
+    public String description;
+    public String author;
+
     public boolean prepareAndValidate(){
         if(this.song != null){
             if(this.emoteData == null)return false;
             this.emoteData.song = this.song;
             this.song = null;
+        }
+        if(emoteData != null) {
+            emoteData.iconData = iconData;
+            emoteData.name = name;
+            emoteData.description = description;
+            emoteData.author = author;
         }
 
         if(purpose == PacketTask.UNKNOWN)return false;

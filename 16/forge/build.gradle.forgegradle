@@ -65,7 +65,7 @@ minecraft {
 
             mods {
                 examplemod {
-                    source sourceSets.main
+                    emoteFormat sourceSets.main
                 }
             }
         }
@@ -87,7 +87,7 @@ minecraft {
 
             mods {
                 examplemod {
-                    source sourceSets.main
+                    emoteFormat sourceSets.main
                 }
             }
         }
@@ -112,7 +112,7 @@ minecraft {
 
             mods {
                 examplemod {
-                    source sourceSets.main
+                    emoteFormat sourceSets.main
                 }
             }
         }
