@@ -100,7 +100,7 @@ if(keysExists) {
         // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
         repo "emotes" // by default this is set to your project name
         tagName "${project.mod_version}" // by default this is set to "v${project.version}"
-        targetCommitish "development" // by default this is set to "master"
+        targetCommitish "2.0" // by default this is set to "master"
         releaseName "Emotecraft-${project.mod_version}" // Release title, by default this is the same as the tagName
         body changes // by default this is empty
         draft false // by default this is false
