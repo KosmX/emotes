@@ -15,8 +15,11 @@ allprojects {
 
     repositories {
         maven{
-            name = "TerraformersMC archive"
-            url = 'https://raw.githubusercontent.com/TerraformersMC/Archive/main/releases'
+            name = "TerraformersMC maven"
+            url = 'https://maven.terraformersmc.com/'
+        }
+        maven {
+            url "https://libraries.minecraft.net"
         }
     }
 

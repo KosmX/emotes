@@ -1,9 +1,5 @@
 plugins {
     id 'java'
-    id 'maven-publish'
-    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
-    //id "architectury-plugin" version "3.0-SNAPSHOT"
-    //id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 version project.mod_version
@@ -15,10 +11,6 @@ architectury{
 
 loom{
     silentMojangMappingsLicense()
-}
-
-repositories {
-    mavenCentral()
 }
 
 configurations {
@@ -48,60 +40,11 @@ tasks.withType(Copy){
     }
 }
 
-//shadowJar{
-//    configurations = [project.configurations.compileModule]
-//    classifier ""
-//}
-
-//remapJar{
-//    dependsOn shadowJar
-//    input.set shadowJar.archiveFile
-//}
-
 jar{
-    //from {
-    //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
-    //}
+
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier "sources"
     from sourceSets.main.allSource
 }
-
-/*
-publishing{
-    publications{
-        maven(MavenPublication) {
-            groupId = 'io.github.kosmx.emotes'
-            artifactId = 'emotesMain'
-            version = project.version
-
-            //artifact(jar) {
-            //    builtBy shadowJar
-            //}
-            //artifact(remapJar) {
-            //    builtBy remapJar
-            //}
-            artifact shadowJar
-            artifact sourcesJar
-            //from components.java
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
-}
- */
-/* This testing stuff could be useful later...
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-test {
-    useJUnitPlatform()
-}
-
- */

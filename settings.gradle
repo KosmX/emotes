@@ -1,5 +1,3 @@
-//Oh, I had this before lol
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -11,7 +9,6 @@ pluginManagement {
             name = 'Architectury maven'
             url = 'https://maven.architectury.dev/'
         }
-        mavenCentral()
         maven {
             name = 'hell'
             url = 'https://maven.minecraftforge.net/'
