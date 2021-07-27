@@ -1,3 +1,6 @@
+plugins{
+    id 'java'
+}
 
 subprojects {
     apply plugin: 'dev.architectury.loom'
@@ -112,8 +115,5 @@ if(keysExists) {
 
 
     //CurseGradle... That plugin should be updated
-    task assemble{}
-    task build{
-        dependsOn('buildAll')
-    }
+
 }
