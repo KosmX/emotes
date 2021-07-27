@@ -57,7 +57,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
         }
 
         if(isPlayingEmote()){
-            setBodyYaw((getBodyYaw() * 3 + getViewYaw()) / 4);
+            setBodyYaw(getViewYaw());
             emoteTickCallback();
             if(this.isMainPlayer() && getEmote().perspective == 1 && EmoteInstance.instance.getClientMethods().getPerspective() != TPBPerspective.get()){
                 this.getEmote().perspective = 0;
