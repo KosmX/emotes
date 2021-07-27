@@ -46,9 +46,11 @@ allprojects {
 
 //---------------- Publishing ----------------
 
-ext.isRelease = true;
+ext.isRelease = false;
+ext.cfType = project.isRelease ? "release" : "alpha"
 ext.changes = "for changelog see [commit history](https://github.com/KosmX/emotes/commits/development)"
 
+println(project.cfType)
 
 import com.modrinth.minotaur.TaskModrinthUpload
 import com.modrinth.minotaur.request.VersionType
@@ -70,7 +72,7 @@ if(keysExists) {
             versionType = VersionType.RELEASE
         }
         else{
-            versionType = VersionType.BETA
+            versionType = VersionType.ALPHA
         }
         token = project.keys.modrinth_token;
         // Get the GitHub Access Token you got from the basics part of this tutorial.

@@ -47,11 +47,7 @@ if(keysExists) {
             changelogType = "markdown"
             //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
             changelog = changes
-            if (isRelease) {
-                releaseType = "release"
-            } else {
-                releaseType = "beta"
-            }
+            releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
             addGameVersion "1.16.5"
             addGameVersion "Fabric"
@@ -77,11 +73,7 @@ if(keysExists) {
             changelogType = "markdown"
             //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
             changelog = changes
-            if (isRelease) {
-                releaseType = "release"
-            } else {
-                releaseType = "beta"
-            }
+            releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
             addGameVersion "1.16.5"
             addGameVersion "Forge"
