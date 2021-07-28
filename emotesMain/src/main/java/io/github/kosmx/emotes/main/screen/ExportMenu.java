@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main.screen;
 
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.executor.EmoteInstance;
@@ -11,6 +12,7 @@ import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
@@ -55,18 +57,45 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
                 if(!exportDir.toFile().isDirectory()){
                     Files.createDirectories(exportDir);
                 }
-                Path file = exportDir.resolve(emoteHolder.name.getString() + "." + format.getExtension());
-                int i = 2;
-                while (file.toFile().isFile()){
-                    file = exportDir.resolve(emoteHolder.name.getString() + "_" + i++ + "." + format.getExtension());
-                }
+                Path file = createFileName(emoteHolder, exportDir, format);
                 OutputStream stream = Files.newOutputStream(file);
                 UniversalEmoteSerializer.writeEmoteData(stream, emote, format);
                 stream.close();
-            }catch (IOException | EmoteSerializerException e){
+
+                if(format == EmoteFormat.JSON_EMOTECRAFT){
+                    Path iconPath = exportDir.resolve(file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")-1) + ".png");
+                    if(iconPath.toFile().isFile()){
+                        throw new IOException("File already exists: " + iconPath);
+                    }
+                    OutputStream iconStream = Files.newOutputStream(iconPath);
+                    iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer(emote.iconData));
+                    iconStream.close();
+                }
+            }catch (IOException | EmoteSerializerException | InvalidPathException e){
                 e.printStackTrace();
             }
         }
+    }
+
+    private static Path createFileName(EmoteHolder emote, Path originPath, EmoteFormat format){
+        String name = emote.name.getString();
+        String finalName = null;
+        while (finalName == null){
+            try{
+                originPath.resolve(name);
+                finalName = name;
+            }
+            catch (InvalidPathException e){
+                int i = e.getIndex();
+                name = name.substring(0, i) + "#" + name.substring(i+1);
+            }
+        }
+        int i = 2;
+        Path file = originPath.resolve(finalName + "." + format.getExtension());
+        while (file.toFile().isFile()){
+            file = originPath.resolve(finalName + "_" + i++ + "." + format.getExtension());
+        }
+        return file;
     }
 
     @Override
