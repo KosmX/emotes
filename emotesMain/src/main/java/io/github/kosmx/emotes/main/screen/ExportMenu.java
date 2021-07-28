@@ -24,12 +24,12 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
     @Override
     public void emotes_initScreen() {
         int h = 10;
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 200, 20,
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportjson"), //TODO translation key
                 iButton -> {
                     this.saveAllJson();
                 }));
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 200, 20,
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportbin"), //TODO translation key
                 iButton -> {
                     this.saveAllBinary();
