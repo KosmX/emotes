@@ -48,7 +48,7 @@ allprojects {
 
 ext.isRelease = false;
 ext.cfType = project.isRelease ? "release" : "alpha"
-ext.changes = "for changelog see [commit history](https://github.com/KosmX/emotes/commits/development)"
+ext.changes = "+ Binary emote format. `.emotecraft`\n  + Emote export emote menu"
 
 println(project.cfType)
 
