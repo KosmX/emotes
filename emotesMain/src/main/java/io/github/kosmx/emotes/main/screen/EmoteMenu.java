@@ -18,8 +18,6 @@ import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
 import javax.annotation.Nullable;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -117,7 +115,6 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     }
 
     protected abstract FastChooseWidget newFastChooseWidghet(int x, int y, int size);
-    abstract public void openExternalEmotesDir();
     abstract public void openClothConfigScreen(); //will we use cloth or nope.
     abstract public void openExportMenuScreen();
 

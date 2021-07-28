@@ -3,13 +3,11 @@ package io.github.kosmx.emotes.arch.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.arch.gui.screen.*;
 import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.EmoteMenu;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
@@ -41,11 +39,6 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
         @Override
         protected FastChooseWidget newFastChooseWidghet(int x, int y, int size) {
             return new FastMenuImpl(x, y, size);
-        }
-
-        @Override
-        public void openExternalEmotesDir() {
-            Util.getPlatform().openFile(EmoteInstance.instance.getExternalEmoteDir());
         }
 
         @Override

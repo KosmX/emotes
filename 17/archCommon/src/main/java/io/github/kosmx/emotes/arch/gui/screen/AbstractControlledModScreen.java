@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
@@ -11,6 +12,7 @@ import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenLogicHelper;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
+import net.minecraft.Util;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,6 +66,10 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
         @Override
         default IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text) {
             return new ConfirmScreenImpl(consumer::accept, ((TextImpl) title).get(), ((TextImpl) text).get());
+        }
+        @Override
+        default void openExternalEmotesDir() {
+            Util.getPlatform().openFile(EmoteInstance.instance.getExternalEmoteDir());
         }
     }
     @Override
