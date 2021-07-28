@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.server.config.Serializer;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class JsonEmoteWrapper implements ISerializer {
@@ -24,8 +25,9 @@ public class JsonEmoteWrapper implements ISerializer {
     @Override
     public void write(EmoteData emote, OutputStream outputStream) throws EmoteSerializerException {
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
             Serializer.serializer.toJson(emote, bufferedWriter);
+            bufferedWriter.close();
         }catch (Exception e){
             throw new EmoteSerializerException("Exception has occurred", this.getFormatExtension(), e);
         }
