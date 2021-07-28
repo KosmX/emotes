@@ -15,4 +15,5 @@ public interface IScreenLogicHelper<MATRIX> extends IRenderHelper<MATRIX> {
 
     IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text);
 
+    void openExternalEmotesDir();
 }

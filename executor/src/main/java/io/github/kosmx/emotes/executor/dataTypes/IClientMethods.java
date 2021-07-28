@@ -31,4 +31,6 @@ public interface IClientMethods {
     void setPerspective(int p);
 
     void sendChatMessage(Text msg);
+
+    void toastExportMessage(int level, Text text, String msg);
 }

@@ -55,5 +55,9 @@
   "emotecraft.resetAllKeys.message": "Do you really want to reset every emote keybinding?",
   "emotecraft.options.export": "Export menu",
   "emotecraft.exportjson": "Export emotes in Json",
-  "emotecraft.exportbin": "Export in .emotecraft binary"
+  "emotecraft.exportbin": "Export in .emotecraft binary",
+  "emotecraft.export.error.json": "Failed export to JSON",
+  "emotecraft.export.error.emotecraft": "Failed export to .emotecraft",
+  "emotecraft.export.done.json": ".json export done",
+  "emotecraft.export.done.emotecraft": ".emotecraft export done"
 }

@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.common.network.objects;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 public class EmoteIconPacket extends AbstractNetworkPacket{
@@ -32,6 +33,7 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
         byteBuffer.putInt(config.emoteData.iconData.remaining());
         ByteBuffer icon = config.emoteData.iconData;
         byteBuffer.put(icon);
+        ((Buffer)icon).position(0);
     }
 
     @Override

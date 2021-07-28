@@ -46,7 +46,7 @@ dependencies {
     implementation(project(path: ":${project.module_name}:archCommon"))
     implementation project(':emotesMain')
     developmentFabric(project(path: ":emotesMain")) { transitive = false }
-    developmentFabric(project(path: ":16:archCommon")) { transitive = false }
+    developmentFabric(project(path: ":${project.module_name}:archCommon")) { transitive = false }
 
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionFabric")) { transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }

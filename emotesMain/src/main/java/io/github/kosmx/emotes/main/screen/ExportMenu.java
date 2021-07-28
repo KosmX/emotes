@@ -24,12 +24,12 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
     @Override
     public void emotes_initScreen() {
         int h = 10;
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 200, 20,
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportjson"), //TODO translation key
                 iButton -> {
                     this.saveAllJson();
                 }));
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 75, h += 30, 200, 20,
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportbin"), //TODO translation key
                 iButton -> {
                     this.saveAllBinary();
@@ -37,6 +37,8 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
 
         //TODO toast notification
         screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
+        screen.addButtonsToChildren();
     }
 
     private void saveAllJson(){
@@ -63,7 +65,7 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
                 stream.close();
 
                 if(format == EmoteFormat.JSON_EMOTECRAFT && emote.iconData != null){
-                    Path iconPath = exportDir.resolve(file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")-1) + ".png");
+                    Path iconPath = exportDir.resolve(file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")) + ".png");
                     if(iconPath.toFile().isFile()){
                         throw new IOException("File already exists: " + iconPath);
                     }
@@ -71,10 +73,17 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
                     iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer(emote.iconData));
                     iconStream.close();
                 }
-            }catch (IOException | EmoteSerializerException | InvalidPathException e){
+            }catch (IOException | EmoteSerializerException | InvalidPathException e) {
                 e.printStackTrace();
+                EmoteInstance.instance.getClientMethods().toastExportMessage( 2,
+                        EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.export.error." + format.getExtension()),
+                        emoteHolder.name.getString());
             }
         }
+        EmoteInstance.instance.getClientMethods().toastExportMessage(1,
+                EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.export.done." + format.getExtension()),
+                "emotes/" + format.getExtension() + "_export/");
+        EmoteInstance.instance.getLogger().log(Level.FINER, "All emotes are saved in " + format.getExtension() + " format", true);
     }
 
     private static Path createFileName(EmoteHolder emote, Path originPath, EmoteFormat format){
