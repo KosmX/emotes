@@ -32,5 +32,5 @@ public interface IClientMethods {
 
     void sendChatMessage(Text msg);
 
-    void toastExportMessage(Text text, String msg);
+    void toastExportMessage(int level, Text text, String msg);
 }

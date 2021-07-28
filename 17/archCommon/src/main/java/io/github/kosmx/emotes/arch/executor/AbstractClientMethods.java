@@ -17,9 +17,12 @@ import java.util.UUID;
 
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractClientMethods implements IClientMethods {
@@ -78,5 +81,10 @@ public abstract class AbstractClientMethods implements IClientMethods {
     @Override
     public void sendChatMessage(Text msg) {
         Minecraft.getInstance().gui.getChat().addMessage(((TextImpl)msg).get());
+    }
+
+    @Override
+    public void toastExportMessage(int level, Text text, String msg) {
+        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.WORLD_BACKUP, ((TextImpl)text).get(), new TextComponent(msg));
     }
 }
