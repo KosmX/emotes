@@ -71,10 +71,17 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
                     iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer(emote.iconData));
                     iconStream.close();
                 }
-            }catch (IOException | EmoteSerializerException | InvalidPathException e){
+            }catch (IOException | EmoteSerializerException | InvalidPathException e) {
                 e.printStackTrace();
+                EmoteInstance.instance.getClientMethods().toastExportMessage(
+                        EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.export.error." + format.getExtension()),
+                        emoteHolder.name.getString());
             }
         }
+        EmoteInstance.instance.getClientMethods().toastExportMessage(
+                EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.export.done." + format.getExtension()),
+                "emotes/" + format.getExtension() + "_export/");
+        EmoteInstance.instance.getLogger().log(Level.FINER, "All emotes are saved in " + format.getExtension() + " format", true);
     }
 
     private static Path createFileName(EmoteHolder emote, Path originPath, EmoteFormat format){
