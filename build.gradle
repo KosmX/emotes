@@ -50,7 +50,6 @@ ext.isRelease = false;
 ext.cfType = project.isRelease ? "release" : "alpha"
 ext.changes = "+ Binary emote format. `.emotecraft`\n  + Emote export emote menu"
 
-println(project.cfType)
 
 import com.modrinth.minotaur.TaskModrinthUpload
 import com.modrinth.minotaur.request.VersionType

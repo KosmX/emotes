@@ -62,7 +62,7 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
                 UniversalEmoteSerializer.writeEmoteData(stream, emote, format);
                 stream.close();
 
-                if(format == EmoteFormat.JSON_EMOTECRAFT){
+                if(format == EmoteFormat.JSON_EMOTECRAFT && emote.iconData != null){
                     Path iconPath = exportDir.resolve(file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")-1) + ".png");
                     if(iconPath.toFile().isFile()){
                         throw new IOException("File already exists: " + iconPath);
