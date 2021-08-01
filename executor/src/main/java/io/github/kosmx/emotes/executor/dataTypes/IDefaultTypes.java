@@ -15,6 +15,9 @@ public interface IDefaultTypes {
     Text fromJson(JsonElement node);
 
     default Text fromJson(String json){
+        if(json == null){
+            return textFromString("");
+        }
         try {
             return fromJson(new JsonParser().parse(json));
         }catch (JsonParseException e){
