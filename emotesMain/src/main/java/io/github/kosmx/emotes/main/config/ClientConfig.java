@@ -55,6 +55,13 @@ public class ClientConfig extends SerializableConfig {
 
 
 
+    //------------------------ Client-only overrides ------------------------//
+
+    //This will override default values before loading the config file.
+    public ClientConfig(){
+        loadEmotesServerSide.set(false);
+    }
+
     //------------------------ Advanced config stuff ------------------------//
     public List<EmoteHolder> emotesWithKey = new ArrayList<>();
     public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
