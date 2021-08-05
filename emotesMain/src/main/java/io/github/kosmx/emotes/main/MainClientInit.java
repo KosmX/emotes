@@ -14,6 +14,8 @@ import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -46,7 +48,9 @@ public class MainClientInit {
 
 
         if(! EmoteInstance.instance.getExternalEmoteDir().isDirectory()) EmoteInstance.instance.getExternalEmoteDir().mkdirs();
-        serializeExternalEmotes();
+        List<EmoteData> emotes = new LinkedList<>();
+        serializeEmotes(emotes, EmoteInstance.instance.getExternalEmoteDir());
+        EmoteHolder.addEmoteToList(emotes);
 
         ((ClientConfig)EmoteInstance.config).assignEmotes();
     }
@@ -71,29 +75,30 @@ public class MainClientInit {
         }
     }
 
-    private static void serializeExternalEmotes(){
-        File externalEmotes = EmoteInstance.instance.getExternalEmoteDir();
-        for(File file : Objects.requireNonNull(EmoteInstance.instance.getExternalEmoteDir().listFiles((dir, name)->name.endsWith(".json")))){
-            serializeExternalEmote(file);
+    private static void serializeEmotes(Collection<EmoteData> emotes, File externalEmotes){
+
+        for(File file : Objects.requireNonNull(externalEmotes.listFiles((dir, name)->name.endsWith(".json")))){
+            emotes.addAll(serializeExternalEmote(file));
         }
-        for(File file : Objects.requireNonNull(EmoteInstance.instance.getExternalEmoteDir().listFiles((dir, name)->name.endsWith("." + EmoteFormat.BINARY.getExtension())))){
-            serializeExternalEmote(file);
+        for(File file : Objects.requireNonNull(externalEmotes.listFiles((dir, name)->name.endsWith("." + EmoteFormat.BINARY.getExtension())))){
+            emotes.addAll(serializeExternalEmote(file));
         }
 
         if(((ClientConfig)EmoteInstance.config).enableQuark.get()){
             EmoteInstance.instance.getLogger().log(Level.INFO, "Quark importer is active", true);
-            for(File file : Objects.requireNonNull(EmoteInstance.instance.getExternalEmoteDir().listFiles((dir, name)->name.endsWith(".emote")))){
-                serializeExternalEmote(file);
+            for(File file : Objects.requireNonNull(externalEmotes.listFiles((dir, name)->name.endsWith(".emote")))){
+                emotes.addAll(serializeExternalEmote(file));
             }
         }
     }
 
-    private static void serializeExternalEmote(File file){
+    private static List<EmoteData> serializeExternalEmote(File file){
         File externalEmotes = EmoteInstance.instance.getExternalEmoteDir();
+        List<EmoteData> emotes = new LinkedList<>();
         try{
             InputStream reader = Files.newInputStream(file.toPath());
-            List<EmoteData> emotes = UniversalEmoteSerializer.readData(reader, file.getName());
-            EmoteHolder.addEmoteToList(emotes);
+            emotes = UniversalEmoteSerializer.readData(reader, file.getName());
+            //EmoteHolder.addEmoteToList(emotes);
             reader.close();
             Path icon = externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".png");
 
@@ -102,6 +107,7 @@ public class MainClientInit {
                 emotes.forEach(emote -> {
                     try {
                         emote.iconData = MathHelper.readFromIStream(iconStream);
+                        iconStream.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -125,6 +131,7 @@ public class MainClientInit {
             EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage());
             if(EmoteInstance.config.showDebug.get())e.printStackTrace();
         }
+        return emotes;
     }
     /**
      * play the test emote
