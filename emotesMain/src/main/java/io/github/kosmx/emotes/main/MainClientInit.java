@@ -3,21 +3,19 @@ package io.github.kosmx.emotes.main;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
-import io.github.kosmx.emotes.common.opennbs.NBSFileUtils;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 
 /**
@@ -49,7 +47,7 @@ public class MainClientInit {
 
         if(! EmoteInstance.instance.getExternalEmoteDir().isDirectory()) EmoteInstance.instance.getExternalEmoteDir().mkdirs();
         List<EmoteData> emotes = new LinkedList<>();
-        serializeEmotes(emotes, EmoteInstance.instance.getExternalEmoteDir());
+        EmoteSerializer.serializeEmotes(emotes, EmoteInstance.instance.getExternalEmoteDir());
         EmoteHolder.addEmoteToList(emotes);
 
         ((ClientConfig)EmoteInstance.config).assignEmotes();
@@ -75,64 +73,6 @@ public class MainClientInit {
         }
     }
 
-    private static void serializeEmotes(Collection<EmoteData> emotes, File externalEmotes){
-
-        for(File file : Objects.requireNonNull(externalEmotes.listFiles((dir, name)->name.endsWith(".json")))){
-            emotes.addAll(serializeExternalEmote(file));
-        }
-        for(File file : Objects.requireNonNull(externalEmotes.listFiles((dir, name)->name.endsWith("." + EmoteFormat.BINARY.getExtension())))){
-            emotes.addAll(serializeExternalEmote(file));
-        }
-
-        if(((ClientConfig)EmoteInstance.config).enableQuark.get()){
-            EmoteInstance.instance.getLogger().log(Level.INFO, "Quark importer is active", true);
-            for(File file : Objects.requireNonNull(externalEmotes.listFiles((dir, name)->name.endsWith(".emote")))){
-                emotes.addAll(serializeExternalEmote(file));
-            }
-        }
-    }
-
-    private static List<EmoteData> serializeExternalEmote(File file){
-        File externalEmotes = EmoteInstance.instance.getExternalEmoteDir();
-        List<EmoteData> emotes = new LinkedList<>();
-        try{
-            InputStream reader = Files.newInputStream(file.toPath());
-            emotes = UniversalEmoteSerializer.readData(reader, file.getName());
-            //EmoteHolder.addEmoteToList(emotes);
-            reader.close();
-            Path icon = externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".png");
-
-            if(icon.toFile().isFile()){
-                InputStream iconStream = Files.newInputStream(icon);
-                emotes.forEach(emote -> {
-                    try {
-                        emote.iconData = MathHelper.readFromIStream(iconStream);
-                        iconStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-
-            File song = externalEmotes.toPath().resolve(file.getName().substring(0, file.getName().length() - 5) + ".nbs").toFile();
-            if(song.isFile() && emotes.size() == 1){
-                DataInputStream bis = new DataInputStream(new FileInputStream(song));
-                try {
-                    emotes.get(0).song = NBSFileUtils.read(bis);
-                }
-                catch (IOException exception){
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while reading song: " + exception.getMessage(), true);
-                    if(EmoteInstance.config.showDebug.get()) exception.printStackTrace();
-                }
-                bis.close(); //I almost forgot this
-            }
-        }catch(Exception e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while importing external emote: " + file.getName() + ".", true);
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage());
-            if(EmoteInstance.config.showDebug.get())e.printStackTrace();
-        }
-        return emotes;
-    }
     /**
      * play the test emote
      */
