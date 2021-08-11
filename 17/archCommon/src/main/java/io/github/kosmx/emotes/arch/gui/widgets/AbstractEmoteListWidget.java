@@ -6,14 +6,13 @@ import io.github.kosmx.emotes.arch.gui.screen.IDrawableImpl;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -46,11 +45,13 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
         this.setLeftPos(left);
     }
 
-    public void setEmotes(List<EmoteHolder> list){
+    @Override
+    public void setEmotes(Collection<EmoteHolder> list){
         this.emotes = new ArrayList<>();
         for(EmoteHolder emoteHolder:list){
             this.emotes.add(newEmoteEntry(Minecraft.getInstance(), emoteHolder));
         }
+        this.emotes.sort(Comparator.comparing(o -> o.emote.name.getString().toLowerCase()));
         filter(() -> "");
     }
 
