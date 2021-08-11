@@ -20,6 +20,9 @@ import java.util.logging.Level;
 
 public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonSerializer<EmoteData> {
 
+    public static Collection<EmoteData> serverEmotes = new HashSet<>(); //Emotes have stable hash function.
+
+
     private final int modVersion = 2;
 
     public static void serializeEmotes(Collection<EmoteData> emotes, File externalEmotes){

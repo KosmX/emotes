@@ -69,7 +69,7 @@ public class ClientConfigSerializer extends ConfigSerializer {
         JsonObject node = new JsonObject();
         for(int i = 0; i != 8; i++){
             if(config.fastMenuEmotes[i] != null){
-                node.addProperty(Integer.toString(i), config.fastMenuEmotes[i].getHash());
+                node.addProperty(Integer.toString(i), config.fastMenuEmotes[i].hashCode());
             }
         }
         return node;
@@ -85,7 +85,7 @@ public class ClientConfigSerializer extends ConfigSerializer {
 
     private JsonObject keyBindSerializer(EmoteHolder emote){
         JsonObject node = new JsonObject();
-        node.addProperty("id", emote.getHash());
+        node.addProperty("id", emote.hashCode());
         node.addProperty("key", emote.keyBinding.getTranslationKey());
         return node;
     }
