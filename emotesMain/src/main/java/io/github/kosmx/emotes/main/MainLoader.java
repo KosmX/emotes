@@ -5,7 +5,9 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
+import java.io.File;
 import java.util.logging.Level;
 
 /**
@@ -26,10 +28,20 @@ public class MainLoader {
 
         EmoteInstance.config = Serializer.getConfig();
 
+        if(! EmoteInstance.instance.getExternalEmoteDir().isDirectory()) EmoteInstance.instance.getExternalEmoteDir().mkdirs();
+
         //TODO init server networking
         if(EmoteInstance.instance.isClient()) {
             MainClientInit.init();
         }
+
+        if(EmoteInstance.config.loadEmotesServerSide.get()){
+            EmoteSerializer.serializeEmotes(EmoteSerializer.serverEmotes, EmoteInstance.instance.getExternalEmoteDir());
+        }
+        File serverEmotesDir = EmoteInstance.instance.getExternalEmoteDir().toPath().resolve("server").toFile();
+        if(! serverEmotesDir.isDirectory()) serverEmotesDir.mkdirs();
+
+        EmoteSerializer.serializeEmotes(EmoteSerializer.serverEmotes, EmoteInstance.instance.getExternalEmoteDir());
     }
 
 

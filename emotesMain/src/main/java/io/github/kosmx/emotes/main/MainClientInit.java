@@ -46,10 +46,11 @@ public class MainClientInit {
 
 
         if(! EmoteInstance.instance.getExternalEmoteDir().isDirectory()) EmoteInstance.instance.getExternalEmoteDir().mkdirs();
-        List<EmoteData> emotes = new LinkedList<>();
-        EmoteSerializer.serializeEmotes(emotes, EmoteInstance.instance.getExternalEmoteDir());
-        EmoteHolder.addEmoteToList(emotes);
-
+        if (!EmoteInstance.config.loadEmotesServerSide.get()) {
+            List<EmoteData> emotes = new LinkedList<>();
+            EmoteSerializer.serializeEmotes(emotes, EmoteInstance.instance.getExternalEmoteDir());
+            EmoteHolder.addEmoteToList(emotes);
+        }
         ((ClientConfig)EmoteInstance.config).assignEmotes();
     }
 

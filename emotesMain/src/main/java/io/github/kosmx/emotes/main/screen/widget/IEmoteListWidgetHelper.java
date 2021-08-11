@@ -7,7 +7,6 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.screen.IRenderHelper;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**

@@ -8,6 +8,7 @@ public enum EmoteFormat {
     JSON_MC_ANIM("json"),
     QUARK("emote"),
     BINARY("emotecraft"),
+    SERVER(null),
     UNKNOWN(null);
 
     private final String extension;
