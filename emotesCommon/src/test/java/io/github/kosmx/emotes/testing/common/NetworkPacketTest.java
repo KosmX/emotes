@@ -23,7 +23,7 @@ public class NetworkPacketTest {
 
         EmotePacket.Builder builder = new EmotePacket.Builder();
         Pair<EmoteData.EmoteBuilder, EmoteData.EmoteBuilder> pair = RandomEmoteData.generateEmotes();
-        builder.configureToSendEmote(pair.getLeft().build());
+        builder.configureToStreamEmote(pair.getLeft().build());
         ByteBuffer byteBuffer = builder.build().write();
         byte[] bytes = byteBuffer.array();
 
@@ -52,7 +52,7 @@ public class NetworkPacketTest {
         try {
             builder = new EmotePacket.Builder();
             builder.configureToSendStop(randID);
-            builder.configureToSendEmote(pair.getLeft().build());
+            builder.configureToStreamEmote(pair.getLeft().build());
             byteBuffer = builder.build().write();
             bytes = byteBuffer.array();
 
