@@ -37,7 +37,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
     public void onChannelRegister(ClientPacketListener handler, PacketSender sender, Minecraft client, List<ResourceLocation> channels) {
         if(channels.contains(ServerNetwork.channelID)){
             this.sendConfigCallback();
-            EmoteInstance.instance.getLogger().log(Level.FINEST, "Sending presence to server");
+            EmoteInstance.instance.getLogger().log(Level.INFO, "Sending presence to server");
         }
     }
     @Override

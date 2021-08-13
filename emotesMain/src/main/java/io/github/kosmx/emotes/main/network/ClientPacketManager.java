@@ -78,7 +78,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
             if(player != null) {
                 data.player = player;
             }
-            if(data.player == null && data.purpose.isEmoteStream){
+            if(data.player == null && data.purpose.playerBound){
                 //this is not exactly IO but something went wrong in IO so it is IO fail
                 throw new IOException("Didn't received any player information");
             }
