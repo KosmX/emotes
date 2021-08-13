@@ -196,9 +196,13 @@ public class EmotePacket {
         }
 
         public EmotePacket build(int sizeLimit){
+            return this.setSizeLimit(sizeLimit).build();
+        }
+
+        public Builder setSizeLimit(int sizeLimit){
             if(sizeLimit <= 0)throw new IllegalArgumentException("Size limit must be positive");
             data.sizeLimit = sizeLimit;
-            return this.build();
+            return this;
         }
 
         public Builder configureToStreamEmote(EmoteData emoteData, @Nullable UUID player){

@@ -35,6 +35,13 @@ public interface INetworkInstance {
     void setVersions(HashMap<Byte, Byte> map);
 
     /**
+     * Invoked after receiving the presence packet
+     * {@link INetworkInstance#setVersions(HashMap)}
+     * Used to send server-side config/emotes
+     */
+    default void presenceResponse(){}
+
+    /**
      * Does send the sender's id to the server
      * @return true means send
      */
@@ -47,6 +54,7 @@ public interface INetworkInstance {
      * only if {@link #isActive()} is true
      * @param builder packet builder
      * @param target target to send message, if null, everyone in the view distance
+     *               on server-side target will be ignored
      * @throws IOException when message write to bytes has failed
      */
     void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException;
@@ -64,6 +72,9 @@ public interface INetworkInstance {
 
     /**
      * You are asked to send your config.
+     * From 2.1 client will start the config exchange and the server will reply
+     *
+     * This shall be invoked when the server is ready to receive packets
      */
     void sendConfigCallback();
 

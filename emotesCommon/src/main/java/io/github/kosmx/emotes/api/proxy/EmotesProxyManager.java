@@ -63,7 +63,14 @@ public abstract class EmotesProxyManager {
         getManager().dispatchReceive(buffer, player, networkInstance);
     }
 
-
+    /**
+     * Use this when a network connection disconnects.
+     * It's responsible to remove server-side emotes
+     * @param networkInstance disconnected network instance
+     */
+    static void disconnectInstance(INetworkInstance networkInstance){
+        getManager().onDisconnectFromServer(networkInstance);
+    }
 
     //---------------- These are EmoteX's own stuff. you shouldn't touch these ----------------
 
@@ -93,4 +100,5 @@ public abstract class EmotesProxyManager {
 
     protected abstract void dispatchReceive(ByteBuffer buffer, UUID player, INetworkInstance networkInstance);
 
+    public abstract void onDisconnectFromServer(INetworkInstance networkInstance);
 }

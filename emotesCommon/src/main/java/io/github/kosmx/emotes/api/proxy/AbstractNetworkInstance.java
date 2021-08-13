@@ -98,6 +98,13 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     }
 
     /**
+     * When the network instance disconnects...
+     */
+    protected void disconnect(){
+        EmotesProxyManager.disconnectInstance(this);
+    }
+
+    /**
      * If {@link ByteBuffer} is wrapped, it is safe to get the array
      * but if is direct manual read is required.
      * @param byteBuffer get the bytes from
@@ -134,6 +141,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     public void sendConfigCallback(){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         packetBuilder.setVersion(this.getVersions());
+        packetBuilder.configureToConfigExchange(true);
         try {
             this.sendMessage(packetBuilder, null);
         }

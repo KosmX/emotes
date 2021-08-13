@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.server;
+package io.github.kosmx.emotes.server.network;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -32,6 +32,7 @@ public abstract class AbstractServerEmotePlay<P> {
                 break;
             case CONFIG:
                 instance.setVersions(data.versions);
+                instance.presenceResponse();
                 break;
             case STREAM:
                 streamEmote(data, player, instance);

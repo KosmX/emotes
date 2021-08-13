@@ -4,7 +4,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.server.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;

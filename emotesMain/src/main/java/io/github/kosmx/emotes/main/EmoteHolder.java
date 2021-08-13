@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.main;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.api.Pair;
@@ -38,9 +39,8 @@ public class EmoteHolder {
     @Nullable
     private IIdentifier iconIdentifier = null;
 
-    public boolean isFromGeckoLib = false;
-
-    public boolean isQuarkEmote = false;
+    @Nullable
+    public INetworkInstance fromInstance = null;
 
     /**
      * Create cache from emote data
@@ -163,6 +163,29 @@ public class EmoteHolder {
         }
     }
 
+    public static EmoteHolder addEmoteToList(EmoteData emote){
+        EmoteHolder newEmote = new EmoteHolder(emote);
+        EmoteHolder old = newEmote.findIfPresent();
+        if(old == null){
+            list.add(newEmote);
+            return newEmote;
+        }
+        else {
+            return old;
+        }
+    }
+
+    EmoteHolder findIfPresent()
+    {
+        if (list.contains(this)) {
+            for (EmoteHolder obj : list) {
+                if (obj.equals(this))
+                    return obj;
+            }
+        }
+        return null;
+    }
+
     @Deprecated
     public static void addEmoteToList(EmoteHolder hold){
         list.add(hold);
@@ -220,6 +243,19 @@ public class EmoteHolder {
         if(hash == null)
             hash = new AtomicInteger(this.emote.hashCode());
         return hash.get();
+    }
+
+    /**
+     * The emote holder data may not be equal, but this is only cache. We may skip some work with this
+     * @param o Emote holder
+     * @return true if eq.... you know
+     */
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof EmoteHolder){
+            return (this.emote.equals(((EmoteHolder)o).emote));
+        }
+        return false;
     }
 }
 
