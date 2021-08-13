@@ -3,17 +3,22 @@ package io.github.kosmx.emotes.server.serializer;
 
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.serializer.type.*;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class UniversalEmoteSerializer {
     public static String binaryExtension = EmoteFormat.BINARY.getExtension();
     public static List<IReader> readers = Arrays.asList(new JsonEmoteWrapper(), new QuarkReaderWrapper(), new BinaryFormat());
+    public static Collection<EmoteData> serverEmotes = new HashSet<>(); //Emotes have stable hash function.
 
 
     /**
@@ -70,5 +75,16 @@ public class UniversalEmoteSerializer {
             }
         }
         throw new EmoteSerializerException("No writer has been found for Format: " + format.toString(), format.getExtension());
+    }
+
+    public static void serializeServerEmotes(){
+        serverEmotes = new HashSet<>();
+        if(EmoteInstance.config.loadEmotesServerSide.get()){
+            EmoteSerializer.serializeEmotes(serverEmotes, EmoteInstance.instance.getExternalEmoteDir());
+        }
+        File serverEmotesDir = EmoteInstance.instance.getExternalEmoteDir().toPath().resolve("server").toFile();
+        if(! serverEmotesDir.isDirectory()) serverEmotesDir.mkdirs();
+
+        EmoteSerializer.serializeEmotes(serverEmotes, serverEmotesDir);
     }
 }
