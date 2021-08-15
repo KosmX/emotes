@@ -19,6 +19,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ServerNetwork extends AbstractServerEmotePlay<Player> {
@@ -78,6 +79,13 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         packet.setName(channelID);
         packet.setData(new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
         return packet;//:D
+    }
+
+    @Override
+    protected void sendForPlayerInRange(NetData data, Player player, UUID target) {
+        if(Objects.requireNonNull(player.getCommandSenderWorld().getPlayerByUUID(target)).canSee(player)){
+            sendForPlayer(data, player, target);
+        }
     }
 
     @Override

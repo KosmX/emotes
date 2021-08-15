@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -64,16 +65,22 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     }
 
     @Override
+    protected void sendForPlayerInRange(NetData data, Player player, UUID target) {
+        PlayerLookup.tracking(player).forEach(serverPlayerEntity -> targetFinder(serverPlayerEntity, data, target));
+    }
+
+    @Override
     protected void sendForPlayer(NetData data, Player player, UUID target) {
-        PlayerLookup.tracking(player).forEach(serverPlayerEntity -> {
-            if (serverPlayerEntity.getUUID().equals(target)) {
-                try {
-                    ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
-                }
-                catch (IOException e){
-                    e.printStackTrace();
-                }
+        PlayerLookup.all(Objects.requireNonNull(player.getServer())).forEach(serverPlayerEntity -> targetFinder(serverPlayerEntity, data, target));
+    }
+
+    private void targetFinder(ServerPlayer serverPlayerEntity, NetData data, UUID target){
+        if (serverPlayerEntity.getUUID().equals(target)) {
+            try {
+                ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }
     }
 }

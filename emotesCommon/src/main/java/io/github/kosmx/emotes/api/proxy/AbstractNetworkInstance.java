@@ -140,7 +140,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     @Override
     public void sendConfigCallback(){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.setVersion(this.getVersions());
+        //packetBuilder.setVersion(this.getVersions());
         packetBuilder.configureToConfigExchange(true);
         try {
             this.sendMessage(packetBuilder, null);

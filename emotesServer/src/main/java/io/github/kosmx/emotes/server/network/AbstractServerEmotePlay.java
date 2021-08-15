@@ -54,12 +54,31 @@ public abstract class AbstractServerEmotePlay<P> {
             if(target == null) {
                 sendForEveryoneElse(data, player);
             }else {
-                sendForPlayer(data, player, target);
+                sendForPlayerInRange(data, player, target);
             }
         }
     }
 
+    /**
+     * Send the message to everyone, except for the player
+     * @param data message
+     * @param player send around this player
+     */
     protected abstract void sendForEveryoneElse(NetData data, P player);
 
+    /**
+     * Send message to target. If target see player the message will be sent
+     * @param data message
+     * @param player around player
+     * @param target target player
+     */
+    protected abstract void sendForPlayerInRange(NetData data, P player, UUID target);
+
+    /**
+     * Send a message to target. This will send a message even if target doesn't see player
+     * @param data message
+     * @param player player for the ServerWorld information
+     * @param target target entity
+     */
     protected abstract void sendForPlayer(NetData data, P player, UUID target);
 }

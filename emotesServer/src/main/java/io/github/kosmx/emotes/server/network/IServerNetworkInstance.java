@@ -21,4 +21,9 @@ public interface IServerNetworkInstance extends INetworkInstance {
             }
         }
     }
+
+    /**
+     * Server closes connection with instance
+     */
+    default void closeConnection(){}
 }

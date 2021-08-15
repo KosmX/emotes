@@ -30,6 +30,11 @@ dependencies {
 
     implementation project(':emotesCommon')
     compileModule project(':emotesCommon')
+
+    implementation project(':executor')
+    compileModule project(':executor')
+    implementation project(':emotesServer')
+    compileModule project(':emotesServer')
 }
 
 processResources{
