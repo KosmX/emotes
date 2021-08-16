@@ -42,7 +42,7 @@ public class BukkitWrapper extends JavaPlugin {
             CommonData.isLoaded = true;
         }
         EmoteInstance.instance = new BukkitInstance(this);
-        new Serializer(); //it does register itself
+        Serializer.INSTANCE = new Serializer(); //it does register itself
         EmoteInstance.config = Serializer.getConfig();
         UniversalEmoteSerializer.serializeServerEmotes();
     }

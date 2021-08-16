@@ -24,6 +24,9 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
     private final int modVersion = 2;
 
     public static void serializeEmotes(Collection<EmoteData> emotes, File externalEmotes){
+        if(!externalEmotes.isDirectory()){
+            externalEmotes.mkdir();
+        }
 
         for(File file : Objects.requireNonNull(externalEmotes.listFiles((dir, name)->name.endsWith(".json")))){
             emotes.addAll(serializeExternalEmote(file));

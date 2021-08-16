@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.executor.dataTypes.IGetters;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class BukkitInstance extends EmoteInstance {
     final java.util.logging.Logger logger;
@@ -46,11 +47,11 @@ public class BukkitInstance extends EmoteInstance {
 
     @Override
     public Path getGameDirectory() {
-        return plugin.getDataFolder().toPath();
+        return Paths.get("");
     }
 
     @Override
     public File getExternalEmoteDir() {
-        return null;
+        return Paths.get("").resolve("emotes").toFile();
     }
 }
