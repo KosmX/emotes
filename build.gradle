@@ -49,6 +49,11 @@ allprojects {
 ext.isRelease = false;
 ext.cfType = project.isRelease ? "release" : "alpha"
 ext.changes = " Server-side emotes, will be streamed to clients"
+ext.mod_version = project.version_base
+
+if(!isRelease){
+    ext.mod_version = "${project.version_base}-SNAPSHOT-${'git rev-parse --verify --short HEAD'.execute().text.trim()}"
+}
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
