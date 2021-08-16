@@ -4,6 +4,7 @@ package io.github.kosmx.emotes.forge.mixin;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @Mixin(ServerGamePacketListenerImpl.class)
-public abstract class ServerPlayNetworkInstance implements INetworkInstance {
+public abstract class ServerPlayNetworkInstance implements IServerNetworkInstance {
     @Shadow public abstract void send(Packet<?> packet);
 
     HashMap<Byte, Byte> versions = new HashMap<>();

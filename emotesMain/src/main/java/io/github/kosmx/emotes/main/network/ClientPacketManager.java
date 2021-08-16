@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.main.EmoteHolder;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -77,7 +78,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
             if(player != null) {
                 data.player = player;
             }
-            if(data.player == null && data.purpose.isEmoteStream){
+            if(data.player == null && data.purpose.playerBound){
                 //this is not exactly IO but something went wrong in IO so it is IO fail
                 throw new IOException("Didn't received any player information");
             }
@@ -121,5 +122,16 @@ public final class ClientPacketManager extends EmotesProxyManager {
             }
         }
         return false;
+    }
+
+
+    /**
+     * This shall be invoked when disconnecting from the server
+     * @param networkInstance ...
+     */
+    @Override
+    public void onDisconnectFromServer(INetworkInstance networkInstance){
+        if(networkInstance == null)throw new NullPointerException("network instance must be non-null");
+        EmoteHolder.list.removeIf(emoteHolder -> emoteHolder.fromInstance == networkInstance);
     }
 }

@@ -28,10 +28,15 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         ServerNetwork.channel.addListener(this::receiveJunk);
         ServerNetwork.channel.addListener(this::registerServerSide);
         MinecraftForge.EVENT_BUS.addListener(this::connectServerCallback);
+        MinecraftForge.EVENT_BUS.addListener(this::disconnectEvent);
     }
 
     private void connectServerCallback(ClientPlayerNetworkEvent.LoggedInEvent event){
         this.isRemotePresent = false;
+    }
+
+    private void disconnectEvent(ClientPlayerNetworkEvent.LoggedOutEvent event){
+        this.disconnect();
     }
 
     private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
@@ -41,6 +46,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     private void registerServerSide(NetworkEvent.ChannelRegistrationChangeEvent event){
         this.isRemotePresent = event.getRegistrationChangeType() == NetworkEvent.RegistrationChangeType.REGISTER;
+        this.sendConfigCallback();
     }
 
     void receiveMessage(FriendlyByteBuf buf){
@@ -104,6 +110,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         if(target != null){
             builder.configureTarget(target);
         }
+        if(Minecraft.getInstance().getConnection() != null)
         Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
     }
 }

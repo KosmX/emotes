@@ -4,7 +4,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.server.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
@@ -19,6 +19,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ServerNetwork extends AbstractServerEmotePlay<Player> {
@@ -78,6 +79,13 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         packet.setName(channelID);
         packet.setData(new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
         return packet;//:D
+    }
+
+    @Override
+    protected void sendForPlayerInRange(NetData data, Player player, UUID target) {
+        if(Objects.requireNonNull(player.getCommandSenderWorld().getPlayerByUUID(target)).canSee(player)){
+            sendForPlayer(data, player, target);
+        }
     }
 
     @Override

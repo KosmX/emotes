@@ -6,7 +6,7 @@ import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.screen.IRenderHelper;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
@@ -17,9 +17,9 @@ public interface IEmoteListWidgetHelper<MATRIX, WIDGET> extends IWidgetLogic<MAT
     void emotesSetLeftPos(int p);
     IEmoteEntry getSelectedEntry();
     void renderThis(MATRIX matrices, int mouseX, int mouseY, float tickDelta);
-    void setEmotes(List<EmoteHolder> emoteHolders);
+    void setEmotes(Collection<EmoteHolder> emoteHolders);
 
-    public interface IEmoteEntry<MATRIX> extends IRenderHelper<MATRIX> {
+    interface IEmoteEntry<MATRIX> extends IRenderHelper<MATRIX> {
         EmoteHolder getEmote();
         default void renderThis(MATRIX matrices, int index, int y, int x, int entryWidth, int entryHeitht, int mouseX, int mouseY, boolean hovered, float tickDelta){
             if(hovered){

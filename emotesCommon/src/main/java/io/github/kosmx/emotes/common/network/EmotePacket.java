@@ -195,7 +195,17 @@ public class EmotePacket {
             return new EmotePacket(data);
         }
 
-        public Builder configureToSendEmote(EmoteData emoteData, @Nullable UUID player){
+        public EmotePacket build(int sizeLimit){
+            return this.setSizeLimit(sizeLimit).build();
+        }
+
+        public Builder setSizeLimit(int sizeLimit){
+            if(sizeLimit <= 0)throw new IllegalArgumentException("Size limit must be positive");
+            data.sizeLimit = sizeLimit;
+            return this;
+        }
+
+        public Builder configureToStreamEmote(EmoteData emoteData, @Nullable UUID player){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
@@ -221,8 +231,8 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToSendEmote(EmoteData emoteData){
-            return configureToSendEmote(emoteData, null);
+        public Builder configureToStreamEmote(EmoteData emoteData){
+            return configureToStreamEmote(emoteData, null);
         }
 
         public Builder configureToSendStop(int emoteID, @Nullable UUID player){

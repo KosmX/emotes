@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.main;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.api.Pair;
@@ -17,9 +18,7 @@ import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
 import javax.annotation.Nullable;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -33,16 +32,15 @@ public class EmoteHolder {
     public final Text author;
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
-    public static List<EmoteHolder> list = new ArrayList<>(); // static array of all imported emotes
+    public static Collection<EmoteHolder> list = new HashSet<>(); // static array of all imported emotes
     public InputKey keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
     public INativeImageBacketTexture nativeIcon = null;
     @Nullable
     private IIdentifier iconIdentifier = null;
 
-    public boolean isFromGeckoLib = false;
-
-    public boolean isQuarkEmote = false;
+    @Nullable
+    public INetworkInstance fromInstance = null;
 
     /**
      * Create cache from emote data
@@ -83,13 +81,13 @@ public class EmoteHolder {
         for(EmoteHolder emote : list){
             if(! emote.keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey())){
                 config.emotesWithKey.add(emote);
-                config.emotesWithHash.add(new Pair<>(emote.getHash(), emote.keyBinding.getTranslationKey()));
+                config.emotesWithHash.add(new Pair<>(emote.hashCode(), emote.keyBinding.getTranslationKey()));
             }
         }
         config.fastMenuHash = new int[8];
         for(int i = 0; i != 8; i++){
             if(config.fastMenuEmotes[i] != null){
-                config.fastMenuHash[i] = config.fastMenuEmotes[i].getHash();
+                config.fastMenuHash[i] = config.fastMenuEmotes[i].hashCode();
             }
         }
     }
@@ -106,7 +104,7 @@ public class EmoteHolder {
                 emoteHolder.nativeIcon.close();
             }
         }
-        list = new ArrayList<>();
+        list = new HashSet<>();
     }
 
     public IIdentifier getIconIdentifier(){
@@ -129,7 +127,7 @@ public class EmoteHolder {
         try {
 
             INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
-            this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.getHash());
+            this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.hashCode());
             EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;
 
@@ -152,7 +150,7 @@ public class EmoteHolder {
 
     public static EmoteHolder getEmoteFromHash(int hash){
         for(EmoteHolder emote : list){
-            if(emote.getHash() == hash){
+            if(emote.hashCode() == hash){
                 return emote;
             }
         }
@@ -163,6 +161,29 @@ public class EmoteHolder {
         for(EmoteData emote : emotes){
             EmoteHolder.list.add(new EmoteHolder(emote));
         }
+    }
+
+    public static EmoteHolder addEmoteToList(EmoteData emote){
+        EmoteHolder newEmote = new EmoteHolder(emote);
+        EmoteHolder old = newEmote.findIfPresent();
+        if(old == null){
+            list.add(newEmote);
+            return newEmote;
+        }
+        else {
+            return old;
+        }
+    }
+
+    EmoteHolder findIfPresent()
+    {
+        if (list.contains(this)) {
+            for (EmoteHolder obj : list) {
+                if (obj.equals(this))
+                    return obj;
+            }
+        }
+        return null;
     }
 
     @Deprecated
@@ -212,10 +233,29 @@ public class EmoteHolder {
         return playEmote(this.emote, playerEntity, this);
     }
 
-    public int getHash() {
+    /**
+     * Hash code of the internal emote.
+     * Cached.
+     * @return hash
+     */
+    @Override
+    public int hashCode() {
         if(hash == null)
             hash = new AtomicInteger(this.emote.hashCode());
         return hash.get();
+    }
+
+    /**
+     * The emote holder data may not be equal, but this is only cache. We may skip some work with this
+     * @param o Emote holder
+     * @return true if eq.... you know
+     */
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof EmoteHolder){
+            return (this.emote.equals(((EmoteHolder)o).emote));
+        }
+        return false;
     }
 }
 

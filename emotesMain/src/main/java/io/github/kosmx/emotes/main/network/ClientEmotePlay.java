@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public class ClientEmotePlay {
@@ -31,7 +32,7 @@ public class ClientEmotePlay {
 
     public static boolean clientStartLocalEmote(EmoteData emote) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
+        packetBuilder.configureToStreamEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
         ClientPacketManager.send(packetBuilder, null);
         EmoteInstance.instance.getClientMethods().getMainPlayer().playEmote(emote, 0);
         return true;
@@ -39,7 +40,7 @@ public class ClientEmotePlay {
 
     public static void clientRepeateLocalEmote(EmoteData emote, int tick, UUID target){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToSendEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID()).configureEmoteTick(tick);
+        packetBuilder.configureToStreamEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
     }
 
@@ -85,6 +86,8 @@ public class ClientEmotePlay {
             case CONFIG:
                 networkInstance.setVersions(Objects.requireNonNull(data.versions));
                 break;
+            case FILE:
+                EmoteHolder.addEmoteToList(data.emoteData).fromInstance = networkInstance;
             case UNKNOWN:
                 if (EmoteInstance.config.showDebug.get()) {
                     EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible unknown purpose");
@@ -156,6 +159,5 @@ public class ClientEmotePlay {
             this.beginTick = begin;
             this.receivedTick = received;
         }
-
     }
 }

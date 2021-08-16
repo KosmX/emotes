@@ -2,20 +2,25 @@ package io.github.kosmx.emotes.fabric.network;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
-public class ClientNetworkInstance extends AbstractNetworkInstance {
+public class ClientNetworkInstance extends AbstractNetworkInstance implements C2SPlayChannelEvents.Register, ClientPlayConnectionEvents.Disconnect {
 
     private int remoteVersion = 0;
 
@@ -23,8 +28,22 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     public void init(){
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
+        C2SPlayChannelEvents.REGISTER.register(this);
+        ClientPlayConnectionEvents.DISCONNECT.register(this);
     }
 
+    @Override
+    public void onChannelRegister(ClientPacketListener handler, PacketSender sender, Minecraft client, List<ResourceLocation> channels) {
+        if(channels.contains(ServerNetwork.channelID)){
+            this.sendConfigCallback();
+            EmoteInstance.instance.getLogger().log(Level.INFO, "Sending presence to server");
+        }
+    }
+
+    @Override
+    public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
+        this.disconnect(); //:D
+    }
     void receiveMessage(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender){
         if(buf.isDirect() || buf.isReadOnly()){ //If the received ByteBuf is direct i have to copy that onto the heap
             byte[] bytes = new byte[buf.readableBytes()];

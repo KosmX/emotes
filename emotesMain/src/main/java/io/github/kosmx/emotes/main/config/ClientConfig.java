@@ -16,7 +16,6 @@ public class ClientConfig extends SerializableConfig {
     public final BooleanConfigEntry frontAsTPPerspective = new BooleanConfigEntry("default3rdPersonFront", false, false, basics);
     public final ConfigEntry<Boolean> loadBuiltinEmotes = new BooleanConfigEntry("loadbuiltin", "loadBuiltin", true, true, basics);
     public final ConfigEntry<Boolean> showIcons = new BooleanConfigEntry("showicon", "showIcon", true, true, basics);
-    public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);
     public final ConfigEntry<Boolean> enableNSFW = new BooleanConfigEntry("enableNSFW", false, true, basics);
     //expert
     public final ConfigEntry<Boolean> alwaysValidate = new BooleanConfigEntry("alwaysValidateEmote", false, true, expert);
@@ -54,6 +53,13 @@ public class ClientConfig extends SerializableConfig {
     public final ConfigEntry<Boolean> exportBuiltin = new BooleanConfigEntry("exportBuiltin", false, expert, true);
 
 
+
+    //------------------------ Client-only overrides ------------------------//
+
+    //This will override default values before loading the config file.
+    public ClientConfig(){
+        loadEmotesServerSide.set(false);
+    }
 
     //------------------------ Advanced config stuff ------------------------//
     public List<EmoteHolder> emotesWithKey = new ArrayList<>();
