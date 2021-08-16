@@ -48,7 +48,7 @@ allprojects {
 
 ext.isRelease = false;
 ext.cfType = project.isRelease ? "release" : "alpha"
-ext.changes = "+ Binary emote format. `.emotecraft`\n  + Emote export emote menu"
+ext.changes = " Server-side emotes, will be streamed to clients"
 
 
 import com.modrinth.minotaur.TaskModrinthUpload
