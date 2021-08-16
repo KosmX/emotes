@@ -26,9 +26,14 @@
   "emotecraft.otherconfig.prespective_redux": "Włącz integrację Perspective Mod Redux",
   "emotecraft.otherconfig.prespective_redux.tooltip": "aktywne tylko, gdy włączona jest perspektywa trzeciej osoby",
   "emotecraft.otherconfig.enableNSFW": "Zezwalaj na nieprzyzwoite reakcje",
+  "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) treści wulgarne\n\nMoże zawierać nagość, eksponowanie seksualności, przemoc lub inne potencjalnie nieodpowiednie treści.",
+  "emotecraft.otherconfig.alwaysValidateEmote": "Zawsze weryfikuj otrzymane reakcje",
+  "emotecraft.otherconfig.default3rdPersonFront": "Użyj widoku od frontu zamiast od tyłu dla wywołania reakcji",
+  "emotecraft.otherconfig.showHiddenConfig": "Pokaż ukryte opcje. (wymaga ponownego uruchomienia)",
   "emotecraft.otherconfig.hideWarning": "Ukryj ostrzeżenie \"brak serwera\"",
   "emotecraft.emotelist": "Wszystkie reakcje",
   "emotecraft.no_server": "Serwer nie posiada modyfikacji Emotecraft, więc inni gracze nie zobaczą Twoich reakcji",
+  "emotecraft.different_server": "Serwer posiada zainstalowaną inną wersję Emotecraft, więc inne osoby mogą nie widzieć poprawnie Twoich reakcji",
   "key.emotecraft.stop": "Zatrzymaj reakcję",
   "emotecraft.openFolder": "Otwórz folder z reakcjami",
   "emotecraft.otherconfig.quark": "Włącz quark deserializer",
@@ -39,5 +44,12 @@
   "emotecraft.resetConfig.title": "Wyzeruj każdą konfigurację Emotecraft",
   "emotecraft.resetConfig.message": "Czy na pewno chcesz wyzerować każdą konfigurację?",
   "emotecraft.resetAllKeys.title": "Wyzeruj wszystkie przypisania klawiszy",
-  "emotecraft.resetAllKeys.message": "Czy na pewno chcesz wyzerować wszystkie przypisania klawiszy?"
+  "emotecraft.resetAllKeys.message": "Czy na pewno chcesz wyzerować wszystkie przypisania klawiszy?",
+  "emotecraft.options.export": "Menu eksportu",
+  "emotecraft.exportjson": "Eksportuj reakcje do pliku Json",
+  "emotecraft.exportbin": "Eksportuj do pliku .emotecraft",
+  "emotecraft.export.error.json": "Błąd eksportu do pliku JSON",
+  "emotecraft.export.error.emotecraft": "Błąd eksportu do pliku .emotecraft",
+  "emotecraft.export.done.json": "Eksport .json zakończony",
+  "emotecraft.export.done.emotecraft": "Eksport .emotecraft zakończony"
 }
