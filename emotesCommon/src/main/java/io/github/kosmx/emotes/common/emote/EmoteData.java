@@ -4,7 +4,6 @@ import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
 
