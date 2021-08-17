@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "emotes",
+    "name": "Emotecraft",
+    "description": "${description}",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/KosmX/emotes",
+    "updateUrl": "",
+    "authorList": ["KosmX"],
+    "credits": "I should credit someone",
+    "logoFile": "emotecraft_mod_logo.png",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

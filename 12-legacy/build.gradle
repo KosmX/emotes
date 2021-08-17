@@ -1,0 +1,86 @@
+buildscript {
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.+'
+    }
+}
+plugins {
+    id 'java'
+    id 'idea'
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
+version = project.mod_version
+group = project.maven_group
+
+configurations {
+    compileModule //We'll need to shadow the whole stuff together
+}
+
+minecraft{
+    mappings channel: project.mcp_channel, version: "${project.mappings}-${project.mcp_version}"
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+
+        server {
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
+}
+jar {
+    manifest {
+        attributes([
+                "Specification-Title": "emotes",
+                "Specification-Vendor": "idk",
+                "Specification-Version": "2", // We are version 1 of ourselves
+                "Implementation-Title": project.name,
+                "Implementation-Version": "${project.version}",
+                "Implementation-Vendor" :"idk",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.forge_version}"
+
+    implementation project(':executor')
+    implementation project(':emotesCommon')
+    implementation project(':emotesServer')
+
+    implementation project(':emotesMain')
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft_version
+    inputs.property "description", project.description
+
+    filesMatching("mcmod.info") {
+        expand "version": project.version, "mcversion": project.project.minecraft_version, "description": project.description
+    }
+}
+
+task copyArtifacts{
+    dependsOn("build")
+    doLast {
+        copy{
+            from "${project.projectDir}/build/libs/${project.archives_base_name}-forge-${project.minecraft_version}-${project.version}.jar"
+            into "${rootProject.projectDir}/artifacts"
+        }
+    }
+}
