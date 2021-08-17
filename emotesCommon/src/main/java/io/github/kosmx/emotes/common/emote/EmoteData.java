@@ -26,6 +26,18 @@ public final class EmoteData {
 
     public final HashMap<String, StateCollection> bodyParts;
     //Deprecated variables will be removed in the animation rework part.
+    @Deprecated
+    public final StateCollection head;
+    @Deprecated
+    public final StateCollection body;
+    @Deprecated
+    public final StateCollection rightArm;
+    @Deprecated
+    public final StateCollection leftArm;
+    @Deprecated
+    public final StateCollection rightLeg;
+    @Deprecated
+    public final StateCollection leftLeg;
     public final boolean isEasingBefore;
     public final boolean nsfw;
 
@@ -65,6 +77,12 @@ public final class EmoteData {
         this.bodyParts = bodyParts;
         this.isEasingBefore = isEasingBefore;
         this.nsfw = nsfw;
+        head = bodyParts.get("head");
+        body = bodyParts.get("body");
+        rightArm = bodyParts.get("rightArm");
+        leftArm = bodyParts.get("rightLeg");
+        rightLeg = bodyParts.get("leftArm");
+        leftLeg = bodyParts.get("leftLeg");
         assert emoteFormat != null;
         this.emoteFormat = emoteFormat;
     }
