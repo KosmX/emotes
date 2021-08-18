@@ -3,14 +3,13 @@ package io.github.kosmx.emotes.main;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.common.tools.Vec3d;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
 import io.github.kosmx.emotes.executor.dataTypes.INativeImageBacketTexture;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -29,6 +28,9 @@ import java.util.logging.Level;
  * Class to store an emote and create renderable texts
  */
 public class EmoteHolder implements Supplier<UUID> {
+
+    public static final EmoteHolder EMPTY = new Empty();
+
     public final EmoteData emote;
     public final Text name;
     public final Text description;
@@ -36,7 +38,7 @@ public class EmoteHolder implements Supplier<UUID> {
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
-    public InputKey keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey(); // assigned keybinding
+    //public InputKey keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
     public INativeImageBacketTexture nativeIcon = null;
     @Nullable
@@ -76,28 +78,6 @@ public class EmoteHolder implements Supplier<UUID> {
         this.author = author;
         this.description = description;
     }
-
-    /**
-     * Bind keys to emotes from config class
-     * @param config config object
-     */
-    public static void bindKeys(ClientConfig config){
-        config.emotesWithKey = new ArrayList<>();
-        config.emotesWithHash = new ArrayList<>();
-        for(EmoteHolder emote : list){
-            if(! emote.keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey())){
-                config.emotesWithKey.add(emote);
-                config.emotesWithHash.add(new Pair<>(emote.hashCode(), emote.keyBinding.getTranslationKey()));
-            }
-        }
-        config.fastMenuHash = new int[8];
-        for(int i = 0; i != 8; i++){
-            if(config.fastMenuEmotes[i] != null){
-                config.fastMenuHash[i] = config.fastMenuEmotes[i].hashCode();
-            }
-        }
-    }
-
 
     /**
      * just clear the {@link EmoteHolder#list} before reimporting emotes
@@ -161,13 +141,8 @@ public class EmoteHolder implements Supplier<UUID> {
         return emote;
     }
 
-    public static EmoteHolder getEmoteFromHash(int hash){
-        for(EmoteHolder emote : list){
-            if(emote.hashCode() == hash){
-                return emote;
-            }
-        }
-        return null;
+    public static EmoteHolder getEmoteFromUuid(UUID uuid){
+        return list.get(uuid);
     }
 
     public static void addEmoteToList(Iterable<EmoteData> emotes){
@@ -277,6 +252,14 @@ public class EmoteHolder implements Supplier<UUID> {
     @Override
     public UUID get() {
         return this.emote.get();
+    }
+
+
+    public static class Empty extends EmoteHolder{
+
+        private Empty() {
+            super(new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN).setName("\"INVALID\"").setUuid(new UUID(0, 0)).build());
+        }
     }
 }
 

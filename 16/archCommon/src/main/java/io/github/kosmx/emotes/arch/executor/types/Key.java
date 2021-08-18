@@ -26,4 +26,9 @@ public class Key implements InputKey {
     public Text getLocalizedText() {
         return new TextImpl(storedKey.getDisplayName().plainCopy());
     }
+
+    @Override
+    public int hashCode() {
+        return storedKey.hashCode();
+    }
 }

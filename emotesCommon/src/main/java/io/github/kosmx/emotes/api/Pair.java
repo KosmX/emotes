@@ -2,6 +2,8 @@ package io.github.kosmx.emotes.api;
 
 //I Didn't found any pair in Java common... so here is it
 
+import java.util.Objects;
+
 /**
  * Pair, stores two objects.
  * @param <L> Left object
@@ -43,5 +45,22 @@ public class Pair <L, R> {
     public Pair<L, R> setRitht(R right){
         this.right = right;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Pair){
+            Pair o2 = (Pair) o;
+            return Objects.equals(this.left, o2.left) && Objects.equals(right, o2.right);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash = hash * 31 + (left == null ? 0 : left.hashCode());
+        hash = hash * 31 + (right == null ? 0 : right.hashCode());
+        return hash;
     }
 }

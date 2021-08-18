@@ -2,11 +2,14 @@ package io.github.kosmx.emotes.main.config;
 
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.common.tools.BiMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.main.EmoteHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class ClientConfig extends SerializableConfig {
@@ -62,33 +65,11 @@ public class ClientConfig extends SerializableConfig {
     }
 
     //------------------------ Advanced config stuff ------------------------//
-    public List<EmoteHolder> emotesWithKey = new ArrayList<>();
-    public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
+    //public List<EmoteHolder> emotesWithKey = new ArrayList<>();
+    //public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
 
-    public List<Pair<Integer, String>> emotesWithHash = new ArrayList<>();
-
-    public void assignEmotes(){
-        this.emotesWithKey = new ArrayList<>();
-        for(int i = 0; i != 8; i++){
-            if(fastMenuHash[i] == 0) continue;
-            EmoteHolder emote = EmoteHolder.getEmoteFromHash(fastMenuHash[i]);
-            this.fastMenuEmotes[i] = emote;
-            if(emote == null){
-                EmoteInstance.instance.getLogger().log(Level.INFO, "Can't find emote from hash: " + fastMenuHash[i]);
-            }
-        }
-
-        for(Pair<Integer, String> pair : emotesWithHash){
-            EmoteHolder emote = EmoteHolder.getEmoteFromHash(pair.getLeft());
-            if(emote != null){
-                emote.keyBinding = EmoteInstance.instance.getDefaults().getKeyFromString(pair.getRight());
-            }
-            EmoteInstance.instance.getLogger().log(Level.INFO, "Can't find emote from hash: " + pair.getLeft());
-
-        }
-
-        EmoteHolder.bindKeys(this);
-    }
+    public BiMap<UUID, InputKey> emoteKeyMap = new BiMap<>();
+    public UUID[] fastMenuEmotes = new UUID[8];
 
     //------------------------ Random tweak stuff ------------------------//
 

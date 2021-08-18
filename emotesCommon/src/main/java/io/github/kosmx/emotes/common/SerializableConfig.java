@@ -13,8 +13,9 @@ public class SerializableConfig {
      * changelog
      * 2 - PlayerSafetyOption
      * 3 - Kale Ko changed a build-in emote, EmoteFixer to keep bound
+     * 4 - using Uuids instead of hash.
      */
-    public final static int staticConfigVersion = 3;
+    public final static int staticConfigVersion = 4;
 
 
     public int configVersion; //this has a different job... not a config
@@ -26,8 +27,6 @@ public class SerializableConfig {
 
     public final BooleanConfigEntry loadEmotesServerSide = new BooleanConfigEntry("loadEmotesServerSide", true, false, expert);
     public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);
-
-    public int[] fastMenuHash = new int[8];
 
     public void iterate(Consumer<ConfigEntry<?>> consumer){
         basics.forEach(consumer);
