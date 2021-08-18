@@ -6,12 +6,13 @@ import io.github.kosmx.emotes.common.opennbs.NBS;
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.function.Supplier;
 
 //TODO
 /**
  * Used to store Emote data
  */
-public final class EmoteData {
+public final class EmoteData implements Supplier<UUID> {
     //Time, while the player can move to the beginning pose
 
     public static final StateCollection.State EMPTY_STATE = new StateCollection.State("empty", 0, 0, false);
@@ -45,11 +46,11 @@ public final class EmoteData {
 
     //Store emote data in the emote object
     @Nullable
-    public String name = null;
+    public final String name;
     @Nullable
-    public String description = null;
+    public final String description;
     @Nullable
-    public String author = null;
+    public final String author;
 
     @Nullable
     public NBS song;
@@ -63,12 +64,11 @@ public final class EmoteData {
     public boolean isBuiltin = false;
 
 
-    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, HashMap<String, StateCollection> bodyParts, boolean isEasingBefore, boolean nsfw, UUID uuid, EmoteFormat emoteFormat){
+    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, HashMap<String, StateCollection> bodyParts, boolean isEasingBefore, boolean nsfw, UUID uuid, @Nullable String name, @Nullable String description, @Nullable String author, EmoteFormat emoteFormat, ByteBuffer iconData, NBS song){
         this.beginTick = Math.max(beginTick, 0);
-        if(uuid == null){
-            uuid = this.generateUuid();
-        }
-        this.uuid = uuid;
+        this.name = name;
+        this.description = description;
+        this.author = author;
         this.endTick = Math.max(beginTick + 1, endTick);
         this.stopTick = stopTick <= endTick ? endTick + 3 : stopTick;
         this.isInfinite = isInfinite;
@@ -76,14 +76,20 @@ public final class EmoteData {
         this.bodyParts = bodyParts;
         this.isEasingBefore = isEasingBefore;
         this.nsfw = nsfw;
+        if(uuid == null){
+            uuid = this.generateUuid();
+        }
+        this.uuid = uuid;
+        this.emoteFormat = emoteFormat;
+        this.iconData = iconData;
+        this.song = song;
         head = bodyParts.get("head");
         body = bodyParts.get("body");
         rightArm = bodyParts.get("rightArm");
-        leftArm = bodyParts.get("rightLeg");
-        rightLeg = bodyParts.get("leftArm");
+        leftArm = bodyParts.get("leftArm");
+        rightLeg = bodyParts.get("rightLeg");
         leftLeg = bodyParts.get("leftLeg");
         assert emoteFormat != null;
-        this.emoteFormat = emoteFormat;
     }
 
     /**
@@ -109,19 +115,6 @@ public final class EmoteData {
         return bodyParts.equals(emoteData.bodyParts);
     }
 
-    public EmoteData setDescription(String s){
-        description = s;
-        return this;
-    }
-    public EmoteData setName(String s){
-        name = s;
-        return this;
-    }
-    public EmoteData setAuthor(String s){
-        author = s;
-        return this;
-    }
-
     @Override
     public int hashCode() {
         int result = beginTick;
@@ -142,37 +135,19 @@ public final class EmoteData {
         result = 31 * result + returnToTick;
         result = 31 * result + (isEasingBefore ? 1 : 0);
 
-        long dataHash = this.bodyParts.hashCode();
+        long dataHash = result * 31 + this.bodyParts.hashCode();
 
         long nameHash = this.name == null ? 0 : name.hashCode();
         long descHash = this.description == null ? 0 : description.hashCode();
-        long authHash = this.author == null ? 0 : author.hashCode();
-        long iconHash = this.iconData == null ? 0 : iconData.hashCode() + authHash * 31;
+        long authHash = result * 31 + (this.author == null ? 0 : author.hashCode());
+        //long iconHash = this.iconData == null ? 0 : iconData.hashCode() + authHash * 31;
 
 
-        return new UUID(dataHash << Integer.SIZE + nameHash, descHash << Integer.SIZE + iconHash);
+        return new UUID(dataHash << Integer.SIZE + nameHash, descHash << Integer.SIZE + authHash);
     }
 
     public boolean isPlayingAt(int tick){
         return isInfinite || tick < stopTick && tick > 0;
-    }
-
-    public void fullyEnableParts(){
-        for(Map.Entry<String, StateCollection> part:bodyParts.entrySet()){
-            part.getValue().fullyEnablePart(false);
-        }
-    }
-
-    /**
-     * Remove unnecessary keyframes from this emote.
-     * If the keyframe before and after are the same as the currently checked, the keyframe will be removed
-     *
-     */
-    public EmoteData optimizeEmote(){
-        for(Map.Entry<String, StateCollection> part:bodyParts.entrySet()){
-            part.getValue().optimize(isInfinite, returnToTick);
-        }
-        return this;
     }
 
     /**
@@ -180,6 +155,11 @@ public final class EmoteData {
      * @return UUID
      */
     public UUID getUuid() {
+        return this.uuid;
+    }
+
+    @Override
+    public UUID get() {
         return this.uuid;
     }
 
@@ -443,7 +423,7 @@ public final class EmoteData {
     public static class EmoteBuilder{
 
         public final StateCollection head;
-        public final StateCollection torso;
+        public final StateCollection body;
         public final StateCollection rightArm;
         public final StateCollection leftArm;
         public final StateCollection rightLeg;
@@ -468,6 +448,18 @@ public final class EmoteData {
 
         private final float validationThreshold;
 
+        public String name = null;
+        @Nullable
+        public String description = null;
+        @Nullable
+        public String author = null;
+
+        @Nullable
+        public NBS song = null;
+
+        @Nullable
+        public ByteBuffer iconData;
+
         public EmoteBuilder(EmoteFormat source){
             this(staticThreshold, source);
         }
@@ -475,14 +467,14 @@ public final class EmoteData {
         public EmoteBuilder(float validationThreshold, EmoteFormat emoteFormat){
             this.validationThreshold = validationThreshold;
             head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold, false);
-            torso = new StateCollection(0, 0, 0, 0, 0, 0, "torso",validationThreshold / 8f, true);
+            body = new StateCollection(0, 0, 0, 0, 0, 0, "body",validationThreshold / 8f, true);
             rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold, true);
             leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold, true);
             leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);
             rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
 
             bodyParts.put("head", head);
-            bodyParts.put("body", torso);
+            bodyParts.put("body", body);
             bodyParts.put("rightArm", rightArm);
             bodyParts.put("rightLeg", rightLeg);
             bodyParts.put("leftArm", leftArm);
@@ -490,6 +482,18 @@ public final class EmoteData {
             this.emoteEmoteFormat = emoteFormat;
         }
 
+        public EmoteBuilder setDescription(String s){
+            description = s;
+            return this;
+        }
+        public EmoteBuilder setName(String s){
+            name = s;
+            return this;
+        }
+        public EmoteBuilder setAuthor(String s){
+            author = s;
+            return this;
+        }
         /**
          * Create a new part. X, Y, Z the default offsets, pitch, yaw, roll are the default rotations.
          *
@@ -521,8 +525,28 @@ public final class EmoteData {
             return bodyParts.get(name);
         }
 
+
+        public EmoteBuilder fullyEnableParts(){
+            for(Map.Entry<String, StateCollection> part:bodyParts.entrySet()){
+                part.getValue().fullyEnablePart(false);
+            }
+            return this;
+        }
+
+        /**
+         * Remove unnecessary keyframes from this emote.
+         * If the keyframe before and after are the same as the currently checked, the keyframe will be removed
+         *
+         */
+        public EmoteBuilder optimizeEmote(){
+            for(Map.Entry<String, StateCollection> part:bodyParts.entrySet()){
+                part.getValue().optimize(isLooped, returnTick);
+            }
+            return this;
+        }
+
         public EmoteData build(){
-            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, bodyParts, isEasingBefore, nsfw, uuid, emoteEmoteFormat);
+            return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, bodyParts, isEasingBefore, nsfw, uuid, name, description, author, emoteEmoteFormat, iconData, song);
         }
     }
 }

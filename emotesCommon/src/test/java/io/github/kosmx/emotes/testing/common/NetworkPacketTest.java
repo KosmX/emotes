@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Test network data sending and receiving
@@ -36,7 +37,7 @@ public class NetworkPacketTest {
         Assertions.assertEquals(pair.getLeft().build().hashCode(), data.emoteData.hashCode(), "The received data should contain the same emote");
 
 
-        int randID = random.nextInt();
+        UUID randID = UUID.randomUUID();
         builder = new EmotePacket.Builder();
         builder.configureToSendStop(randID);
         byteBuffer = builder.build().write();
@@ -46,7 +47,7 @@ public class NetworkPacketTest {
         //Assume it has happened, create a new ByteBuffer and read it.
 
         data = new EmotePacket.Builder().build().read(ByteBuffer.wrap(bytes));
-        Assertions.assertEquals(randID, data.stopEmoteID.get());
+        Assertions.assertEquals(randID, data.stopEmoteID);
 
         boolean shouldRemainFalse = false;
         try {

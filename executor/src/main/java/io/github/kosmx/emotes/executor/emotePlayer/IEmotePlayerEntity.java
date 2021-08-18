@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.Vec3d;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 //Every player will be IEmotePlayer
 public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEntity{
@@ -17,7 +18,7 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEnti
 
     boolean isPlayingEmote();
 
-    void stopEmote(int emoteID);
+    void stopEmote(UUID emoteID);
 
     /**
      * Use this ONLY for the main player

@@ -23,7 +23,7 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
         if(size != 0) {
             byte[] bytes = new byte[size];
             byteBuffer.get(bytes);
-            config.iconData = ByteBuffer.wrap(bytes);
+            config.getEmoteBuilder().iconData = ByteBuffer.wrap(bytes);
         }
         return true;
     }

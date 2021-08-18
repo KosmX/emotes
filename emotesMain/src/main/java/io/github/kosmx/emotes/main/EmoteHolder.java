@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.common.tools.Vec3d;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
@@ -20,25 +21,30 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
  * Class to store an emote and create renderable texts
  */
-public class EmoteHolder {
+public class EmoteHolder implements Supplier<UUID> {
     public final EmoteData emote;
     public final Text name;
     public final Text description;
     public final Text author;
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
-    public static Collection<EmoteHolder> list = new HashSet<>(); // static array of all imported emotes
+    public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
     public InputKey keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
     public INativeImageBacketTexture nativeIcon = null;
     @Nullable
     private IIdentifier iconIdentifier = null;
 
+    /**
+     * Null if imported locally
+     */
     @Nullable
     public INetworkInstance fromInstance = null;
 
@@ -95,16 +101,23 @@ public class EmoteHolder {
 
     /**
      * just clear the {@link EmoteHolder#list} before reimporting emotes
+     * Does not remove server-emotes
      */
     public static void clearEmotes(){
-        for(EmoteHolder emoteHolder : list){
-            if(emoteHolder.iconIdentifier != null){
-                EmoteInstance.instance.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
-                assert emoteHolder.nativeIcon != null;
-                emoteHolder.nativeIcon.close();
+        list.removeIf(new Predicate<EmoteHolder>() {
+            @Override
+            public boolean test(EmoteHolder emoteHolder) {
+                if(emoteHolder.fromInstance != null){
+                    return false;
+                }
+                if(emoteHolder.iconIdentifier != null){
+                    EmoteInstance.instance.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
+                    assert emoteHolder.nativeIcon != null;
+                    emoteHolder.nativeIcon.close();
+                }
+                return true;
             }
-        }
-        list = new HashSet<>();
+        });
     }
 
     public IIdentifier getIconIdentifier(){
@@ -157,7 +170,7 @@ public class EmoteHolder {
         return null;
     }
 
-    public static void addEmoteToList(List<EmoteData> emotes){
+    public static void addEmoteToList(Iterable<EmoteData> emotes){
         for(EmoteData emote : emotes){
             EmoteHolder.list.add(new EmoteHolder(emote));
         }
@@ -245,6 +258,9 @@ public class EmoteHolder {
         return hash.get();
     }
 
+    public UUID getUuid(){
+        return this.emote.getUuid();
+    }
     /**
      * The emote holder data may not be equal, but this is only cache. We may skip some work with this
      * @param o Emote holder
@@ -256,6 +272,11 @@ public class EmoteHolder {
             return (this.emote.equals(((EmoteHolder)o).emote));
         }
         return false;
+    }
+
+    @Override
+    public UUID get() {
+        return this.emote.get();
     }
 }
 

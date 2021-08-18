@@ -82,7 +82,7 @@ public class EmotePacket {
             partCount.getAndSet((byte) (partCount.get() + 1));
             sizeSum.addAndGet(songSize);
         }
-        else data.song = null;
+        else data.writeSong = false;
 
         ByteBuffer buf = ByteBuffer.allocate(sizeSum.get());
 
@@ -235,15 +235,15 @@ public class EmotePacket {
             return configureToStreamEmote(emoteData, null);
         }
 
-        public Builder configureToSendStop(int emoteID, @Nullable UUID player){
+        public Builder configureToSendStop(UUID emoteID, @Nullable UUID player){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can't send emote and stop at the same time");
             data.purpose = PacketTask.STOP;
-            data.stopEmoteID = new AtomicInteger(emoteID);
+            data.stopEmoteID = emoteID;
             data.player = player;
             return this;
         }
 
-        public Builder configureToSendStop(int emoteID){
+        public Builder configureToSendStop(UUID emoteID){
             return configureToSendStop(emoteID, null);
         }
 

@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.opennbs.NBS;
 
@@ -24,17 +25,19 @@ public final class NetData {
     public PacketTask purpose = PacketTask.UNKNOWN;
     public float threshold;
     @Nullable
-    public AtomicInteger stopEmoteID = null;
+    public UUID stopEmoteID = null;
     @Nullable
     public EmoteData emoteData = null;
+    private EmoteData.EmoteBuilder emoteBuilder = null;
     public int tick = 0;
     /**
      * Is the emote is valid (Not validated)
      */
     public boolean valid;
     //Never use it permanently
-    @Nullable
-    public NBS song = null;
+
+    public boolean wasEmoteData = false;
+    public boolean writeSong = true;
 
     public boolean versionsUpdated = false;
     public HashMap<Byte, Byte> versions;
@@ -46,23 +49,18 @@ public final class NetData {
 
     public int sizeLimit = Short.MAX_VALUE;
 
-    @Nullable
-    public ByteBuffer iconData = null;
-    public String name;
-    public String description;
-    public String author;
+    public EmoteData.EmoteBuilder getEmoteBuilder(){
+        if(emoteBuilder == null){
+             emoteBuilder = new EmoteData.EmoteBuilder(threshold, EmoteFormat.BINARY);
+        }
+        return emoteBuilder;
+    }
 
     public boolean prepareAndValidate(){
-        if(this.song != null){
-            if(this.emoteData == null)return false;
-            this.emoteData.song = this.song;
-            this.song = null;
-        }
-        if(emoteData != null) {
-            emoteData.iconData = iconData;
-            emoteData.name = name;
-            emoteData.description = description;
-            emoteData.author = author;
+        if(emoteBuilder != null) {
+            if(emoteData != null) return false;
+            if(!wasEmoteData)return false;
+            emoteData = emoteBuilder.build();
         }
 
         if(purpose == PacketTask.UNKNOWN)return false;
@@ -78,11 +76,10 @@ public final class NetData {
         NetData data = new NetData();
         data.purpose = this.purpose;
         data.threshold = threshold;
-        data.stopEmoteID = stopEmoteID != null ? new AtomicInteger(stopEmoteID.get()) : null;
+        data.stopEmoteID = stopEmoteID;
         data.emoteData = emoteData;
         data.tick = tick;
         data.valid = valid;
-        data.song = song;
         data.versionsUpdated = versionsUpdated;
         data.versions = versions;
         data.player = player;

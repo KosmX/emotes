@@ -48,7 +48,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         }
 
         head = new BodyPart(data.head);
-        torso = new BodyPart(data.torso);
+        torso = new BodyPart(data.body);
         rightArm = new BodyPart(data.rightArm);
         leftArm = new BodyPart(data.leftArm);
         rightLeg = new BodyPart(data.rightLeg);

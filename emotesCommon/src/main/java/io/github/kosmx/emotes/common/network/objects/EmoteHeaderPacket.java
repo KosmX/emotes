@@ -19,9 +19,10 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        config.name = readString(byteBuffer);
-        config.description = readString(byteBuffer);
-        config.author = readString(byteBuffer);
+        EmoteData.EmoteBuilder builder = config.getEmoteBuilder();
+        builder.name = readString(byteBuffer);
+        builder.description = readString(byteBuffer);
+        builder.author = readString(byteBuffer);
         return true;
     }
 

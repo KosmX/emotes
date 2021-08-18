@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.tools.Ease;
 
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         putBoolean(buf, emote.nsfw);
         buf.put(keyframeSize);
         writeBodyPartInfo(buf, emote.head);
-        writeBodyPartInfo(buf, emote.torso);
+        writeBodyPartInfo(buf, emote.body);
         writeBodyPartInfo(buf, emote.rightArm);
         writeBodyPartInfo(buf, emote.leftArm);
         writeBodyPartInfo(buf, emote.rightLeg);
@@ -73,7 +72,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
     public boolean read(ByteBuffer buf, NetData config, int version) throws IOException {
         this.version = version;
-        EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(config.threshold, EmoteFormat.BINARY);
+        EmoteData.EmoteBuilder builder = config.getEmoteBuilder();
         config.tick = buf.getInt();
         builder.beginTick = buf.getInt();
         builder.endTick = buf.getInt();
@@ -85,19 +84,19 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         keyframeSize = buf.get();
         if(!(keyframeSize > 0)) throw new IOException("keyframe size must be greater than 0, current: " + keyframeSize);
         getBodyPartInfo(buf, builder.head, false);
-        getBodyPartInfo(buf, builder.torso, true);
+        getBodyPartInfo(buf, builder.body, true);
         getBodyPartInfo(buf, builder.rightArm, true);
         getBodyPartInfo(buf, builder.leftArm, true);
         getBodyPartInfo(buf, builder.rightLeg, true);
         getBodyPartInfo(buf, builder.leftLeg, true);
 
-        EmoteData emote = builder.build();
-        boolean correct = emote.beginTick >= 0 && emote.beginTick < emote.endTick && (! emote.isInfinite || emote.returnToTick <= emote.endTick && emote.returnToTick >= 0);
+        //EmoteData emote = builder.build();
+        boolean correct = builder.beginTick >= 0 && builder.beginTick < builder.endTick && (! builder.isLooped || builder.returnTick <= builder.endTick && builder.returnTick >= 0);
         valid = valid && correct;
 
-        config.emoteData = emote;
         config.valid = valid;
 
+        config.wasEmoteData = true;
         return correct;
     }
 
@@ -156,7 +155,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         //I will create less efficient loops but these will be more easily fixable
         int size = 24;//The header makes 46 bytes IIIIBIBBB
         size += partSize(config.emoteData.head);
-        size += partSize(config.emoteData.torso);
+        size += partSize(config.emoteData.body);
         size += partSize(config.emoteData.rightArm);
         size += partSize(config.emoteData.leftArm);
         size += partSize(config.emoteData.rightLeg);

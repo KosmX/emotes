@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import java.nio.ByteBuffer;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StopPacket extends AbstractNetworkPacket {
@@ -15,18 +16,24 @@ public class StopPacket extends AbstractNetworkPacket {
 
     @Override
     public byte getVer() {
-        return 0;
+        return 1;
     }
 
     @Override
     public boolean read(ByteBuffer buf, NetData config, int version){
-        config.stopEmoteID = new AtomicInteger(buf.getInt());
+        if(version < 1){
+            return false;
+        }
+        long msb = buf.getLong();
+        long lsb = buf.getLong();
+        config.stopEmoteID = new UUID(msb, lsb);
         return true;
     }
 
     @Override
     public void write(ByteBuffer buf, NetData config){
-        buf.putInt(config.stopEmoteID.get());
+        buf.putLong(config.stopEmoteID.getMostSignificantBits());
+        buf.putLong(config.stopEmoteID.getLeastSignificantBits());
     }
 
     @Override
@@ -36,6 +43,6 @@ public class StopPacket extends AbstractNetworkPacket {
 
     @Override
     public int calculateSize(NetData config) {
-        return 4;
+        return Long.BYTES*2; //16
     }
 }

@@ -12,7 +12,7 @@ public interface IServerNetworkInstance extends INetworkInstance {
     default void presenceResponse() {
         INetworkInstance.super.presenceResponse();
         if(this.getVersions().getOrDefault((byte)11, (byte)0) >= 0) {
-            for (EmoteData emote : UniversalEmoteSerializer.serverEmotes) {
+            for (EmoteData emote : UniversalEmoteSerializer.serverEmotes.values()) {
                 try{
                     this.sendMessage(new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000), null); //1 MB
                 }catch (IOException e){

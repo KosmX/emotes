@@ -17,7 +17,7 @@ public interface IEmoteListWidgetHelper<MATRIX, WIDGET> extends IWidgetLogic<MAT
     void emotesSetLeftPos(int p);
     IEmoteEntry getSelectedEntry();
     void renderThis(MATRIX matrices, int mouseX, int mouseY, float tickDelta);
-    void setEmotes(Collection<EmoteHolder> emoteHolders);
+    void setEmotes(Iterable<EmoteHolder> emoteHolders);
 
     interface IEmoteEntry<MATRIX> extends IRenderHelper<MATRIX> {
         EmoteHolder getEmote();

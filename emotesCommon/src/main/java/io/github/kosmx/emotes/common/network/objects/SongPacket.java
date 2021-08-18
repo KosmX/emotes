@@ -20,7 +20,7 @@ public class SongPacket extends AbstractNetworkPacket{
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         NBSPacket reader = new NBSPacket();
         reader.read(byteBuffer);
-        config.song = reader.getSong();
+        config.getEmoteBuilder().song = reader.getSong();
         return true;
     }
 
@@ -35,7 +35,7 @@ public class SongPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.versions.get(this.getID()) != 0 && config.emoteData != null && config.emoteData.song != null;
+        return config.versions.get(this.getID()) != 0 && config.emoteData != null && config.emoteData.song != null && config.writeSong;
     }
 
     @Override

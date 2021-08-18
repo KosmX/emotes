@@ -52,7 +52,7 @@ public class ClientEmotePlay {
 
     public static void clientStopLocalEmote(EmoteData emoteData) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToSendStop(emoteData.hashCode(), EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
+        packetBuilder.configureToSendStop(emoteData.getUuid(), EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
         ClientPacketManager.send(packetBuilder, null);
         EmoteInstance.instance.getClientMethods().getMainPlayer().stopEmote();
     }
@@ -74,7 +74,7 @@ public class ClientEmotePlay {
                 IEmotePlayerEntity player = EmoteInstance.instance.getGetters().getPlayerFromUUID(data.player);
                 assert data.stopEmoteID != null;
                 if(player != null) {
-                    player.stopEmote(data.stopEmoteID.get());
+                    player.stopEmote(data.stopEmoteID);
                     if(player.isMainPlayer()){
                         EmoteInstance.instance.getClientMethods().sendChatMessage(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.blockedEmote"));
                     }

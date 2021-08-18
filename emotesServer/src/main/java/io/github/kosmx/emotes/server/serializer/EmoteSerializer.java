@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.opennbs.NBSFileUtils;
 import io.github.kosmx.emotes.common.tools.MathHelper;
+import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.common.tools.Easing;
 import io.github.kosmx.emotes.common.quarktool.QuarkReader;
@@ -21,9 +22,9 @@ import java.util.logging.Level;
 public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonSerializer<EmoteData> {
 
 
-    private final int modVersion = 2;
+    private final int modVersion = 3;
 
-    public static void serializeEmotes(Collection<EmoteData> emotes, File externalEmotes){
+    public static void serializeEmotes(UUIDMap<EmoteData> emotes, File externalEmotes){
         if(!externalEmotes.isDirectory()){
             externalEmotes.mkdir();
         }
@@ -96,7 +97,7 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
         int version = 1;
         if(node.has("version")) version = node.get("version").getAsInt();
         //Text author = EmoteInstance.instance.getDefaults().emptyTex();
-        EmoteData emote = emoteDeserializer(node.getAsJsonObject("emote"));
+        EmoteData.EmoteBuilder emote = emoteDeserializer(node.getAsJsonObject("emote"), version);
 
 
         //Text name = EmoteInstance.instance.getDefaults().fromJson(node.get("name"));
@@ -123,11 +124,11 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
 
         emote.optimizeEmote();
         List<EmoteData> list = new ArrayList<>();
-        list.add(emote);
+        list.add(emote.build());
         return list;
     }
 
-    private EmoteData emoteDeserializer(JsonObject node) throws JsonParseException{
+    private EmoteData.EmoteBuilder emoteDeserializer(JsonObject node, int version) throws JsonParseException{
         EmoteData.EmoteBuilder builder = new EmoteData.EmoteBuilder(EmoteFormat.JSON_EMOTECRAFT);
         if(node.has("beginTick")){
             builder.beginTick = node.get("beginTick").getAsInt();
@@ -156,55 +157,52 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
         boolean degrees = ! node.has("degrees") || node.get("degrees").getAsBoolean();
         //EmoteData emote = new EmoteData(beginTick, endTick, resetTick, isLoop, returnTick);
         if(node.has("easeBeforeKeyframe"))builder.isEasingBefore = node.get("easeBeforeKeyframe").getAsBoolean();
-        EmoteData emote = builder.build();
-        moveDeserializer(emote, node.getAsJsonArray("moves"), degrees);
+        moveDeserializer(builder, node.getAsJsonArray("moves"), degrees, version);
 
-        emote.fullyEnableParts();
+        builder.fullyEnableParts();
 
-        return emote;
+        return builder;
     }
 
-    private void moveDeserializer(EmoteData emote, JsonArray node, boolean degrees){
+    private void moveDeserializer(EmoteData.EmoteBuilder emote, JsonArray node, boolean degrees, int version){
         for(JsonElement n : node){
             JsonObject obj = n.getAsJsonObject();
             int tick = obj.get("tick").getAsInt();
             String easing = obj.has("easing") ? obj.get("easing").getAsString() : "linear";
-            obj.entrySet().forEach((entry)->{
-                String string = entry.getKey();
-                if(string.equals("tick") || string.equals("comment") || string.equals("easing") || string.equals("turn") || string.equals("head") || string.equals("torso") || string.equals("rightArm") || string.equals("leftArm") || string.equals("rightLeg") || string.equals("leftLeg"))
-                    return;
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
-            });
             int turn = obj.has("turn") ? obj.get("turn").getAsInt() : 0;
-            addBodyPartIfExists(emote.head, "head", obj, degrees, tick, easing, turn);
-            addBodyPartIfExists(emote.torso, "torso", obj, degrees, tick, easing, turn);
-            addBodyPartIfExists(emote.rightArm, "rightArm", obj, degrees, tick, easing, turn);
-            addBodyPartIfExists(emote.leftArm, "leftArm", obj, degrees, tick, easing, turn);
-            addBodyPartIfExists(emote.rightLeg, "rightLeg", obj, degrees, tick, easing, turn);
-            addBodyPartIfExists(emote.leftLeg, "leftLeg", obj, degrees, tick, easing, turn);
+            for(Map.Entry<String, JsonElement> entry:obj.entrySet()){
+                if(entry.getKey().equals("tick") || entry.getKey().equals("comment") || entry.getKey().equals("easing") || entry.getKey().equals("turn")){
+                    continue;
+                }
+                addBodyPartIfExists(emote, entry.getKey(), entry.getValue(), degrees, tick, easing, turn, version);
+            }
         }
     }
 
-    private void addBodyPartIfExists(EmoteData.StateCollection part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){
-        if(node.has(name)){
-            JsonObject partNode = node.get(name).getAsJsonObject();
-            partNode.entrySet().forEach((entry)->{
-                String string = entry.getKey();
-                if(string.equals("x") || string.equals("y") || string.equals("z") || string.equals("pitch") || string.equals("yaw") || string.equals("roll") || string.equals("comment") || string.equals("bend") || string.equals("axis"))
-                    return;
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
-            });
-            addPartIfExists(part.x, "x", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.y, "y", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.z, "z", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.pitch, "pitch", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.yaw, "yaw", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.roll, "roll", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.bend, "bend", partNode, degrees, tick, easing, turn);
-            addPartIfExists(part.bendDirection, "axis", partNode, degrees, tick, easing, turn);
+    private void addBodyPartIfExists(EmoteData.EmoteBuilder emote, String name, JsonElement node, boolean degrees, int tick, String easing, int turn, int version){
+        if(version < 3 && name.equals("torso"))name = "body";// rename part
+        EmoteData.StateCollection part = emote.getPart(name);
+        if(part == null){
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + name + " : " + node);
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
+            return;
         }
+        JsonObject partNode = node.getAsJsonObject();
+        partNode.entrySet().forEach((entry)->{
+            String string = entry.getKey();
+            if(string.equals("x") || string.equals("y") || string.equals("z") || string.equals("pitch") || string.equals("yaw") || string.equals("roll") || string.equals("comment") || string.equals("bend") || string.equals("axis"))
+                return;
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");
+        });
+        addPartIfExists(part.x, "x", partNode, degrees, tick, easing, turn);
+        addPartIfExists(part.y, "y", partNode, degrees, tick, easing, turn);
+        addPartIfExists(part.z, "z", partNode, degrees, tick, easing, turn);
+        addPartIfExists(part.pitch, "pitch", partNode, degrees, tick, easing, turn);
+        addPartIfExists(part.yaw, "yaw", partNode, degrees, tick, easing, turn);
+        addPartIfExists(part.roll, "roll", partNode, degrees, tick, easing, turn);
+        addPartIfExists(part.bend, "bend", partNode, degrees, tick, easing, turn);
+        addPartIfExists(part.bendDirection, "axis", partNode, degrees, tick, easing, turn);
     }
 
     private void addPartIfExists(EmoteData.StateCollection.State part, String name, JsonObject node, boolean degrees, int tick, String easing, int turn){

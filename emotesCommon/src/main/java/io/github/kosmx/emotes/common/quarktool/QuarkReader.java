@@ -14,7 +14,7 @@ public class QuarkReader {
     private boolean isSuccess = false;
     private String name;
     final PartMap head = new PartMap(emote.head);
-    final PartMap torso = new PartMap(emote.torso);
+    final PartMap torso = new PartMap(emote.body);
     final PartMap rightLeg = new PartMap(emote.rightLeg);
     final PartMap leftLeg = new PartMap(emote.leftLeg);
     final PartMap rightArm = new PartMap(emote.rightArm);
@@ -53,9 +53,10 @@ public class QuarkReader {
                                    this.hash).setQuarkEmote(true);
 
              */
-            return emote.build()
+            return emote
                     .setName("{\"color\":\"white\",\"text\":\"" + this.name + "\"}")
-                    .setDescription("{\"color\":\"gray\",\"text\":\"Imported from quark\"}");
+                    .setDescription("{\"color\":\"gray\",\"text\":\"Imported from quark\"}")
+                    .build();
         }else return null;
     }
 
