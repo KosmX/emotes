@@ -24,6 +24,14 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
         return rToL.get(key);
     }
 
+    public boolean containsL(L l){
+        return lToR.containsKey(l);
+    }
+
+    public boolean containsR(R r){
+        return rToL.containsKey(r);
+    }
+
     public Pair<L, R> put(L l, R r){
         if(l == null || r == null)throw new NullPointerException("BiMap does not allow null elements");
         L ol = rToL.put(r, l);

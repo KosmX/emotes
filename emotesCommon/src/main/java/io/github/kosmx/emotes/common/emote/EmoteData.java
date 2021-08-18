@@ -548,5 +548,10 @@ public final class EmoteData implements Supplier<UUID> {
         public EmoteData build(){
             return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, bodyParts, isEasingBefore, nsfw, uuid, name, description, author, emoteEmoteFormat, iconData, song);
         }
+
+        public EmoteBuilder setUuid(UUID uuid) {
+            this.uuid = uuid;
+            return this;
+        }
     }
 }

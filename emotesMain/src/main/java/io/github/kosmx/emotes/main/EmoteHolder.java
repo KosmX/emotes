@@ -10,6 +10,7 @@ import io.github.kosmx.emotes.common.tools.Vec3d;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
 import io.github.kosmx.emotes.executor.dataTypes.INativeImageBacketTexture;
+import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -28,8 +29,6 @@ import java.util.logging.Level;
  * Class to store an emote and create renderable texts
  */
 public class EmoteHolder implements Supplier<UUID> {
-
-    public static final EmoteHolder EMPTY = new Empty();
 
     public final EmoteData emote;
     public final Text name;
@@ -255,10 +254,21 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
 
+    public static void handleKeyPress(InputKey key){
+        if(EmoteHolder.canRunEmote(EmoteInstance.instance.getClientMethods().getMainPlayer())){
+            UUID uuid = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getL(key);
+            if(uuid != null){
+                EmoteHolder emoteHolder = list.get(uuid);
+                if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(emoteHolder);
+            }
+        }
+    }
+
+
     public static class Empty extends EmoteHolder{
 
-        private Empty() {
-            super(new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN).setName("\"INVALID\"").setUuid(new UUID(0, 0)).build());
+        public Empty(UUID uuid) {
+            super(new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN).setName("{\"color\":\"red\",\"text\":\"INVALID\"}").setUuid(uuid).build());
         }
     }
 }

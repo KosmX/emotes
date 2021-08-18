@@ -44,10 +44,15 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     }
 
     @Override
-    public void setEmotes(Iterable<EmoteHolder> list){
+    public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid){
         this.emotes = new ArrayList<>();
         for(EmoteHolder emoteHolder:list){
             this.emotes.add(newEmoteEntry(Minecraft.getInstance(), emoteHolder));
+        }
+        if(showInvalid) {
+            for (EmoteHolder emoteHolder : getEmptyEmotes()) {
+                this.emotes.add(newEmoteEntry(Minecraft.getInstance(), emoteHolder));
+            }
         }
         this.emotes.sort(Comparator.comparing(o -> o.emote.name.getString().toLowerCase()));
         filter(() -> "");

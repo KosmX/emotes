@@ -16,13 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class KeyEventMixin {
     @Inject(method = "click", at = @At(value = "HEAD"))
     private static void keyPressCallback(InputConstants.Key key, CallbackInfo ci){
-        if(EmoteHolder.canRunEmote(EmoteInstance.instance.getClientMethods().getMainPlayer())){
-            for(EmoteHolder emoteHolder: ((ClientConfig)EmoteInstance.config).emotesWithKey){
-                if(emoteHolder.keyBinding.equals(new Key(key))){
-                    ClientEmotePlay.clientStartLocalEmote(emoteHolder);
-                    return;
-                }
-            }
-        }
+        EmoteHolder.handleKeyPress(new Key(key));
     }
 }

@@ -51,7 +51,6 @@ public class MainClientInit {
             EmoteSerializer.serializeEmotes(emotes, EmoteInstance.instance.getExternalEmoteDir());
             EmoteHolder.addEmoteToList(emotes);
         }
-        ((ClientConfig)EmoteInstance.config).assignEmotes();
     }
 
     private static void serializeInternalJson(String name){

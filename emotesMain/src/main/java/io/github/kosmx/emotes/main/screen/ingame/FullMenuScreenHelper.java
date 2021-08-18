@@ -34,7 +34,7 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends Abstr
         this.searchBox.setInputListener((string)->emoteList.filter(string::toLowerCase));
         this.emoteList = newEmoteList(x, screen.getHeight(), screen.getWidth());
         this.emoteList.emotesSetLeftPos((screen.getWidth() - x) / 2);
-        emoteList.setEmotes(EmoteHolder.list);
+        emoteList.setEmotes(EmoteHolder.list, false);
         screen.addToChildren(searchBox);
         screen.addToChildren(emoteList);
         screen.setInitialFocus(this.searchBox);
