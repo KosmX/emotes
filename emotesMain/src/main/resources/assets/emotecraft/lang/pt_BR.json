@@ -52,5 +52,12 @@
   "emotecraft.resetConfig.title": "Redefinir todas as configurações do Emotecraft",
   "emotecraft.resetConfig.message": "Deseja mesmo redefinir as configurações?",
   "emotecraft.resetAllKeys.title": "Redefinir todos os atalhos de emotes",
-  "emotecraft.resetAllKeys.message": "Você quer mesmo redefinir todos os atalhos de emotes?"
+  "emotecraft.resetAllKeys.message": "Você quer mesmo redefinir todos os atalhos de emotes?",
+  "emotecraft.options.export": "Menu de exportação",
+  "emotecraft.exportjson": "Exportar emotes em JSON",
+  "emotecraft.exportbin": "Exportar em binário .emotecraft",
+  "emotecraft.export.error.json": "Falha ao exportar para JSON",
+  "emotecraft.export.error.emotecraft": "Falha ao exportar para .emotecraft",
+  "emotecraft.export.done.json": "Exportação em .json concluída",
+  "emotecraft.export.done.emotecraft": "Exportação em .emotecraft concluída"
 }
