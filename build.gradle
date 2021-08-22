@@ -46,13 +46,16 @@ allprojects {
 
 //---------------- Publishing ----------------
 
-ext.isRelease = false;
-ext.cfType = project.isRelease ? "release" : "alpha"
-ext.changes = " Server-side emotes, will be streamed to clients"
+ext.ENV = System.getenv()
+
+ext.cfType = ENV.RELEASE_TYPE ? ENV.RELEASE_TYPE : "alpha"
+ext.isRelease = cfType == "release"
+ext.changes = ENV.CHANGELOG ? ENV.CHANGELOG : ""
 ext.mod_version = project.version_base
 
+
 if(!isRelease){
-    ext.mod_version = "${project.version_base}-SNAPSHOT-${'git rev-parse --verify --short HEAD'.execute().text.trim()}"
+    ext.mod_version = "${project.version_base}-SNAPSHOT-${ ENV.BUILD_NUMBER ? ENV.BUILD_NUMBER : 'git rev-parse --verify --short HEAD'.execute().text.trim()}"
 }
 
 
@@ -61,15 +64,14 @@ import com.modrinth.minotaur.request.VersionType
 
 List<File> releaseArtifacts
 
-ext.keysExists = file("keys.properties").exists();
+ext.keysExists = ENV.GH_TOKEN != null;
 
 if(keysExists) {
-    println("Keys file exists, loading publish scripts")
-    file("keys.properties").withReader {
-        Properties props = new Properties()
-        props.load(it)
-        project.ext.keys = props
-    }
+    println("Keys loaded, loading publish scripts")
+    project.ext.keys.modrinth_token = ENV.MODRINTH_TOKEN
+    project.ext.keys.curseforge_key = ENV.CURSEFORGE_TOKEN
+    project.ext.keys.github_token = ENV.GH_TOKEN
+
 
     task publishModrinth(type: TaskModrinthUpload) {
         if(project.isRelease){

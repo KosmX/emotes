@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Check for valid input
         run: |
-          if [ ${{github.event.inputs.type}} = "alpha" || ${{github.event.inputs.type}} = "beta" || ${{github.event.inputs.type}} = "release" ]
+          if ! ( [ "${{github.event.inputs.type}}" = "alpha" ] || [ "${{github.event.inputs.type}}" = "beta" ] || [ "${{github.event.inputs.type}}" = "release" ] )
           then
           return -1
           fi
@@ -38,3 +38,13 @@ jobs:
       - name: Grant execute permission for gradlew
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x gradlew
+      - name: Do gradle release
+        uses: gradle/gradle-build-action@v1
+        with:
+          arguments: autoPublish
+        env:
+          RELEASE_TYPE: ${{github.event.inputs.type}}
+          CHANGELOG: ${{github.event.inputs.changelog}}
+          CURSEFORGE_TOKEN: ${{secrets.CURSEFORGE}}
+          MODRINTH_TOKEN: ${{secrets.MODRINTH}}
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
