@@ -44,6 +44,7 @@ jobs:
           arguments: autoPublish
         env:
           CI: true
+          BUILD_NUMBER: ${{github.run_number}}
           RELEASE_TYPE: ${{github.event.inputs.type}}
           CHANGELOG: ${{github.event.inputs.changelog}}
           CURSEFORGE_TOKEN: ${{secrets.CURSEFORGE}}
