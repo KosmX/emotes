@@ -43,6 +43,7 @@ jobs:
         with:
           arguments: autoPublish
         env:
+          CI: true
           RELEASE_TYPE: ${{github.event.inputs.type}}
           CHANGELOG: ${{github.event.inputs.changelog}}
           CURSEFORGE_TOKEN: ${{secrets.CURSEFORGE}}
