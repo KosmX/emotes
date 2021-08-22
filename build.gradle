@@ -68,6 +68,7 @@ ext.keysExists = ENV.GH_TOKEN != null;
 
 if(keysExists) {
     println("Keys loaded, loading publish scripts")
+    project.ext.keys = new Properties()
     project.ext.keys.modrinth_token = ENV.MODRINTH_TOKEN
     project.ext.keys.curseforge_key = ENV.CURSEFORGE_TOKEN
     project.ext.keys.github_token = ENV.GH_TOKEN
@@ -147,7 +148,7 @@ if(keysExists) {
     }
 }
 else {
-    println("Keys file is not exists publishing is not possible")
+    println("Keys are not in ENV, publishing is not possible")
 }
 
 //Build all modules task :D
