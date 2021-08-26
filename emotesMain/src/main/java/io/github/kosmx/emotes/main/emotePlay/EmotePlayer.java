@@ -10,7 +10,11 @@ import io.github.kosmx.emotes.common.tools.Vector3;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 // abstract to extend it in every environments
 public abstract class EmotePlayer<T> implements IEmotePlayer {
@@ -23,12 +27,22 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
 
     protected float tickDelta;
 
+    /**
+     * Will be removed when I give up the 1.16- support
+     */
+    @Deprecated
     public final BodyPart head;
+    @Deprecated
     public final BodyPart torso;
+    @Deprecated
     public final BodyPart rightArm;
+    @Deprecated
     public final BodyPart leftArm;
+    @Deprecated
     public final BodyPart rightLeg;
+    @Deprecated
     public final BodyPart leftLeg;
+    public final HashMap<String, BodyPart> bodyParts;
     public int perspective = 0;
 
     /**
@@ -47,12 +61,18 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
             this.song = null;
         }
 
-        head = new BodyPart(data.head);
-        torso = new BodyPart(data.body);
-        rightArm = new BodyPart(data.rightArm);
-        leftArm = new BodyPart(data.leftArm);
-        rightLeg = new BodyPart(data.rightLeg);
-        leftLeg = new BodyPart(data.leftLeg);
+        this.bodyParts = new HashMap<>(emote.bodyParts.size());
+        for(Map.Entry<String, EmoteData.StateCollection> part:emote.bodyParts.entrySet()){
+            this.bodyParts.put(part.getKey(), new BodyPart(part.getValue()));
+        }
+
+        head = this.bodyParts.get(data.head.name);
+        torso = this.bodyParts.get(data.body.name);
+        rightArm = this.bodyParts.get(data.rightArm.name);
+        leftArm = this.bodyParts.get(data.leftArm.name);
+        rightLeg = this.bodyParts.get(data.rightLeg.name);
+        leftLeg = this.bodyParts.get(data.leftLeg.name);
+
         this.currentTick = t;
         if(isInfinite() && t > data.returnToTick){
             currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
@@ -114,6 +134,10 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
     @Override
     public EmoteData getData() {
         return data;
+    }
+
+    public BodyPart getPart(String string){
+        return bodyParts.get(string);
     }
 
     public void setTickDelta(float tickDelta) {
