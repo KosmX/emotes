@@ -21,7 +21,7 @@ pluginManagement {
 
 rootProject.name = "emotecraft"
 
-include 'emotesCommon'
+include 'emotesAPI'
 
 
 //include 'oldJunk'
