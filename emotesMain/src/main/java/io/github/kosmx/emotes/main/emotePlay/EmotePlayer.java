@@ -137,7 +137,8 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
     }
 
     public BodyPart getPart(String string){
-        return bodyParts.get(string);
+        BodyPart part = bodyParts.get(string);
+        return part == null ? new BodyPart(null) : part;
     }
 
     public void setTickDelta(float tickDelta) {
@@ -159,6 +160,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
     protected abstract void updateBodyPart(BodyPart bodyPart, T modelPart);
 
     public class BodyPart {
+        @Nullable
         public final EmoteData.StateCollection part;
         public final Axis x;
         public final Axis y;
@@ -170,16 +172,28 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         public final RotationAxis bend;
 
 
-        public BodyPart(EmoteData.StateCollection part) {
+        public BodyPart(@Nullable EmoteData.StateCollection part) {
             this.part = part;
-            this.x = new Axis(part.x);
-            this.y = new Axis(part.y);
-            this.z = new Axis(part.z);
-            this.pitch = new RotationAxis(part.pitch);
-            this.yaw = new RotationAxis(part.yaw);
-            this.roll = new RotationAxis(part.roll);
-            this.bendAxis = new RotationAxis(part.bendDirection);
-            this.bend = new RotationAxis(part.bend);
+            if(part != null) {
+                this.x = new Axis(part.x);
+                this.y = new Axis(part.y);
+                this.z = new Axis(part.z);
+                this.pitch = new RotationAxis(part.pitch);
+                this.yaw = new RotationAxis(part.yaw);
+                this.roll = new RotationAxis(part.roll);
+                this.bendAxis = new RotationAxis(part.bendDirection);
+                this.bend = new RotationAxis(part.bend);
+            }
+            else {
+                this.x = null;
+                this.y = null;
+                this.z = null;
+                this.pitch = null;
+                this.yaw = null;
+                this.roll = null;
+                this.bendAxis = null;
+                this.bend = null;
+            }
         }
 
         /**
@@ -194,14 +208,16 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
          * }
          */
         public void updateBodyPart(T modelPart){
-            EmotePlayer.this.updateBodyPart(this, modelPart);
+            if(part != null) EmotePlayer.this.updateBodyPart(this, modelPart);
         }
 
         public Pair<Float, Float> getBend() {
+            if(bend == null) return new Pair<>(0f, 0f);
             return new Pair<>(this.bendAxis.getValueAtCurrentTick(0), this.bend.getValueAtCurrentTick(0));
         }
 
         public Vector3<Double> getBodyOffset() {
+            if(this.part == null) return new Vector3<>(0d, 0d, 0d);
             double x = this.x.getValueAtCurrentTick(0);
             double y = this.y.getValueAtCurrentTick(0);
             double z = this.z.getValueAtCurrentTick(0);
@@ -209,6 +225,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         }
 
         public Vector3<Float> getBodyRotation() {
+            if(this.part == null) return new Vector3<>(0f, 0f, 0f);
             return new Vector3<>(
                     this.pitch.getValueAtCurrentTick(0),
                     this.yaw.getValueAtCurrentTick(0),
