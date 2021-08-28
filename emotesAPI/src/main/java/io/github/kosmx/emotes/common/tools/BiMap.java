@@ -8,7 +8,8 @@ import java.util.*;
 /**
  * Bi-directional hash-map.
  *
- * Both L and R has to be hash-able
+ * Both L and R has to implement {@link Object#hashCode()} and {@link Object#equals(Object)} functions
+ * it can not be checked automatically, but DON'T forget it
  * @param <L>
  * @param <R>
  */

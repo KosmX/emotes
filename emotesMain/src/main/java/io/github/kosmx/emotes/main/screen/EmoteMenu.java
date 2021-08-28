@@ -17,6 +17,7 @@ import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.*;
@@ -238,7 +239,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private boolean applyKey(boolean force, EmoteHolder emote, InputKey key){
         boolean bl = true;
         for(EmoteHolder emoteHolder : EmoteHolder.list){
-            if(! key.equals(EmoteInstance.instance.getDefaults().getUnknownKey()) && ((ClientConfig)EmoteInstance.config).emoteKeyMap.getR(emoteHolder.getUuid()).equals(key)){
+            if(! key.equals(EmoteInstance.instance.getDefaults().getUnknownKey()) && getKey(emoteHolder.getUuid()).equals(key)){
                 bl = false;
                 if(force){
                     //emoteHolder.keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
@@ -255,6 +256,14 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         return bl;
     }
 
+    @Nonnull
+    public static InputKey getKey(UUID emoteID){
+        InputKey key;
+        if((key = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getR(emoteID)) == null){
+            return EmoteInstance.instance.getDefaults().getUnknownKey();
+        }
+        return key;
+    }
 
     @Override
     public void emotes_onRemove(){
@@ -277,7 +286,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     private void updateKeyText(){
         if(emoteList.getSelectedEntry() != null){
-            Text message = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getR(emoteList.getSelectedEntry().getEmote().getUuid()).getLocalizedText();
+            Text message = getKey(emoteList.getSelectedEntry().getEmote().getUuid()).getLocalizedText();
             if(activeKeyTime != 0)
                 //message = (new LiteralText("> ")).append(message.shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW);
                 message = EmoteInstance.instance.getDefaults().textFromString("> ").append(message).formatted(EmotesTextFormatting.YELLOW).append(" <").formatted(EmotesTextFormatting.YELLOW);

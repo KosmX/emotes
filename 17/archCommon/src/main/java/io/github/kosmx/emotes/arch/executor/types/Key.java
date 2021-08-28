@@ -28,6 +28,11 @@ public class Key implements InputKey {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Key && storedKey.equals(((Key)obj).storedKey);
+    }
+
+    @Override
     public int hashCode() {
         return storedKey.hashCode();
     }
