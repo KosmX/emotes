@@ -2,7 +2,9 @@ package io.github.kosmx.emotes.common.tools;
 
 import io.github.kosmx.emotes.api.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Bi-directional hash-map.
@@ -11,6 +13,7 @@ import java.util.*;
  * @param <L>
  * @param <R>
  */
+@SuppressWarnings("unchecked")
 public class BiMap<L, R> implements Collection<Pair<L, R>> {
     final HashMap<L, R> lToR = new HashMap<>();
     final HashMap<R, L> rToL = new HashMap<>();
@@ -34,8 +37,17 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
 
     public Pair<L, R> put(L l, R r){
         if(l == null || r == null)throw new NullPointerException("BiMap does not allow null elements");
-        L ol = rToL.put(r, l);
-        R or = lToR.put(l, r);
+        L ol = null;
+        R or = null;
+        if(lToR.containsKey(l) || rToL.containsKey(r)){
+            ol = rToL.remove(r);
+            or = lToR.remove(l);
+            collection.removeIf(obj -> obj.getLeft() == l || obj.getRight() == r);
+            //collection.remove(new Pair<>(ol, or));
+        }
+        rToL.put(r, l);
+        lToR.put(l, r);
+        collection.add(new Pair<>(l, r));
         return new Pair<>(ol, or);
     }
 
@@ -95,7 +107,7 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(@Nonnull Collection<?> c) {
         return collection.containsAll(c);
     }
 
@@ -117,14 +129,25 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
         return bl;
     }
 
+    /**
+     * Retains only the elements in this collection that are contained in the specified collection.
+     *
+     * Code copied from standard lib but runs with my iterator...
+     * @param c collection
+     * @return was the map modified
+     */
     @Override
-    public boolean retainAll(Collection<?> c) {
-        if(c == null)return false;
-        if(collection.retainAll(c)){
-            lToR.entrySet().removeIf(lrEntry -> !c.contains(lrEntry));
-            return true;
+    public boolean retainAll(@Nonnull Collection<?> c) {
+        Objects.requireNonNull(c);
+        boolean modified = false;
+        Iterator<Pair<L, R>> it = iterator();
+        while (it.hasNext()) {
+            if (!c.contains(it.next())) {
+                it.remove();
+                modified = true;
+            }
         }
-        return false;
+        return modified;
     }
 
     @Override
@@ -151,7 +174,26 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
 
     @Override
     public Iterator<Pair<L, R>> iterator() {
-        return collection.iterator();
+        return new Iterator<Pair<L, R>>() {
+            final Iterator<Pair<L, R>> _iter = collection.iterator();
+            Pair<L, R> _var = null;
+            @Override
+            public boolean hasNext() {
+                return _iter.hasNext();
+            }
+
+            @Override
+            public Pair<L, R> next() {
+                return _var = _iter.next();
+            }
+
+            @Override
+            public void remove() {
+                _iter.remove();
+                lToR.remove(_var.getLeft());
+                rToL.remove(_var.getRight());
+            }
+        };
     }
 
     @Override
@@ -166,5 +208,18 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
 
     private void idk(){
         this.iterator().remove();
+    }
+
+    @Override
+    public int hashCode() {
+        return collection.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof BiMap){
+            return collection.equals(((BiMap<?, ?>) obj).collection);
+        }
+        return false;
     }
 }
