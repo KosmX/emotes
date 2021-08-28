@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.api;
 
 //I Didn't found any pair in Java common... so here is it
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
 /**
@@ -9,17 +10,10 @@ import java.util.Objects;
  * @param <L> Left object
  * @param <R> Right object
  */
+@Immutable
 public class Pair <L, R> {
-    L left;
-    R right;
-
-    /**
-     * Creates an empty pair
-     */
-    public Pair(){
-        this.left = null;
-        this.right = null;
-    }
+    final L left;
+    final R right;
 
     /**
      * Creates a pair from two values
@@ -36,15 +30,6 @@ public class Pair <L, R> {
     }
     public R getRight() {
         return right;
-    }
-
-    public Pair<L, R> setLeft(L left){
-        this.left = left;
-        return this;
-    }
-    public Pair<L, R> setRitht(R right){
-        this.right = right;
-        return this;
     }
 
     @Override
