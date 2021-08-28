@@ -4,7 +4,6 @@ import io.github.kosmx.emotes.api.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Bi-directional hash-map.
