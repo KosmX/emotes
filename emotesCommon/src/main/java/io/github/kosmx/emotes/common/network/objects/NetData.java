@@ -34,6 +34,8 @@ public class NetData {
     //Never use it permanently
     @Nullable
     public NBS song = null;
+    @Deprecated
+    public boolean sendSong = true;
 
     public boolean versionsUpdated = false;
     public HashMap<Byte, Byte> versions;

@@ -76,7 +76,7 @@ public class EmotePacket {
             partCount.getAndSet((byte) (partCount.get() + 1));
             sizeSum.addAndGet(songSize);
         }
-        else data.song = null;
+        else data.sendSong = false;
 
         ByteBuffer buf = ByteBuffer.allocate(sizeSum.get());
 
