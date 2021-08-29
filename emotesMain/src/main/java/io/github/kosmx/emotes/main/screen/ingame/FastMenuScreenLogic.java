@@ -81,5 +81,10 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
             }
             return false;
         }
+
+        @Override
+        protected boolean doesShowInvalid() {
+            return false;
+        }
     }
 }

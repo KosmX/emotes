@@ -59,5 +59,6 @@
   "emotecraft.export.error.json": "Failed export to JSON",
   "emotecraft.export.error.emotecraft": "Failed export to .emotecraft",
   "emotecraft.export.done.json": ".json export done",
-  "emotecraft.export.done.emotecraft": ".emotecraft export done"
+  "emotecraft.export.done.emotecraft": ".emotecraft export done",
+  "emotecraft.song_too_big_to_send": "Song is too big, can not send to server. Sending emote only"
 }

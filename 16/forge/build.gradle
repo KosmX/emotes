@@ -37,7 +37,7 @@ loom{
 
 dependencies {
     implementation project(':executor')
-    implementation project(':emotesCommon')
+    implementation project(':emotesAPI')
     implementation project(':emotesServer')
 
     implementation project(':emotesMain')
@@ -48,7 +48,7 @@ dependencies {
     compileModule(project(':emotesMain')){ transitive = false }
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")){ transitive = false }
     compileModule project(':executor')
-    compileModule project(':emotesCommon')
+    compileModule project(':emotesAPI')
     compileModule project(':emotesServer')
 
 

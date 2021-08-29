@@ -41,13 +41,13 @@ public class GeckoLibSerializer {
                     builder.returnTick = builder.endTick;
                 }
             }
+            builder.fullyEnableParts();
+            builder.optimizeEmote();
+            builder.name = name.toJsonTree().toString();
+            builder.description = EmoteInstance.instance.getDefaults().textFromString("").formatted(EmotesTextFormatting.YELLOW).toString();
+
             EmoteData emoteData = builder.build();
             keyframeSerializer(emoteData, node.get("bones").getAsJsonObject());
-            emoteData.fullyEnableParts();
-            emoteData.optimizeEmote();
-            emoteData.name = name.toJsonTree().toString();
-            emoteData.description = EmoteInstance.instance.getDefaults().textFromString("").formatted(EmotesTextFormatting.YELLOW).toString();
-
             //EmoteHolder emoteHolder = new EmoteHolder(emoteData, name, EmoteInstance.instance.getDefaults().textFromString("").formatted(EmotesTextFormatting.YELLOW), EmoteInstance.instance.getDefaults().emptyTex(), node.hashCode());
             //emoteHolder.isFromGeckoLib = true;
             emotes.add(emoteData);
@@ -57,7 +57,7 @@ public class GeckoLibSerializer {
 
     private static void keyframeSerializer(EmoteData emoteData, JsonObject node){
         if(node.has("head"))readBone(emoteData.head, node.get("head").getAsJsonObject(), emoteData);
-        if(node.has("body"))readBone(emoteData.torso, node.get("body").getAsJsonObject(), emoteData);
+        if(node.has("body"))readBone(emoteData.body, node.get("body").getAsJsonObject(), emoteData);
 
         if(node.has("right_arm"))readBone(emoteData.rightArm, node.get("right_arm").getAsJsonObject(), emoteData);
         else if(node.has("rightArm"))readBone(emoteData.rightArm, node.get("rightArm").getAsJsonObject(), emoteData);
@@ -146,8 +146,8 @@ public class GeckoLibSerializer {
         if(a.length != 3)throw new ArrayStoreException("wrong array length");
         for(int i = 0; i < 3; i++){
             float value = array.get(i).getAsFloat();
-            if(a[0] == emoteData.torso.x) value = value / 16f;
-            else if(a[0] == emoteData.torso.pitch) value = -value;
+            if(a[0] == emoteData.body.x) value = value / 16f;
+            else if(a[0] == emoteData.body.pitch) value = -value;
             value += a[i].defaultValue;
             a[i].addKeyFrame(tick, value, ease, 0, true);
         }

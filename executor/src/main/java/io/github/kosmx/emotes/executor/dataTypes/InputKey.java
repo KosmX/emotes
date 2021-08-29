@@ -8,4 +8,6 @@ public interface InputKey {
     Text getLocalizedText();
 
     boolean equals(Object object);
+
+    int hashCode();
 }

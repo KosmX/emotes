@@ -28,8 +28,8 @@ dependencies {
 
     implementation("org.bukkit:bukkit:${project.spigot_api}")
 
-    implementation project(':emotesCommon')
-    compileModule project(':emotesCommon')
+    implementation project(':emotesAPI')
+    compileModule project(':emotesAPI')
 
     implementation project(':executor')
     compileModule project(':executor')

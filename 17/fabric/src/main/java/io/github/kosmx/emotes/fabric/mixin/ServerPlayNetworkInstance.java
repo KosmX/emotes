@@ -31,9 +31,10 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
 
     @Override
     public void setVersions(HashMap<Byte, Byte> map) {
-        if(map.containsKey((byte)3)) {
-            versions.put((byte) 3, map.get((byte) 3));
-        }
+        //if(map.containsKey((byte)3)) {
+        //    versions.put((byte) 3, map.get((byte) 3));
+        //}
+        versions = map; //store every data
     }
 
     @Override
@@ -63,6 +64,6 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
 
     @Override
     public boolean isActive() {
-        return false;
+        return true;
     }
 }

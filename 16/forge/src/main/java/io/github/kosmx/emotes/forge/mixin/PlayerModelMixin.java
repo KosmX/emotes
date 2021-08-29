@@ -115,6 +115,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
             emote.rightArm.updateBodyPart(this.rightArm);
             emote.leftLeg.updateBodyPart(this.leftLeg);
             emote.rightLeg.updateBodyPart(this.rightLeg);
+            emote.getPart("torso").updateBodyPart(this.body);
 
             thisWithMixin.getTorso().bend(emote.torso.getBend());
             thisWithMixin.getLeftArm().bend(emote.leftArm.getBend());

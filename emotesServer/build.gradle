@@ -12,7 +12,7 @@ repositories {
 
 
 dependencies {
-    implementation project(':emotesCommon')
+    implementation project(':emotesAPI')
     implementation project(':executor')
 
     implementation "com.google.code.gson:gson:2.8.0"

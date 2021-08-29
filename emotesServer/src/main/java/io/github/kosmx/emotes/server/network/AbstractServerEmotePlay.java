@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.server.network;
 
+import io.github.kosmx.emotes.api.events.impl.EventResult;
+import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
@@ -43,19 +45,21 @@ public abstract class AbstractServerEmotePlay<P> {
         }
     }
 
-    protected void streamEmote(NetData data, P player, INetworkInstance instance) throws IOException{
-        if(!data.valid && doValidate()){
-            EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.hashCode()).configureTarget(getUUIDFromPlayer(player));
-            instance.sendMessage(stopMSG, null);
-        }
-        else {
-            UUID target = data.player;
-            data.player = getUUIDFromPlayer(player);
-            if(target == null) {
-                sendForEveryoneElse(data, player);
-            }else {
-                sendForPlayerInRange(data, player, target);
+    protected void streamEmote(NetData data, P player, INetworkInstance instance) throws IOException {
+        if (!data.valid && doValidate()) {
+            EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(player));
+            if (result != EventResult.FAIL) {
+                EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.getUuid()).configureTarget(getUUIDFromPlayer(player)).setSizeLimit(0x100000);
+                instance.sendMessage(stopMSG, null);
+                return;
             }
+        }
+        UUID target = data.player;
+        data.player = getUUIDFromPlayer(player);
+        if (target == null) {
+            sendForEveryoneElse(data, player);
+        } else {
+            sendForPlayerInRange(data, player, target);
         }
     }
 

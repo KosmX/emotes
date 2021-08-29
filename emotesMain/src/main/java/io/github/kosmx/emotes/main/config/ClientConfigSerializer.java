@@ -3,10 +3,14 @@ package io.github.kosmx.emotes.main.config;
 import com.google.gson.*;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 
 import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.UUID;
 
 
 public class ClientConfigSerializer extends ConfigSerializer {
@@ -41,22 +45,31 @@ public class ClientConfigSerializer extends ConfigSerializer {
         ClientConfig config = (ClientConfig) sconfig;
         EmoteFixer emoteFixer = new EmoteFixer(config.configVersion);
         if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config, emoteFixer);
-        if(node.has("keys")) keyBindsDeserializer(node.get("keys").getAsJsonArray(), config, emoteFixer);
+        if(node.has("keys")) keyBindsDeserializer(node.get("keys").getAsJsonObject(), config, emoteFixer);
     }
 
     private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
         for(int i = 0; i != 8; i++){
             if(node.has(Integer.toString(i))){
-                config.fastMenuHash[i] = fixer.getEmoteID(node.get(Integer.toString(i)));
+                config.fastMenuEmotes[i] = fixer.getEmoteID(node.get(Integer.toString(i)));
             }
         }
     }
 
-    private void keyBindsDeserializer(JsonArray node, ClientConfig config, EmoteFixer fixer){
-        for(JsonElement object : node){
-            JsonObject n = object.getAsJsonObject();
-            config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
-            //keyBindDeserializer(object.getAsJsonObject());
+    private void keyBindsDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
+        if(config.configVersion < 4){
+            oldKeyBindsSerializer(node.getAsJsonArray(), config, fixer);
+        }
+        for(Map.Entry<String, JsonElement> element : node.entrySet()){
+            config.emoteKeyMap.put(UUID.fromString(element.getKey()), EmoteInstance.instance.getDefaults().getKeyFromString(element.getValue().getAsString()));
+            //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
+        }
+    }
+
+    private void oldKeyBindsSerializer(JsonArray node, ClientConfig config, EmoteFixer fixer){
+        for(JsonElement jsonElement : node){
+            JsonObject n = jsonElement.getAsJsonObject();
+            config.emoteKeyMap.add(new Pair<>(fixer.getEmoteID(n.get("id")), EmoteInstance.instance.getDefaults().getKeyFromString(n.get("key").getAsString())));
         }
     }
 
@@ -69,24 +82,17 @@ public class ClientConfigSerializer extends ConfigSerializer {
         JsonObject node = new JsonObject();
         for(int i = 0; i != 8; i++){
             if(config.fastMenuEmotes[i] != null){
-                node.addProperty(Integer.toString(i), config.fastMenuEmotes[i].hashCode());
+                node.addProperty(Integer.toString(i), config.fastMenuEmotes[i].toString());
             }
         }
         return node;
     }
 
-    private JsonArray keyBindsSerializer(ClientConfig config){
-        JsonArray array = new JsonArray();
-        for(EmoteHolder emote : config.emotesWithKey){
-            array.add(keyBindSerializer(emote));
+    private JsonObject keyBindsSerializer(ClientConfig config){
+        JsonObject array = new JsonObject();
+        for(Pair<UUID, InputKey> emote : config.emoteKeyMap){
+            array.addProperty(emote.getLeft().toString(), emote.getRight().getTranslationKey());
         }
         return array;
-    }
-
-    private JsonObject keyBindSerializer(EmoteHolder emote){
-        JsonObject node = new JsonObject();
-        node.addProperty("id", emote.hashCode());
-        node.addProperty("key", emote.keyBinding.getTranslationKey());
-        return node;
     }
 }

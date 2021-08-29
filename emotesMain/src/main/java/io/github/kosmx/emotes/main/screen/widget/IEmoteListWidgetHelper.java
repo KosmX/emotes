@@ -1,12 +1,17 @@
 package io.github.kosmx.emotes.main.screen.widget;
 
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.screen.IRenderHelper;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
@@ -17,7 +22,17 @@ public interface IEmoteListWidgetHelper<MATRIX, WIDGET> extends IWidgetLogic<MAT
     void emotesSetLeftPos(int p);
     IEmoteEntry getSelectedEntry();
     void renderThis(MATRIX matrices, int mouseX, int mouseY, float tickDelta);
-    void setEmotes(Collection<EmoteHolder> emoteHolders);
+    void setEmotes(Iterable<EmoteHolder> emoteHolders, boolean showInvalid);
+
+    default Iterable<EmoteHolder> getEmptyEmotes(){
+        Collection<EmoteHolder> empties = new LinkedList<>();
+        for(Pair<UUID, InputKey> pair : ((ClientConfig)EmoteInstance.config).emoteKeyMap){
+            if(!EmoteHolder.list.containsKey(pair.getLeft())){
+                empties.add(new EmoteHolder.Empty(pair.getLeft()));
+            }
+        }
+        return empties;
+    }
 
     interface IEmoteEntry<MATRIX> extends IRenderHelper<MATRIX> {
         EmoteHolder getEmote();
