@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * It should be placed into emotecraftCommon but it has too many references to minecraft codes...
@@ -41,7 +42,8 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         writeBodyPartInfo(buf, emote.leftArm);
         writeBodyPartInfo(buf, emote.rightLeg);
         writeBodyPartInfo(buf, emote.leftLeg);
-
+        buf.putLong(config.stopEmoteID.getMostSignificantBits());
+        buf.putLong(config.stopEmoteID.getLeastSignificantBits());
     }
 
     private void writeBodyPartInfo(ByteBuffer buf, EmoteData.StateCollection part){
@@ -89,6 +91,11 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         getBodyPartInfo(buf, builder.leftArm, true);
         getBodyPartInfo(buf, builder.rightLeg, true);
         getBodyPartInfo(buf, builder.leftLeg, true);
+        if(version >= 1){
+            long msb = buf.getLong();
+            long lsb = buf.getLong();
+            builder.uuid = new UUID(msb, lsb);
+        }
 
         //EmoteData emote = builder.build();
         boolean correct = builder.beginTick >= 0 && builder.beginTick < builder.endTick && (! builder.isLooped || builder.returnTick <= builder.endTick && builder.returnTick >= 0);
@@ -134,7 +141,10 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
 
     @Override
     public byte getVer() {
-        return 0;
+        /**
+         * version 1: 2.1 features, extended parts, UUID emote ID
+         */
+        return 1;
     }
 
     @Override
