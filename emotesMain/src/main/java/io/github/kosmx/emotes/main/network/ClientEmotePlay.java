@@ -38,7 +38,7 @@ public class ClientEmotePlay {
         return true;
     }
 
-    public static void clientRepeateLocalEmote(EmoteData emote, int tick, UUID target){
+    public static void clientRepeatLocalEmote(EmoteData emote, int tick, UUID target){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         packetBuilder.configureToStreamEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);

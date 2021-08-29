@@ -150,4 +150,9 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
             e.printStackTrace();
         }
     }
+
+    @Override
+    public int maxDataSize() {
+        return Short.MAX_VALUE;
+    }
 }

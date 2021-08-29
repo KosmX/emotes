@@ -99,4 +99,9 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
         }
         ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write().array())));
     }
+
+    @Override
+    public int maxDataSize() {
+        return 0x100000;
+    }
 }

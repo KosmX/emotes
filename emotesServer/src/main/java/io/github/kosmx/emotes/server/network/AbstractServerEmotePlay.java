@@ -49,7 +49,7 @@ public abstract class AbstractServerEmotePlay<P> {
         if (!data.valid && doValidate()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(player));
             if (result != EventResult.FAIL) {
-                EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.getUuid()).configureTarget(getUUIDFromPlayer(player));
+                EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.getUuid()).configureTarget(getUUIDFromPlayer(player)).setSizeLimit(0x100000);
                 instance.sendMessage(stopMSG, null);
                 return;
             }

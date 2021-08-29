@@ -42,7 +42,7 @@ public interface INetworkInstance {
     default void presenceResponse(){}
 
     /**
-     * Does send the sender's id to the server
+     * Do send the sender's id to the server
      * @return true means send
      */
     default boolean sendPlayerID(){
@@ -109,6 +109,14 @@ public interface INetworkInstance {
      * @return remote version number. 8-255
      */
     int getRemoteVersion();
+
+    /**
+     * Maximum size of the data what the instance can send
+     *
+     * {@link AbstractNetworkInstance#maxDataSize()} defaults to {@link Short#MAX_VALUE}
+     * @return max size of bytes[]
+     */
+    int maxDataSize();
 
     /**
      * If {@link ByteBuffer} is wrapped, it is safe to get the array
