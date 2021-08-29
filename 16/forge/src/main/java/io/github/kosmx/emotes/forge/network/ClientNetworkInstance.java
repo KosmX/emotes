@@ -113,9 +113,4 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         if(Minecraft.getInstance().getConnection() != null)
         Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
     }
-
-    @Override
-    public int maxDataSize() {
-        return 0x100000;
-    }
 }
