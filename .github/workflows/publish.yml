@@ -1,0 +1,52 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'alpha/beta/release'
+        required: false
+        default: 'alpha'
+      changelog:
+        description: 'changelog'
+        required: false
+        default: ''
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for valid input
+        run: |
+          if ! ( [ "${{github.event.inputs.type}}" = "alpha" ] || [ "${{github.event.inputs.type}}" = "beta" ] || [ "${{github.event.inputs.type}}" = "release" ] )
+          then
+          return -1
+          fi
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: 16
+      - name: checkout repository
+        uses: actions/checkout@v2
+      - name: configure gradle
+        uses: gradle/wrapper-validation-action@v1
+      - name: Grant execute permission for gradlew
+        if: ${{ runner.os != 'Windows' }}
+        run: chmod +x gradlew
+      - name: Do gradle release
+        uses: gradle/gradle-build-action@v1
+        with:
+          arguments: autoPublish
+        env:
+          CI: true
+          BUILD_NUMBER: ${{github.run_number}}
+          RELEASE_TYPE: ${{github.event.inputs.type}}
+          CHANGELOG: ${{github.event.inputs.changelog}}
+          CURSEFORGE_TOKEN: ${{secrets.CURSEFORGE}}
+          MODRINTH_TOKEN: ${{secrets.MODRINTH}}
+          GH_TOKEN: ${{secrets.GH_TOKEN}}

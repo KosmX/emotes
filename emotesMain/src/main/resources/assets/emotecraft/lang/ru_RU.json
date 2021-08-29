@@ -55,5 +55,9 @@
   "emotecraft.resetAllKeys.message": "Вы действительно хотите сбросить все привязки клавиш для эмоций?",
   "emotecraft.options.export": "Меню экспортирования",
   "emotecraft.exportjson": "Экспортировать эмоцию в Json",
-  "emotecraft.exportbin": "Экспортировать в двоичный файл .emotecraft"
+  "emotecraft.exportbin": "Экспортировать в двоичный файл .emotecraft",
+  "emotecraft.export.error.json": "Не удалось экспортировать в JSON",
+  "emotecraft.export.error.emotecraft": "Не удалось экспортировать в .emotecraft",
+  "emotecraft.export.done.json": "Успешный экспорт .json",
+  "emotecraft.export.done.emotecraft": "Успешный экспорт .emotecraft"
 }
