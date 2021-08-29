@@ -35,7 +35,7 @@ public class SongPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.versions.get(this.getID()) != 0 && config.emoteData != null && config.emoteData.song != null;
+        return config.sendSong && config.versions.get(this.getID()) != 0 && config.emoteData != null && config.emoteData.song != null;
     }
 
     @Override
