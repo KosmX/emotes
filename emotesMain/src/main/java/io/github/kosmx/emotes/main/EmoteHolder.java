@@ -17,6 +17,7 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
@@ -262,6 +263,13 @@ public class EmoteHolder implements Supplier<UUID> {
                 if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(emoteHolder);
             }
         }
+    }
+
+
+    public static EmoteHolder getNonNull(@Nonnull UUID emote){
+        EmoteHolder emoteHolder = list.get(emote);
+        if(emoteHolder == null)return new Empty(emote);
+        return emoteHolder;
     }
 
 
