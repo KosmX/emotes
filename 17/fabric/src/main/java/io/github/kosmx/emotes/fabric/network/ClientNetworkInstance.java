@@ -97,6 +97,10 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
         if(target != null){
             builder.configureTarget(target);
         }
-        ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write().array())));
+        EmotePacket writer = builder.build();
+        ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(writer.write().array())));
+        if(writer.data.emoteData != null && writer.data.emoteData.song != null && !writer.data.writeSong){
+            EmoteInstance.instance.getClientMethods().sendChatMessage(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.song_too_big_to_send"));
+        }
     }
 }

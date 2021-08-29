@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 
@@ -25,7 +26,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
         }
         if(!this.isMainPlayer() && EmoteInstance.instance.getClientMethods().getMainPlayer() != null && EmoteInstance.instance.getClientMethods().getMainPlayer().isPlayingEmote()){
             IEmotePlayerEntity playerEntity = EmoteInstance.instance.getClientMethods().getMainPlayer();
-            ClientEmotePlay.clientRepeateLocalEmote(playerEntity.getEmote().getData(), playerEntity.getEmote().getTick(), this.emotes_getUUID());
+            ClientEmotePlay.clientRepeatLocalEmote(playerEntity.getEmote().getData(), playerEntity.getEmote().getTick(), this.emotes_getUUID());
         }
 
     }
@@ -81,8 +82,8 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
     }
 
     @Override
-    default void stopEmote(int emoteID){
-        if(getEmote() != null && getEmote().getData().hashCode() == emoteID){
+    default void stopEmote(UUID emoteID){
+        if(getEmote() != null && getEmote().getData().getUuid().equals(emoteID)){
             this.getEmote().stop();
             this.voidEmote();
         }

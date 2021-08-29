@@ -1,9 +1,7 @@
 package io.github.kosmx.emotes.fabric.mixin;
 
-import io.github.kosmx.bendylib.ICuboidBuilder;
 import io.github.kosmx.bendylib.ModelPartAccessor;
 import io.github.kosmx.bendylib.impl.BendableCuboid;
-import io.github.kosmx.bendylib.impl.ICuboid;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
@@ -25,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
 import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
@@ -41,6 +40,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
     public ModelPart leftSleeve;
     @Shadow @Final public ModelPart rightPants;
     @Shadow @Final public ModelPart leftPants;
+    @Shadow @Final private List<ModelPart> parts;
     public SetableSupplier<EmotePlayImpl> emoteSupplier = new SetableSupplier<>();
     //private BendableModelPart mutatedTorso;
     //private MutableModelPart head :D ... it were be funny XD
@@ -88,6 +88,10 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
         this.head.y = 0.0F;
         this.head.zRot = 0f;
         this.body.y = 0.0F;
+        this.body.x = 0f;
+        this.body.z = 0f;
+        this.body.yRot = 0;
+        this.body.zRot = 0;
     }
 
     @Inject(method = "setupAnim", at = @At(value = "HEAD"))
@@ -106,6 +110,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
             emote.rightArm.updateBodyPart(this.rightArm);
             emote.leftLeg.updateBodyPart(this.leftLeg);
             emote.rightLeg.updateBodyPart(this.rightLeg);
+            emote.getPart("torso").updateBodyPart(this.body);
 
             thisWithMixin.getTorso().bend(emote.torso.getBend());
             thisWithMixin.getLeftArm().bend(emote.leftArm.getBend());

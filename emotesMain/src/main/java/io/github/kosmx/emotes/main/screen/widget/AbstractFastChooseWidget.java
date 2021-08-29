@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -139,6 +140,8 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
 
     protected abstract boolean EmotesOnClick(FastChooseElement element, int button);  //What DO I want to do with this element? set or play.
 
+    protected abstract boolean doesShowInvalid();
+
     protected class FastChooseElement {
         private final float angle;
         private final int id;
@@ -155,12 +158,22 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         }
 
         public void setEmote(@Nullable EmoteHolder emote){
-            ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] = emote;
+            ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] = emote == null ? null : emote.getUuid();
         }
 
         @Nullable
         public EmoteHolder getEmote(){
-            return ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id];
+            UUID uuid = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id];
+            if(uuid != null){
+                EmoteHolder emote = EmoteHolder.list.get(uuid);
+                if(emote == null && doesShowInvalid()){
+                    emote = new EmoteHolder.Empty(uuid);
+                }
+                return emote;
+            }
+            else {
+                return null;
+            }
         }
 
         public void clearEmote(){
@@ -168,7 +181,8 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         }
 
         public void render(MATRIX matrices){
-            IIdentifier identifier = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id].getIconIdentifier() : null;
+            UUID emoteID = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] : null;
+            IIdentifier identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
             if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons.get()){
                 int s = size / 10;
                 int iconX = (int) (((float) (x + size / 2)) + size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
@@ -177,7 +191,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
                 drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             }else{
                 if(((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null){
-                    drawCenteredText(matrices, ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id].name, this.angle);
+                    drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[id]).name, this.angle);
                 }else{
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Tried to render non-existing name", true);
                 }

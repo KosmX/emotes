@@ -21,10 +21,10 @@ configurations {
 }
 
 dependencies {
-    implementation project(':emotesCommon')
+    implementation project(':emotesAPI')
     implementation project(':executor')
     implementation project(':emotesServer')
-    compileModule project(':emotesCommon')
+    compileModule project(':emotesAPI')
     compileModule project(':executor')
     compileModule project(':emotesServer')
 

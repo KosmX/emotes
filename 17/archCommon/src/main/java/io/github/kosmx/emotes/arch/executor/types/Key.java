@@ -26,4 +26,14 @@ public class Key implements InputKey {
     public Text getLocalizedText() {
         return new TextImpl(storedKey.getDisplayName().plainCopy());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Key && storedKey.equals(((Key)obj).storedKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return storedKey.hashCode();
+    }
 }

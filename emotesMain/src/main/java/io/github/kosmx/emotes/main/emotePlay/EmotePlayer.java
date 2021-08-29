@@ -10,7 +10,11 @@ import io.github.kosmx.emotes.common.tools.Vector3;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 // abstract to extend it in every environments
 public abstract class EmotePlayer<T> implements IEmotePlayer {
@@ -23,12 +27,22 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
 
     protected float tickDelta;
 
+    /**
+     * Will be removed when I give up the 1.16- support
+     */
+    @Deprecated
     public final BodyPart head;
+    @Deprecated
     public final BodyPart torso;
+    @Deprecated
     public final BodyPart rightArm;
+    @Deprecated
     public final BodyPart leftArm;
+    @Deprecated
     public final BodyPart rightLeg;
+    @Deprecated
     public final BodyPart leftLeg;
+    public final HashMap<String, BodyPart> bodyParts;
     public int perspective = 0;
 
     /**
@@ -47,12 +61,18 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
             this.song = null;
         }
 
-        head = new BodyPart(data.head);
-        torso = new BodyPart(data.torso);
-        rightArm = new BodyPart(data.rightArm);
-        leftArm = new BodyPart(data.leftArm);
-        rightLeg = new BodyPart(data.rightLeg);
-        leftLeg = new BodyPart(data.leftLeg);
+        this.bodyParts = new HashMap<>(emote.bodyParts.size());
+        for(Map.Entry<String, EmoteData.StateCollection> part:emote.bodyParts.entrySet()){
+            this.bodyParts.put(part.getKey(), new BodyPart(part.getValue()));
+        }
+
+        head = this.bodyParts.get(data.head.name);
+        torso = this.bodyParts.get(data.body.name);
+        rightArm = this.bodyParts.get(data.rightArm.name);
+        leftArm = this.bodyParts.get(data.leftArm.name);
+        rightLeg = this.bodyParts.get(data.rightLeg.name);
+        leftLeg = this.bodyParts.get(data.leftLeg.name);
+
         this.currentTick = t;
         if(isInfinite() && t > data.returnToTick){
             currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
@@ -116,6 +136,11 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         return data;
     }
 
+    public BodyPart getPart(String string){
+        BodyPart part = bodyParts.get(string);
+        return part == null ? new BodyPart(null) : part;
+    }
+
     public void setTickDelta(float tickDelta) {
         this.tickDelta = tickDelta;
     }
@@ -135,6 +160,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
     protected abstract void updateBodyPart(BodyPart bodyPart, T modelPart);
 
     public class BodyPart {
+        @Nullable
         public final EmoteData.StateCollection part;
         public final Axis x;
         public final Axis y;
@@ -146,16 +172,28 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         public final RotationAxis bend;
 
 
-        public BodyPart(EmoteData.StateCollection part) {
+        public BodyPart(@Nullable EmoteData.StateCollection part) {
             this.part = part;
-            this.x = new Axis(part.x);
-            this.y = new Axis(part.y);
-            this.z = new Axis(part.z);
-            this.pitch = new RotationAxis(part.pitch);
-            this.yaw = new RotationAxis(part.yaw);
-            this.roll = new RotationAxis(part.roll);
-            this.bendAxis = new RotationAxis(part.bendDirection);
-            this.bend = new RotationAxis(part.bend);
+            if(part != null) {
+                this.x = new Axis(part.x);
+                this.y = new Axis(part.y);
+                this.z = new Axis(part.z);
+                this.pitch = new RotationAxis(part.pitch);
+                this.yaw = new RotationAxis(part.yaw);
+                this.roll = new RotationAxis(part.roll);
+                this.bendAxis = new RotationAxis(part.bendDirection);
+                this.bend = new RotationAxis(part.bend);
+            }
+            else {
+                this.x = null;
+                this.y = null;
+                this.z = null;
+                this.pitch = null;
+                this.yaw = null;
+                this.roll = null;
+                this.bendAxis = null;
+                this.bend = null;
+            }
         }
 
         /**
@@ -170,14 +208,16 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
          * }
          */
         public void updateBodyPart(T modelPart){
-            EmotePlayer.this.updateBodyPart(this, modelPart);
+            if(part != null) EmotePlayer.this.updateBodyPart(this, modelPart);
         }
 
         public Pair<Float, Float> getBend() {
+            if(bend == null) return new Pair<>(0f, 0f);
             return new Pair<>(this.bendAxis.getValueAtCurrentTick(0), this.bend.getValueAtCurrentTick(0));
         }
 
         public Vector3<Double> getBodyOffset() {
+            if(this.part == null) return new Vector3<>(0d, 0d, 0d);
             double x = this.x.getValueAtCurrentTick(0);
             double y = this.y.getValueAtCurrentTick(0);
             double z = this.z.getValueAtCurrentTick(0);
@@ -185,6 +225,7 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
         }
 
         public Vector3<Float> getBodyRotation() {
+            if(this.part == null) return new Vector3<>(0f, 0f, 0f);
             return new Vector3<>(
                     this.pitch.getValueAtCurrentTick(0),
                     this.yaw.getValueAtCurrentTick(0),

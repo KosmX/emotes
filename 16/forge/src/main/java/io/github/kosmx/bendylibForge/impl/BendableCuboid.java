@@ -206,7 +206,7 @@ public class BendableCuboid implements ICuboid, IBendable, IterableRePos {
                     RememberingPos rp1 = getOrCreate(positions, transformVector(edges[0].copy(), edges[1].copy(), edges[2].copy(), u2, v1, u1, v2, localU2, localV2));
                     RememberingPos rp2 = getOrCreate(positions, transformVector(edges[0].copy(), edges[1].copy(), edges[2].copy(), u2, v1, u1, v2, localU, localV2));
                     RememberingPos rp3 = getOrCreate(positions, transformVector(edges[0].copy(), edges[1].copy(), edges[2].copy(), u2, v1, u1, v2, localU, localV));
-                    quads.add(new Quad(new RememberingPos[]{rp0, rp1, rp2, rp3}, localU, localV, localU2, localV2, textureWidth, textureHeight, mirror));
+                    quads.add(new Quad(new RememberingPos[]{rp3, rp0, rp1, rp2}, localU2, localV, localU, localV2, textureWidth, textureHeight, mirror));
                 }
             }
         }
