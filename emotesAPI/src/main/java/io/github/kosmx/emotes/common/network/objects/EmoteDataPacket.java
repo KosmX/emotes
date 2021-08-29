@@ -163,7 +163,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public int calculateSize(NetData config) {
         if(config.emoteData == null)return 0;
         //I will create less efficient loops but these will be more easily fixable
-        int size = 24;//The header makes 46 bytes IIIIBIBBB
+        int size = 40;//The header makes xx bytes IIIIBIBBBLL
         size += partSize(config.emoteData.head);
         size += partSize(config.emoteData.body);
         size += partSize(config.emoteData.rightArm);
