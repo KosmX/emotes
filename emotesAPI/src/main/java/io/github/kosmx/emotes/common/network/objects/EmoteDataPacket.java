@@ -42,8 +42,8 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         writeBodyPartInfo(buf, emote.leftArm);
         writeBodyPartInfo(buf, emote.rightLeg);
         writeBodyPartInfo(buf, emote.leftLeg);
-        buf.putLong(config.stopEmoteID.getMostSignificantBits());
-        buf.putLong(config.stopEmoteID.getLeastSignificantBits());
+        buf.putLong(config.emoteData.getUuid().getMostSignificantBits());
+        buf.putLong(config.emoteData.getUuid().getLeastSignificantBits());
     }
 
     private void writeBodyPartInfo(ByteBuffer buf, EmoteData.StateCollection part){
