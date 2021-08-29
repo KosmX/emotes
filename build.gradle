@@ -55,7 +55,7 @@ ext.mod_version = project.version_base
 
 
 if(!isRelease){
-    ext.mod_version = "${project.version_base}-SNAPSHOT-${ ENV.BUILD_NUMBER ? ENV.BUILD_NUMBER : 'git rev-parse --verify --short HEAD'.execute().text.trim()}"
+    ext.mod_version = "${project.version_base}-SNAPSHOT-${ ENV.BUILD_NUMBER ? "build.${ENV.BUILD_NUMBER}" : 'git rev-parse --verify --short HEAD'.execute().text.trim()}"
 }
 
 
