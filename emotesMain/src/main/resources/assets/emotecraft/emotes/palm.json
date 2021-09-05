@@ -2,6 +2,7 @@
     "name": "Face palm",
     "author": "KosmX",
     "description": "Whyyy",
+    "uuid": "0de63fbe-2f20-44e0-8969-479b76ceeb6b",
     "emote":{
         "isLoop": "false",
         "returnTick": 2,

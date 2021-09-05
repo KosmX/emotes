@@ -2,6 +2,7 @@
     "name": "roblox potion dance",
     "author": "Wah0o",
     "description": "recreated roblox potion dance",
+    "uuid": "f9f6669d-f1b3-4170-8bc5-475a9a600439",
     "emote":{
         "isLoop": "true",
         "returnTick": 0,
