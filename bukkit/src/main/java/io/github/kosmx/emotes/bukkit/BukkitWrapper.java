@@ -1,34 +1,18 @@
 package io.github.kosmx.emotes.bukkit;
 
 import io.github.kosmx.emotes.bukkit.executor.BukkitInstance;
-import io.github.kosmx.emotes.bukkit.network.BukkitNetworkInstance;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Level;
 
 public class BukkitWrapper extends JavaPlugin {
 
-    public final static String Emotepacket = CommonData.getIDAsString(CommonData.playEmoteID);
+    public final static String EmotePacket = CommonData.getIDAsString(CommonData.playEmoteID);
+    public final static String GeyserPacket = "geyser:emote";
     ServerSideEmotePlay networkPlay = null;
 
 
@@ -44,7 +28,7 @@ public class BukkitWrapper extends JavaPlugin {
         EmoteInstance.instance = new BukkitInstance(this);
         Serializer.INSTANCE = new Serializer(); //it does register itself
         EmoteInstance.config = Serializer.getConfig();
-        UniversalEmoteSerializer.serializeServerEmotes();
+        UniversalEmoteSerializer.loadEmotes();
     }
 
     @Override
@@ -58,6 +42,6 @@ public class BukkitWrapper extends JavaPlugin {
     @Override
     public void onDisable() {
         super.onDisable();
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(this, Emotepacket);
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EmotePacket);
     }
 }

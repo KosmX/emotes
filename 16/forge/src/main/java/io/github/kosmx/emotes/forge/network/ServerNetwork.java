@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.forge.network;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
@@ -18,12 +19,15 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
 public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     public static final ResourceLocation channelID = new ResourceLocation(CommonData.MOD_ID, CommonData.playEmoteID);
+
+    public static final ResourceLocation geyserChannelID = new ResourceLocation("geyser", "emote");
 
     public static final EventNetworkChannel channel = NetworkRegistry.newEventChannel(
             channelID,
@@ -32,10 +36,18 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
             s -> true
     );
 
+    public static final EventNetworkChannel geyserChannel = NetworkRegistry.newEventChannel(
+            geyserChannelID,
+            () -> "0",
+            s -> true,
+            s -> true
+    );
+
     public static ServerNetwork instance = new ServerNetwork();
 
     public void init(){
         channel.addListener(this::receiveByteBuf);
+        geyserChannel.addListener(networkEvent -> receiveGeyserMessage(networkEvent.getSource().get().getSender(), toBytes(networkEvent.getPayload())));
     }
 
     public void receiveByteBuf(NetworkEvent.ClientCustomPayloadEvent event){
@@ -43,18 +55,22 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         event.getSource().get().setPacketHandled(true);//it was handled just in a bit weirder way me :D
     }
 
-    void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf){
-        try{
-            if(buf.isDirect()){
-                byte[] bytes = new byte[buf.readableBytes()];
-                buf.getBytes(buf.readerIndex(), bytes);
-                receiveMessage(bytes, player, (INetworkInstance) handler);
-            }
-            else {
-                receiveMessage(buf.array(), player, (INetworkInstance) handler);
-            }
-        }catch (IOException e){
+    void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
+        try {
+            receiveMessage(toBytes(buf), player, (INetworkInstance) handler);
+        } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    byte[] toBytes(FriendlyByteBuf buf){
+        if(buf.isDirect()){
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readerIndex(), bytes);
+            return bytes;
+        }
+        else {
+            return buf.array();
         }
     }
 
@@ -64,12 +80,30 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     }
 
     @Override
-    protected void sendForEveryoneElse(NetData data, Player player) {
-        data.player = player.getUUID();
-        try{
-        PacketDistributor.TRACKING_ENTITY.with(()->player).send(newS2CEmotesPacket(data));
+    protected long getRuntimePlayerID(Player player) {
+        return player.getId();
+    }
+
+    @Override
+    protected void sendForEveryoneElse(GeyserEmotePacket packet, Player player) {
+        /* I don't want to use this *shit* packet distributor. maybe tomorrow.
+
+        try {
+            PacketDistributor.TRACKING_ENTITY.with(() -> player).send(newS2CEmotesPacket(geyserChannelID, packet.write()));
+        }catch (IOException e){
+            e.printStackTrace();
         }
-        catch (IOException e){
+
+         */
+    }
+
+    @Override
+    protected void sendForEveryoneElse(NetData data, @Nullable GeyserEmotePacket emotePacket, Player player) {
+        data.player = player.getUUID();
+        try {
+            PacketDistributor.TRACKING_ENTITY.with(() -> player).send(newS2CEmotesPacket(data));
+            if (emotePacket != null) sendForEveryoneElse(emotePacket, player);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -79,6 +113,13 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         packet.setName(channelID);
         packet.setData(new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
         return packet;//:D
+    }
+
+    public static Packet newS2CEmotesPacket(ResourceLocation channelID, byte[] data) throws IOException {
+        ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket();
+        packet.setName(channelID);
+        packet.setData(new FriendlyByteBuf(Unpooled.wrappedBuffer(data)));
+        return packet;
     }
 
     @Override

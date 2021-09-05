@@ -4,7 +4,9 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.tools.BiMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.serializer.BiMapSerializer;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
 import javax.annotation.Nullable;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class Serializer {
@@ -35,6 +38,7 @@ public class Serializer {
         builder.registerTypeAdapter(SerializableConfig.class, new ConfigSerializer());
         builder.registerTypeAdapter(new TypeToken<List<EmoteData>>(){}.getType(), new EmoteSerializer());
         builder.registerTypeAdapter(EmoteData.class, new EmoteSerializer());
+        builder.registerTypeAdapter(new TypeToken<BiMap<UUID, UUID>>(){}.getType(), new BiMapSerializer());
     }
 
     public static void saveConfig(){
@@ -79,16 +83,9 @@ public class Serializer {
             }
         }
         else{
-            try{
-                BufferedWriter writer = Files.newBufferedWriter(path);
-                SerializableConfig config = readConfig((BufferedReader) null);
-                saveConfig(config);
-                return config;
-            }
-            catch (IOException e){
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to create config file: " + e.getMessage(), true);
-                e.printStackTrace();
-            }
+            SerializableConfig config = readConfig((BufferedReader) null);
+            saveConfig(config);
+            return config;
         }
         return readConfig((BufferedReader) null);
     }
