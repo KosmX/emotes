@@ -50,7 +50,7 @@ ext.ENV = System.getenv()
 
 ext.cfType = ENV.RELEASE_TYPE ? ENV.RELEASE_TYPE : "alpha"
 ext.isRelease = cfType == "release"
-ext.changes = ENV.CHANGELOG ? ENV.CHANGELOG.replaceAll("\\n", "\n") : ""
+ext.changes = ENV.CHANGELOG ? ENV.CHANGELOG.replaceAll("\\\\n", "\n") : ""
 ext.mod_version = project.version_base
 
 
