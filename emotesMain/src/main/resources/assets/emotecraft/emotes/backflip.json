@@ -2,6 +2,7 @@
     "name": "Back Flip",
     "author": "Kale Ko",
     "description": "Makes You Do A Back Flip",
+    "uuid": "ebfb1e69-330a-4970-8bca-f5625c90681a",
     "emote":{
         "isLoop": "false",
         "returnTick": 2,

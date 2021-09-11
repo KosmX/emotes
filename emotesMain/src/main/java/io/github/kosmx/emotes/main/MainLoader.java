@@ -31,12 +31,12 @@ public class MainLoader {
 
         if(! EmoteInstance.instance.getExternalEmoteDir().isDirectory()) EmoteInstance.instance.getExternalEmoteDir().mkdirs();
 
-        //TODO init server networking
+        //TODO init server networking on actual implementation
+
         if(EmoteInstance.instance.isClient()) {
             MainClientInit.init();
-        }
+        }else UniversalEmoteSerializer.loadEmotes();
 
-        UniversalEmoteSerializer.serializeServerEmotes();
     }
 
 

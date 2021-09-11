@@ -2,6 +2,7 @@
 	"name": "Waving",
 	"author": "KosmX",
 	"description": "Like say Hi!",
+	"uuid": "33b912f8-0aa0-45e6-a2d4-9b5677e6f35c",
 	"emote":{
 		"beginTick":12,
 		"endTick":45,

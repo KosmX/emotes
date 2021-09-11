@@ -31,46 +31,13 @@ public class MainClientInit {
     }
 
 
-    public static void loadEmotes(){
+    public static void loadEmotes() {
+        UniversalEmoteSerializer.loadEmotes();
+
         EmoteHolder.clearEmotes();
 
-        serializeInternalJson("waving");
-        serializeInternalJson("clap");
-        serializeInternalJson("crying");
-        serializeInternalJson("point");
-        serializeInternalJson("here");
-        serializeInternalJson("palm");
-        serializeInternalJson("backflip");
-        serializeInternalJson("roblox_potion_dance");
-        serializeInternalJson("kazotsky_kick");
+        EmoteHolder.addEmoteToList(UniversalEmoteSerializer.hiddenServerEmotes);
 
-
-        if(! EmoteInstance.instance.getExternalEmoteDir().isDirectory()) EmoteInstance.instance.getExternalEmoteDir().mkdirs();
-        if (!EmoteInstance.config.loadEmotesServerSide.get()) {
-            UUIDMap<EmoteData> emotes = new UUIDMap<>();
-            EmoteSerializer.serializeEmotes(emotes, EmoteInstance.instance.getExternalEmoteDir());
-            EmoteHolder.addEmoteToList(emotes);
-        }
-    }
-
-    private static void serializeInternalJson(String name){
-        if(!((ClientConfig)EmoteInstance.config).loadBuiltinEmotes.get()){
-            return;
-        }
-        try {
-            InputStream stream = MainClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json");
-            List<EmoteData> emotes = UniversalEmoteSerializer.readData(stream, null, "json");
-            EmoteData emote = emotes.get(0);
-            emote.isBuiltin = true;
-            InputStream iconStream = MainClientInit.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
-            if(iconStream != null) {
-                emote.iconData = MathHelper.readFromIStream(iconStream);
-                iconStream.close();
-            }
-            EmoteHolder.addEmoteToList(emotes);
-        }catch (EmoteSerializerException | IOException e){
-            e.printStackTrace();
-        }
     }
 
     /**

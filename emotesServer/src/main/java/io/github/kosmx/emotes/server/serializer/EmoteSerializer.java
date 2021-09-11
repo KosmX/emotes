@@ -106,6 +106,10 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
             emote.author = node.get("author").toString();
         }
 
+        if(node.has("uuid")){
+            emote.uuid = UUID.fromString(node.get("uuid").getAsString());
+        }
+
         if(modVersion < version){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Emote: " + emote.name + " was made for a newer mod version", true);
             throw new JsonParseException(emote.name + " is version " + Integer.toString(version) + ". Emotecraft can only process version " + Integer.toString(modVersion) + ".");
@@ -116,7 +120,7 @@ public class EmoteSerializer implements JsonDeserializer<List<EmoteData>>, JsonS
         }
         node.entrySet().forEach((entry)->{
             String string = entry.getKey();
-            if(string.equals("author") || string.equals("comment") || string.equals("name") || string.equals("description") || string.equals("emote") || string.equals("version"))
+            if(string.equals("uuid") || string.equals("author") || string.equals("comment") || string.equals("name") || string.equals("description") || string.equals("emote") || string.equals("version"))
                 return;
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't understadt: " + string + " : " + entry.getValue());
             EmoteInstance.instance.getLogger().log(Level.WARNING, "If it is a comment, ignore the warning");

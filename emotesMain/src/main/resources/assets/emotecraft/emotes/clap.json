@@ -2,6 +2,7 @@
     "name": "Clap",
     "author": "KosmX",
     "description": "clap clap clap",
+    "uuid": "96506a5e-a69c-4a18-9add-d43dfd272fa6",
     "emote":{
         "isLoop": "false",
         "returnTick": 0,

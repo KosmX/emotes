@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.fabric.network;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
@@ -10,15 +11,12 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.loader.FabricLoader;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
-
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
@@ -26,11 +24,15 @@ import java.util.UUID;
 
 public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     public static final ResourceLocation channelID = new ResourceLocation(CommonData.MOD_ID, CommonData.playEmoteID);
+    public static final ResourceLocation geyserChannelID = new ResourceLocation("geyser", "emote");
 
     public static ServerNetwork instance = new ServerNetwork();
 
     public void init(){
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ServerPlayNetworking.registerReceiver(handler, channelID, this::receiveMessage));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayNetworking.registerReceiver(handler, channelID, this::receiveMessage);
+            ServerPlayNetworking.registerReceiver(handler, geyserChannelID, this::receiveGeyserMessage);
+        });
     }
 
     void receiveMessage(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf, PacketSender responseSender){
@@ -48,20 +50,52 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         }
     }
 
+    void receiveGeyserMessage(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf, PacketSender responseSender){
+        if(buf.isDirect()){
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.getBytes(buf.readerIndex(), bytes);
+            receiveGeyserMessage(player, bytes);
+        }
+        else {
+            receiveGeyserMessage(player, buf.array());
+        }
+    }
+
     @Override
     protected UUID getUUIDFromPlayer(Player player) {
         return player.getUUID();
     }
 
     @Override
-    protected void sendForEveryoneElse(NetData data, Player player) {
+    protected long getRuntimePlayerID(Player player) {
+        return player.getId();
+    }
+
+    @Override
+    protected void sendForEveryoneElse(GeyserEmotePacket packet, Player player) {
+        PlayerLookup.tracking(player).forEach(serverPlayer -> {
+            try {
+                if (serverPlayer != player && ServerPlayNetworking.canSend(serverPlayer, geyserChannelID)){
+                    ServerPlayNetworking.send(serverPlayer, geyserChannelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(packet.write())));
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    protected void sendForEveryoneElse(NetData data, GeyserEmotePacket emotePacket, Player player) {
         data.player = player.getUUID();
         PlayerLookup.tracking(player).forEach(serverPlayerEntity -> {
             try {
-               if(serverPlayerEntity != player){
-                   ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
-               }
-            }catch (IOException e){
+                if (serverPlayerEntity != player) {
+                    if (ServerPlayNetworking.canSend(serverPlayerEntity, channelID))
+                        ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+                    if (ServerPlayNetworking.canSend(serverPlayerEntity, geyserChannelID) && emotePacket != null)
+                        ServerPlayNetworking.send(serverPlayerEntity, geyserChannelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(emotePacket.write())));
+                }
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         });

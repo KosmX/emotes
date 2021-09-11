@@ -2,6 +2,7 @@
     "name": "kazotsky kick",
     "author": "Wah0o",
     "description": "cheap kazotsky kick",
+    "uuid": "01a53a42-2fd2-418c-8e46-e4ee1ff9ee6a",
     "emote":{
         "isLoop": "true",
         "returnTick": 11,
