@@ -52,5 +52,13 @@
   "emotecraft.resetConfig.title": "Réinitialiser toutes les configurations d'Emotecraft",
   "emotecraft.resetConfig.message": "Voulez-vous vraiment réinitialiser la configuration ?",
   "emotecraft.resetAllKeys.title": "Réinitialiser tous les raccourcis clavier d'émotes",
-  "emotecraft.resetAllKeys.message": "Voulez-vous vraiment réinitialiser tous les raccourcis clavier d'émotes ?"
+  "emotecraft.resetAllKeys.message": "Voulez-vous vraiment réinitialiser tous les raccourcis clavier d'émotes ?",
+  "emotecraft.options.export": "Menu d'export",
+  "emotecraft.exportjson": "Exporter un émote au format json",
+  "emotecraft.exportbin": "Exporter au format .emotecraft",
+  "emotecraft.export.error.json": "Échec de l'export au format json",
+  "emotecraft.export.error.emotecraft": "Échec de l'export au format .emotecraft",
+  "emotecraft.export.done.json": "Export .json effectué",
+  "emotecraft.export.done.emotecraft": "Export .emotecraft effectué",
+  "emotecraft.song_too_big_to_send": "La musique est trop lourde, impossible d'envoyer au serveur. Envoi de l'emote uniquement"
 }
