@@ -36,7 +36,7 @@ and you can invoke Emotecraft's receiver when you received a message.
 
 Modules:
 --------
-`emotesCommon`: common library used by Emotecraft, has no dependencies, published as **emotesAPI**  
+`emotesAPI`: common library used by Emotecraft, has no dependencies, published as **emotesAPI**  
     you can find it in my private maven server: `http://kosmx.ddns.net/maven`  
 `executor`: the interface to be implemented to the modloader+MC version  
 `emotesMain`: Main client-side logic    
@@ -48,6 +48,3 @@ Modules:
 
 ### If you have any questions about the mod, you can find me on Discord
 [![](https://img.shields.io/discord/737216980095991838?label=Discord)](https://discord.gg/6NfdRuE)
-
-
-[![HitCount](http://hits.dwyl.com/kosmx/emotes.svg)](http://hits.dwyl.com/kosmx/emotes)
