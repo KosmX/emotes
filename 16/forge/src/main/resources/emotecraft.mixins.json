@@ -3,7 +3,9 @@
   "package": "io.github.kosmx.emotes.forge.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ServerPlayNetworkInstance"
+    "ServerPlayNetworkInstance",
+    "ChunkMapAccessor",
+    "TrackedEntityAccessor"
   ],
   "client": [
     "EmotePlayerMixin",
