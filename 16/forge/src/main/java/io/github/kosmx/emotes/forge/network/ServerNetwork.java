@@ -51,12 +51,17 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
 
     public void init(){
         channel.addListener(this::receiveByteBuf);
-        geyserChannel.addListener(networkEvent -> receiveGeyserMessage(networkEvent.getSource().get().getSender(), toBytes(networkEvent.getPayload())));
+        geyserChannel.addListener(this::receiveGeyserEvent); //Lambdas are not possible.
     }
 
     public void receiveByteBuf(NetworkEvent.ClientCustomPayloadEvent event){
         instance.receiveMessage(event.getSource().get().getSender(), event.getSource().get().getSender().connection, event.getPayload());
         event.getSource().get().setPacketHandled(true);//it was handled just in a bit weirder way me :D
+    }
+
+    public void receiveGeyserEvent(NetworkEvent.ClientCustomPayloadEvent networkEvent){
+        receiveGeyserMessage(networkEvent.getSource().get().getSender(), toBytes(networkEvent.getPayload()));
+        networkEvent.getSource().get().setPacketHandled(true);
     }
 
     void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
