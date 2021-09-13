@@ -72,6 +72,7 @@ if(keysExists) {
     project.ext.keys.modrinth_token = ENV.MODRINTH_TOKEN
     project.ext.keys.curseforge_key = ENV.CURSEFORGE_TOKEN
     project.ext.keys.github_token = ENV.GH_TOKEN
+    project.ext.keys.kosmx_maven = ENV.KOSMX_TOKEN
 
 
     task publishModrinth(type: TaskModrinthUpload) {
@@ -144,6 +145,8 @@ if(keysExists) {
 
         finalizedBy(':16:publishToCF')
         finalizedBy(':17:publishToCF')
+        
+        finalizedBy(':emotesAPI:publish')
 
     }
 }

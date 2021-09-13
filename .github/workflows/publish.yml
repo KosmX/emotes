@@ -50,3 +50,4 @@ jobs:
           CURSEFORGE_TOKEN: ${{secrets.CURSEFORGE}}
           MODRINTH_TOKEN: ${{secrets.MODRINTH}}
           GH_TOKEN: ${{secrets.GH_TOKEN}}
+          KOSMX_TOKEN: ${{secrets.KOSMX_TOKEN}}

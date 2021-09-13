@@ -97,6 +97,19 @@ publishing {
     // select the repositories you want to publish to
     repositories {
         // uncomment to publish to the local maven
-        mavenLocal()
+        if (project.keysExists) {
+            repositories {
+                maven {
+                    url = 'https://kosmx.duckdns.org/maven/'
+                    credentials {
+                        username = 'kosmx'
+                        password = project.keys.kosmx_maven
+                    }
+                }
+            }
+        }
+        else {
+            mavenLocal()
+        }
     }
 }
