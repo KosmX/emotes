@@ -16,20 +16,6 @@ repositories {
         name = "BucketMaven"
         url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
     }
-    maven{
-        url = 'https://jitpack.io'
-    }
-    maven{
-        url = 'https://repo.viaversion.com'
-    }
-    maven{
-        name = "OpenCollab snapshots"
-        url = "https://repo.opencollab.dev/maven-snapshots/"
-    }
-    maven{
-        name = 'OpenCollab'
-        url = 'https://repo.opencollab.dev/maven-releases/'
-    }
 }
 
 configurations {
@@ -50,8 +36,6 @@ dependencies {
     implementation project(':emotesServer')
     compileModule project(':emotesServer')
     compileModule project(':emotesMain')
-
-    implementation("org.geysermc:connector:1.4.2-SNAPSHOT")
 }
 
 processResources{
