@@ -21,7 +21,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = project.mod_version
 group = project.maven_group
-archivesBaseName = project.archives_base_name
+archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
@@ -157,6 +157,7 @@ jar {
         configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
     }
     //Like shadow just without killing refmap task
+    archiveName "${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
 }
 
 jar.finalizedBy('reobfJar')
@@ -174,14 +175,8 @@ tasks.withType(JavaCompile) {
     it.options.encoding = "UTF-8"
 }
 
-/*
-shadowJar {
-    configurations = [project.configurations.compileModule]
-    classifier 'dev'
-}
-
- */
-
+// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
+//publish.dependsOn('reobfJar')
 
 mixin{
     add sourceSets.main, "emotecraft.refmap.json"
