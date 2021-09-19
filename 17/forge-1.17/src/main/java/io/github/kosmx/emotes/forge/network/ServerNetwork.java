@@ -121,8 +121,9 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         try {
             sendConsumer(player, serverPlayer -> {
                 try {
-                    PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(data));
-                    if (emotePacket != null && geyserChannel.isRemotePresent(serverPlayer.connection.getConnection())) {
+                    if (channel.isRemotePresent(serverPlayer.connection.getConnection())){
+                        PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(data));
+                    } else if (emotePacket != null && geyserChannel.isRemotePresent(serverPlayer.connection.getConnection())) {
                         PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(geyserChannelID, emotePacket.write()));
                     }
                 }catch (IOException e){
