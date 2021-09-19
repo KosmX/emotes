@@ -82,8 +82,10 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
             if (player1 != player && player1.canSee(player)) {
                 try {
                     //Bukkit server will filter if I really can send, or not.
-                    player1.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
-                    if(emotePacket != null) player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, emotePacket.write());
+                    //If else to not spam dumb forge clients.
+                    if(player1.getListeningPluginChannels().contains(BukkitWrapper.EmotePacket))
+                        player1.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
+                    else if(emotePacket != null) player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, emotePacket.write());
                 }catch (Exception e){
                     e.printStackTrace();
                 }

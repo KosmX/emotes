@@ -49,7 +49,7 @@ dependencies {
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")){ transitive = false }
     compileModule project(':executor')
     compileModule project(':emotesAPI')
-    compileModule project(':emotesServer')
+    compileModule(project(':emotesServer')){ transitive = false }
 
 
     forge "net.minecraftforge:forge:${project.minecraft_version}-36.2.0"

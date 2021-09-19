@@ -4,9 +4,12 @@ plugins {
 
 version project.mod_version
 
+apply plugin: 'dev.architectury.loom'
+apply plugin: 'architectury-plugin'
 architectury{
     injectInjectables = false
     common(false) //TODO update Forge
+    minecraft = project.minecraft_version
 }
 
 loom{
@@ -18,6 +21,10 @@ configurations {
 }
 
 dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+
+    
     implementation project(':emotesMain')
     implementation project(':emotesAPI')
     implementation project(':executor')

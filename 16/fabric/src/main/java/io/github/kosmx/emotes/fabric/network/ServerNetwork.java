@@ -92,7 +92,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
                 if (serverPlayerEntity != player) {
                     if (ServerPlayNetworking.canSend(serverPlayerEntity, channelID))
                         ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
-                    if (ServerPlayNetworking.canSend(serverPlayerEntity, geyserChannelID) && emotePacket != null)
+                    else if (ServerPlayNetworking.canSend(serverPlayerEntity, geyserChannelID) && emotePacket != null)
                         ServerPlayNetworking.send(serverPlayerEntity, geyserChannelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(emotePacket.write())));
                 }
             } catch (IOException e) {

@@ -34,8 +34,9 @@ dependencies {
     implementation project(':executor')
     compileModule project(':executor')
     implementation project(':emotesServer')
-    compileModule project(':emotesServer')
-    compileModule project(':emotesMain')
+    
+    compileModule(project(':emotesServer')){ transitive = false }
+    compileModule(project(':emotesMain')){ transitive = false }
 }
 
 processResources{
