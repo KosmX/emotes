@@ -37,7 +37,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     public ModelPart leftLeg;
     @Shadow
     public ModelPart leftArm;
-    protected SetableSupplier<EmotePlayImpl> emote;
+    protected SetableSupplier<EmotePlayImpl> emote = new SetableSupplier<>();
 
     @Inject(method = "<init>(Lnet/minecraft/client/model/geom/ModelPart;Ljava/util/function/Function;)V", at = @At("RETURN"))
     private void InitInject(ModelPart modelPart, Function<ResourceLocation, RenderType> function, CallbackInfo ci){

@@ -49,12 +49,13 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                emotes {
                     source sourceSets.main
                 }
             }
-
-            arg "-mixin.config=emotecraft.mixins.json, bendylib.mixin.json"
+            property 'mixin.env.disableRefMap', 'true'
+            arg "-mixin.config=emotecraft.mixins.json"
+            arg "-mixin.config=bendylib.mixin.json"
         }
 
         server {
@@ -73,11 +74,13 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                emotes {
                     source sourceSets.main
                 }
             }
-            arg "-mixin.config=emotecraft.mixins.json, bendylib.mixin.json"
+            property 'mixin.env.disableRefMap', 'true'
+            arg "-mixin.config=emotecraft.mixins.json"
+            arg "-mixin.config=bendylib.mixin.json"
         }
 
         data {
@@ -99,7 +102,7 @@ minecraft {
             args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                examplemod {
+                emotes {
                     source sourceSets.main
                 }
             }

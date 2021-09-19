@@ -9,12 +9,10 @@ import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -22,9 +20,7 @@ import net.minecraftforge.fmlclient.ConfigGuiHandler;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class ClientInit {
@@ -39,14 +35,6 @@ public class ClientInit {
         initKeyBinding();
 
         ClientNetworkInstance.networkInstance.init(); //init network
-        /*
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            FabricClientMethods.tick++;
-
-            keyBindingFunction.accept(client);
-        });
-
-         */
 
         ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> new EmoteMenuImpl(screen)));
     }
