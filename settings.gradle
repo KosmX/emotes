@@ -45,3 +45,5 @@ include '17:fabric'
 include 'bukkit'
 include 'bukkit:debug'
 
+include 'forge-1.17'
+

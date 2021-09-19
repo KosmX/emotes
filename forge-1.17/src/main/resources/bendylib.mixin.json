@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "io.github.kosmx.bendylibForge.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "emotecraft.refmap.json",
+  "mixins": [],
+  "client": [
+    "CuboidMutator",
+    "IModelPartMixin",
+    "QuadMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
