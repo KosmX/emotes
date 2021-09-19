@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
@@ -166,6 +167,6 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
 
     private void sendConsumer(Player player, Consumer<ServerPlayer> consumer){
         TrackedEntityAccessor tracker = ((ChunkMapAccessor)((ServerChunkCache)player.getCommandSenderWorld().getChunkSource()).chunkMap).getTrackedEntity().get(player.getId());
-        tracker.getPlayersTracking().stream().forEach(consumer);
+        tracker.getPlayersTracking().forEach(serverPlayerConnection -> consumer.accept(serverPlayerConnection.getPlayer()));
     }
 }
