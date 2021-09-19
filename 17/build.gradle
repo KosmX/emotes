@@ -2,6 +2,7 @@ plugins{
     id 'java'
 }
 
+/*
 subprojects {
     apply plugin: 'dev.architectury.loom'
     dependencies {
@@ -18,12 +19,14 @@ architectury{
     minecraft = project.minecraft_version
 }
 
+ */
+
 
 apply plugin: 'com.matthewprenger.cursegradle'
 
 task buildAll{
     dependsOn(":${project.module_name}:fabric:build")
-    //dependsOn(":${project.module_name}:forge:build")
+    dependsOn(":${project.module_name}:forge-1.17:build")
 }
 
 task copyArtifacts{
@@ -34,12 +37,10 @@ task copyArtifacts{
             into "${rootProject.projectDir}/artifacts"
         }
 
-        /*copy{
-            from "${project.projectDir}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
+        copy{
+            from "${project.projectDir}/forge-1.17/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
             into "${rootProject.projectDir}/artifacts"
         }
-
-         */
     }
 }
 
@@ -76,7 +77,7 @@ if(keysExists) {
                 //displayName = archivesBaseName
             }
         }
-        /*
+
         project {
             id = '403422' //Fabric version
             changelogType = "markdown"
@@ -84,7 +85,7 @@ if(keysExists) {
             changelog = changes
             releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
-            addGameVersion "1.16.5"
+            addGameVersion "1.17.1"
             addGameVersion "Forge"
 
 
@@ -93,11 +94,11 @@ if(keysExists) {
                 javaVersionAutoDetect = false // defaults to true
             }
 
-            mainArtifact("${project.getProjectDir()}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
+            mainArtifact("${project.getProjectDir()}/forge-1.17/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
                 //displayName = archivesBaseName
             }
         }
-         */
+
     }
 
     task publishToCF{
