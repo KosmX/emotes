@@ -31,8 +31,10 @@ configurations {
 }
 loom{
     silentMojangMappingsLicense()
-    mixinConfig "emotecraft.mixins.json"
-    mixinConfig "bendylib.mixin.json"
+    forge {
+        mixinConfig "emotecraft.mixins.json"
+        mixinConfig "bendylib.mixin.json"
+    }
 }
 
 dependencies {
@@ -52,7 +54,7 @@ dependencies {
     compileModule(project(':emotesServer')){ transitive = false }
 
 
-    forge "net.minecraftforge:forge:${project.minecraft_version}-36.2.0"
+    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
     //other dependency(ies)
 
     //modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"

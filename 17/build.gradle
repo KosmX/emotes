@@ -2,7 +2,6 @@ plugins{
     id 'java'
 }
 
-/*
 subprojects {
     apply plugin: 'dev.architectury.loom'
     dependencies {
@@ -18,9 +17,6 @@ allprojects {
 architectury{
     minecraft = project.minecraft_version
 }
-
- */
-
 
 apply plugin: 'com.matthewprenger.cursegradle'
 

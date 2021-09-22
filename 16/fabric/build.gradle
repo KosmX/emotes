@@ -1,7 +1,3 @@
-/*
-This build.gradle has been tweaked. Don't build other mods with this or this with the default Fabric.
- */
-
 
 plugins {
     id 'maven-publish'

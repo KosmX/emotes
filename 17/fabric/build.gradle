@@ -1,19 +1,14 @@
 
 plugins {
-    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
-    //id "architectury-plugin" version "3.0-SNAPSHOT"
     id 'maven-publish'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
-apply plugin: 'dev.architectury.loom'
-apply plugin: 'architectury-plugin'
 architectury{
     platformSetupLoomIde()
     fabric()
     minecraft = project.minecraft_version
-
 }
 
 loom{
@@ -35,10 +30,6 @@ configurations {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-
-
     implementation project(':executor')
     implementation project(':emotesAPI')
     implementation project(':emotesServer')
