@@ -43,7 +43,7 @@ dependencies {
     implementation project(':emotesServer')
 
     implementation project(':emotesMain')
-    implementation project(":${project.module_name}:archCommon")
+    implementation project(path: ":${project.module_name}:archCommon", configuration: 'dev')
     developmentForge(project(path: ":emotesMain")) { transitive = false }
     developmentForge(project(path: ":${project.module_name}:archCommon")) { transitive = false }
 

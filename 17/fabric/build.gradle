@@ -34,7 +34,7 @@ dependencies {
     implementation project(':emotesAPI')
     implementation project(':emotesServer')
 
-    implementation(project(path: ":${project.module_name}:archCommon"))
+    implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev'))
     implementation project(':emotesMain')
     developmentFabric(project(path: ":emotesMain")) { transitive = false }
     developmentFabric(project(path: ":${project.module_name}:archCommon")) { transitive = false }

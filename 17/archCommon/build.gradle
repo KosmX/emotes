@@ -4,12 +4,10 @@ plugins {
 
 version project.mod_version
 
-apply plugin: 'dev.architectury.loom'
-apply plugin: 'architectury-plugin'
 architectury{
     injectInjectables = false
-    common(false) //TODO update Forge
-    minecraft = project.minecraft_version
+    common() //TODO update Forge
+    //minecraft = project.minecraft_version
 }
 
 loom{
@@ -18,6 +16,7 @@ loom{
 
 configurations {
     compileModule
+    dev
 }
 
 dependencies {
@@ -45,6 +44,10 @@ tasks.withType(Copy){
 
 jar{
 
+}
+
+artifacts {
+    dev(jar)
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
