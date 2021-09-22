@@ -39,7 +39,7 @@ include '16:forge'
 include '17'
 include '17:archCommon'
 include '17:fabric'
-include '17:forge-1.17'
+include '17:forge'
 
 //Bukkit plugin stuff
 include 'bukkit'
