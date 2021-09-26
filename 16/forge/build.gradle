@@ -49,9 +49,6 @@ dependencies {
 
     compileModule(project(':emotesMain')){ transitive = false }
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")){ transitive = false }
-    compileModule project(':executor')
-    compileModule project(':emotesAPI')
-    compileModule(project(':emotesServer')){ transitive = false }
 
 
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"

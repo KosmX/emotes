@@ -46,9 +46,6 @@ dependencies {
 
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionFabric")) { transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }
-    compileModule project(':executor')
-    compileModule project(':emotesAPI')
-    compileModule(project(':emotesServer')){ transitive = false }
 
 
     //to change the versions see the gradle.properties file
