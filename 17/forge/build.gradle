@@ -43,9 +43,9 @@ dependencies {
     implementation project(':emotesServer')
 
     implementation project(':emotesMain')
-    implementation project(path: ":${project.module_name}:archCommon", configuration: 'dev')
+    implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev')){ transitive = false }
     developmentForge(project(path: ":emotesMain")) { transitive = false }
-    developmentForge(project(path: ":${project.module_name}:archCommon")) { transitive = false }
+    developmentForge(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false }
 
     compileModule(project(':emotesMain')){ transitive = false }
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")){ transitive = false }
