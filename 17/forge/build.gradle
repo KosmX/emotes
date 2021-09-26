@@ -42,9 +42,9 @@ dependencies {
     implementation project(':emotesAPI')
     implementation project(':emotesServer')
 
-    implementation project(':emotesMain')
+    implementation(project(path: ':emotesMain', configuration: 'dev')){ transitive = false }
     implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev')){ transitive = false }
-    developmentForge(project(path: ":emotesMain")) { transitive = false }
+    developmentForge(project(path: ":emotesMain", configuration: 'dev')) { transitive = false }
     developmentForge(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false }
 
     compileModule(project(':emotesMain')){ transitive = false }

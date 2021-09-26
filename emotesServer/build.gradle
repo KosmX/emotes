@@ -1,5 +1,3 @@
-
-
 plugins {
     id 'java'
 }
@@ -10,17 +8,17 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    dev
+}
 
 dependencies {
     implementation project(':emotesAPI')
     implementation project(':executor')
 
-    implementation "com.google.code.gson:gson:2.8.0"
+    compileOnly "com.google.code.gson:gson:2.8.0"
 }
 
-/*
-test {
-    useJUnitPlatform()
+artifacts {
+    dev(jar)
 }
-
- */

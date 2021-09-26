@@ -14,9 +14,8 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    //NONE :D
-    //I use Java 1.8 but that's okay
+configurations {
+    dev
 }
 
 dependencies {
@@ -27,6 +26,9 @@ test {
     useJUnitPlatform()
 }
 
+artifacts {
+    dev(jar)
+}
 
 //-------- publishing --------
 
