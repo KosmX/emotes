@@ -2,7 +2,6 @@ plugins{
     id 'java'
 }
 
-/*
 subprojects {
     apply plugin: 'dev.architectury.loom'
     dependencies {
@@ -19,14 +18,11 @@ architectury{
     minecraft = project.minecraft_version
 }
 
- */
-
-
 apply plugin: 'com.matthewprenger.cursegradle'
 
 task buildAll{
     dependsOn(":${project.module_name}:fabric:build")
-    dependsOn(":${project.module_name}:forge-1.17:build")
+    dependsOn(":${project.module_name}:forge:build")
 }
 
 task copyArtifacts{
@@ -38,7 +34,7 @@ task copyArtifacts{
         }
 
         copy{
-            from "${project.projectDir}/forge-1.17/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
+            from "${project.projectDir}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
             into "${rootProject.projectDir}/artifacts"
         }
     }
@@ -94,7 +90,7 @@ if(keysExists) {
                 javaVersionAutoDetect = false // defaults to true
             }
 
-            mainArtifact("${project.getProjectDir()}/forge-1.17/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
+            mainArtifact("${project.getProjectDir()}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
                 //displayName = archivesBaseName
             }
         }

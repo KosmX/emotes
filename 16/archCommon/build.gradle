@@ -25,6 +25,7 @@ repositories {
 
 configurations {
     compileModule
+    dev
 }
 
 dependencies {
@@ -70,8 +71,12 @@ jar{
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
-    classifier = "sources"
+    classifier "sources"
     from sourceSets.main.allSource
+}
+
+artifacts {
+    dev(jar)
 }
 
 /*

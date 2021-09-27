@@ -42,13 +42,14 @@ dependencies {
     implementation project(':emotesAPI')
     implementation project(':emotesServer')
 
-    implementation project(':emotesMain')
-    implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false}
-    developmentForge(project(path: ":emotesMain")) { transitive = false }
+    implementation(project(path: ':emotesMain', configuration: 'dev')){ transitive = false }
+    implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev')){ transitive = false }
+    developmentForge(project(path: ":emotesMain", configuration: 'dev')) { transitive = false }
     developmentForge(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false }
 
     compileModule(project(':emotesMain')){ transitive = false }
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")){ transitive = false }
+
 
 
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"

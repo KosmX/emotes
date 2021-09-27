@@ -8,7 +8,15 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    dev
+}
+
 dependencies {
     implementation project(':emotesAPI')
     compileOnly "com.google.code.gson:gson:2.8.0"
+}
+
+artifacts {
+    dev(jar)
 }

@@ -1,19 +1,14 @@
 
 plugins {
-    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
-    //id "architectury-plugin" version "3.0-SNAPSHOT"
     id 'maven-publish'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
-apply plugin: 'dev.architectury.loom'
-apply plugin: 'architectury-plugin'
 architectury{
     platformSetupLoomIde()
     fabric()
     minecraft = project.minecraft_version
-
 }
 
 loom{
@@ -35,24 +30,17 @@ configurations {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-
-
     implementation project(':executor')
     implementation project(':emotesAPI')
     implementation project(':emotesServer')
 
-    implementation(project(path: ":${project.module_name}:archCommon"))
+    implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev'))
     implementation project(':emotesMain')
     developmentFabric(project(path: ":emotesMain")) { transitive = false }
-    developmentFabric(project(path: ":${project.module_name}:archCommon")) { transitive = false }
+    developmentFabric(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false }
 
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionFabric")) { transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }
-    compileModule project(':executor')
-    compileModule project(':emotesAPI')
-    compileModule(project(':emotesServer')){ transitive = false }
 
 
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"

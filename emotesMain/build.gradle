@@ -7,7 +7,7 @@ plugins {
 
 //apply plugin: 'dev.architectury.loom'
 //apply plugin: "architectury-plugin"
-apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'com.github.johnrengelman.shadow'
 
 version project.mod_version
 
@@ -18,6 +18,7 @@ repositories {
 
 configurations {
     compileModule
+    dev
 }
 
 dependencies {
@@ -31,7 +32,6 @@ dependencies {
     compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 }
 
-
 tasks.withType(Copy){
     eachFile{
         rename{
@@ -41,21 +41,27 @@ tasks.withType(Copy){
         //Possibly creates other problems on other operating systems
     }
 }
-
+/*
 shadowJar{
     configurations = [project.configurations.compileModule]
     classifier ""
 }
 
+
+ */
 //remapJar{
 //    dependsOn shadowJar
 //    input.set shadowJar.archiveFile
 //}
 
 jar{
-    //from {
-    //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
-    //}
+   from {
+       configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+   }
+}
+
+artifacts {
+    dev(jar)
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
@@ -77,7 +83,7 @@ publishing{
             //artifact(remapJar) {
             //    builtBy remapJar
             //}
-            artifact shadowJar
+            //artifact shadowJar
             artifact sourcesJar
             //from components.java
         }
