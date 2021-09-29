@@ -49,7 +49,7 @@ dependencies {
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}"){
         exclude group: "net.fabricmc.fabric-api"
     }
-    include "com.terraformersmc:modmenu:${project.modmenu_version}"
+    //include "com.terraformersmc:modmenu:${project.modmenu_version}"
 
 
     modImplementation "io.github.kosmx:bendy-lib:${project.bendylib_version}"
