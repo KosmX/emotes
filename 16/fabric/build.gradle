@@ -58,7 +58,7 @@ dependencies {
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}"){
         exclude group: "net.fabricmc.fabric-api"
     }
-    include "com.terraformersmc:modmenu:${project.modmenu_version}"
+    //include "com.terraformersmc:modmenu:${project.modmenu_version}"
     //modImplementation "me.shedaniel.cloth:config-2:${project.cloth_version}"
     //include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
