@@ -71,24 +71,22 @@ public class ConfigScreen extends OptionsSubScreen {
         this.addWidget(options);
     }
 
-    private void addConfigEntry(SerializableConfig.ConfigEntry<?> entry, OptionsList options){
-        if(entry.showEntry() || ((ClientConfig)EmoteInstance.config).showHiddenConfig.get()) {
+    private void addConfigEntry(SerializableConfig.ConfigEntry<?> entry, OptionsList options) {
+        if (entry.showEntry() || ((ClientConfig) EmoteInstance.config).showHiddenConfig.get()) {
             if (entry instanceof SerializableConfig.BooleanConfigEntry) {
-                if(entry.hasTooltip) {
+                if (entry.hasTooltip) {
                     options.addBig(CycleOption.createOnOff("emotecraft.otherconfig." + entry.getName(),
                             new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip"),
                             gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
                             (gameOptions, option, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
                     ));
-                }
-                else {
+                } else {
                     options.addBig(CycleOption.createOnOff("emotecraft.otherconfig." + entry.getName(),
                             gameOptions -> ((SerializableConfig.BooleanConfigEntry) entry).get(),
                             (gameOptions, option, aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
                     ));
                 }
-            }
-            else if (entry instanceof SerializableConfig.FloatConfigEntry) {
+            } else if (entry instanceof SerializableConfig.FloatConfigEntry) {
                 SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
                 options.addBig(new ProgressOption(
                         EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
@@ -103,8 +101,8 @@ public class ConfigScreen extends OptionsSubScreen {
         }
     }
 
-    private void resetAll(boolean bl){
-        if(bl) {
+    private void resetAll(boolean bl) {
+        if (bl) {
             EmoteInstance.config.iterate(SerializableConfig.ConfigEntry::resetToDefault);
             this.init(); //reload screen
         }
@@ -123,7 +121,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     }
 
-    static class DummyEntry extends Option{
+    static class DummyEntry extends Option {
 
         public DummyEntry(String key) {
             super(key);
@@ -135,7 +133,7 @@ public class ConfigScreen extends OptionsSubScreen {
         }
     }
 
-    static class DummyButton extends AbstractWidget{
+    static class DummyButton extends AbstractWidget {
 
         public DummyButton(int x, int y, int width, int height, Component message) {
             super(x, y, width, height, message);
