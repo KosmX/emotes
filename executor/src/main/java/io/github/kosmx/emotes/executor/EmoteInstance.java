@@ -27,7 +27,11 @@ public abstract class EmoteInstance {
     public abstract boolean isClient();
 
     public abstract Path getGameDirectory();
-    public abstract File getExternalEmoteDir();
+
+    public File getExternalEmoteDir(){
+        return getGameDirectory().resolve(config.emotesDir.get()).toFile();
+    }
+
     public Path getConfigPath(){
         if(!Files.exists(getGameDirectory().resolve("config"))){
             try {
