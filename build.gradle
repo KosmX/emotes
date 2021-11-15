@@ -96,6 +96,8 @@ if(keysExists) {
         //System.out.println("Enter the game version number: (See minotaur docs for valids)");
         addGameVersion('1.16.5');
         addGameVersion('1.17');
+        addGameVersion('1.17.1')
+        addGameVersion('1.18-pre1');
         changelog = changes;
         addLoader("fabric")
         addLoader("forge")
