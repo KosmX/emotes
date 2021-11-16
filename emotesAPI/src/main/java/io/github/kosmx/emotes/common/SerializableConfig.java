@@ -29,6 +29,8 @@ public class SerializableConfig {
     public final BooleanConfigEntry loadEmotesServerSide = new BooleanConfigEntry("loadEmotesServerSide", true, false, expert);
     public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);
 
+    public final StringConfigEntry emotesDir = new StringConfigEntry("emotesDirectory", "emotes", false, expert, true);
+
     public void iterate(Consumer<ConfigEntry<?>> consumer){
         basics.forEach(consumer);
         expert.forEach(consumer);
@@ -139,6 +141,20 @@ public class SerializableConfig {
         }
         public T getTextVal(){
             return (T) get();
+        }
+    }
+
+    public static class StringConfigEntry extends ConfigEntry<String> {
+        public StringConfigEntry(String name, String defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden) {
+            super(name, null, defVal, hasTooltip, collection, hidden);
+        }
+
+        public StringConfigEntry(String name, String defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
+            super(name, defVal, hasTooltip, collection);
+        }
+
+        public StringConfigEntry(String name, String defVal, List<ConfigEntry<?>> collection, boolean hidden) {
+            super(name, defVal, collection, hidden);
         }
     }
 }

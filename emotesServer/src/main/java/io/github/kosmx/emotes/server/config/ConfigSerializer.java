@@ -47,6 +47,9 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
             else if(entry instanceof SerializableConfig.FloatConfigEntry){
                 ((SerializableConfig.FloatConfigEntry)entry).set(element.getAsFloat());
             }
+            else if(entry instanceof SerializableConfig.StringConfigEntry){
+                ((SerializableConfig.StringConfigEntry)entry).set(element.getAsString());
+            }
         }
     }
 
@@ -64,6 +67,9 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         }
         else if(entry instanceof SerializableConfig.FloatConfigEntry){
             node.addProperty(entry.getName(), (float)((SerializableConfig.FloatConfigEntry) entry).get());
+        }
+        else if(entry instanceof SerializableConfig.StringConfigEntry){
+            node.addProperty(entry.getName(), ((SerializableConfig.StringConfigEntry)entry).get());
         }
     }
 
