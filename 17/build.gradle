@@ -61,7 +61,7 @@ if(keysExists) {
 
             relations {
                 requiredDependency 'fabric-api'
-                embeddedLibrary 'modmenu'
+                optionalDependency 'modmenu'
                 //optionalDependency 'perspective-mod-redux'
             }
 
@@ -70,7 +70,7 @@ if(keysExists) {
                 javaVersionAutoDetect = false // defaults to true
             }
 
-            mainArtifact("${project.getProjectDir()}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar") {
+            mainArtifact("${project.getProjectDir()}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}+1.18-${project.mod_version}-fabric.jar") {
                 //displayName = archivesBaseName
             }
         }

@@ -55,7 +55,7 @@ if(keysExists) {
 
             relations {
                 requiredDependency 'fabric-api'
-                embeddedLibrary 'modmenu'
+                optionalDependency 'modmenu'
                 //optionalDependency 'perspective-mod-redux'
             }
 
