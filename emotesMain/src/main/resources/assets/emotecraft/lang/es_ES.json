@@ -52,5 +52,6 @@
   "emotecraft.resetConfig.title": "Reiniciar toda la configuración de Emotecraft",
   "emotecraft.resetConfig.message": "¿De verdad quieres reiniciar la configuración?",
   "emotecraft.resetAllKeys.title": "Reiniciar todos los accesos rápidos",
-  "emotecraft.resetAllKeys.message": "¿De verdad quieres reiniciar todos los accesos rápidos?"
+  "emotecraft.resetAllKeys.message": "¿De verdad quieres reiniciar todos los accesos rápidos?",
+  "emotecraft.options.export": "Exportar menú"
 }
