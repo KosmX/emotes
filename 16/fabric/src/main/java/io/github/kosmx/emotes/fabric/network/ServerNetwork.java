@@ -86,7 +86,6 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
 
     @Override
     protected void sendForEveryoneElse(NetData data, GeyserEmotePacket emotePacket, Player player) {
-        data.player = player.getUUID();
         PlayerLookup.tracking(player).forEach(serverPlayerEntity -> {
             try {
                 if (serverPlayerEntity != player) {

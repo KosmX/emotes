@@ -117,7 +117,6 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
 
     @Override
     protected void sendForEveryoneElse(NetData data, @Nullable GeyserEmotePacket emotePacket, Player player) {
-        data.player = player.getUUID();
         try {
             sendConsumer(player, serverPlayer -> {
                 try {

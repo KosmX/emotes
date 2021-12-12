@@ -5,6 +5,7 @@
     <option name="MAIN_CLASS_NAME" value="org.bukkit.craftbukkit.Main" />
     <module name="emotecraft.bukkit.debug.main" />
     <option name="PROGRAM_PARAMETERS" value="-nogui" />
+    <option name="VM_PARAMETERS" value="-DIReallyKnowWhatIAmDoingISwear" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bukkit/debug/run" />
     <method v="2">
       <option name="Make" enabled="true" />

@@ -98,6 +98,7 @@ if(keysExists) {
         addGameVersion('1.17');
         addGameVersion('1.17.1')
         addGameVersion('1.18');
+        addGameVersion('1.18.1');
         changelog = changes;
         addLoader("fabric")
         addLoader("forge")
