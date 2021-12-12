@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: 16
+          java-version: 17
       - name: checkout repository
         uses: actions/checkout@v2
       - name: configure gradle

@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        java: [16]
+        java: [17]
         os: [ubuntu-latest, windows-latest]
         
     runs-on: ${{ matrix.os }}
@@ -37,7 +37,7 @@ jobs:
         dependencies-cache-enabled: true
         configuration-cache-enabled: true
     - name: capture build artifacts
-      if: ${{ runner.os == 'Linux' && matrix.java == '16' }}
+      if: ${{ runner.os == 'Linux' && matrix.java == '17' }}
       uses: actions/upload-artifact@v2
       with:
         name: artifacts
