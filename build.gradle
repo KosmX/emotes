@@ -98,6 +98,7 @@ if(keysExists) {
         addGameVersion('1.17');
         addGameVersion('1.17.1')
         addGameVersion('1.18');
+        addGameVersion('1.18.1');
         changelog = changes;
         addLoader("fabric")
         addLoader("forge")
@@ -148,6 +149,7 @@ if(keysExists) {
 
         finalizedBy(':16:publishToCF')
         finalizedBy(':17:publishToCF')
+        finalizedBy(':18:publishToCF')
         
         finalizedBy(':emotesAPI:publish')
 
@@ -160,7 +162,7 @@ else {
 //Build all modules task :D
 task buildAll{
     dependsOn(':bukkit:build')
-    dependsOn(':16:buildAll', ':17:buildAll')
+    dependsOn(':16:buildAll', ':17:buildAll', ':18:buildAll')
 }
 
 task cleanupArtifacts{
@@ -172,7 +174,7 @@ task cleanupArtifacts{
 task collectArtifacts{
     dependsOn('cleanupArtifacts')
     dependsOn(':bukkit:copyArtifacts')
-    dependsOn(':16:copyArtifacts', ':17:copyArtifacts')
+    dependsOn(':16:copyArtifacts', ':17:copyArtifacts', ':18:copyArtifacts')
     doLast {
         releaseArtifacts = project.getProjectDir().toPath().resolve("artifacts").toFile().listFiles()
     }

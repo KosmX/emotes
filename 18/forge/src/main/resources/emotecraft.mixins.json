@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "package": "io.github.kosmx.emotes.forge.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "ServerPlayNetworkInstance",
+    "ChunkMapAccessor",
+    "TrackedEntityAccessor"
+  ],
+  "client": [
+    "EmotePlayerMixin",
+    "FeatureRendererMixin",
+    "KeyEventMixin",
+    "ModelPartMixin",
+    "PlayerRendererMixin",
+    "PlayerModelMixin",
+    "HeldItemMixin",
+    "LivingEntityRenderRedirect",
+    "ArmorFeatureRendererMixin",
+    "BipedEntityModelMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+}
+
+version project.mod_version
+
+architectury{
+    injectInjectables = false
+    common() //TODO update Forge
+    //minecraft = project.minecraft_version
+}
+
+loom{
+    silentMojangMappingsLicense()
+}
+
+configurations {
+    compileModule
+    dev
+}
+
+dependencies {
+    implementation project(':emotesMain')
+    implementation project(':emotesAPI')
+    implementation project(':executor')
+    implementation project(':emotesServer')
+
+
+    //compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
+
+    modImplementation("net.fabricmc:fabric-loader:${project.loader_version}")
+}
+
+
+tasks.withType(Copy){
+    eachFile{
+        rename{
+            String filename->filename = filename.toLowerCase()
+        }
+        //Rename every file to lowercase. This is essential for the translations to work
+        //Possibly creates other problems on other operating systems
+    }
+}
+
+jar{
+
+}
+
+artifacts {
+    dev(jar)
+}
+
+task sourcesJar(type: Jar, dependsOn: classes){
+    classifier "sources"
+    from sourceSets.main.allSource
+}

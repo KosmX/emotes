@@ -29,7 +29,7 @@ task copyArtifacts{
     dependsOn("buildAll")
     doLast {
         copy{
-            from "${project.projectDir}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}+1.18-${project.mod_version}-fabric.jar"
+            from "${project.projectDir}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar"
             into "${rootProject.projectDir}/artifacts"
         }
 
@@ -52,8 +52,8 @@ if(keysExists) {
             changelog = changes
             releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
-            addGameVersion "1.17"
-            addGameVersion "1.17.1"
+            addGameVersion "1.18"
+            addGameVersion "1.18.1"
             addGameVersion "Fabric"
             //addGameVersion "Java 1.16"
 
@@ -81,7 +81,7 @@ if(keysExists) {
             changelog = changes
             releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
-            addGameVersion "1.17.1"
+            addGameVersion "1.18.1"
             addGameVersion "Forge"
 
 
