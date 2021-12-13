@@ -34,6 +34,7 @@ loom{
     forge {
         mixinConfig "emotecraft.mixins.json"
         mixinConfig "bendylib.mixin.json"
+        mixinConfig "emotecraft-arch.mixins.json"
     }
 }
 
