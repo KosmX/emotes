@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.fabric.mixin;
+package io.github.kosmx.emotes.arch.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;

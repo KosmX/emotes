@@ -6,15 +6,8 @@
     "ServerPlayNetworkInstance"
   ],
   "client": [
-    "EmotePlayerMixin",
-    "FeatureRendererMixin",
-    "KeyEventMixin",
-    "ModelPartMixin",
-    "PlayerRendererMixin",
     "PlayerModelMixin",
-    "HeldItemMixin",
     "LivingEntityRenderRedirect",
-    "ArmorFeatureRendererMixin",
     "BipedEntityModelMixin"
   ],
   "server": [],

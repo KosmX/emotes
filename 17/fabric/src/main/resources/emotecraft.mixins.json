@@ -1,20 +1,13 @@
 {
   "required": true,
   "package": "io.github.kosmx.emotes.fabric.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ServerPlayNetworkInstance"
   ],
   "client": [
-    "EmotePlayerMixin",
-    "FeatureRendererMixin",
-    "KeyEventMixin",
-    "ModelPartMixin",
-    "PlayerRendererMixin",
     "PlayerModelMixin",
-    "HeldItemMixin",
     "LivingEntityRenderRedirect",
-    "ArmorFeatureRendererMixin",
     "BipedEntityModelMixin"
   ],
   "server": [],

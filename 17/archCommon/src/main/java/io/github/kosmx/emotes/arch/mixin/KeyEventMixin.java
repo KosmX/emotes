@@ -1,11 +1,8 @@
-package io.github.kosmx.emotes.fabric.mixin;
+package io.github.kosmx.emotes.arch.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.arch.executor.types.Key;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
-import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

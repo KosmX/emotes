@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.forge.mixin;
+package io.github.kosmx.emotes.arch.mixin;
 
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;

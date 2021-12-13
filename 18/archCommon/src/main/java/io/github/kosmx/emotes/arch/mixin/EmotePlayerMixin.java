@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.fabric.mixin;
+package io.github.kosmx.emotes.arch.mixin;
 
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
