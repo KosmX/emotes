@@ -30,12 +30,16 @@ import net.minecraft.world.entity.LivingEntity;
 @Mixin(HumanoidModel.class)
 public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart, EmotePlayImpl> {
 
+    @Final
     @Shadow
     public ModelPart rightLeg;
+    @Final
     @Shadow
     public ModelPart rightArm;
+    @Final
     @Shadow
     public ModelPart leftLeg;
+    @Final
     @Shadow
     public ModelPart leftArm;
     protected SetableSupplier<EmotePlayImpl> emote = new SetableSupplier<>();

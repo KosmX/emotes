@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SuppressWarnings("unchecked")
 @Mixin(PlayerRenderer.class)
 public class PlayerRendererMixin {
-    @Inject(method = "setupRotations", at = @At("RETURN"))
+    @Inject(method = "setupRotations(Lnet/minecraft/client/player/AbstractClientPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V", at = @At("RETURN"))
     private void applyBodyTransforms(AbstractClientPlayer abstractClientPlayerEntity, PoseStack matrixStack, float f, float bodyYaw, float tickDelta, CallbackInfo ci){
         if(((IEmotePlayerEntity<EmotePlayImpl>)abstractClientPlayerEntity).isPlayingEmote()){
             EmotePlayImpl emote = ((IEmotePlayerEntity<EmotePlayImpl>) abstractClientPlayerEntity).getEmote();
