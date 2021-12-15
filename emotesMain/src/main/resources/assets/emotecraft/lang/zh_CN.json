@@ -1,5 +1,5 @@
 {
-  "emotecraft.options.options": "更多选项",
+  "emotecraft.options.options": "模组设置",
   "emotecraft.options.keybind": "设置自定义按键来播放所选的表情",
   "emotecraft.options.fastmenu": "选择一个表情，然后单击",
   "emotecraft.options.fastmenu2": "添加到快捷菜单。",
@@ -33,11 +33,11 @@
   "emotecraft.otherconfig.alwaysValidateEmote": "总是验证接受到的表情",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "客户端选项，不会影响内部服务器\n\n默认情况下，客户端仅验证从不受信任的代理接收的表情。\n使用此选项来始终执行客户端的验证",
   "emotecraft.otherconfig.default3rdPersonFront": "播放表情时使用前视图而不是后视图",
-  "emotecraft.otherconfig.showHiddenConfig": "显示隐藏配置，需要重载",
+  "emotecraft.otherconfig.showHiddenConfig": "显示隐藏配置（需要重载）",
   "emotecraft.otherconfig.hideWarning": "隐藏 \"无服务器\" 警告",
   "emotecraft.emotelist": "所有表情",
-  "emotecraft.no_server": "服务器没有安装 Emotecraft，其他人将不会看到您是否正在播放表情",
-  "emotecraft.different_server": "服务器安装了不同版本的 Emotecraft ，其他人可能无法正确看到您的表情",
+  "emotecraft.no_server": "服务器没有安装表情工艺模组，其他人将不会看到您是否正在播放表情",
+  "emotecraft.different_server": "服务器安装了不同版本的表情工艺模组，其他人可能无法正确看到您的表情",
   "emotecraft.only_proxy": "仅代理串流可用。",
   "key.emotecraft.fastchoose": "快捷菜单",
   "key.emotecraft.debug": "播放“调试”表情",
@@ -52,5 +52,13 @@
   "emotecraft.resetConfig.title": "重置每一个表情工艺的设置",
   "emotecraft.resetConfig.message": "你是否确认要重置设置？",
   "emotecraft.resetAllKeys.title": "重置所有表情绑定的按键",
-  "emotecraft.resetAllKeys.message": "你确定要重置所有表情绑定的按键吗？"
+  "emotecraft.resetAllKeys.message": "你确定要重置所有表情绑定的按键吗？",
+  "emotecraft.options.export": "导出菜单",
+  "emotecraft.exportjson": "以Json格式导出表情",
+  "emotecraft.exportbin": "导出为.emotecraft的二进制文件",
+  "emotecraft.export.error.json": "导出JSON文件失败",
+  "emotecraft.export.error.emotecraft": "导出.emotecraft文件失败",
+  "emotecraft.export.done.json": ".json导出完毕",
+  "emotecraft.export.done.emotecraft": ".emotecraft导出完毕",
+  "emotecraft.song_too_big_to_send": "歌曲太大，无法发送到服务器。仅发送表情"
 }

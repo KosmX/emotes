@@ -78,6 +78,7 @@ public abstract class AbstractServerEmotePlay<P> {
     public void receiveMessage(NetData data, P player, INetworkInstance instance) throws IOException {
         switch (data.purpose){
             case STOP:
+                data.player = getUUIDFromPlayer(player);
                 sendForEveryoneElse(data, null, player);
                 break;
             case CONFIG:
