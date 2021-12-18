@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.HumanoidModel;
@@ -30,12 +29,16 @@ import net.minecraft.world.entity.LivingEntity;
 @Mixin(HumanoidModel.class)
 public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart, EmotePlayImpl> {
 
+    @Final
     @Shadow
     public ModelPart rightLeg;
+    @Final
     @Shadow
     public ModelPart rightArm;
+    @Final
     @Shadow
     public ModelPart leftLeg;
+    @Final
     @Shadow
     public ModelPart leftArm;
     protected SetableSupplier<EmotePlayImpl> emote = new SetableSupplier<>();
@@ -96,6 +99,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
         }else super.renderToBuffer(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 
+    @Final
     @Shadow public ModelPart body;
 
     @Shadow @Final public ModelPart head;

@@ -58,6 +58,7 @@ jar{
     from{
         configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
     }
+    dependsOn(':emotesMain:build')
     classifier "bukkit"
 }
 
