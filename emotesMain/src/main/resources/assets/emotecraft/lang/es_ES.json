@@ -53,5 +53,12 @@
   "emotecraft.resetConfig.message": "¿De verdad quieres reiniciar la configuración?",
   "emotecraft.resetAllKeys.title": "Reiniciar todos los accesos rápidos",
   "emotecraft.resetAllKeys.message": "¿De verdad quieres reiniciar todos los accesos rápidos?",
-  "emotecraft.options.export": "Exportar menú"
+  "emotecraft.options.export": "Exportar menú",
+  "emotecraft.exportjson": "Exportar gestos en Json",
+  "emotecraft.exportbin": "Exportar a .emotecraft binario",
+  "emotecraft.export.error.json": "No se pudo exportar a JSON",
+  "emotecraft.export.error.emotecraft": "No se pudo exportar a .emotecraft",
+  "emotecraft.export.done.json": "Exportación.json realizada",
+  "emotecraft.export.done.emotecraft": "Exportación.emotecraft realizada",
+  "emotecraft.song_too_big_to_send": "La canción es demasiado grande, no se puede enviar al servidor. Enviando solo emote"
 }
