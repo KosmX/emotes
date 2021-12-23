@@ -1,3 +1,15 @@
 {
-  "emotecraft.options.options": "خيارات المود"
+  "emotecraft.options.options": "خيارات المود",
+  "emotecraft.options.fastmenu3": "أنقر بزُر الفأرة الأيمن للمسح",
+  "emotecraft.otherconfig.category.general": "الخيارات الأساسية",
+  "emotecraft.otherconfig.category.expert": "خيارات الخبراء",
+  "emotecraft.otherconfig": "الخيارات الأخرى",
+  "emotecraft.otherconfig.showicon.tooltip": "إذا كان متاحًا",
+  "category.emotecraft.keybinding": "Emotecraft",
+  "emotecraft.emote.author": "المؤلف: ",
+  "emotecraft.options.export": "قائمة التصدير",
+  "emotecraft.export.error.json": "فشل التصدير إلى JSON",
+  "emotecraft.export.error.emotecraft": "فشل التصدير إلى .emotecraft",
+  "emotecraft.export.done.json": "تم تصدير .json",
+  "emotecraft.export.done.emotecraft": "تم تصدير .emotecraft"
 }
