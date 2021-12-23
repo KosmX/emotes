@@ -102,7 +102,7 @@ publishing {
         if (project.keysExists) {
             repositories {
                 maven {
-                    url = 'https://kosmx.duckdns.org/maven/'
+                    url = 'https://maven.kosmx.dev/'
                     credentials {
                         username = 'kosmx'
                         password = project.keys.kosmx_maven
