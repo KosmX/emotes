@@ -52,5 +52,7 @@
   "emotecraft.resetConfig.title": "ƃᴉɟuoɔ ʇɟɐɹɔǝʇoɯƎ ʎɹǝʌǝ ʇǝsǝɹ",
   "emotecraft.resetConfig.message": "¿ƃᴉɟuoɔ ǝɥʇ ʇǝsǝɹ oʇ ʇuɐʍ ʎllɐǝɹ noʎ op",
   "emotecraft.resetAllKeys.title": "ƃuᴉpuᴉqʎǝʞ ǝʇoɯǝ llɐ ʇǝsǝɹ",
-  "emotecraft.resetAllKeys.message": "¿ƃuᴉpuᴉqʎǝʞ ǝʇoɯǝ ʎɹǝʌǝ ʇǝsǝɹ oʇ ʇuɐʍ ʎllɐǝɹ noʎ op"
+  "emotecraft.resetAllKeys.message": "¿ƃuᴉpuᴉqʎǝʞ ǝʇoɯǝ ʎɹǝʌǝ ʇǝsǝɹ oʇ ʇuɐʍ ʎllɐǝɹ noʎ op",
+  "emotecraft.export.done.json": "ǝuop ʇɹodxǝ uosɾ˙",
+  "emotecraft.song_too_big_to_send": "ʎluo ǝʇoɯǝ ƃuıpuǝs ˙ɹǝʌɹǝs oʇ puǝs ʇou uɐɔ ‘ƃıq ooʇ sı ƃuos"
 }
