@@ -1,7 +1,9 @@
 {
   "emotecraft.options.options": "خيارات المود",
-  "emotecraft.options.keybind": "تعيين مفتاح مخصص لتشغيل إيماء محدد",
-  "emotecraft.options.fastmenu3": "أنقر بزُر الفأرة الأيمن للمسح",
+  "emotecraft.options.keybind": "عيّن مفتاحًا مخصص لتشغيل الرموز التعبيرية المختارة",
+  "emotecraft.options.fastmenu": "اختر رمزًا تعبيريًا عن طريق النقر عليه",
+  "emotecraft.options.fastmenu2": "للإضافة إلى عجلة الإختيار السريع.",
+  "emotecraft.options.fastmenu3": "نقر الزر الأيمن للمسح",
   "emotecraft.otherconfig.category.general": "الخيارات الأساسية",
   "emotecraft.otherconfig.category.expert": "خيارات الخبراء",
   "emotecraft.otherconfig": "الخيارات الأخرى",
