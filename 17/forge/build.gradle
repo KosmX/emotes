@@ -164,15 +164,14 @@ if(keysExists) {
         // Get the GitHub Access Token you got from the basics part of this tutorial.
         projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
         //System.out.println("Enter the version number:");
-        versionNumber = "${project.mod_version}-forge"
+        versionNumber = "${project.mod_version}-MC${project.minecraft_version}-forge"
         versionName = "${project.mod_version}"
 
         addGameVersion('1.17.1')
         changelog = changes;
         addLoader("forge")
         failSilently = false
-        doLast {
-            uploadFile = remapJar
-        }
+
+        uploadFile = "${project.projectDir}/build/libs/${project.archivesBaseName}-${project.mod_version}-forge.jar"
     }
 }
