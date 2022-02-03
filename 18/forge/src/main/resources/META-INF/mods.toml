@@ -1,6 +1,6 @@
 modLoader="javafml" #junkloader
 
-loaderVersion="[37.0,)" #From mixin.
+loaderVersion="[38.0,)" #From mixin.
 
 license="CC-BY-4.0 License"
 
