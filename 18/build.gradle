@@ -40,8 +40,13 @@ task copyArtifacts{
     }
 }
 
-
 if(keysExists) {
+    task publishMod {
+        finalizedBy(":${project.module_name}:fabric:publishModrinth")
+        finalizedBy(":${project.module_name}:forge:publishModrinth")
+        finalizedBy(":${project.module_name}:publishToCF")
+    }
+
     curseforge {
         apiKey = project.keys.curseforge_key
 

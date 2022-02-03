@@ -7,7 +7,7 @@ plugins{
 
     id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
     id "com.github.breadmoirai.github-release" version "2.2.12"
-    id "com.modrinth.minotaur" version "1.2.1"
+    id "com.modrinth.minotaur" version "1.2.1" apply false
     id "io.freefair.lombok" version "6.3.0"
 }
 
@@ -76,40 +76,6 @@ if(keysExists) {
     project.ext.keys.kosmx_maven = ENV.KOSMX_TOKEN
 
 
-    task publishModrinth(type: TaskModrinthUpload) {
-        if(project.isRelease){
-            versionType = VersionType.RELEASE
-        }
-        else{
-            versionType = VersionType.ALPHA
-        }
-        token = project.keys.modrinth_token;
-        // Get the GitHub Access Token you got from the basics part of this tutorial.
-        projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
-        //System.out.println("Enter the version number:");
-        versionNumber = "${project.mod_version}"
-        versionName = "${project.mod_version}"
-        //uploadFile = releaseArtifacts.get(0)
-        //additionalFiles = releaseArtifacts.subList(1, releaseArtifacts.size())
-                           //"forge/build/libs/emotecraft-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"]
-        //uploadFile = tasks.fabric.remapJar
-        //System.out.println("Enter the game version number: (See minotaur docs for valids)");
-        addGameVersion('1.16.5');
-        addGameVersion('1.17');
-        addGameVersion('1.17.1')
-        addGameVersion('1.18');
-        addGameVersion('1.18.1');
-        changelog = changes;
-        addLoader("fabric")
-        addLoader("forge")
-        failSilently = false
-        doLast {
-            uploadFile = releaseArtifacts.get(0)
-            additionalFiles = releaseArtifacts.subList(1, releaseArtifacts.size())
-        }
-    }
-
-
     githubRelease {
         token project.keys.github_token // This is your personal access token with Repo permissions
         // You get this from your user settings > developer settings > Personal Access Tokens
@@ -145,11 +111,10 @@ if(keysExists) {
         }
 
         finalizedBy(tasks.githubRelease)
-        finalizedBy(publishModrinth)
 
-        finalizedBy(':16:publishToCF')
-        finalizedBy(':17:publishToCF')
-        finalizedBy(':18:publishToCF')
+        finalizedBy(':16:publishMod')
+        finalizedBy(':17:publishMod')
+        finalizedBy(':18:publishMod')
         
         finalizedBy(':emotesAPI:publish')
 
