@@ -162,6 +162,7 @@ else {
 //Build all modules task :D
 task buildAll{
     dependsOn(':bukkit:build')
+    dependsOn(':bungee:build')
     dependsOn(':16:buildAll', ':17:buildAll', ':18:buildAll')
 }
 
@@ -174,6 +175,7 @@ task cleanupArtifacts{
 task collectArtifacts{
     dependsOn('cleanupArtifacts')
     dependsOn(':bukkit:copyArtifacts')
+    dependsOn(':bungee:copyArtifacts')
     dependsOn(':16:copyArtifacts', ':17:copyArtifacts', ':18:copyArtifacts')
     doLast {
         releaseArtifacts = project.getProjectDir().toPath().resolve("artifacts").toFile().listFiles()

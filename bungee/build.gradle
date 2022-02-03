@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    //id "com.github.johnrengelman.shadow" version "6.1.0"
+}
+
+version 'unspecified'
+
+project.archivesBaseName = project.archives_base_name
+//project.version = project.mod_version
+project.version = project.mod_version
+
+repositories {
+    mavenCentral()
+    
+    maven{
+        name = "BungeeMaven"
+        url "https://hub.spigotmc.org/nexus/content/repositories/public/"
+    }
+}
+
+configurations {
+    compileModule
+}
+
+dependencies {
+    //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    //testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    compileOnly "net.md-5:bungeecord-api:${project.bungee_api}"
+
+    implementation project(':emotesAPI')
+    //compileModule(project(':emotesAPI')){ transitive = false }
+
+    implementation project(':executor')
+    //compileModule(project(':executor')){ transitive = false }
+    implementation project(':emotesServer')
+    
+    //compileModule(project(':emotesServer')){ transitive = false }
+    compileModule(project(':emotesMain')){ transitive = false }
+}
+
+processResources{
+
+    inputs.property "version", project.version
+
+    filesMatching("bungee.yml"){
+        expand version: project.version
+    }
+
+}
+
+//shadowJar{
+//    configurations = [project.configurations.compileModule]
+//    classifier "bukkit"
+//}
+
+jar{
+    from{
+        configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
+    }
+    dependsOn(':emotesMain:build')
+    classifier "bungee"
+}
+
+task copyArtifacts{
+    dependsOn('build')
+    doLast {
+        copy{
+            from "${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}-bungee.jar"
+            into "${rootProject.projectDir}/artifacts"
+        }
+    }
+}
+

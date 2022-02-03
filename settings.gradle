@@ -50,3 +50,6 @@ include '18:forge'
 //Bukkit plugin stuff
 include 'bukkit'
 include 'bukkit:debug'
+
+//Bungee plugin stuff
+include 'bungee'
