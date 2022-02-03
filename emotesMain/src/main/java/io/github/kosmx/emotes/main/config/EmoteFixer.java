@@ -24,33 +24,40 @@ public class EmoteFixer{
     }
 
     public UUID getEmoteID(JsonElement element) {
-        int id = 0;
-        UUID uuid = null;
-        if(currentVersion < 4) {
-            id = element.getAsInt();
-        }else {
-            uuid = UUID.fromString(element.getAsString());
-        }
-        for (int i = currentVersion; i < SerializableConfig.staticConfigVersion; i++) {
-            if (getData().has(Integer.toString(i))) {
-                if(i < 3) {
-                    if (getData().get(Integer.toString(i)).getAsJsonObject().has(String.valueOf(id))) {
-                        id = getData().get(String.valueOf(i)).getAsJsonObject().get(String.valueOf(id)).getAsInt();
-                    }
-                }
-                else if(i == 3) { //It is true, now. But it won't be true forever
-                    if (getData().get(Integer.toString(i)).getAsJsonObject().has(String.valueOf(id))) {
-                        uuid = UUID.fromString(getData().get(String.valueOf(i)).getAsJsonObject().get(String.valueOf(id)).getAsString());
-                    }
-                }
-                else {
-                    if (getData().get(Integer.toString(i)).getAsJsonObject().has(String.valueOf(uuid))) {
-                        uuid = UUID.fromString(getData().get(String.valueOf(i)).getAsJsonObject().get(String.valueOf(uuid)).getAsString());
+        try {
+            int id = 0;
+            UUID uuid = null;
+            if (currentVersion < 4) {
+                id = element.getAsInt();
+            } else {
+                uuid = UUID.fromString(element.getAsString());
+            }
+            for (int i = currentVersion; i < SerializableConfig.staticConfigVersion; i++) {
+                if (getData().has(Integer.toString(i))) {
+                    if (i < 3) {
+                        if (getData().get(Integer.toString(i)).getAsJsonObject().has(String.valueOf(id))) {
+                            id = getData().get(String.valueOf(i)).getAsJsonObject().get(String.valueOf(id)).getAsInt();
+                        }
+                    } else if (i == 3) { //It is true, now. But it won't be true forever
+                        if (getData().get(Integer.toString(i)).getAsJsonObject().has(String.valueOf(id))) {
+                            uuid = UUID.fromString(getData().get(String.valueOf(i)).getAsJsonObject().get(String.valueOf(id)).getAsString());
+                        }
+                    } else {
+                        if (getData().get(Integer.toString(i)).getAsJsonObject().has(String.valueOf(uuid))) {
+                            uuid = UUID.fromString(getData().get(String.valueOf(i)).getAsJsonObject().get(String.valueOf(uuid)).getAsString());
+                        }
                     }
                 }
             }
+            return uuid;
+        } catch(Exception e) {
+            if (element.getAsJsonPrimitive().isNumber()) {
+                return new UUID(0, 0);
+            }
+            else {
+                return UUID.fromString(element.getAsString());
+            }
         }
-        return uuid;
     }
 
     private JsonObject getData(){
