@@ -1,5 +1,5 @@
 {
-  "emotecraft.options.options": "模组设置",
+  "emotecraft.options.options": "Mod设置",
   "emotecraft.options.keybind": "设置自定义按键来播放所选的表情",
   "emotecraft.options.fastmenu": "选择一个表情，然后单击",
   "emotecraft.options.fastmenu2": "添加到快捷菜单。",
@@ -26,7 +26,7 @@
   "emotecraft.otherconfig.playersafety": "启用玩家保护功能",
   "emotecraft.otherconfig.playersafety.tooltip": "不会显示被禁言的玩家的表情（1.16.4+）",
   "emotecraft.otherconfig.perspective": "当播放一个表情时自动切换至第三人称视角",
-  "emotecraft.otherconfig.prespective_redux": "启用Perspective Mod Redux模组的集成",
+  "emotecraft.otherconfig.prespective_redux": "启用Perspective Mod Redux集成",
   "emotecraft.otherconfig.prespective_redux.tooltip": "仅在第三人称视角时激活",
   "emotecraft.otherconfig.enableNSFW": "允许播放NSFW表情",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW（工作时间不适宜查看）存在不雅内容\n\n可能包含裸体、激烈的性行为、暴力或其他可能令人不安的主题。",
