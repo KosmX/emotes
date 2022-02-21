@@ -106,8 +106,6 @@ if(keysExists) {
         //Configure Modrinth and GitHub with artifacts to release
         doFirst {
             tasks.githubRelease.releaseAssets = releaseArtifacts
-            tasks.publishModrinth.uploadFile = releaseArtifacts.get(0)
-            tasks.publishModrinth.additionalFiles = releaseArtifacts.subList(1, releaseArtifacts.size())
         }
 
         finalizedBy(tasks.githubRelease)
