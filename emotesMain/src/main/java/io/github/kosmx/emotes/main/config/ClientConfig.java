@@ -50,7 +50,7 @@ public class ClientConfig extends SerializableConfig {
             return (int)this.getConfigVal();
         }
     };
-    public final ConfigEntry<Boolean> showHiddenConfig = new BooleanConfigEntry("showHiddenConfig", false, expert, false);
+    public final ConfigEntry<Boolean> showHiddenConfig = new BooleanConfigEntry("showHiddenConfig", false, true, expert, false);
     public final ConfigEntry<Boolean> neverRemoveBadIcon = new BooleanConfigEntry("neverRemoveBadIcon", false, expert, true);
     public final ConfigEntry<Boolean> exportBuiltin = new BooleanConfigEntry("exportBuiltin", false, expert, true);
 

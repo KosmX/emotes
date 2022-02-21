@@ -26,7 +26,7 @@ public class SerializableConfig {
     public final FloatConfigEntry<Float> validThreshold = new FloatConfigEntry<>("validationThreshold", "validThreshold", 8f, true, expert, "options.generic_value", 0.2f, 16f, 0f);
 
     public final ConfigEntry<Boolean> loadBuiltinEmotes = new BooleanConfigEntry("loadbuiltin", "loadBuiltin", true, true, basics);
-    public final BooleanConfigEntry loadEmotesServerSide = new BooleanConfigEntry("loadEmotesServerSide", true, false, expert);
+    public final BooleanConfigEntry loadEmotesServerSide = new BooleanConfigEntry("emotesFolderOnLogicalServer", true, true, expert, true);
     public final ConfigEntry<Boolean> enableQuark = new BooleanConfigEntry("quark", "enablequark", false, true, basics);
 
     public final StringConfigEntry emotesDir = new StringConfigEntry("emotesDirectory", "emotes", false, expert, true);
@@ -103,6 +103,10 @@ public class SerializableConfig {
         }
         public BooleanConfigEntry(String name, String oldconfig, Boolean defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
             super(name, oldconfig, defVal, hasTooltip, collection);
+        }
+
+        public BooleanConfigEntry(String name, Boolean defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden) {
+            super(name, null, defVal, hasTooltip, collection, hidden);
         }
 
         public BooleanConfigEntry(String name, Boolean defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
