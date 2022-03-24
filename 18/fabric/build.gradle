@@ -23,7 +23,7 @@ version = project.mod_version
 group = project.maven_group
 
 
-minecraft {
+loom {
     accessWidenerPath = file("src/main/resources/emotes.accesswidener")
 }
 configurations {
