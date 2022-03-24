@@ -16,11 +16,6 @@ pluginManagement {
                 excludeGroupByRegex "org\\.eclipse\\.?.*"
             }
         }
-
-        maven {
-            name = "Mojang"
-            url = "https://libraries.minecraft.net/"
-        }
     }
 }
 
