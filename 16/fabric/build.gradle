@@ -28,7 +28,7 @@ version = project.mod_version
 group = project.maven_group
 
 
-minecraft {
+loom {
     //accessWidener = file("src/main/resources/emotecraft.accesswidener")
 }
 configurations {
