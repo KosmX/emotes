@@ -36,7 +36,7 @@
   "emotecraft.otherconfig.showHiddenConfig": "Show hidden config. (reload required)",
   "emotecraft.otherconfig.showHiddenConfig.tooltip": "These configs are unstable or not meant to be used without programming knowledge\nMost of these are for testing",
   "emotecraft.otherconfig.hideWarning": "Hide \"no server\" warning",
-  "emotecraft.otherconfig.emotesFolderOnLogicalServer": "Load emotes on logical server",
+  "emotecraft.otherconfig.emotesFolderOnLogicalServer": "DO NOT TURN ON  Load emotes on logical server",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "KEEP IT DISABLED\nThe internal server will load the client emotes instead of the client\nIf you enable it, emotes will only work in singleplayer",
   "emotecraft.emotelist": "All emote",
   "emotecraft.no_server": "Server has no Emotecraft installed, others won't see if you play an emote",
