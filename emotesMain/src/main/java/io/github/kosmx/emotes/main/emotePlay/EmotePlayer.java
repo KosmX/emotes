@@ -51,7 +51,6 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
      * @param noteConsumer {@link Layer.Note} consumer
      * @param t begin playing from tick
      */
-    @Nullable
     public EmotePlayer(EmoteData emote, Consumer<Layer.Note> noteConsumer, int t) {
         this.data = emote;
         if (emote.song != null) {

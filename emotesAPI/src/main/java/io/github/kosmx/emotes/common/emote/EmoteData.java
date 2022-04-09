@@ -163,6 +163,14 @@ public final class EmoteData implements Supplier<UUID> {
         return this.uuid;
     }
 
+    /**
+     * Will return invalid information if {@link EmoteData#isInfinite} is true
+     * @return The length of the emote in ticks (20 t/s)
+     */
+    public int getLength() {
+        return stopTick;
+    }
+
     public static class StateCollection {
         @Deprecated
         public final String name;

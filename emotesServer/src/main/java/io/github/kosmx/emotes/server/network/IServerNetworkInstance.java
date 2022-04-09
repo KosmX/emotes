@@ -8,10 +8,13 @@ import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import java.io.IOException;
 
 public interface IServerNetworkInstance extends INetworkInstance {
+
+
+
     @Override
     default void presenceResponse() {
         INetworkInstance.super.presenceResponse();
-        if(this.getVersions().getOrDefault((byte)11, (byte)0) >= 0) {
+        if(this.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
             for (EmoteData emote : UniversalEmoteSerializer.serverEmotes.values()) {
                 try{
                     this.sendMessage(new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000), null); //1 MB
@@ -26,4 +29,7 @@ public interface IServerNetworkInstance extends INetworkInstance {
      * Server closes connection with instance
      */
     default void closeConnection(){}
+
+
+
 }

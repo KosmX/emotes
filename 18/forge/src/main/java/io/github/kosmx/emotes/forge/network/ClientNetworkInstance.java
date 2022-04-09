@@ -50,17 +50,16 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     }
 
     void receiveMessage(FriendlyByteBuf buf){
-        if(buf.isDirect()){ //If the received ByteBuf is direct i have to copy that onto the heap
+        if(buf.isDirect()){
             byte[] bytes = new byte[buf.readableBytes()];
             buf.getBytes(buf.readerIndex(), bytes);
             receiveMessage(bytes);
         }
         else {
-            receiveMessage(buf.array()); //if heap, I can just use it's byte-array
+            receiveMessage(buf.array());
         }
     }
 
-    private boolean disableNBS = false;
     @Override
     public HashMap<Byte, Byte> getVersions() {
         if(disableNBS){
@@ -69,21 +68,6 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
             return map;
         }
         return null;
-    }
-
-    @Override
-    public void setVersions(HashMap<Byte, Byte> map) {
-        if(map.containsKey((byte)3)){
-            disableNBS = map.get((byte)3) == 0;
-        }
-        if(map.containsKey((byte)8)){
-            remoteVersion = map.get((byte)8); //8x8 :D
-        }
-    }
-
-    @Override
-    public int getRemoteVersion() {
-        return remoteVersion;
     }
 
     @Override
