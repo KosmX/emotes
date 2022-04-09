@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly files("run/craftbukkit.jar")
+    runtimeOnly files("run/spigot-1.18.2.jar")
 }

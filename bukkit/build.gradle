@@ -12,9 +12,13 @@ project.version = project.mod_version
 repositories {
     mavenCentral()
 
-    maven{
+    maven {
         name = "BucketMaven"
         url "https://hub.spigotmc.org/nexus/content/repositories/snapshots"
+    }
+    maven {
+        name = "dmulloy2"
+        url "https://repo.dmulloy2.net/repository/public/"
     }
 }
 
@@ -26,7 +30,8 @@ dependencies {
     //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     //testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
-    implementation("org.bukkit:bukkit:${project.spigot_api}")
+    implementation("org.spigotmc:spigot-api:${project.spigot_api}")
+    implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.8.0"
 
     implementation project(':emotesAPI')
     //compileModule(project(':emotesAPI')){ transitive = false }
