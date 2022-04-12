@@ -87,7 +87,7 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
     }
 
     private static Path createFileName(EmoteHolder emote, Path originPath, EmoteFormat format){
-        String name = emote.name.getString();
+        String name = emote.name.getString().replaceAll("[\\\\/]", "#");
         String finalName = null;
         while (finalName == null){
             try{
@@ -101,6 +101,10 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
         }
         int i = 2;
         Path file = originPath.resolve(finalName + "." + format.getExtension());
+        if (!file.getParent().equals(originPath)) {
+            finalName = Integer.toString(emote.hashCode());
+            file = originPath.resolve(finalName + "." + format.getExtension());
+        }
         while (file.toFile().isFile()){
             file = originPath.resolve(finalName + "_" + i++ + "." + format.getExtension());
         }
