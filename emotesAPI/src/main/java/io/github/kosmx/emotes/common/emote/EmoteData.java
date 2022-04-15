@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.common.emote;
 
 import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.opennbs.NBS;
+import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -20,6 +21,7 @@ public final class EmoteData implements Supplier<UUID> {
     public final int beginTick;
     public final int endTick;
     public final int stopTick;
+    @Getter
     public final boolean isInfinite;
     //if infinite, where to return
     public final int returnToTick;

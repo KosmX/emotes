@@ -9,8 +9,6 @@ import java.io.IOException;
 
 public interface IServerNetworkInstance extends INetworkInstance {
 
-
-
     @Override
     default void presenceResponse() {
         INetworkInstance.super.presenceResponse();
@@ -30,6 +28,6 @@ public interface IServerNetworkInstance extends INetworkInstance {
      */
     default void closeConnection(){}
 
-
+    EmotePlayTracker getEmoteTracker();
 
 }

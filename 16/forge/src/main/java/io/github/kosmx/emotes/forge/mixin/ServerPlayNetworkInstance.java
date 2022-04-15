@@ -2,8 +2,8 @@ package io.github.kosmx.emotes.forge.mixin;
 
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
+import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -17,19 +17,24 @@ import java.util.UUID;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements IServerNetworkInstance {
+
+    private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
     @Shadow public abstract void send(Packet<?> packet);
 
     HashMap<Byte, Byte> versions = new HashMap<>();
     @Override
-    public HashMap<Byte, Byte> getVersions() {
+    public HashMap<Byte, Byte> getRemoteVersions() {
         return versions;
     }
 
     @Override
     public void setVersions(HashMap<Byte, Byte> map) {
-        if(map.containsKey((byte)3)) {
-            versions.put((byte) 3, map.get((byte) 3));
-        }
+        versions = map;
+    }
+
+    @Override
+    public EmotePlayTracker getEmoteTracker() {
+        return emoteTracker;
     }
 
     @Override
