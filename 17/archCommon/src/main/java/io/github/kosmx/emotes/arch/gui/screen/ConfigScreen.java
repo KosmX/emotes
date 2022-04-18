@@ -56,7 +56,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
         EmoteInstance.config.iterateExpert(entry -> addConfigEntry(entry, options));
 
-        this.addRenderableWidget(new Button(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableComponent("controls.resetAll"), (button) -> {
+        this.addRenderableWidget(new Button(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableComponent("controls.reset"), (button) -> {
             this.minecraft.setScreen(new ConfirmScreen(
                     this::resetAll,
                     new TranslatableComponent("emotecraft.resetConfig.title"),
