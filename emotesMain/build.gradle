@@ -9,8 +9,8 @@ plugins {
 //apply plugin: "architectury-plugin"
 //apply plugin: 'com.github.johnrengelman.shadow'
 
+group project.maven_group
 version project.mod_version
-
 
 repositories {
     mavenCentral()
@@ -58,6 +58,12 @@ jar{
    from {
        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
    }
+    classifier "dev"
+}
+
+task publicationJar (type: Jar, dependsOn: classes ){
+    classifier ""
+    from sourceSets.main.output
 }
 
 artifacts {
@@ -69,39 +75,90 @@ task sourcesJar(type: Jar, dependsOn: classes){
     from sourceSets.main.allSource
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
 
-publishing{
-    publications{
-        maven(MavenPublication) {
-            groupId = 'io.github.kosmx.emotes'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+
             artifactId = 'emotesMain'
-            version = project.version
 
-            //artifact(jar) {
-            //    builtBy shadowJar
-            //}
-            //artifact(remapJar) {
-            //    builtBy remapJar
-            //}
-            //artifact shadowJar
-            artifact sourcesJar
-            //from components.java
+            artifact(publicationJar)
+            artifact(sourcesJar)
+            artifact(javadocJar)
+
+
+            pom.withXml {
+                def depsNode = asNode().appendNode("dependencies")
+
+                def apiNode = depsNode.appendNode("dependency")
+                apiNode.appendNode("groupId", project.group)
+                apiNode.appendNode("artifactId", "emotesApi")
+                apiNode.appendNode("version", project.version)
+                apiNode.appendNode("scope", "compile")
+
+                def executorNode = depsNode.appendNode("dependency")
+                executorNode.appendNode("groupId", project.group)
+                executorNode.appendNode("artifactId", "emotesExecutor")
+                executorNode.appendNode("version", project.version)
+                executorNode.appendNode("scope", "compile")
+
+                def serverNode = depsNode.appendNode("dependency")
+                serverNode.appendNode("groupId", project.group)
+                serverNode.appendNode("artifactId", "emotesExecutor")
+                serverNode.appendNode("version", project.version)
+                serverNode.appendNode("scope", "compile")
+            }
+
+
+            pom {
+                name = "emotesMain"
+                description = "Minecraft Emotecraft main common code"
+                url = 'https://github.com/KosmX/emotes'
+                developers {
+                    developer {
+                        id = 'kosmx'
+                        name = 'KosmX'
+                        email = 'kosmx.mc@gmail.com'
+                    }
+                }
+
+                licenses{
+                    license{
+                        name = "CC-BY-4.0 License"
+                        url = "https://creativecommons.org/licenses/by/4.0/legalcode"
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:github.com/kosmx/emotes.git'
+                    developerConnection = 'scm:git:github.com/kosmx/emotes.git'
+                    url = 'https://github.com/KosmX/emotes'
+                }
+            }
         }
     }
 
+    // select the repositories you want to publish to
     repositories {
-        mavenLocal()
+        // uncomment to publish to the local maven
+        if (project.keysExists) {
+            repositories {
+                maven {
+                    url = 'https://maven.kosmx.dev/'
+                    credentials {
+                        username = 'kosmx'
+                        password = project.keys.kosmx_maven
+                    }
+                }
+            }
+        }
+        else {
+            mavenLocal()
+        }
     }
 }
-
-/* This testing stuff could be useful later...
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-test {
-    useJUnitPlatform()
-}
-
- */
