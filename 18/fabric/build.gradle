@@ -26,23 +26,25 @@ group = project.maven_group
 loom {
     accessWidenerPath = file("src/main/resources/emotes.accesswidener")
 }
+
 configurations {
     compileModule
+    common
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
 }
 
 dependencies {
-    implementation project(':executor')
-    implementation project(':emotesAPI')
-    implementation project(':emotesServer')
+    common project(':executor')
+    common project(':emotesAPI')
+    common project(':emotesServer')
 
-    implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev'))
-    implementation project(':emotesMain')
-    developmentFabric(project(path: ":emotesMain")) { transitive = false }
-    developmentFabric(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false }
+    common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
+    common(project(':emotesMain')) {transitive false}
 
-    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionFabric")) { transitive = false }
-    compileModule(project(':emotesMain')){ transitive = false }
-
+    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionFabric")) { transitive false }
+    compileModule(project(':emotesMain')) { transitive false }
 
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
@@ -56,11 +58,6 @@ dependencies {
     modImplementation "io.github.kosmx:bendy-lib:${project.bendylib_version}"
     include "io.github.kosmx:bendy-lib:${project.bendylib_version}"
 
-}
-
-tasks.withType(JavaCompile){
-    options.compilerArgs << '-Xlint:unchecked'
-    options.deprecation = true	//deprecated warning on compile
 }
 
 
