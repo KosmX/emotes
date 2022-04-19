@@ -29,6 +29,10 @@ jobs:
     - name: Grant execute permission for gradlew
       if: ${{ runner.os != 'Windows' }}
       run: chmod +x gradlew
+    - name: Test Gradle buildscript  #Test the full gradle buildscript before use it. Useful to catch publish errors.
+      uses: gradle/gradle-build-action@v1
+      with:
+        arguments: --dry-run
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v1
       with:
