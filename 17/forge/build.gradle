@@ -145,20 +145,11 @@ publishing {
 }
 
 
-import com.modrinth.minotaur.TaskModrinthUpload
-import com.modrinth.minotaur.request.VersionType
-
 if(keysExists) {
-    task publishModrinth(type: TaskModrinthUpload) {
-        if(project.isRelease){
-            versionType = VersionType.RELEASE
-        }
-        else if(project.cfType == "beta") {
-            versionType = VersionType.BETA
-        }
-        else {
-            versionType = VersionType.ALPHA
-        }
+    modrinth {
+        versionType = project.cfType
+
+        uploadFile = remapJar
 
         token = project.keys.modrinth_token;
         // Get the GitHub Access Token you got from the basics part of this tutorial.
@@ -167,11 +158,9 @@ if(keysExists) {
         versionNumber = "${project.mod_version}-MC${project.minecraft_version}-forge"
         versionName = "${project.mod_version}"
 
-        addGameVersion('1.17.1')
-        changelog = changes;
-        addLoader("forge")
+        gameVersions = ["1.17.1"]
+        changelog = changes
+        loaders = ["forge"]
         failSilently = false
-
-        uploadFile = "${project.projectDir}/build/libs/${project.archivesBaseName}-${project.mod_version}-forge.jar"
     }
 }

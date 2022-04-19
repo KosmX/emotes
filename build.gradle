@@ -62,20 +62,26 @@ if(!isRelease){
 }
 
 
-import com.modrinth.minotaur.TaskModrinthUpload
-import com.modrinth.minotaur.request.VersionType
-
 List<File> releaseArtifacts
 
-ext.keysExists = ENV.GH_TOKEN != null;
+ext.keysExists = ENV.GH_TOKEN != null || project.getGradle().getStartParameter().isDryRun();
 
 if(keysExists) {
-    println("Keys loaded, loading publish scripts")
     project.ext.keys = new Properties()
-    project.ext.keys.modrinth_token = ENV.MODRINTH_TOKEN
-    project.ext.keys.curseforge_key = ENV.CURSEFORGE_TOKEN
-    project.ext.keys.github_token = ENV.GH_TOKEN
-    project.ext.keys.kosmx_maven = ENV.KOSMX_TOKEN
+    if (project.getGradle().getStartParameter().isDryRun()) {
+        println("Dry run, loading publish scripts")
+        //All of these are fake, don't waste your time with it. (Copied from API docs and random generated)
+        project.ext.keys.modrinth_token = "gho_pJ9dGXVKpfzZp4PUHSxYEq9hjk0h288Gwj4S"
+        project.ext.keys.curseforge_key = "00000000-0000-0000-0000-000000000000"
+        project.ext.keys.github_token = "gh_0123456789"
+        project.ext.keys.kosmx_maven = "V2h5IGRpZCB5b3UgZGVjb2RlIGl0PyAg"
+    } else {
+        println("Keys loaded, loading publish scripts")
+        project.ext.keys.modrinth_token = ENV.MODRINTH_TOKEN
+        project.ext.keys.curseforge_key = ENV.CURSEFORGE_TOKEN
+        project.ext.keys.github_token = ENV.GH_TOKEN
+        project.ext.keys.kosmx_maven = ENV.KOSMX_TOKEN
+    }
 
 
     githubRelease {
