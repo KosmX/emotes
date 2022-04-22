@@ -34,8 +34,8 @@ allprojects {
         sourceCompatibility = JavaVersion.toVersion(targetVersion)
         targetCompatibility = JavaVersion.toVersion(targetVersion)
 
-        options.compilerArgs << '-Xlint:unchecked'
-        options.deprecation = true	//deprecated warning on compile
+        //options.compilerArgs << '-Xlint:unchecked'
+        //options.deprecation = true	//deprecated warning on compile
         repositories {
             mavenCentral()
         }
@@ -121,8 +121,11 @@ if(keysExists) {
         finalizedBy(':16:publishMod')
         finalizedBy(':17:publishMod')
         finalizedBy(':18:publishMod')
-        
+
         finalizedBy(':emotesAPI:publish')
+        finalizedBy(':executor:publish')
+        finalizedBy(':emotesServer:publish')
+        finalizedBy(':emotesMain:publish')
 
     }
 }

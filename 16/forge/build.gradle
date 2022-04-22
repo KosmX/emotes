@@ -27,9 +27,7 @@ archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_vers
 version = project.mod_version
 group = project.maven_group
 
-configurations {
-    compileModule
-}
+
 loom{
     silentMojangMappingsLicense()
     forge {
@@ -38,34 +36,27 @@ loom{
     }
 }
 
+configurations {
+    compileModule
+    common
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
 dependencies {
-    implementation project(':executor')
-    implementation project(':emotesAPI')
-    implementation project(':emotesServer')
+    common project(':executor')
+    common project(':emotesAPI')
+    common project(':emotesServer')
 
-    implementation project(':emotesMain')
-    implementation(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false}
-    developmentForge(project(path: ":emotesMain")) { transitive = false }
-    developmentForge(project(path: ":${project.module_name}:archCommon", configuration: 'dev')) { transitive = false }
+    common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
+    common(project(':emotesMain')) {transitive false}
 
-    compileModule(project(':emotesMain')){ transitive = false }
-    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")){ transitive = false }
+    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")) { transitive false }
+    compileModule(project(':emotesMain')) { transitive false }
 
 
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
-    //other dependency(ies)
-
-    //modImplementation "pm.c7.perspective:PerspectiveModRedux:0.0.5"
-
-
-    //compileOnly files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
-
-
-    //Spigot stuff
-    //implementation("org.spigotmc:spigot-api:${project.spigot_api}")//Spigot will be a different module...
-
-    //runtime files("replaymod-1.16.4-2.5.1-2-g57c7362-dirty-dev.jar", "jGui-1.16.4-git-dev.jar")
-
 }
 
 processResources {

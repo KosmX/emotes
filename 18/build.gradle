@@ -59,6 +59,7 @@ if(keysExists) {
             //addGameVersion project.minecraft_version //TODO set it back
             addGameVersion "1.18"
             addGameVersion "1.18.1"
+            addGameVersion "1.18.2"
             addGameVersion "Fabric"
             //addGameVersion "Java 1.16"
 
@@ -87,6 +88,7 @@ if(keysExists) {
             releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
             addGameVersion "1.18.1"
+            addGameVersion "1.18.2"
             addGameVersion "Forge"
 
 
