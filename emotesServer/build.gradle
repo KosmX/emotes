@@ -47,7 +47,7 @@ publishing {
 
                 def apiNode = depsNode.appendNode("dependency")
                 apiNode.appendNode("groupId", project.group)
-                apiNode.appendNode("artifactId", "emotesApi")
+                apiNode.appendNode("artifactId", "emotesAPI")
                 apiNode.appendNode("version", project.version)
                 apiNode.appendNode("scope", "compile")
 
