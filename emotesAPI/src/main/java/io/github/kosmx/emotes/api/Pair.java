@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.api;
 
-//I Didn't found any pair in Java common... so here is it
+//I Didn't find any pair in Java common... so here is it
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
