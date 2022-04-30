@@ -14,11 +14,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Workaround unsafe repository bug
-      run: git config --global --add safe.directory /github/workspace
-
     - name: crowdin action
-      uses: crowdin/github-action@1.4.7
+      uses: crowdin/github-action@v2
       with:
         upload_translations: true
         download_translations: true
