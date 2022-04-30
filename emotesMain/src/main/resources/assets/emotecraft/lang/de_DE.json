@@ -24,7 +24,7 @@
   "emotecraft.otherconfig.loadbuiltin": "Lade built-in Emotes",
   "emotecraft.otherconfig.loadbuiltin.tooltip": "Wenn du sie aus irgendeinem Grund nicht haben willst...",
   "emotecraft.otherconfig.playersafety": "Aktiviere Sicherheitsfunktionen für Spieler",
-  "emotecraft.otherconfig.playersafety.tooltip": "verhindert das Anzeigen von Emotes von gemuteten Spielern (1.16.4+)",
+  "emotecraft.otherconfig.playersafety.tooltip": "verhindert das Anzeigen von Emotes von stummgeschaltenen Spielern (ab 1.16.4)",
   "emotecraft.otherconfig.perspective": "Aktiviere Er-Perspektive während ein Emote gespielt wird",
   "emotecraft.otherconfig.prespective_redux": "Aktiviere Integration für \"Perspective Mod Redux\"",
   "emotecraft.otherconfig.prespective_redux.tooltip": "Nur aktiv wenn Er-Perspektive auch aktiviert ist",
@@ -34,7 +34,10 @@
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Client-option, hat keine Auswirkungen auf integrierten Server (Singleplayer) \n\nStandardmäßig wird nur eine Überprüfung bei nicht Vertrauenswürdigen Proxys durchgeführt. Hiermit lässt sich immer eine Überprüfung durchführen",
   "emotecraft.otherconfig.default3rdPersonFront": "Nutze Frontansicht statt Rückenansicht beim abspielen von Emotes",
   "emotecraft.otherconfig.showHiddenConfig": "Zeige versteckte Konfiguration. (Neustart nötig)",
+  "emotecraft.otherconfig.showHiddenConfig.tooltip": "Diese Konfigurationen sind instabil oder sollten nicht ohne Programmierwissen verwendet werden\nDie meisten davon sind zum Testen",
   "emotecraft.otherconfig.hideWarning": "Verstecke Warnung \"kein Server\"",
+  "emotecraft.otherconfig.emotesFolderOnLogicalServer": "NICHT AKTIVIEREN Lade Emotes auf logischem Server",
+  "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "LASS ES DEAKTIVIERT\nDer interne Server lädt die Benutzer-Emotes anstatt der Benutzer\nwenn du es anschaltest, werden Emotes nur im Einzelspieler Modus funktionieren",
   "emotecraft.emotelist": "Alle Emotes",
   "emotecraft.no_server": "Server hat kein Emotecraft-Plugin installiert, andere werden deine Emotes nicht sehen können",
   "emotecraft.different_server": "Server hat eine andere Emotecraft-Version installiert, es können Fehler bei der Anzeige auftreten",
@@ -59,5 +62,6 @@
   "emotecraft.export.error.json": "Export nach Json fehlgeschlagen",
   "emotecraft.export.error.emotecraft": "Export als .emotecraft fehlgeschlagen",
   "emotecraft.export.done.json": ".json-Export erfolgreich abgeschlossen",
-  "emotecraft.export.done.emotecraft": ".Emotecraft-Export erfolgreich abgeschlossen"
+  "emotecraft.export.done.emotecraft": ".Emotecraft-Export erfolgreich abgeschlossen",
+  "emotecraft.song_too_big_to_send": "Das Lied ist zu lang, um es zum Server zu senden. Sende nur Emote"
 }
