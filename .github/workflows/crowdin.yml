@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Workaround unsafe repository bug
+      run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
     - name: Checkout
       uses: actions/checkout@v3
