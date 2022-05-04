@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,6 +19,6 @@ public class ServerPlayTrackerMixin {
 
     @Inject(method = "addPairing", at = @At(value = "RETURN"))
     private void startTrackingCallback(ServerPlayer serverPlayer, CallbackInfo ci) {
-        AbstractServerEmotePlay.getInstance().playerStartTracking(this.entity, serverPlayer); //Do not do this in your code
+        if (this.entity instanceof Player) AbstractServerEmotePlay.getInstance().playerStartTracking(this.entity, serverPlayer); //Do not do this in your code
     }
 }

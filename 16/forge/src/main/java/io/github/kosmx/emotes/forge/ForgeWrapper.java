@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.forge.executor.ForgeEmotesMain;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
 import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -33,7 +34,7 @@ public class ForgeWrapper {
 
     @SubscribeEvent
     private void playerStartTrackEvent(PlayerEvent.StartTracking event) {
-        AbstractServerEmotePlay.getInstance().playerStartTracking(event.getTarget(), event.getPlayer()); //Do not do this in your code
+        if (event.getTarget() instanceof Player) AbstractServerEmotePlay.getInstance().playerStartTracking(event.getTarget(), event.getPlayer()); //Do not do this in your code
     }
 
     private void setup(final FMLCommonSetupEvent event){

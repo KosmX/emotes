@@ -1,19 +1,32 @@
 package io.github.kosmx.emotes.bukkit;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ConnectionSide;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.MonitorAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import io.github.kosmx.emotes.bukkit.executor.BukkitInstance;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Field;
+import java.util.UUID;
 
 public class BukkitWrapper extends JavaPlugin {
 
     public final static String EmotePacket = CommonData.getIDAsString(CommonData.playEmoteID);
     public final static String GeyserPacket = "geyser:emote";
     ServerSideEmotePlay networkPlay = null;
+
+    private ProtocolManager protocolManager;
 
 
     @Override
@@ -29,6 +42,8 @@ public class BukkitWrapper extends JavaPlugin {
         Serializer.INSTANCE = new Serializer(); //it does register itself
         EmoteInstance.config = Serializer.getConfig();
         UniversalEmoteSerializer.loadEmotes();
+        protocolManager = ProtocolLibrary.getProtocolManager();
+        registerProtocolListener();
     }
 
     @Override
@@ -43,5 +58,25 @@ public class BukkitWrapper extends JavaPlugin {
     public void onDisable() {
         super.onDisable();
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EmotePacket);
+    }
+
+    public void registerProtocolListener() {
+        protocolManager.addPacketListener(new MonitorAdapter(this, ConnectionSide.SERVER_SIDE) {
+            @Override
+            public void onPacketSending(PacketEvent packetEvent) {
+                if (packetEvent.getPacketType().equals(PacketType.Play.Server.NAMED_ENTITY_SPAWN)) {
+                    //Field trackedField = packetEvent.getPacket().getStructures().getField(2);
+                    UUID tracked = packetEvent.getPacket().getUUIDs().readSafely(0);
+
+                    AbstractServerEmotePlay.getInstance().playerStartTracking(tracked, packetEvent.getPlayer());
+
+                }
+            }
+
+            @Override
+            public void onPacketReceiving(PacketEvent packetEvent) {
+
+            }
+        });
     }
 }

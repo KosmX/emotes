@@ -177,7 +177,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     public void playerStartTracking(P tracked, P tracker) {
         Pair<EmoteData, Integer> playedEmote = getPlayerNetworkInstance(tracked).getEmoteTracker().getPlayedEmote();
         if (playedEmote != null) {
-            sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.getLeft()).configureEmoteTick(playedEmote.getRight()).build().data, tracked, getUUIDFromPlayer(tracker));
+            sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.getLeft()).configureEmoteTick(playedEmote.getRight()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, getUUIDFromPlayer(tracker));
         }
     }
 
