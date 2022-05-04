@@ -33,6 +33,10 @@ public class EmotePlayTracker {
         }
     }
 
+    /**
+     * Get the currently played emote and the tick time
+     * @return null if not playing emote
+     */
     @Nullable
     public Pair<EmoteData, Integer> getPlayedEmote() {
         if (currentEmote == null) return null;

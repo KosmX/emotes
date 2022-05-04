@@ -2,7 +2,9 @@
   "required": true,
   "package": "io.github.kosmx.emotes.arch.mixin",
   "compatibilityLevel": "JAVA_16",
-  "mixins": [],
+  "mixins": [
+    "ServerPlayTrackerMixin"
+  ],
   "client": [
     "ArmorFeatureRendererMixin",
     "EmotePlayerMixin",

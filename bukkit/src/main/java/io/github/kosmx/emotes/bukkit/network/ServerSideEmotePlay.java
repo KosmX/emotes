@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,8 +60,23 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     }
 
     @Override
+    protected Player getPlayerFromUUID(UUID player) {
+        return plugin.getServer().getPlayer(player);
+    }
+
+    @Override
     protected long getRuntimePlayerID(Player player) {
         return player.getEntityId();
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
+        return player_database.get(getUUIDFromPlayer(player));
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(UUID player) {
+        return this.player_database.get(player);
     }
 
     @Override

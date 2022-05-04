@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -67,8 +68,23 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<ProxiedPlayer> 
     }
 
     @Override
+    protected ProxiedPlayer getPlayerFromUUID(UUID player) {
+        return plugin.getProxy().getPlayer(player);
+    }
+
+    @Override
     protected long getRuntimePlayerID(ProxiedPlayer player) {
         return player.getUniqueId().getMostSignificantBits() & Long.MAX_VALUE;
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(ProxiedPlayer player) {
+        return player_database.get(getUUIDFromPlayer(player));
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(UUID player) {
+        return this.player_database.get(player);
     }
 
     @Override

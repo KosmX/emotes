@@ -39,21 +39,23 @@ public final class ClientPacketManager extends EmotesProxyManager {
         if(!defaultNetwork.isActive() || useAlwaysAlt()){
             for(INetworkInstance network:networkInstances){
                 if(network.isActive()){
-                    try {
-                        EmotePacket.Builder builder = packetBuilder.copy();
-                        if(!network.sendPlayerID())builder.removePlayerID();
-                        builder.setSizeLimit(network.maxDataSize());
-                        network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
-                    } catch (IOException exception) {
-                        EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
-                        if(EmoteInstance.config.showDebug.get()) {
-                            exception.printStackTrace();
+                    if (target == null || !network.isServerTrackingPlayState()) {
+                        try {
+                            EmotePacket.Builder builder = packetBuilder.copy();
+                            if (!network.sendPlayerID()) builder.removePlayerID();
+                            builder.setSizeLimit(network.maxDataSize());
+                            network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
+                        } catch(IOException exception) {
+                            EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
+                            if (EmoteInstance.config.showDebug.get()) {
+                                exception.printStackTrace();
+                            }
                         }
                     }
                 }
             }
         }
-        if(defaultNetwork.isActive()){
+        if(defaultNetwork.isActive() && (target == null || !defaultNetwork.isServerTrackingPlayState())){
             if(!defaultNetwork.sendPlayerID())packetBuilder.removePlayerID();
             try {
                 packetBuilder.setSizeLimit(defaultNetwork.maxDataSize());

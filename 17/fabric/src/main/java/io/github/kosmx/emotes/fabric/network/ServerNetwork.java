@@ -5,7 +5,9 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.fabric.FabricWrapper;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -67,8 +69,18 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     }
 
     @Override
+    protected Player getPlayerFromUUID(UUID player) {
+        return FabricWrapper.SERVER_INSTANCE.getPlayerList().getPlayer(player);
+    }
+
+    @Override
     protected long getRuntimePlayerID(Player player) {
         return player.getId();
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
+        return (IServerNetworkInstance) ((ServerPlayer)player).connection; //If the mixin works, this should suffice//
     }
 
     @Override
