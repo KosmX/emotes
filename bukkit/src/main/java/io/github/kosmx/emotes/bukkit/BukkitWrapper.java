@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.MonitorAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import io.github.kosmx.emotes.bukkit.executor.BukkitInstance;
+import io.github.kosmx.emotes.bukkit.network.BukkitNetworkInstance;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
@@ -68,7 +69,7 @@ public class BukkitWrapper extends JavaPlugin {
                     //Field trackedField = packetEvent.getPacket().getStructures().getField(2);
                     UUID tracked = packetEvent.getPacket().getUUIDs().readSafely(0);
 
-                    AbstractServerEmotePlay.getInstance().playerStartTracking(tracked, packetEvent.getPlayer());
+                    AbstractServerEmotePlay.getInstance().playerStartTracking(BukkitWrapper.this.networkPlay.getPlayerFromUUID(tracked), packetEvent.getPlayer());
 
                 }
             }

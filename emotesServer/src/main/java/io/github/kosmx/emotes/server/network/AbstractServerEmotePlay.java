@@ -90,8 +90,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     public void receiveMessage(NetData data, P player, INetworkInstance instance) throws IOException {
         switch (data.purpose){
             case STOP:
-                data.player = getUUIDFromPlayer(player);
-                sendForEveryoneElse(data, null, player);
+                stopEmote(player, data);
                 break;
             case CONFIG:
                 instance.setVersions(data.versions);
@@ -163,6 +162,16 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         sendForEveryoneElse(data, geyserEmotePacket, player);
     }
 
+    protected void stopEmote(P player, @Nullable NetData originalMessage) {
+        Pair<EmoteData, Integer> emote = getPlayerNetworkInstance(player).getEmoteTracker().getPlayedEmote();
+        getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(null);
+        if (emote != null) {
+            NetData data = new EmotePacket.Builder().configureToSendStop(emote.getLeft().getUuid(), getUUIDFromPlayer(player)).build().data;
+
+            sendForEveryoneElse(data, null, player);
+        }
+    }
+
     public void receiveGeyserMessage(P player, byte[] data){
         try {
             GeyserEmotePacket packet = new GeyserEmotePacket();
@@ -183,7 +192,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
     @Override
     protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData) {
-        streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player));
+        if (emoteData != null) {
+            streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player));
+        } else {
+            stopEmote(getPlayerFromUUID(player), null);
+        }
     }
 
     @Override

@@ -23,6 +23,10 @@ public class EmotePlayTracker {
 
     private Instant startTime = null;
 
+    /**
+     * Set the currently played emote.
+     * @param data Emote, null if stop playing
+     */
     public void setPlayedEmote(@Nullable EmoteData data) {
         currentEmote = data;
         if (data == null) {

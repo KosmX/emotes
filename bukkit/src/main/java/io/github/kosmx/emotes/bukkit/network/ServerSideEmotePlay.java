@@ -24,7 +24,6 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
 
     final HashMap<UUID, BukkitNetworkInstance> player_database = new HashMap<>();
 
-    public static ServerSideEmotePlay INSTANCE;
 
     public ServerSideEmotePlay(BukkitWrapper plugin){
         this.plugin = plugin;
@@ -35,7 +34,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     }
 
     private void receivePluginMessage(String channel, Player player, byte[] message) {
-        EmoteInstance.instance.getLogger().log(Level.FINE, "[EMOTECRAFT] streaming emote");
+        //EmoteInstance.instance.getLogger().log(Level.FINE, "[EMOTECRAFT] streaming emote");
         if (channel.equals(BukkitWrapper.EmotePacket)) {
             BukkitNetworkInstance playerNetwork = player_database.getOrDefault(player.getUniqueId(), null);
             if (playerNetwork != null) {
@@ -55,12 +54,12 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     }
 
     @Override
-    protected UUID getUUIDFromPlayer(Player player) {
+    public UUID getUUIDFromPlayer(Player player) {
         return player.getUniqueId();
     }
 
     @Override
-    protected Player getPlayerFromUUID(UUID player) {
+    public Player getPlayerFromUUID(UUID player) {
         return plugin.getServer().getPlayer(player);
     }
 
