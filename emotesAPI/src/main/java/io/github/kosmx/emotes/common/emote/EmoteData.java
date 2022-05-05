@@ -563,5 +563,14 @@ public final class EmoteData implements Supplier<UUID> {
             this.uuid = uuid;
             return this;
         }
+
+    }
+    @Override
+    public String toString() {
+        return "EmoteBuilder{" +
+                "uuid=" + uuid +
+                ", length=" + this.getLength() +
+                ", song=" + song +
+                '}';
     }
 }

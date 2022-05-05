@@ -58,6 +58,8 @@ public class ClientEmotePlay {
     }
 
     static void executeMessage(NetData data, INetworkInstance networkInstance) throws NullPointerException {
+        EmoteInstance.instance.getLogger().log(Level.INFO, "[emotes client] Received message: " + data);
+
         if (data.purpose == null) {
             if (EmoteInstance.config.showDebug.get()) {
                 EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible without a purpose");
