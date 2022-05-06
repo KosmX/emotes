@@ -43,4 +43,9 @@ public class BungeeNetworkInstance extends AbstractNetworkInstance implements IS
     public boolean isActive() {
         return true;
     }
+
+    @Override
+    public boolean trackPlayState() {
+        return false;
+    }
 }
