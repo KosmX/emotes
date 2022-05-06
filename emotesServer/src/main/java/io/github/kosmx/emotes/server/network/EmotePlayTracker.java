@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.server.network;
 
 import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.emote.EmoteData;
-import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -18,7 +17,6 @@ import java.time.Instant;
  */
 public class EmotePlayTracker {
 
-    @Getter
     private EmoteData currentEmote = null;
 
     private Instant startTime = null;

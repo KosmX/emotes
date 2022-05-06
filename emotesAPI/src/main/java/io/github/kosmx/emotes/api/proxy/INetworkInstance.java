@@ -26,7 +26,7 @@ public interface INetworkInstance {
      * do {@code HashMap#put(3, 0)} to disable sound streaming. NBS can't be optimized and often very large
      *
      * @return maybe null
-     * @Deprecated ambiguous name, use {@link INetworkInstance#getRemoteVersions()}
+     * @deprecated ambiguous name, use {@link INetworkInstance#getRemoteVersions()}
      */
     @Deprecated
     default HashMap<Byte, Byte> getVersions() { return null; }
