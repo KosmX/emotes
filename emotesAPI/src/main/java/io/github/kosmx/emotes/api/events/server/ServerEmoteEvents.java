@@ -22,6 +22,7 @@ public final class ServerEmoteEvents {
         return EventResult.PASS;
     });
 
+    @FunctionalInterface
     public interface EmoteVerifier {
 
         /**
@@ -48,8 +49,7 @@ public final class ServerEmoteEvents {
 
     /**
      * Invoked when someone is starting an emote
-     * WARNING: The server does not track the emote play states
-     * (not yet)
+     * For checking and cancelling, use {@link ServerEmoteEvents#EMOTE_VERIFICATION}
      */
     public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (emote, userID) -> {
         for (EmotePlayEvent listener : listeners) {
@@ -57,6 +57,7 @@ public final class ServerEmoteEvents {
         }
     });
 
+    @FunctionalInterface
     public interface EmotePlayEvent {
 
         /**
@@ -65,5 +66,23 @@ public final class ServerEmoteEvents {
          * @param userID User ID
          */
         void onEmotePlay(EmoteData emoteData, UUID userID);
+    }
+
+    public static final Event<EmoteStopEvent> EMOTE_STOP_BY_USER = new Event<>(EmoteStopEvent.class, listeners -> (emoteID, userID) -> {
+        for (EmoteStopEvent listener : listeners) {
+            listener.onStopEmote(emoteID, userID);
+        }
+    });
+
+    @FunctionalInterface
+    public interface EmoteStopEvent {
+
+        /**
+         * Only used when a user stops an emote-play,
+         * Finishing an emote will NOT invoke it
+         * @param emoteID the ID of the emote
+         * @param userID the ID of the user
+         */
+        void onStopEmote(UUID emoteID, UUID userID);
     }
 }

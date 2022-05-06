@@ -152,6 +152,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
      */
     protected void streamEmote(NetData data, P player) {
         getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(data.emoteData);
+        ServerEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, getUUIDFromPlayer(player));
         data.player = getUUIDFromPlayer(player);
         UUID bedrockEmoteID = bedrockEmoteMap.getBeEmote(data.emoteData.getUuid());
         GeyserEmotePacket geyserEmotePacket = null;
@@ -167,6 +168,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         Pair<EmoteData, Integer> emote = getPlayerNetworkInstance(player).getEmoteTracker().getPlayedEmote();
         getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(null);
         if (emote != null) {
+            ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.getLeft().getUuid(), getUUIDFromPlayer(player));
             NetData data = new EmotePacket.Builder().configureToSendStop(emote.getLeft().getUuid(), getUUIDFromPlayer(player)).build().data;
 
             sendForEveryoneElse(data, null, player);
