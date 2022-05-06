@@ -88,7 +88,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     public void receiveMessage(NetData data, P player, INetworkInstance instance) throws IOException {
-        EmoteInstance.instance.getLogger().log(Level.INFO, "[emotes server] Received data from: " + getUUIDFromPlayer(player) + " data: " + data);
+        EmoteInstance.instance.getLogger().log(Level.FINEST, "[emotes server] Received data from: " + getUUIDFromPlayer(player) + " data: " + data);
         switch (data.purpose){
             case STOP:
                 stopEmote(player, data);
