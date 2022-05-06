@@ -19,7 +19,6 @@ import java.util.UUID;
 public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     boolean isRemotePresent = false;
-    private int remoteVersion = 0;
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
@@ -58,32 +57,6 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         else {
             receiveMessage(buf.array()); //if heap, I can just use it's byte-array
         }
-    }
-
-    private boolean disableNBS = false;
-    @Override
-    public HashMap<Byte, Byte> getVersions() {
-        if(disableNBS){
-            HashMap<Byte, Byte> map = new HashMap<>();
-            map.put((byte)3, (byte) 0);
-            return map;
-        }
-        return null;
-    }
-
-    @Override
-    public void setVersions(HashMap<Byte, Byte> map) {
-        if(map.containsKey((byte)3)){
-            disableNBS = map.get((byte)3) == 0;
-        }
-        if(map.containsKey((byte)8)){
-            remoteVersion = map.get((byte)8); //8x8 :D
-        }
-    }
-
-    @Override
-    public int getRemoteVersion() {
-        return remoteVersion;
     }
 
     @Override

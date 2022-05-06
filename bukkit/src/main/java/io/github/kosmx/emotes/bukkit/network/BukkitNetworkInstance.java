@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.bukkit.network;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import org.bukkit.entity.Player;
 
@@ -14,6 +15,13 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
     private HashMap<Byte, Byte> version = null;
     final Player player;
     final BukkitWrapper bukkitPlugin = BukkitWrapper.getPlugin(BukkitWrapper.class);
+
+    private final EmotePlayTracker emotePlayTracker = new EmotePlayTracker();
+
+    @Override
+    public EmotePlayTracker getEmoteTracker() {
+        return this.emotePlayTracker;
+    }
 
     public BukkitNetworkInstance(Player player){
         this.player = player;
@@ -39,4 +47,13 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
         return true;
     }
 
+    @Override
+    public void presenceResponse() {
+        IServerNetworkInstance.super.presenceResponse();
+        for (Player player :bukkitPlugin.getServer().getOnlinePlayers()) {
+            if (this.player.canSee(player)) {
+                ServerSideEmotePlay.getInstance().playerStartTracking(player, this.player);
+            }
+        }
+    }
 }

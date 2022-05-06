@@ -22,8 +22,6 @@ import java.util.logging.Level;
 
 public class ClientNetworkInstance extends AbstractNetworkInstance implements C2SPlayChannelEvents.Register, ClientPlayConnectionEvents.Disconnect {
 
-    private int remoteVersion = 0;
-
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
     public void init(){
@@ -56,27 +54,6 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
         }
     }
 
-    private boolean disableNBS = false;
-    @Override
-    public HashMap<Byte, Byte> getVersions() {
-        if(disableNBS){
-            HashMap<Byte, Byte> map = new HashMap<>();
-            map.put((byte)3, (byte) 0);
-            return map;
-        }
-        return null;
-    }
-
-    @Override
-    public void setVersions(HashMap<Byte, Byte> map) {
-        if(map.containsKey((byte)3)){
-            disableNBS = map.get((byte)3) == 0;
-        }
-        if(map.containsKey((byte)8)){
-            remoteVersion = map.get((byte)8); //8x8 :D
-        }
-    }
-
     @Override
     public boolean sendPlayerID() {
         return false;
@@ -85,11 +62,6 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
     @Override
     public boolean isActive() {
         return ClientPlayNetworking.canSend(ServerNetwork.channelID);
-    }
-
-    @Override
-    public int getRemoteVersion() {
-        return remoteVersion;
     }
 
     @Override

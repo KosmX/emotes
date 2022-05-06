@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.common.emote;
 
 import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.opennbs.NBS;
+import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
@@ -20,6 +21,7 @@ public final class EmoteData implements Supplier<UUID> {
     public final int beginTick;
     public final int endTick;
     public final int stopTick;
+    @Getter
     public final boolean isInfinite;
     //if infinite, where to return
     public final int returnToTick;
@@ -161,6 +163,14 @@ public final class EmoteData implements Supplier<UUID> {
     @Override
     public UUID get() {
         return this.uuid;
+    }
+
+    /**
+     * Will return invalid information if {@link EmoteData#isInfinite} is true
+     * @return The length of the emote in ticks (20 t/s)
+     */
+    public int getLength() {
+        return stopTick;
     }
 
     public static class StateCollection {
@@ -553,5 +563,14 @@ public final class EmoteData implements Supplier<UUID> {
             this.uuid = uuid;
             return this;
         }
+
+    }
+    @Override
+    public String toString() {
+        return "EmoteBuilder{" +
+                "uuid=" + uuid +
+                ", length=" + this.getLength() +
+                ", song=" + song +
+                '}';
     }
 }

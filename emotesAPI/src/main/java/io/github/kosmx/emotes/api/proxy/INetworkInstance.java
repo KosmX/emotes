@@ -18,6 +18,20 @@ import java.util.UUID;
  * use this interface if you want to do something completely different
  */
 public interface INetworkInstance {
+
+    /**
+     * Get the version from the other side. null if default
+     * the map doesn't have to contain information about every module. these will be added automatically.
+     *
+     * do {@code HashMap#put(3, 0)} to disable sound streaming. NBS can't be optimized and often very large
+     *
+     * @return maybe null
+     * @Deprecated ambiguous name, use {@link INetworkInstance#getRemoteVersions()}
+     */
+    @Deprecated
+    default HashMap<Byte, Byte> getVersions() { return null; }
+
+
     /**
      * Get the version from the other side. null if default
      * the map doesn't have to contain information about every module. these will be added automatically.
@@ -26,7 +40,10 @@ public interface INetworkInstance {
      *
      * @return maybe null
      */
-    HashMap<Byte, Byte> getVersions();
+    @SuppressWarnings("deprecated")
+    default HashMap<Byte, Byte> getRemoteVersions() {
+        return getVersions();
+    }
 
     /**
      * Receive (and save) versions from the other side
@@ -74,7 +91,7 @@ public interface INetworkInstance {
      * You are asked to send your config.
      * From 2.1 client will start the config exchange and the server will reply
      *
-     * This shall be invoked when the server is ready to receive packets
+     * This should be invoked when the server is ready to receive packets
      */
     void sendConfigCallback();
 
@@ -109,6 +126,12 @@ public interface INetworkInstance {
      * @return remote version number. 8-255
      */
     int getRemoteVersion();
+
+    /**
+     * Does the track the emote play state of every player -> true
+     * The client has to resend the emote if a new player get close -> false
+     */
+    boolean isServerTrackingPlayState();
 
     /**
      * Maximum size of the data what the instance can send

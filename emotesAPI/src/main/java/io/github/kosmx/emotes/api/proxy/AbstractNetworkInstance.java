@@ -2,21 +2,25 @@ package io.github.kosmx.emotes.api.proxy;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
 /**
  * Implement this if you want to act as a proxy for EmoteX
- * This have most of the functions implemented but you can override any
+ * This has most of the functions implemented as you might want, but you can override any.
  */
 public abstract class AbstractNetworkInstance implements INetworkInstance{
 
+    //Notable version parameters
+    protected int remoteVersion = 0;
+    protected boolean disableNBS = false;
+    protected boolean doesServerTrackEmotePlay = false;
 
     /*
      * You have to implement at least one of these three functions
@@ -36,6 +40,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      */
     protected void sendMessage(byte[] bytes, @Nullable UUID target){
         //If code here were invoked, you have made a big mistake.
+        throw new UnsupportedOperationException("You should have implemented send emote feature");
     }
 
     /**
@@ -111,21 +116,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * @return the byte array
      */
     public static byte[] safeGetBytesFromBuffer(ByteBuffer byteBuffer){
-        try {
-            if (byteBuffer.isDirect() || byteBuffer.isReadOnly()) {
-                //not so fast, but there is no other way if the buffer is direct
-                byte[] bytes = new byte[byteBuffer.remaining()];
-                byteBuffer.get(bytes);
-                return bytes;
-            }
-            //Most efficient way.
-            else return byteBuffer.array();
-        }
-        //This shouldn't be able to happen
-        catch (BufferOverflowException | BufferUnderflowException e){
-            e.printStackTrace();
-            return null;
-        }
+        return INetworkInstance.safeGetBytesFromBuffer(byteBuffer);
     }
 
     /**
@@ -137,11 +128,52 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
         return CommonData.networkingVersion;
     }
 
+
+    /**
+     * Default client-side version config,
+     * Please call super if you override it.
+     * @param map version/config map
+     */
+    @Override
+    public void setVersions(HashMap<Byte, Byte> map) {
+        if (map.containsKey((byte) 3)) {
+            disableNBS = map.get((byte) 3) == 0;
+        }
+        if (map.containsKey((byte) 8)) {
+            remoteVersion = map.get((byte) 8); //8x8 :D
+        }
+        if (map.containsKey(PacketConfig.SERVER_TRACK_EMOTE_PLAY)) {
+            this.doesServerTrackEmotePlay = map.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
+        }
+    }
+
+    /**
+     * see {@link INetworkInstance#getRemoteVersions()}
+     * it is just a default implementation
+     */
+    @Override
+    public HashMap<Byte, Byte> getRemoteVersions() {
+        HashMap<Byte, Byte> map = new HashMap<>();
+        if(disableNBS){
+            map.put((byte)3, (byte) 0);
+        }
+        if (doesServerTrackEmotePlay) {
+            map.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)1);
+        }
+        return map;
+    }
+
+    @Override
+    public boolean isServerTrackingPlayState() {
+        return this.doesServerTrackEmotePlay;
+    }
+
     @Override
     public void sendConfigCallback(){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         //packetBuilder.setVersion(this.getVersions());
         packetBuilder.configureToConfigExchange(true);
+
         try {
             this.sendMessage(packetBuilder, null);
         }

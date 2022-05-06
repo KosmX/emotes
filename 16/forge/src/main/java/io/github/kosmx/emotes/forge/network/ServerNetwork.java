@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.forge.mixin.ChunkMapAccessor;
 import io.github.kosmx.emotes.forge.mixin.TrackedEntityAccessor;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
@@ -17,10 +18,12 @@ import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.event.EventNetworkChannel;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -89,8 +92,18 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     }
 
     @Override
+    protected Player getPlayerFromUUID(UUID player) {
+        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(player);
+    }
+
+    @Override
     protected long getRuntimePlayerID(Player player) {
         return player.getId();
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
+        return (IServerNetworkInstance) ((ServerPlayer)player).connection; //If the mixin works, this should suffice//
     }
 
     @Override

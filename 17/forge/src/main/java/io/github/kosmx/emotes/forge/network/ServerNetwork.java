@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.forge.mixin.ChunkMapAccessor;
 import io.github.kosmx.emotes.forge.mixin.TrackedEntityAccessor;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
@@ -22,6 +23,7 @@ import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -64,6 +66,11 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         networkEvent.getSource().get().setPacketHandled(true);
     }
 
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
+        return (IServerNetworkInstance) ((ServerPlayer)player).connection; //If the mixin works, this should suffice//
+    }
+
     void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
         try {
             receiveMessage(toBytes(buf), player, (INetworkInstance) handler);
@@ -86,6 +93,11 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     @Override
     protected UUID getUUIDFromPlayer(Player player) {
         return player.getUUID();
+    }
+
+    @Override
+    protected Player getPlayerFromUUID(UUID player) {
+        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(player);
     }
 
     @Override

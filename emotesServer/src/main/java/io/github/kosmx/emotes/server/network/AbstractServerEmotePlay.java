@@ -2,9 +2,11 @@ package io.github.kosmx.emotes.server.network;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.api.events.impl.EventResult;
+import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
@@ -14,8 +16,6 @@ import io.github.kosmx.emotes.common.tools.BiMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.geyser.EmoteMappings;
-import io.github.kosmx.emotes.server.serializer.BiMapSerializer;
-import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
 import javax.annotation.Nullable;
@@ -26,18 +26,22 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * This will be used for modded servers
  *
  */
-public abstract class AbstractServerEmotePlay<P> {
+public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     protected EmoteMappings bedrockEmoteMap = new EmoteMappings(new BiMap<>());
+
+    //private AbstractServerEmotePlay instance;
 
 
     public AbstractServerEmotePlay(){
         try {
             initMappings(EmoteInstance.instance.getGameDirectory().resolve("config"));
+            ServerEmoteAPI.INSTANCE = this;
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -69,24 +73,32 @@ public abstract class AbstractServerEmotePlay<P> {
 
     protected abstract UUID getUUIDFromPlayer(P player);
 
+    protected abstract P getPlayerFromUUID(UUID player);
+
     protected abstract long getRuntimePlayerID(P player);
+
+    protected abstract IServerNetworkInstance getPlayerNetworkInstance(P player);
+
+    protected IServerNetworkInstance getPlayerNetworkInstance(UUID player) { //For potential optimization
+        return getPlayerNetworkInstance(this.getPlayerFromUUID(player));
+    }
 
     public void receiveMessage(byte[] bytes, P player, INetworkInstance instance) throws IOException{
         receiveMessage(new EmotePacket.Builder().setThreshold(EmoteInstance.config.validThreshold.get()).build().read(ByteBuffer.wrap(bytes)), player, instance);
     }
 
     public void receiveMessage(NetData data, P player, INetworkInstance instance) throws IOException {
+        EmoteInstance.instance.getLogger().log(Level.FINEST, "[emotes server] Received data from: " + getUUIDFromPlayer(player) + " data: " + data);
         switch (data.purpose){
             case STOP:
-                data.player = getUUIDFromPlayer(player);
-                sendForEveryoneElse(data, null, player);
+                stopEmote(player, data);
                 break;
             case CONFIG:
                 instance.setVersions(data.versions);
                 instance.presenceResponse();
                 break;
             case STREAM:
-                streamEmote(data, player, instance);
+                handleStreamEmote(data, player, instance);
                 break;
             case UNKNOWN:
             default:
@@ -105,12 +117,19 @@ public abstract class AbstractServerEmotePlay<P> {
             NetData data = new NetData();
             data.emoteData = UniversalEmoteSerializer.getEmote(javaEmote);
             data.purpose = PacketTask.STREAM;
-            streamEmote(data, player, null);
+            handleStreamEmote(data, player, null);
         }
         else sendForEveryoneElse(emotePacket, player);
     }
 
-    protected void streamEmote(NetData data, P player, INetworkInstance instance) throws IOException {
+    /**
+     * Handle received stream message
+     * @param data received data
+     * @param player sender player
+     * @param instance senders network handler
+     * @throws IOException probably not
+     */
+    protected void handleStreamEmote(NetData data, P player, INetworkInstance instance) throws IOException {
         if (!data.valid && doValidate()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(player));
             if (result != EventResult.FAIL) {
@@ -119,19 +138,38 @@ public abstract class AbstractServerEmotePlay<P> {
                 return;
             }
         }
-        UUID target = data.player;
+        if (data.player != null) {
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " does not respect server-side emote tracking. Ignoring repeat", true);
+            return;
+        }
+        streamEmote(data, player);
+    }
+
+    /**
+     * Stream emote
+     * @param data   data
+     * @param player source player
+     */
+    protected void streamEmote(NetData data, P player) {
+        getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(data.emoteData);
         data.player = getUUIDFromPlayer(player);
-        if (target == null) {
-            UUID bedrockEmoteID = bedrockEmoteMap.getBeEmote(data.emoteData.getUuid());
-            GeyserEmotePacket geyserEmotePacket = null;
-            if(bedrockEmoteID != null){
-                geyserEmotePacket = new GeyserEmotePacket();
-                geyserEmotePacket.setEmoteID(bedrockEmoteID);
-                geyserEmotePacket.setRuntimeEntityID(getRuntimePlayerID(player));
-            }
-            sendForEveryoneElse(data, geyserEmotePacket, player);
-        } else {
-            sendForPlayerInRange(data, player, target);
+        UUID bedrockEmoteID = bedrockEmoteMap.getBeEmote(data.emoteData.getUuid());
+        GeyserEmotePacket geyserEmotePacket = null;
+        if(bedrockEmoteID != null){
+            geyserEmotePacket = new GeyserEmotePacket();
+            geyserEmotePacket.setEmoteID(bedrockEmoteID);
+            geyserEmotePacket.setRuntimeEntityID(getRuntimePlayerID(player));
+        }
+        sendForEveryoneElse(data, geyserEmotePacket, player);
+    }
+
+    protected void stopEmote(P player, @Nullable NetData originalMessage) {
+        Pair<EmoteData, Integer> emote = getPlayerNetworkInstance(player).getEmoteTracker().getPlayedEmote();
+        getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(null);
+        if (emote != null) {
+            NetData data = new EmotePacket.Builder().configureToSendStop(emote.getLeft().getUuid(), getUUIDFromPlayer(player)).build().data;
+
+            sendForEveryoneElse(data, null, player);
         }
     }
 
@@ -144,6 +182,27 @@ public abstract class AbstractServerEmotePlay<P> {
         }catch (Throwable t){
             t.printStackTrace();
         }
+    }
+
+    public void playerStartTracking(P tracked, P tracker) {
+        Pair<EmoteData, Integer> playedEmote = getPlayerNetworkInstance(tracked).getEmoteTracker().getPlayedEmote();
+        if (playedEmote != null) {
+            sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.getLeft()).configureEmoteTick(playedEmote.getRight()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, getUUIDFromPlayer(tracker));
+        }
+    }
+
+    @Override
+    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData) {
+        if (emoteData != null) {
+            streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player));
+        } else {
+            stopEmote(getPlayerFromUUID(player), null);
+        }
+    }
+
+    @Override
+    protected Pair<EmoteData, Integer> getPlayedEmoteImpl(UUID player) {
+        return getPlayerNetworkInstance(getPlayerFromUUID(player)).getEmoteTracker().getPlayedEmote();
     }
 
     protected abstract void sendForEveryoneElse(GeyserEmotePacket packet, P player);
@@ -171,4 +230,13 @@ public abstract class AbstractServerEmotePlay<P> {
      * @param target target entity
      */
     protected abstract void sendForPlayer(NetData data, P player, UUID target);
+
+    /**
+     * This is **NOT** for API usage,
+     * internal purpose only
+     * @return this
+     */
+    public static AbstractServerEmotePlay getInstance() {
+        return (AbstractServerEmotePlay) ServerEmoteAPI.INSTANCE;
+    }
 }

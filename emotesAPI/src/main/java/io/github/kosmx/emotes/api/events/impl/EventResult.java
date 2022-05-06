@@ -1,8 +1,12 @@
 package io.github.kosmx.emotes.api.events.impl;
 
+/**
+ * Generic event results
+ * See the actual event documentation for actual behaviour
+ */
 public enum EventResult {
     /**
-     * You listener did nothing, in won't change the result of the event
+     * Your listener did nothing, in won't change the result of the event
      */
     PASS,
 

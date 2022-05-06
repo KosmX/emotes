@@ -86,4 +86,16 @@ public final class NetData {
         data.sizeLimit = sizeLimit;
         return data;
     }
+
+    @Override
+    public String toString() {
+        return "NetData{" +
+                "purpose=" + purpose +
+                ", threshold=" + threshold +
+                ", stopEmoteID=" + stopEmoteID +
+                ", emoteData=" + emoteData +
+                ", startingAt=" + tick +
+                ", player=" + player +
+                '}';
+    }
 }

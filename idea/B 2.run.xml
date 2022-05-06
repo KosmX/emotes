@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="B 2" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="16" />
-    <option name="MAIN_CLASS_NAME" value="org.bukkit.craftbukkit.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.bukkit.craftbukkit.bootstrap.Main" />
     <module name="emotecraft.bukkit.debug.main" />
     <option name="PROGRAM_PARAMETERS" value="-nogui" />
     <option name="VM_PARAMETERS" value="-DIReallyKnowWhatIAmDoingISwear" />

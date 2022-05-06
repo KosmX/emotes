@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +24,6 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
 
     final HashMap<UUID, BukkitNetworkInstance> player_database = new HashMap<>();
 
-    public static ServerSideEmotePlay INSTANCE;
 
     public ServerSideEmotePlay(BukkitWrapper plugin){
         this.plugin = plugin;
@@ -34,7 +34,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     }
 
     private void receivePluginMessage(String channel, Player player, byte[] message) {
-        EmoteInstance.instance.getLogger().log(Level.FINE, "[EMOTECRAFT] streaming emote");
+        //EmoteInstance.instance.getLogger().log(Level.FINE, "[EMOTECRAFT] streaming emote");
         if (channel.equals(BukkitWrapper.EmotePacket)) {
             BukkitNetworkInstance playerNetwork = player_database.getOrDefault(player.getUniqueId(), null);
             if (playerNetwork != null) {
@@ -54,13 +54,28 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     }
 
     @Override
-    protected UUID getUUIDFromPlayer(Player player) {
+    public UUID getUUIDFromPlayer(Player player) {
         return player.getUniqueId();
+    }
+
+    @Override
+    public Player getPlayerFromUUID(UUID player) {
+        return plugin.getServer().getPlayer(player);
     }
 
     @Override
     protected long getRuntimePlayerID(Player player) {
         return player.getEntityId();
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
+        return player_database.get(getUUIDFromPlayer(player));
+    }
+
+    @Override
+    protected IServerNetworkInstance getPlayerNetworkInstance(UUID player) {
+        return this.player_database.get(player);
     }
 
     @Override
