@@ -15,7 +15,16 @@ public abstract class ServerEmoteAPI {
      * @param emote the new emote
      */
     public static void setPlayerPlayingEmote(UUID player, @Nullable EmoteData emote) {
-        INSTANCE.setPlayerPlayingEmoteImpl(player, emote);
+        INSTANCE.setPlayerPlayingEmoteImpl(player, emote, false);
+    }
+
+    /**
+     * Set the player to FORCE play emote.
+     * Forced emotes can only be stopped by a plugin, or by ending the emote.
+     * @param emote the new emote
+     */
+    public static void forcePlayEmote(UUID player, @Nullable EmoteData emote) {
+        INSTANCE.setPlayerPlayingEmoteImpl(player, emote, true);
     }
 
     /**
@@ -32,6 +41,6 @@ public abstract class ServerEmoteAPI {
 
     protected static ServerEmoteAPI INSTANCE;
 
-    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData);
+    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData, boolean isForced);
     protected abstract Pair<EmoteData, Integer> getPlayedEmoteImpl(UUID player);
 }

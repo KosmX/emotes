@@ -1,22 +1,12 @@
 package io.github.kosmx.emotes.arch.mixin;
 
+import com.mojang.authlib.GameProfile;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
 import io.github.kosmx.emotes.common.tools.Vec3d;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
-import com.mojang.authlib.GameProfile;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.annotation.Nullable;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -26,6 +16,11 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 //Mixin it into the player is way easier than storing it somewhere else...
@@ -35,15 +30,17 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
 
     @Shadow @Final public ClientLevel clientLevel;
     @Nullable EmotePlayer<ModelPart> emote;
+    boolean isForced = false;
 
     public EmotePlayerMixin(Level world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
     }
 
     @Override
-    public void playEmote(EmoteData emote, int t) {
+    public void playEmote(EmoteData emote, int t, boolean isForced) {
         this.emote = new EmotePlayImpl(emote, this::noteConsumer, t);
         this.initEmotePerspective(this.emote);
+        if (this.isMainPlayer()) this.isForced = isForced;
     }
 
     private void noteConsumer(Layer.Note note){
@@ -123,5 +120,10 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     public void tick() {
         super.tick();
         this.emoteTick();
+    }
+
+    @Override
+    public boolean isForcedEmote() {
+        return this.isPlayingEmote() && this.isForced;
     }
 }

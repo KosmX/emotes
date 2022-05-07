@@ -46,6 +46,8 @@ public final class NetData {
     //left it null when using Collar
     @Nullable
     public UUID player = null;
+    //Forced flag
+    public boolean isForced = false;
 
     public int sizeLimit = Short.MAX_VALUE;
 
@@ -84,6 +86,7 @@ public final class NetData {
         data.versions = versions;
         data.player = player;
         data.sizeLimit = sizeLimit;
+        data.isForced = isForced;
         return data;
     }
 

@@ -11,7 +11,7 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEnti
 
     //void init();
 
-    void playEmote(EmoteData emote, int tick);
+    void playEmote(EmoteData emote, int tick, boolean isForced);
 
     @Nullable
     T getEmote();
@@ -41,4 +41,6 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEnti
 
     default void emoteTickCallback(){}
     default void emoteStartPlayCallback(){}
+
+    public boolean isForcedEmote();
 }

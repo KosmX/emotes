@@ -142,7 +142,10 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " does not respect server-side emote tracking. Ignoring repeat", true);
             return;
         }
-        streamEmote(data, player);
+        if (getPlayerNetworkInstance(player).getEmoteTracker().isForced()) {
+            EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " is disobeying force play flag and tried to override it");
+        }
+        streamEmote(data, player, false);
     }
 
     /**
@@ -150,9 +153,10 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
      * @param data   data
      * @param player source player
      */
-    protected void streamEmote(NetData data, P player) {
-        getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(data.emoteData);
+    protected void streamEmote(NetData data, P player, boolean isForced) {
+        getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(data.emoteData, isForced);
         ServerEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, getUUIDFromPlayer(player));
+        data.isForced = isForced;
         data.player = getUUIDFromPlayer(player);
         UUID bedrockEmoteID = bedrockEmoteMap.getBeEmote(data.emoteData.getUuid());
         GeyserEmotePacket geyserEmotePacket = null;
@@ -166,7 +170,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
     protected void stopEmote(P player, @Nullable NetData originalMessage) {
         Pair<EmoteData, Integer> emote = getPlayerNetworkInstance(player).getEmoteTracker().getPlayedEmote();
-        getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(null);
+        getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(null, false);
         if (emote != null) {
             ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.getLeft().getUuid(), getUUIDFromPlayer(player));
             NetData data = new EmotePacket.Builder().configureToSendStop(emote.getLeft().getUuid(), getUUIDFromPlayer(player)).build().data;
@@ -194,9 +198,9 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     @Override
-    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData) {
+    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData, boolean isForced) {
         if (emoteData != null) {
-            streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player));
+            streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player), isForced);
         } else {
             stopEmote(getPlayerFromUUID(player), null);
         }

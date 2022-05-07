@@ -21,18 +21,35 @@ public class EmotePlayTracker {
 
     private Instant startTime = null;
 
+    private boolean isForced = false;
+
     /**
      * Set the currently played emote.
      * @param data Emote, null if stop playing
      */
-    public void setPlayedEmote(@Nullable EmoteData data) {
+    public void setPlayedEmote(@Nullable EmoteData data, boolean isForced) {
         currentEmote = data;
         if (data == null) {
             startTime = null;
+            isForced = false;
         }
         else {
             startTime = Instant.now();
+            isForced = isForced;
         }
+    }
+
+    /**
+     * Is the currently played emote forced
+     * Returns false if not playing emote
+     * a.k.a. disallow the user play a different emote
+     * @return true if forced, false if not playing any emote.
+     */
+    public boolean isForced() {
+        if( getPlayedEmote() != null) {
+            return isForced;
+        }
+        else return false;
     }
 
     /**
@@ -47,6 +64,7 @@ public class EmotePlayTracker {
         if (!currentEmote.isInfinite() && currentEmote.getLength() <= tick) {
             currentEmote = null;
             startTime = null;
+            isForced = false;
             return null;
         }
         return new Pair<>(currentEmote, tick);

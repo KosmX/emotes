@@ -13,18 +13,20 @@ public class PlayerDataPacket extends AbstractNetworkPacket{
 
     @Override
     public byte getVer() {
-        return 0;
+        return 1;
     }
 
     @Override
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         config.player = CommonNetwork.readUUID(byteBuffer);
+        if (version >= 1) config.isForced = byteBuffer.get() != 0x00;
         return true;
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
         CommonNetwork.writeUUID(byteBuffer, config.player);
+        byteBuffer.put(config.isForced ? (byte) 0x01 : (byte) 0x00);
     }
 
     @Override
@@ -34,6 +36,6 @@ public class PlayerDataPacket extends AbstractNetworkPacket{
 
     @Override
     public int calculateSize(NetData config) {
-        return 16;//1 UUID = 2 Long = 2*8 bytes = 16 bytes
+        return 17;//1 UUID = 2 Long = 2*8 bytes = 16 bytes + 1 byte for forced flag
     }
 }
