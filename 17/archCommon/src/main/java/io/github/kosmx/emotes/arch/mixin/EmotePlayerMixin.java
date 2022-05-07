@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import com.mojang.authlib.GameProfile;
+import io.github.kosmx.playerAnim.IAnimatedPlayer;
 import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import io.github.kosmx.playerAnim.layered.AnimationContainer;
 import io.github.kosmx.playerAnim.layered.AnimationStack;
@@ -33,7 +34,7 @@ import java.util.UUID;
 
 //Mixin it into the player is way easier than storing it somewhere else...
 @Mixin(AbstractClientPlayer.class)
-public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<ModelPart> {
+public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<ModelPart>, IAnimatedPlayer {
     int emotes_age = 0;
 
     @Shadow @Final public ClientLevel clientLevel;
@@ -146,5 +147,10 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     @Override
     public AnimationPlayer getAnimation() {
         return this.animationApplier;
+    }
+
+    @Override
+    public AnimationStack getAnimationStack() {
+        return animationStack;
     }
 }
