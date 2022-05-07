@@ -13,6 +13,7 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.tools.BiMap;
+import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.geyser.EmoteMappings;
@@ -22,9 +23,12 @@ import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -244,5 +248,28 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
      */
     public static AbstractServerEmotePlay getInstance() {
         return (AbstractServerEmotePlay) ServerEmoteAPI.INSTANCE;
+    }
+
+    @Override
+    protected HashMap<UUID, EmoteData> getLoadedEmotesImpl() {
+        HashMap<UUID, EmoteData> map = new UUIDMap<>();
+        map.putAll(UniversalEmoteSerializer.serverEmotes);
+        map.putAll(UniversalEmoteSerializer.hiddenServerEmotes);
+        return map;
+    }
+
+    @Override
+    protected UUIDMap<EmoteData> getHiddenEmotesImpl() {
+        return UniversalEmoteSerializer.hiddenServerEmotes;
+    }
+
+    @Override
+    protected List<EmoteData> unserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format) {
+        return UniversalEmoteSerializer.readData(inputStream, quarkName, format);
+    }
+
+    @Override
+    protected EmoteData getEmoteImpl(UUID emoteID) {
+        return UniversalEmoteSerializer.getEmote(emoteID);
     }
 }
