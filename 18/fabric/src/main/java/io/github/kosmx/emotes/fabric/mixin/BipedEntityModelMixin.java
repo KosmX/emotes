@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.fabric.BendableModelPart;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,7 +29,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 @SuppressWarnings("unchecked")
 @Mixin(HumanoidModel.class)
-public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart, EmotePlayImpl> {
+public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart> {
 
     @Final
     @Shadow
@@ -42,7 +43,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     @Final
     @Shadow
     public ModelPart leftArm;
-    protected SetableSupplier<EmotePlayImpl> emote = new SetableSupplier<>();
+    protected SetableSupplier<AnimationPlayer> emote = new SetableSupplier<>();
 
     @Inject(method = "<init>(Lnet/minecraft/client/model/geom/ModelPart;Ljava/util/function/Function;)V", at = @At("RETURN"))
     private void initBend(ModelPart modelPart, Function<ResourceLocation, RenderType> function, CallbackInfo ci){
@@ -58,7 +59,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     }
 
     @Override
-    public void setEmoteSupplier(SetableSupplier<EmotePlayImpl> emoteSupplier){
+    public void setEmoteSupplier(SetableSupplier<AnimationPlayer> emoteSupplier){
         this.emote = emoteSupplier;
     }
 
@@ -71,7 +72,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
 
     @Override
     public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha){
-        if(EmotePlayImpl.isRunningEmote(this.emote.get())){
+        if(this.emote.get() != null && this.emote.get().isActive()){
             this.headParts().forEach((part)->{
                 if(! ((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -83,9 +84,9 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
                 }
             });
 
-            SetableSupplier<EmotePlayImpl> emoteSupplier = this.emote;
+            SetableSupplier<AnimationPlayer> emoteSupplier = this.emote;
             matrices.pushPose();
-            BendableModelPart.roteteMatrixStack(matrices, emoteSupplier.get().torso.getBend());
+            BendableModelPart.roteteMatrixStack(matrices, emoteSupplier.get().getBend("body"));
             this.headParts().forEach((part)->{
                 if(((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -132,7 +133,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     }
 
     @Override
-    public SetableSupplier<EmotePlayImpl> getEmoteSupplier(){
+    public SetableSupplier<AnimationPlayer> getEmoteSupplier(){
         return emote;
     }
 }

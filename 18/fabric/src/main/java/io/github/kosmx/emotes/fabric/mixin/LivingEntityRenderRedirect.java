@@ -59,7 +59,7 @@ public abstract class LivingEntityRenderRedirect<T extends Entity, M extends Ent
         poseStack.pushPose();
         RenderLayer<T, M> layer = instance.next();
         if(livingEntity instanceof Player && livingEntity instanceof IEmotePlayerEntity && ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).isPlayingEmote() && ((IUpperPartHelper) layer).isUpperPart()){
-            BendableModelPart.roteteMatrixStack(poseStack, ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getEmote().torso.getBend());
+            BendableModelPart.roteteMatrixStack(poseStack, ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getAnimation().getBend("body"));
         }
         return layer;
     }
