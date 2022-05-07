@@ -180,6 +180,16 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             NetData data = new EmotePacket.Builder().configureToSendStop(emote.getLeft().getUuid(), getUUIDFromPlayer(player)).build().data;
 
             sendForEveryoneElse(data, null, player);
+            if (originalMessage == null) { //If the stop is not from the player, server needs to notify the player too
+                data.isForced = true;
+                sendForPlayer(data, player, getUUIDFromPlayer(player));
+            }
+        }
+    }
+
+    public void playerEntersInvalidPose(P player) {
+        if (!getPlayerNetworkInstance(player).getEmoteTracker().isForced()) {
+            stopEmote(player, null);
         }
     }
 

@@ -47,6 +47,8 @@ public final class NetData {
     @Nullable
     public UUID player = null;
     //Forced flag
+    //On play, it can not be stopped by the player
+    //On stop, the server stops it not because invalid but because event stopped it
     public boolean isForced = false;
 
     public int sizeLimit = Short.MAX_VALUE;

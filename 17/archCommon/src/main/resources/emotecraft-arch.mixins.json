@@ -3,6 +3,7 @@
   "package": "io.github.kosmx.emotes.arch.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "ServerPlayerMixin",
     "ServerPlayTrackerMixin"
   ],
   "client": [
