@@ -1,9 +1,10 @@
 package io.github.kosmx.emotes.executor.emotePlayer;
 
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
+import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 
 
-public interface IMutatedBipedModel<T, E extends IEmotePlayer> {
+public interface IMutatedBipedModel<T> {
     T getTorso();
 
     T getRightArm();
@@ -14,9 +15,9 @@ public interface IMutatedBipedModel<T, E extends IEmotePlayer> {
 
     T getLeftLeg();
 
-    void setEmoteSupplier(SetableSupplier<E> emoteSupplier);
+    void setEmoteSupplier(SetableSupplier<AnimationPlayer> emoteSupplier);
 
-    SetableSupplier<E> getEmoteSupplier();
+    SetableSupplier<AnimationPlayer> getEmoteSupplier();
 
     default void setTorso(T v){}
     default void setRightArm(T v){}

@@ -3,6 +3,13 @@ package io.github.kosmx.playerAnim.layered;
 import io.github.kosmx.emotes.common.tools.Vec3f;
 import io.github.kosmx.playerAnim.TransformType;
 
+/**
+ * A container to make swapping animation object easier
+ * It will clone the behaviour of the held animation
+ *
+ * you can put endless AnimationContainer into each other
+ * @param <T>
+ */
 public class AnimationContainer<T extends IAnimation> implements IAnimation {
     protected T anim;
 
@@ -22,6 +29,11 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
     @Override
     public boolean isActive() {
         return anim == null || anim.isActive();
+    }
+
+    @Override
+    public void tick() {
+        if (anim != null) anim.tick();
     }
 
     @Override
