@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -31,10 +32,15 @@ public class ClientEmotePlay {
     }
 
     public static boolean clientStartLocalEmote(EmoteData emote) {
+        IEmotePlayerEntity player = EmoteInstance.instance.getClientMethods().getMainPlayer();
+        if (player.isForcedEmote()) {
+            return false;
+        }
+
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToStreamEmote(emote, EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
+        packetBuilder.configureToStreamEmote(emote, player.emotes_getUUID());
         ClientPacketManager.send(packetBuilder, null);
-        EmoteInstance.instance.getClientMethods().getMainPlayer().playEmote(emote, 0);
+        EmoteInstance.instance.getClientMethods().getMainPlayer().playEmote(emote, 0, false);
         return true;
     }
 
@@ -69,7 +75,7 @@ public class ClientEmotePlay {
             case STREAM:
                 assert data.emoteData != null;
                 if(data.valid || !(((ClientConfig)EmoteInstance.config).alwaysValidate.get() || !networkInstance.safeProxy())) {
-                    receivePlayPacket(data.emoteData, data.player, data.tick);
+                    receivePlayPacket(data.emoteData, data.player, data.tick, data.isForced);
                 }
                 break;
             case STOP:
@@ -77,7 +83,7 @@ public class ClientEmotePlay {
                 assert data.stopEmoteID != null;
                 if(player != null) {
                     player.stopEmote(data.stopEmoteID);
-                    if(player.isMainPlayer()){
+                    if(player.isMainPlayer() && !data.isForced){
                         EmoteInstance.instance.getClientMethods().sendChatMessage(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.blockedEmote"));
                     }
                 }
@@ -98,11 +104,11 @@ public class ClientEmotePlay {
         }
     }
 
-    static void receivePlayPacket(EmoteData emoteData, UUID player, int tick) {
+    static void receivePlayPacket(EmoteData emoteData, UUID player, int tick, boolean isForced) {
         IEmotePlayerEntity playerEntity = EmoteInstance.instance.getGetters().getPlayerFromUUID(player);
         if(isEmoteAllowed(emoteData, player)) {
             if (playerEntity != null) {
-                playerEntity.playEmote(emoteData, tick);
+                playerEntity.playEmote(emoteData, tick, isForced);
             }
             else {
                 addToQueue(new QueueEntry(emoteData, tick, EmoteInstance.instance.getClientMethods().getCurrentTick()), player);

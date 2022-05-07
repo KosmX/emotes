@@ -30,15 +30,22 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
 
     @Shadow @Final public ClientLevel clientLevel;
     @Nullable EmotePlayer<ModelPart> emote;
+    private boolean isForcedEmote = false;
 
     public EmotePlayerMixin(Level world, BlockPos pos, float yaw, GameProfile profile) {
         super(world, pos, yaw, profile);
     }
 
     @Override
-    public void playEmote(EmoteData emote, int t) {
+    public void playEmote(EmoteData emote, int t, boolean isForced) {
         this.emote = new EmotePlayImpl(emote, this::noteConsumer, t);
         this.initEmotePerspective(this.emote);
+        if (this.isMainPlayer()) this.isForcedEmote = isForced;
+    }
+
+    @Override
+    public boolean isForcedEmote() {
+        return this.isPlayingEmote() && isForcedEmote;
     }
 
     private void noteConsumer(Layer.Note note){

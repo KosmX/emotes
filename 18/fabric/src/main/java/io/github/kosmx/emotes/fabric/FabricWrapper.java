@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.fabric.network.ServerNetwork;
 import io.github.kosmx.emotes.main.MainLoader;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
@@ -34,14 +35,16 @@ public class FabricWrapper implements ModInitializer {
         }
 
         ServerNetwork.instance.init();
-
-        ServerWorldEvents.LOAD.register((server, world) -> {
-            SERVER_INSTANCE = server; //keep it for later use
-        });
-
+        subscribeEvents();
     }
 
     public static void log(Level level, String msg){
         logger.log(level, msg);
+    }
+
+    private static void subscribeEvents() {
+        ServerWorldEvents.LOAD.register((server, world) -> {
+            SERVER_INSTANCE = server; //keep it for later use
+        });
     }
 }
