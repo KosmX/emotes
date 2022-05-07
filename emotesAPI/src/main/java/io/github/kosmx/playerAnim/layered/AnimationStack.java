@@ -59,7 +59,7 @@ public class AnimationStack implements IAnimation {
      * If there are multiple with the same priority, the one, added first will have larger priority
      * @param priority priority
      * @param layer    animation layer
-     * @apiNote Same priority entries logic is subject to change
+     * note: Same priority entries logic is subject to change
      */
     public void addAnimLayer(int priority, IAnimation layer) {
         int search = 0;
