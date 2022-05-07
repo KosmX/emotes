@@ -31,4 +31,10 @@ public interface IAnimation {
      */
     public Vec3f get3DTransform(String modelName, TransformType type, float tickDelta, Vec3f value0);
 
+    /**
+     * Called before rendering a character
+     * @param tickDelta Time since the last tick. 0-1
+     */
+    public void setupAnim(float tickDelta);
+
 }

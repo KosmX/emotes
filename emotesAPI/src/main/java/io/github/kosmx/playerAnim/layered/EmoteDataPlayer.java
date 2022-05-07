@@ -97,6 +97,11 @@ public class EmoteDataPlayer implements IAnimation {
         }
     }
 
+    @Override
+    public void setupAnim(float tickDelta) {
+        this.tickDelta = tickDelta;
+    }
+
     /**
      * is the emote already in an infinite loop?
      *
@@ -116,9 +121,6 @@ public class EmoteDataPlayer implements IAnimation {
         return part == null ? new BodyPart(null) : part;
     }
 
-    public void setTickDelta(float tickDelta) {
-        this.tickDelta = tickDelta;
-    }
 
     public int getStopTick() {
         return this.data.stopTick;

@@ -41,6 +41,7 @@ public abstract class EmotePlayer<T> extends EmoteDataPlayer implements IEmotePl
 
     @Override
     public void tick() {
+        super.tick();
         if (this.isActive()) {
             if (SoundPlayer.isPlayingSong(this.song)) song.tick();
         }

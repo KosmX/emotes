@@ -27,6 +27,7 @@ public class AnimationPlayer {
 
     public void setTickDelta(float tickDelta) {
         this.tickDelta = tickDelta;
+        this.animation.setupAnim(tickDelta);
     }
 
     public Pair<Float, Float> getBend(String modelName) {

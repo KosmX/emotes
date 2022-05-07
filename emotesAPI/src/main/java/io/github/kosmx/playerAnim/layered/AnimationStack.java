@@ -46,6 +46,14 @@ public class AnimationStack implements IAnimation {
         return value0;
     }
 
+    @Override
+    public void setupAnim(float tickDelta) {
+        for (Pair<Integer, IAnimation> layer : layers) {
+            layer.getRight().setupAnim(tickDelta);
+        }
+    }
+
+
     /**
      * Add an animation layer.
      * If there are multiple with the same priority, the one, added first will have larger priority

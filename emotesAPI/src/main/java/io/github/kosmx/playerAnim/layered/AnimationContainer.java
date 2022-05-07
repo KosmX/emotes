@@ -28,7 +28,7 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
 
     @Override
     public boolean isActive() {
-        return anim == null || anim.isActive();
+        return anim != null && anim.isActive();
     }
 
     @Override
@@ -39,5 +39,10 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
     @Override
     public Vec3f get3DTransform(String modelName, TransformType type, float tickDelta, Vec3f value0) {
         return anim == null ? value0 : anim.get3DTransform(modelName, type, tickDelta, value0);
+    }
+
+    @Override
+    public void setupAnim(float tickDelta) {
+        this.anim.setupAnim(tickDelta);
     }
 }
