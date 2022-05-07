@@ -2,6 +2,8 @@ package io.github.kosmx.emotes.common.tools;
 
 public class Vec3f extends Vector3<Float> {
 
+    public static final Vec3f ZERO = new Vec3f(0f, 0f, 0f);
+
     public Vec3f(float x, float y, float z) {
         super(x, y, z);
     }
