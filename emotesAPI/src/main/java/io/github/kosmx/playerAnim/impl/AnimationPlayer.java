@@ -5,6 +5,9 @@ import io.github.kosmx.emotes.common.tools.Vec3f;
 import io.github.kosmx.playerAnim.TransformType;
 import io.github.kosmx.playerAnim.layered.IAnimation;
 
+/**
+ * Tool to easily play animation to the player.
+ */
 public class AnimationPlayer {
     private final IAnimation animation;
     private float tickDelta = 0f;

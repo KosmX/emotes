@@ -3,8 +3,11 @@ package io.github.kosmx.emotes.forge.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.common.tools.Vec3f;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
+import io.github.kosmx.playerAnim.TransformType;
+import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -24,10 +27,12 @@ public class HeldItemMixin {
     private void renderMixin(LivingEntity livingEntity, ItemStack stack, ItemTransforms.TransformType transformationMode, HumanoidArm arm, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci){
         if(livingEntity instanceof IEmotePlayerEntity){
             IEmotePlayerEntity<EmotePlayImpl> player = (IEmotePlayerEntity<EmotePlayImpl>) livingEntity;
-            if(EmotePlayImpl.isRunningEmote(player.getEmote())){
-                EmotePlayImpl emote = player.getEmote();
+            if(player.getAnimation().isActive()){
+                AnimationPlayer anim = player.getAnimation();
 
-                Pair<Float, Float> pair = arm == HumanoidArm.LEFT ? emote.leftArm.getBend() : emote.rightArm.getBend();
+                Vec3f data = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftArm" : "rightArm", TransformType.BEND, new Vec3f(0f, 0f, 0f));
+
+                Pair<Float, Float> pair = new Pair<>(data.getX(), data.getY());
 
                 float offset = 0.25f;
                 matrices.translate(0, offset, 0);

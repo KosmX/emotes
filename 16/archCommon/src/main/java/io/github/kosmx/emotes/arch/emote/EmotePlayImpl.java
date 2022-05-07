@@ -14,7 +14,6 @@ public class EmotePlayImpl extends EmotePlayer<ModelPart>{
         super(emote, noteConsumer, t);
     }
 
-    @Override
     protected void updateBodyPart(BodyPart bodyPart, ModelPart modelPart) {
 
         modelPart.x = bodyPart.x.getValueAtCurrentTick(modelPart.x);

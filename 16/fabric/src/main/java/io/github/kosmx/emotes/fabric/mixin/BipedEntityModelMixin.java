@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.kosmx.bendylib.IModelPart;
+import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +26,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 @SuppressWarnings("unchecked")
 @Mixin(HumanoidModel.class)
-public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart, EmotePlayImpl> {
+public abstract class BipedEntityModelMixin<T extends LivingEntity> extends AgeableListModel<T> implements IMutatedBipedModel<BendableModelPart> {
 
     @Shadow
     public ModelPart rightLeg;
@@ -40,7 +41,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     protected BendableModelPart mutatedLeftArm;
     protected BendableModelPart mutatedLeftLeg;
     protected BendableModelPart mutatedRightLeg;
-    protected SetableSupplier<EmotePlayImpl> emote;
+    protected SetableSupplier<AnimationPlayer> emote;
 
     @Inject(method = "<init>(Ljava/util/function/Function;FFII)V", at = @At("RETURN"))
     private void InitInject(Function<ResourceLocation, RenderType> texturedLayerFactory, float scale, float pivotY, int textureWidth, int textureHeight, CallbackInfo ci){
@@ -61,7 +62,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     }
 
     @Override
-    public void setEmoteSupplier(SetableSupplier<EmotePlayImpl> emoteSupplier){
+    public void setEmoteSupplier(SetableSupplier<AnimationPlayer> emoteSupplier){
         this.mutatedLeftLeg.setEmote(emoteSupplier);
         this.mutatedRightLeg.setEmote(emoteSupplier);
         this.mutatedLeftArm.setEmote(emoteSupplier);
@@ -75,21 +76,21 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
         if(emote != null){
             if(((IMutatedBipedModel) bipedEntityModel).getEmoteSupplier() != emote)
                 ((IMutatedBipedModel) bipedEntityModel).setEmoteSupplier(emote);
-            if(EmotePlayImpl.isRunningEmote(this.emote.get())){
-                IMutatedBipedModel<BendableModelPart, EmotePlayImpl> thisWithMixin = (IMutatedBipedModel) bipedEntityModel;
-                EmotePlayImpl playedEmote = emote.get();
-                thisWithMixin.getTorso().bend(playedEmote.torso.getBend());
-                thisWithMixin.getLeftArm().bend(playedEmote.leftArm.getBend());
-                thisWithMixin.getLeftLeg().bend(playedEmote.leftLeg.getBend());
-                thisWithMixin.getRightArm().bend(playedEmote.rightArm.getBend());
-                thisWithMixin.getRightLeg().bend(playedEmote.rightLeg.getBend());
+            if(this.emote.get() != null && this.emote.get().isActive()){
+                IMutatedBipedModel<BendableModelPart> thisWithMixin = (IMutatedBipedModel) bipedEntityModel;
+                AnimationPlayer playedEmote = emote.get();
+                thisWithMixin.getTorso().bend(playedEmote.getBend("torso"));
+                thisWithMixin.getLeftArm().bend(playedEmote.getBend("leftArm"));
+                thisWithMixin.getLeftLeg().bend(playedEmote.getBend("leftLeg"));
+                thisWithMixin.getRightArm().bend(playedEmote.getBend("rightArm"));
+                thisWithMixin.getRightLeg().bend(playedEmote.getBend("rightLeg"));
             }
         }
     }
 
     @Override
     public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha){
-        if(((IModelPart) this.body).getActiveMutatedPart() == this.mutatedTorso && mutatedTorso.getEmote() != null && EmotePlayImpl.isRunningEmote(mutatedTorso.getEmote().get())){
+        if(((IModelPart) this.body).getActiveMutatedPart() == this.mutatedTorso && mutatedTorso.getEmote() != null && this.emote.get() != null && this.emote.get().isActive()){
             this.headParts().forEach((part)->{
                 if(! ((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -101,9 +102,9 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
                 }
             });
 
-            SetableSupplier<EmotePlayImpl> emoteSupplier = this.mutatedTorso.getEmote();
+            SetableSupplier<AnimationPlayer> emoteSupplier = this.mutatedTorso.getEmote();
             matrices.pushPose();
-            BendableModelPart.roteteMatrixStack(matrices, emoteSupplier.get().torso.getBend());
+            BendableModelPart.roteteMatrixStack(matrices, emoteSupplier.get().getBend("body"));
             this.headParts().forEach((part)->{
                 if(((IUpperPartHelper) part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -176,7 +177,7 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     }
 
     @Override
-    public SetableSupplier<EmotePlayImpl> getEmoteSupplier(){
+    public SetableSupplier<AnimationPlayer> getEmoteSupplier(){
         return emote;
     }
 }
