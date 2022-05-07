@@ -1,11 +1,8 @@
 package io.github.kosmx.emotes.common.tools;
 
-/**
- * Three-dimensional double vector
- */
-public class Vec3d extends Vector3<Double> {
+public class Vec3f extends Vector3<Float> {
 
-    public Vec3d(Double x, Double y, Double z) {
+    public Vec3f(float x, float y, float z) {
         super(x, y, z);
     }
 
