@@ -27,7 +27,7 @@ public class HeldItemMixin {
     private void renderMixin(LivingEntity livingEntity, ItemStack stack, ItemTransforms.TransformType transformationMode, HumanoidArm arm, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci){
         if(livingEntity instanceof IEmotePlayerEntity){
             IEmotePlayerEntity<EmotePlayImpl> player = (IEmotePlayerEntity<EmotePlayImpl>) livingEntity;
-            if(player.getAnimation().isActive() || true){
+            if(player.getAnimation().isActive()){
                 AnimationPlayer anim = player.getAnimation();
 
                 Vec3f data = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftArm" : "rightArm", TransformType.BEND, new Vec3f(0f, 0f, 0f));
