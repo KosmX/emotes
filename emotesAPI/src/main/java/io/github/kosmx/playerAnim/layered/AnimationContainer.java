@@ -43,6 +43,6 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
 
     @Override
     public void setupAnim(float tickDelta) {
-        this.anim.setupAnim(tickDelta);
+        if (this.anim != null) this.anim.setupAnim(tickDelta);
     }
 }

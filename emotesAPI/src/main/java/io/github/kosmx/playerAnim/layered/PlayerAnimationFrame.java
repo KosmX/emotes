@@ -13,9 +13,8 @@ import java.util.Map;
  *
  * It is a representation of your pose on the frame.
  * Override {@link IAnimation#setupAnim(float)} and set the pose there.
- * @param <T>
  */
-public abstract class PlayerAnimationFrame<T extends PlayerAnimationFrame.PlayerPart> implements IAnimation {
+public abstract class PlayerAnimationFrame implements IAnimation {
 
     protected PlayerPart head = new PlayerPart();
     protected PlayerPart body = new PlayerPart();
@@ -23,16 +22,20 @@ public abstract class PlayerAnimationFrame<T extends PlayerAnimationFrame.Player
     protected PlayerPart leftArm = new PlayerPart();
     protected PlayerPart rightLeg = new PlayerPart();
     protected PlayerPart leftLeg = new PlayerPart();
+    protected PlayerPart rightItem = new PlayerPart();
+    protected PlayerPart leftItem = new PlayerPart();
 
     HashMap<String, PlayerPart> parts = new HashMap<>();
 
     public PlayerAnimationFrame() {
         parts.put("head", head);
-        parts.put("body", head);
-        parts.put("rightArm", head);
-        parts.put("leftArm", head);
-        parts.put("rightLeg", head);
-        parts.put("leftLeg", head);
+        parts.put("body", body);
+        parts.put("rightArm", rightArm);
+        parts.put("leftArm", leftArm);
+        parts.put("rightLeg", rightLeg);
+        parts.put("leftLeg", leftLeg);
+        parts.put("rightItem", rightItem);
+        parts.put("leftItem", leftItem);
     }
 
 
@@ -64,6 +67,7 @@ public abstract class PlayerAnimationFrame<T extends PlayerAnimationFrame.Player
     @Override
     public Vec3f get3DTransform(String modelName, TransformType type, float tickDelta, Vec3f value0) {
         PlayerPart part = parts.get(modelName);
+        if (part == null) return value0;
         switch (type) {
             case POSITION:
                 return part.pos == null ? value0 : part.pos;

@@ -58,7 +58,7 @@ public abstract class LivingEntityRenderRedirect<T extends Entity, M extends Ent
     private Object transformMatrixStack(Iterator<RenderLayer<T, M>> instance, LivingEntity livingEntity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i){
         poseStack.pushPose();
         RenderLayer<T, M> layer = instance.next();
-        if(livingEntity instanceof Player && livingEntity instanceof IEmotePlayerEntity && ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).isPlayingEmote() && ((IUpperPartHelper) layer).isUpperPart()){
+        if(livingEntity instanceof Player && livingEntity instanceof IEmotePlayerEntity && ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getAnimation().isActive() && ((IUpperPartHelper) layer).isUpperPart()){
             BendableModelPart.roteteMatrixStack(poseStack, ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getAnimation().getBend("body"));
         }
         return layer;

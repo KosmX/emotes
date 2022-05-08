@@ -42,6 +42,15 @@ public class HeldItemMixin {
                 //return this.setRotation(axis.getRadialQuaternion(bend));
                 matrices.mulPose(axis.rotation(bend));
                 matrices.translate(0, - offset, 0);
+
+                Vec3f rot = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftItem" : "rightItem", TransformType.ROTATION, Vec3f.ZERO);
+                Vec3f pos = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftItem" : "rightItem", TransformType.POSITION, Vec3f.ZERO);
+
+                matrices.translate(pos.getX(), pos.getY(), pos.getZ());
+
+                matrices.mulPose(Vector3f.ZP.rotation(rot.getZ()));    //roll
+                matrices.mulPose(Vector3f.YP.rotation(rot.getY()));    //pitch
+                matrices.mulPose(Vector3f.XP.rotation(rot.getX()));    //yaw
             }
         }
     }

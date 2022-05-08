@@ -38,6 +38,12 @@ public final class EmoteData implements Supplier<UUID> {
     public final StateCollection rightLeg;
     @Deprecated
     public final StateCollection leftLeg;
+    @Deprecated
+    public final StateCollection rightItem;
+    @Deprecated
+    public final StateCollection leftItem;
+    @Deprecated
+    public final StateCollection torso;
     public final boolean isEasingBefore;
     public final boolean nsfw;
 
@@ -89,6 +95,9 @@ public final class EmoteData implements Supplier<UUID> {
         leftArm = bodyParts.get("leftArm");
         rightLeg = bodyParts.get("rightLeg");
         leftLeg = bodyParts.get("leftLeg");
+        rightItem = bodyParts.get("rightItem");
+        leftItem = bodyParts.get("leftItem");
+        torso = bodyParts.get("torso");
         assert emoteFormat != null;
     }
 
@@ -439,7 +448,10 @@ public final class EmoteData implements Supplier<UUID> {
         public final StateCollection rightArm;
         public final StateCollection leftArm;
         public final StateCollection rightLeg;
-        public final StateCollection leftLeg;
+        public final StateCollection leftLeg;;
+        public final StateCollection leftItem;;
+        public final StateCollection rightItem;;
+        public final StateCollection torso;
         public boolean isEasingBefore = false;
         //public float validationThreshold = staticThreshold;
         public boolean nsfw = false;
@@ -484,6 +496,9 @@ public final class EmoteData implements Supplier<UUID> {
             leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold, true);
             leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);
             rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
+            leftItem = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftItem", validationThreshold, false);
+            rightItem = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightItem", validationThreshold, false);
+            torso = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "torso", validationThreshold, true);
 
             bodyParts.put("head", head);
             bodyParts.put("body", body);
@@ -491,6 +506,9 @@ public final class EmoteData implements Supplier<UUID> {
             bodyParts.put("rightLeg", rightLeg);
             bodyParts.put("leftArm", leftArm);
             bodyParts.put("leftLeg", leftLeg);
+            bodyParts.put("leftItem", leftItem);
+            bodyParts.put("rightItem", rightItem);
+            bodyParts.put("torso", torso);
             this.emoteEmoteFormat = emoteFormat;
         }
 

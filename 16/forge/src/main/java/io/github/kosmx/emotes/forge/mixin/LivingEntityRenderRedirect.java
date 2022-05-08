@@ -28,7 +28,7 @@ public abstract class LivingEntityRenderRedirect<T extends Entity, M extends Ent
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V"))
     private void featureRendererTransformer(RenderLayer<T, M> featureRenderer, PoseStack matrices, MultiBufferSource vertexConsumers, int light, T livingEntity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch){
-        if(livingEntity instanceof Player && livingEntity instanceof IEmotePlayerEntity && ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).isPlayingEmote() && ((IUpperPartHelper) featureRenderer).isUpperPart()){
+        if(livingEntity instanceof Player && livingEntity instanceof IEmotePlayerEntity && ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getAnimation().isActive() && ((IUpperPartHelper) featureRenderer).isUpperPart()){
             matrices.pushPose();
             BendableModelPart.roteteMatrixStack(matrices, ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getAnimation().getBend("body"));
             featureRenderer.render(matrices, vertexConsumers, light, livingEntity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);

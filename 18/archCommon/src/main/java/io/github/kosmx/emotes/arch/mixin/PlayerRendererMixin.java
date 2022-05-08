@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class PlayerRendererMixin {
     @Inject(method = "setupRotations(Lnet/minecraft/client/player/AbstractClientPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V", at = @At("RETURN"))
     private void applyBodyTransforms(AbstractClientPlayer abstractClientPlayerEntity, PoseStack matrixStack, float f, float bodyYaw, float tickDelta, CallbackInfo ci){
-        if(((IEmotePlayerEntity<EmotePlayImpl>)abstractClientPlayerEntity).isPlayingEmote()){
-            var animationPlayer = ((IEmotePlayerEntity<EmotePlayImpl>) abstractClientPlayerEntity).getAnimation();
-            animationPlayer.setTickDelta(tickDelta);
+        var animationPlayer = ((IEmotePlayerEntity<EmotePlayImpl>) abstractClientPlayerEntity).getAnimation();
+        animationPlayer.setTickDelta(tickDelta);
+        if(animationPlayer.isActive()){
 
             //These are additive properties
             Vector3<Float> vec3d = animationPlayer.get3DTransform("body", TransformType.POSITION, Vec3f.ZERO);
