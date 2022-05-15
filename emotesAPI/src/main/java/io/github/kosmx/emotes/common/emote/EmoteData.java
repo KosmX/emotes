@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Supplier;
@@ -162,6 +163,19 @@ public final class EmoteData implements Supplier<UUID> {
         return new UUID(dataHash << Integer.SIZE + nameHash, descHash << Integer.SIZE + authHash);
     }
 
+
+    public EmoteData copy() {
+        return this.mutableCopy().build();
+    }
+    public EmoteBuilder mutableCopy() {
+        HashMap<String, StateCollection> newParts = new HashMap<>();
+        for(Map.Entry<String, StateCollection> part : this.bodyParts.entrySet()) {
+            newParts.put(part.getKey(), part.getValue().copy());
+        }
+        return new EmoteBuilder(beginTick, endTick, stopTick, isInfinite, returnToTick, newParts, isEasingBefore, nsfw, uuid, name, description, author, emoteFormat, iconData, song);
+    }
+
+
     public boolean isPlayingAt(int tick){
         return isInfinite || tick < stopTick && tick > 0;
     }
@@ -225,6 +239,24 @@ public final class EmoteData implements Supplier<UUID> {
             this.isBendable = bendable;
         }
 
+        public StateCollection(StateCollection stateCollection) {
+            this.name = stateCollection.name;
+            this.x = stateCollection.x.copy();
+            this.y = stateCollection.y.copy();
+            this.z = stateCollection.z.copy();
+            this.pitch = stateCollection.pitch.copy();
+            this.yaw = stateCollection.yaw.copy();
+            this.roll = stateCollection.roll.copy();
+            this.isBendable = stateCollection.isBendable;
+            if (stateCollection.isBendable) {
+                this.bendDirection = stateCollection.bendDirection.copy();
+                this.bend = stateCollection.bend.copy();
+            } else {
+                this.bend = null;
+                this.bendDirection = null;
+            }
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -259,6 +291,7 @@ public final class EmoteData implements Supplier<UUID> {
             return result;
         }
 
+
         public void fullyEnablePart(boolean always){
             if(always || x.isEnabled || y.isEnabled || z.isEnabled || pitch.isEnabled || yaw.isEnabled || roll.isEnabled || (isBendable && (bend.isEnabled || bendDirection.isEnabled))){
                 x.isEnabled = true;
@@ -287,6 +320,10 @@ public final class EmoteData implements Supplier<UUID> {
             }
         }
 
+        public StateCollection copy() {
+            return new StateCollection(this);
+        }
+
         public static class State{
             public final float defaultValue;
             public final float threshold;
@@ -294,6 +331,15 @@ public final class EmoteData implements Supplier<UUID> {
             public final String name;
             private final boolean isAngle;
             public boolean isEnabled = false;
+
+            public State(State state) {
+                this.defaultValue = state.defaultValue;
+                this.threshold = state.threshold;
+                this.keyFrames.addAll(state.keyFrames); //KeyFrames are immutable, copying them is safe
+                this.name = state.name;
+                this.isAngle = state.isAngle;
+                this.isEnabled = state.isEnabled;
+            }
 
             @Override
             public boolean equals(Object o) {
@@ -413,8 +459,13 @@ public final class EmoteData implements Supplier<UUID> {
                     keyFrames.remove(i--);
                 }
             }
+
+            public State copy() {
+                return new State(this);
+            }
         }
     }
+    @Immutable
     public static class KeyFrame{
 
         public final int tick;
@@ -517,6 +568,39 @@ public final class EmoteData implements Supplier<UUID> {
             bodyParts.put("rightItem", rightItem);
             bodyParts.put("torso", torso);
             this.emoteEmoteFormat = emoteFormat;
+        }
+
+        private EmoteBuilder(int beginTick, int endTick, int stopTick, boolean isInfinite,
+                             int returnToTick, HashMap<String, StateCollection> bodyParts, boolean isEasingBefore, boolean nsfw, @Nullable UUID uuid,
+                             @Nullable String name, @Nullable String description, @Nullable String author, EmoteFormat emoteFormat, @Nullable ByteBuffer iconData, @Nullable NBS song) {
+            this.validationThreshold = staticThreshold;
+            this.bodyParts.putAll(bodyParts);
+
+            head = bodyParts.get("head");
+            body = bodyParts.get("body");
+            rightArm = bodyParts.get("rightArm");
+            rightLeg = bodyParts.get("rightLeg");
+            leftArm = bodyParts.get("leftArm");
+            leftLeg = bodyParts.get("leftLeg");
+            leftItem = bodyParts.get("leftItem");
+            rightItem = bodyParts.get("rightItem");
+            torso = bodyParts.get("torso");
+
+            this.beginTick = beginTick;
+            this.endTick = endTick;
+            this.stopTick = stopTick;
+            this.isLooped = isInfinite;
+            this.returnTick = returnToTick;
+            this.isEasingBefore = isEasingBefore;
+            this.nsfw = nsfw;
+            this.uuid = uuid;
+            this.name = name;
+            this.description = description;
+            this.author = author;
+            this.emoteEmoteFormat = emoteFormat;
+            this.iconData = iconData;
+            this.song = song;
+
         }
 
         public EmoteBuilder setDescription(String s){
