@@ -49,6 +49,10 @@ public final class EmoteData implements Supplier<UUID> {
 
     //Emote identifier code.
     private final UUID uuid;
+    /**
+     * Is the uuid generated when loading or was loaded from a file
+     */
+    public final boolean isUUIDGenerated;
 
     //Store emote data in the emote object
     @Nullable
@@ -83,7 +87,10 @@ public final class EmoteData implements Supplier<UUID> {
         this.isEasingBefore = isEasingBefore;
         this.nsfw = nsfw;
         if(uuid == null){
+            this.isUUIDGenerated = true;
             uuid = this.generateUuid();
+        } else {
+            this.isUUIDGenerated = false;
         }
         this.uuid = uuid;
         this.emoteFormat = emoteFormat;
