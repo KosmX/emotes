@@ -20,7 +20,7 @@ public abstract class ServerPlayerMixin extends LivingEntity {
 
     @Inject(method = "updatePlayerPose", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setPose(Lnet/minecraft/world/entity/Pose;)V"))
     private void updatePlayerPoseEvent(CallbackInfo ci) {
-        if(this.getPose() == Pose.CROUCHING || getPose() == Pose.DYING || getPose() == Pose.SWIMMING || getPose() == Pose.FALL_FLYING || getPose() == Pose.SLEEPING) {
+        if(!this.level.isClientSide() || this.getPose() == Pose.CROUCHING || getPose() == Pose.DYING || getPose() == Pose.SWIMMING || getPose() == Pose.FALL_FLYING || getPose() == Pose.SLEEPING) {
             AbstractServerEmotePlay.getInstance().playerEntersInvalidPose(this);
         }
     }
