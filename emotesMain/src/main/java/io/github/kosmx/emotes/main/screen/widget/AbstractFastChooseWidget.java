@@ -63,10 +63,13 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         int y = mouseY - this.y - this.size / 2;
         int i = 0;
         double pi = Math.PI;
-        float degrees = (float) (Math.abs(((Math.atan2(y , x) - pi) / (2*pi)) * 360 - 270) % 360);
-        if (Math.abs(x) <= 10 && Math.abs(y) <= 10){
+
+        double distanceFromCenter = Math.sqrt(x*x+y*y);
+        if (distanceFromCenter < this.size*0.17 || distanceFromCenter > this.size/2.0){
             return null;
         }
+
+        float degrees = (float) (Math.abs(((Math.atan2(y , x) - pi) / (2*pi)) * 360 - 270) % 360);
         if (degrees < 22.5) {}
         else if (degrees < 22.5+45){
             i = 1;
