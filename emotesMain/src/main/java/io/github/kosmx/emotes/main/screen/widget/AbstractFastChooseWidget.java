@@ -83,40 +83,6 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         } else if (degrees < 22.5+315){
             i = 7;
         }
-        /*if (degrees >= (337.5f) || degrees <= 22.5f){
-            //System.out.println("x : " + x + " y : " + y + " | " + degrees);
-        } else if (degrees >= (22.5f) && degrees <= 67.5f){
-            i = 1;
-        } else if (degrees >= (67.5f) && degrees <= 112.5f){
-            i = 2;
-        } else if (degrees >= (112.5f) && degrees <= 157.5f){
-            i = 3;
-        } else if (degrees >= (157.5f) && degrees <= 202.5f){
-            i = 4;
-        } else if (degrees >= (202.5f) && degrees <= 247.5f){
-            i = 5;
-        } else if (degrees >= (247.5f) && degrees <= 292.5f){
-            i = 6;
-        } else if (degrees >= (292.5f) && degrees <= 337.4f){
-            i = 7;
-        }*/
-        /*if(x == 0){
-            return null;
-        }else if(x < 0){
-            i += 4;
-        }
-
-        if(y == 0){
-            return null;
-        }else if(y < 0){
-            i += 2;
-        }
-
-        if(Math.abs(x) == Math.abs(y)){
-            return null;
-        }else if(Math.abs(x) > Math.abs(y)){
-            i++;
-        }*/
         return elements.get(i);
     }
 
@@ -128,11 +94,6 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         renderDefaultBendFunction();
         renderEnableDepthText();
         this.drawTexture(matrices, 0, 0, 0, 0, 2);
-        //this.drawableDrawTexture(matrices, this.x, this.y, this.size, this.size, 0, 0, 256, 256, 512, 512);
-        //this.drawTexture_select(matrices, 256, 256, 128, 128, 1, 1, 1);
-        //this.drawTexture_select(matrices, 0, 0, 0, 0, 1, 1, 1);
-        //this.drawTexture_select(matrices, 256, 0, 128, 0, 1, 1, 1);
-        //this.drawTexture_select(matrices, 0, 256, 0, 128, 1, 1, 1);
         if(this.hovered){
             FastChooseElement part = getActivePart(mouseX, mouseY);
             if(part != null && doHoverPart(part)){
@@ -245,24 +206,6 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         }
 
         public void renderHover(MATRIX matrices){
-/*            int textX = 0;
-            int textY = 0;
-            int x = 0;
-            int y = 0;
-
-            if((id & 1) == 0){
-                textY = 128;
-            }else{
-                textX = 128;
-            }
-
-            if((id & 2) == 0){
-                y = 128;
-            }
-
-            if((id & 4) == 0){
-                x = 128;
-            }*/
             switch (id) {
                 case 0:
                     drawTexture_select(matrices, 0, 256, 0, 384, 2, 1);//0
@@ -289,7 +232,6 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
                     drawTexture_select(matrices, 0, 256, 256, 384, 1, 1);//7
                     break;
             }
-            //drawTexture(matrices, x, y, textX + x, textY + y, 1, 128, 128);
         }
     }
 }
