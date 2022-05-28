@@ -192,8 +192,8 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
             IIdentifier identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
             if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons.get()){
                 int s = size / 10;
-                int iconX = (int) (((float) (x + size / 2)) + size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
-                int iconY = (int) (((float) (y + size / 2)) + size * 0.4 * Math.cos(this.angle * 0.0174533)) - s;
+                int iconX = (int) (((float) (x + size / 2)) + size * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
+                int iconY = (int) (((float) (y + size / 2)) + size * 0.36 * Math.cos(this.angle * 0.0174533)) - s;
                 renderBindTexture(identifier);
                 drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             }else{
