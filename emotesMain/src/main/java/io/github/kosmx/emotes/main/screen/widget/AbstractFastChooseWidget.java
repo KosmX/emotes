@@ -28,17 +28,17 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
-    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_dark.png") : EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_light.png");
+    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_dark_new.png") : EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_light_new.png");
 
     private AbstractFastChooseWidget(){
-        elements.add( new FastChooseElement(0, 22.5f));
-        elements.add( new FastChooseElement(1, 67.5f));
-        elements.add( new FastChooseElement(2, 157.5f));
-        elements.add( new FastChooseElement(3, 112.5f));
-        elements.add( new FastChooseElement(4, 337.5f));
-        elements.add( new FastChooseElement(5, 292.5f));
-        elements.add( new FastChooseElement(6, 202.5f));
-        elements.add( new FastChooseElement(7, 247.5f));
+        elements.add( new FastChooseElement(0, 22.5f-22.5f));
+        elements.add( new FastChooseElement(1, 67.5f-22.5f));
+        elements.add( new FastChooseElement(2, 112.5f-22.5f));
+        elements.add( new FastChooseElement(3, 157.5f-22.5f));
+        elements.add( new FastChooseElement(4, 202.5f-22.5f));
+        elements.add( new FastChooseElement(5, 247.5f-22.5f));
+        elements.add( new FastChooseElement(6, 292.5f-22.5f));
+        elements.add( new FastChooseElement(7, 337.5f-22.5f));
     }
 
     public AbstractFastChooseWidget(int x, int y, int size){
@@ -62,7 +62,45 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         int x = mouseX - this.x - this.size / 2;
         int y = mouseY - this.y - this.size / 2;
         int i = 0;
-        if(x == 0){
+        double pi = Math.PI;
+        float degrees = (float) (Math.abs(((Math.atan2(y , x) - pi) / (2*pi)) * 360 - 270) % 360);
+        if (Math.abs(x) <= 10 && Math.abs(y) <= 10){
+            return null;
+        }
+        if (degrees < 22.5) {}
+        else if (degrees < 22.5+45){
+            i = 1;
+        } else if (degrees < 22.5+90){
+            i = 2;
+        } else if (degrees < 22.5+135){
+            i = 3;
+        } else if (degrees < 22.5+180){
+            i = 4;
+        } else if (degrees < 22.5+225){
+            i = 5;
+        } else if (degrees < 22.5+270){
+            i = 6;
+        } else if (degrees < 22.5+315){
+            i = 7;
+        }
+        /*if (degrees >= (337.5f) || degrees <= 22.5f){
+            //System.out.println("x : " + x + " y : " + y + " | " + degrees);
+        } else if (degrees >= (22.5f) && degrees <= 67.5f){
+            i = 1;
+        } else if (degrees >= (67.5f) && degrees <= 112.5f){
+            i = 2;
+        } else if (degrees >= (112.5f) && degrees <= 157.5f){
+            i = 3;
+        } else if (degrees >= (157.5f) && degrees <= 202.5f){
+            i = 4;
+        } else if (degrees >= (202.5f) && degrees <= 247.5f){
+            i = 5;
+        } else if (degrees >= (247.5f) && degrees <= 292.5f){
+            i = 6;
+        } else if (degrees >= (292.5f) && degrees <= 337.4f){
+            i = 7;
+        }*/
+        /*if(x == 0){
             return null;
         }else if(x < 0){
             i += 4;
@@ -78,7 +116,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
             return null;
         }else if(Math.abs(x) > Math.abs(y)){
             i++;
-        }
+        }*/
         return elements.get(i);
     }
 
@@ -90,6 +128,11 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         renderDefaultBendFunction();
         renderEnableDepthText();
         this.drawTexture(matrices, 0, 0, 0, 0, 2);
+        //this.drawableDrawTexture(matrices, this.x, this.y, this.size, this.size, 0, 0, 256, 256, 512, 512);
+        //this.drawTexture_select(matrices, 256, 256, 128, 128, 1, 1, 1);
+        //this.drawTexture_select(matrices, 0, 0, 0, 0, 1, 1, 1);
+        //this.drawTexture_select(matrices, 256, 0, 128, 0, 1, 1, 1);
+        //this.drawTexture_select(matrices, 0, 256, 0, 128, 1, 1, 1);
         if(this.hovered){
             FastChooseElement part = getActivePart(mouseX, mouseY);
             if(part != null && doHoverPart(part)){
@@ -113,6 +156,9 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
      */
     private void drawTexture(MATRIX matrices, int x, int y, int u, int v, int s){
         drawableDrawTexture(matrices, this.x + x * this.size / 256, this.y + y * this.size / 256, s * this.size / 2, s * this.size / 2, u, v, s * 128, s * 128, 512, 512);
+    }
+    private void drawTexture_select(MATRIX matrices, int x, int y, int u, int v, int w, int h){
+        drawableDrawTexture(matrices, this.x + x * this.size / 512, this.y + y * this.size / 512, w * this.size / 2, h * this.size / 2, u, v, w * 128, h * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
@@ -199,15 +245,15 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         }
 
         public void renderHover(MATRIX matrices){
-            int textX = 0;
+/*            int textX = 0;
             int textY = 0;
             int x = 0;
             int y = 0;
 
             if((id & 1) == 0){
-                textY = 256;
+                textY = 128;
             }else{
-                textX = 256;
+                textX = 128;
             }
 
             if((id & 2) == 0){
@@ -216,8 +262,34 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
 
             if((id & 4) == 0){
                 x = 128;
+            }*/
+            switch (id) {
+                case 0:
+                    drawTexture_select(matrices, 0, 256, 0, 384, 2, 1);//0
+                    break;
+                case 1:
+                    drawTexture_select(matrices, 256, 256, 384, 384, 1, 1);//1
+                    break;
+                case 2:
+                    drawTexture_select(matrices, 256, 0, 384, 0, 1, 2);//2
+                    break;
+                case 3:
+                    drawTexture_select(matrices, 256, 0, 384, 256, 1, 1);//3
+                    break;
+                case 4:
+                    drawTexture_select(matrices, 0, 0, 0, 256, 2, 1);//4
+                    break;
+                case 5:
+                    drawTexture_select(matrices, 0, 0, 256, 256, 1, 1); //5
+                    break;
+                case 6:
+                    drawTexture_select(matrices, 0, 0, 256, 0, 1, 2);//6
+                    break;
+                case 7:
+                    drawTexture_select(matrices, 0, 256, 256, 384, 1, 1);//7
+                    break;
             }
-            drawTexture(matrices, x, y, textX + x, textY + y, 1);
+            //drawTexture(matrices, x, y, textX + x, textY + y, 1, 128, 128);
         }
     }
 }
