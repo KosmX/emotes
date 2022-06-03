@@ -26,7 +26,7 @@ public interface IChooseWheel<MATRIX> {
 
     static <MATRIX, WIDGET> IChooseWheel<MATRIX> getWheel(AbstractFastChooseWidget<MATRIX, WIDGET> widget) {
         if (((ClientConfig) EmoteInstance.config).oldChooseWheel.get()) {
-            throw new UnsupportedOperationException();
+            return new LegacyChooseWidget<>(widget);
         } else {
             return new ModernChooseWheel<>(widget);
         }
