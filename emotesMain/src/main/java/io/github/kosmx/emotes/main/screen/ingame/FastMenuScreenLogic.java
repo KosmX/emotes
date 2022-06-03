@@ -8,6 +8,8 @@ import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
+import io.github.kosmx.emotes.main.screen.widget.IChooseWheel;
+import io.github.kosmx.emotes.main.screen.widget.ModernChooseWheel;
 
 /**
  * Stuff to override
@@ -60,10 +62,15 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
 
         public FastMenuWidget(int x, int y, int size){
             super(x, y, size);
+            if (((ClientConfig) EmoteInstance.config).oldChooseWheel.get()) {
+                //TODO
+            } else {
+                this.bind(new ModernChooseWheel<>(this));
+            }
         }
 
         @Override
-        protected boolean doHoverPart(FastChooseElement part){
+        protected boolean doHoverPart(IChooseWheel.IChooseElement part){
             return part.hasEmote();
         }
 
@@ -73,7 +80,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
         }
 
         @Override
-        protected boolean EmotesOnClick(FastChooseElement element, int button){
+        protected boolean EmotesOnClick(IChooseWheel.IChooseElement element, int button){
             if(element.getEmote() != null){
                 boolean bl = element.getEmote().playEmote(EmoteInstance.instance.getClientMethods().getMainPlayer());
                 screen.openScreen(null);
