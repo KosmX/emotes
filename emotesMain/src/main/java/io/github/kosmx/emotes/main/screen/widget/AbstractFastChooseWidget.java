@@ -18,6 +18,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         this.x = x;
         this.y = y;
         this.size = size;
+        this.wheel = IChooseWheel.getWheel(this);
     }
 
     protected void bind(IChooseWheel<MATRIX> wheel) {

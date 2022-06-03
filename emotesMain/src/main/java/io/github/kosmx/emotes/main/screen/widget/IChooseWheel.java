@@ -1,6 +1,8 @@
 package io.github.kosmx.emotes.main.screen.widget;
 
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.config.ClientConfig;
 
 public interface IChooseWheel<MATRIX> {
 
@@ -11,7 +13,7 @@ public interface IChooseWheel<MATRIX> {
 
     boolean isMouseOver(double mouseX, double mouseY);
 
-    public interface IChooseElement {
+    interface IChooseElement {
 
         boolean hasEmote();
 
@@ -20,5 +22,13 @@ public interface IChooseWheel<MATRIX> {
         void clearEmote();
 
         void setEmote(EmoteHolder emote);
+    }
+
+    static <MATRIX, WIDGET> IChooseWheel<MATRIX> getWheel(AbstractFastChooseWidget<MATRIX, WIDGET> widget) {
+        if (((ClientConfig) EmoteInstance.config).oldChooseWheel.get()) {
+            throw new UnsupportedOperationException();
+        } else {
+            return new ModernChooseWheel<>(widget);
+        }
     }
 }

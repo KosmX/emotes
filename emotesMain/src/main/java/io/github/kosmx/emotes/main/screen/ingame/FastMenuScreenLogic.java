@@ -62,11 +62,6 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
 
         public FastMenuWidget(int x, int y, int size){
             super(x, y, size);
-            if (((ClientConfig) EmoteInstance.config).oldChooseWheel.get()) {
-                //TODO
-            } else {
-                this.bind(new ModernChooseWheel<>(this));
-            }
         }
 
         @Override
