@@ -43,6 +43,17 @@ public class HeldItemMixin {
                 matrices.mulPose(axis.rotation(bend));
                 matrices.translate(0, - offset, 0);
 
+            }
+        }
+    }
+
+    @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
+    private void changeItemLocation(LivingEntity livingEntity, ItemStack itemStack, ItemTransforms.TransformType transformType, HumanoidArm arm, PoseStack matrices, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+        if(livingEntity instanceof IEmotePlayerEntity) {
+            IEmotePlayerEntity<EmotePlayImpl> player = (IEmotePlayerEntity<EmotePlayImpl>) livingEntity;
+            if (player.getAnimation().isActive()) {
+                AnimationPlayer anim = player.getAnimation();
+
                 Vec3f rot = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftItem" : "rightItem", TransformType.ROTATION, Vec3f.ZERO);
                 Vec3f pos = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftItem" : "rightItem", TransformType.POSITION, Vec3f.ZERO).scale(1/16f);
 
@@ -54,5 +65,4 @@ public class HeldItemMixin {
             }
         }
     }
-
 }

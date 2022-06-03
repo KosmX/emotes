@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.common.tools.Vec3f;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.playerAnim.TransformType;
+import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -27,7 +28,7 @@ public class HeldItemMixin {
         if(livingEntity instanceof IEmotePlayerEntity){
             IEmotePlayerEntity<EmotePlayImpl> player = (IEmotePlayerEntity<EmotePlayImpl>) livingEntity;
             if(player.getAnimation().isActive()){
-                var anim = player.getAnimation();
+                AnimationPlayer anim = player.getAnimation();
 
                 Vec3f data = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftArm" : "rightArm", TransformType.BEND, new Vec3f(0f, 0f, 0f));
 
@@ -42,6 +43,17 @@ public class HeldItemMixin {
                 matrices.mulPose(axis.rotation(bend));
                 matrices.translate(0, - offset, 0);
 
+            }
+        }
+    }
+
+    @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;renderItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemTransforms$TransformType;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
+    private void changeItemLocation(LivingEntity livingEntity, ItemStack itemStack, ItemTransforms.TransformType transformType, HumanoidArm arm, PoseStack matrices, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+        if(livingEntity instanceof IEmotePlayerEntity) {
+            IEmotePlayerEntity<EmotePlayImpl> player = (IEmotePlayerEntity<EmotePlayImpl>) livingEntity;
+            if (player.getAnimation().isActive()) {
+                AnimationPlayer anim = player.getAnimation();
+
                 Vec3f rot = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftItem" : "rightItem", TransformType.ROTATION, Vec3f.ZERO);
                 Vec3f pos = anim.get3DTransform(arm == HumanoidArm.LEFT ? "leftItem" : "rightItem", TransformType.POSITION, Vec3f.ZERO).scale(1/16f);
 
@@ -53,5 +65,4 @@ public class HeldItemMixin {
             }
         }
     }
-
 }
