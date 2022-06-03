@@ -1,9 +1,7 @@
 package io.github.kosmx.emotes.main.screen.widget;
 
-import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 
@@ -19,18 +17,18 @@ import java.util.logging.Level;
  * void isMouseHover
  * @param <MATRIX> Minecraft's MatrixStack
  */
-public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidgetLogic<MATRIX, WIDGET> {
+public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
 
 
-    public int x;
-    public int y;
-    protected int size;
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
     private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_dark_new.png") : EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_light_new.png");
 
-    private AbstractFastChooseWidget(){
+    private final AbstractFastChooseWidget<MATRIX, WIDGET> widget;
+
+    public ModernChooseWheel(AbstractFastChooseWidget<MATRIX, WIDGET> widget){
+        this.widget = widget;
         elements.add( new FastChooseElement(0, 22.5f-22.5f));
         elements.add( new FastChooseElement(1, 67.5f-22.5f));
         elements.add( new FastChooseElement(2, 112.5f-22.5f));
@@ -41,65 +39,51 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         elements.add( new FastChooseElement(7, 337.5f-22.5f));
     }
 
-    public AbstractFastChooseWidget(int x, int y, int size){
-        this();
-        this.x = x;
-        this.y = y;
-        this.size = size;       //It's a square with same width and height
-    }
-
-    public void drawCenteredText(MATRIX matrixStack, Text stringRenderable, float deg){
-        drawCenteredText(matrixStack, stringRenderable, (float) (((float) (this.x + this.size / 2)) + size * 0.4 * Math.sin(deg * 0.0174533)), (float) (((float) (this.y + this.size / 2)) + size * 0.4 * Math.cos(deg * 0.0174533)));
-    }
-
-    public void drawCenteredText(MATRIX matrices, Text stringRenderable, float x, float y){
-        int c = ((ClientConfig)EmoteInstance.config).dark.get() ? 255 : 0; //:D
-        textDraw(matrices, stringRenderable, x - (float) textRendererGetWidth(stringRenderable) / 2, y - 2, MathHelper.colorHelper(c, c, c, 1));
-    }
-
     @Nullable
-    protected FastChooseElement getActivePart(int mouseX, int mouseY){
-        int x = mouseX - this.x - this.size / 2;
-        int y = mouseY - this.y - this.size / 2;
+    protected FastChooseElement getActivePart(int mouseX, int mouseY) {
+        int x = mouseX - widget.x - widget.size / 2;
+        int y = mouseY - widget.y - widget.size / 2;
         int i = 0;
         double pi = Math.PI;
 
-        double distanceFromCenter = Math.sqrt(x*x+y*y);
-        if (distanceFromCenter < this.size*0.17 || distanceFromCenter > this.size/2.0){
+        double distanceFromCenter = Math.sqrt(x * x + y * y);
+        if (distanceFromCenter < widget.size * 0.17 || distanceFromCenter > widget.size / 2.0) {
             return null;
         }
 
-        float degrees = (float) (Math.abs(((Math.atan2(y , x) - pi) / (2*pi)) * 360 - 270) % 360);
-        if (degrees < 22.5) {}
-        else if (degrees < 22.5+45){
+        float degrees = (float) (Math.abs(((Math.atan2(y, x) - pi) / (2 * pi)) * 360 - 270) % 360);
+        if (degrees < 22.5) {
+            i = 0;
+        } else if (degrees < 22.5 + 45) {
             i = 1;
-        } else if (degrees < 22.5+90){
+        } else if (degrees < 22.5 + 90) {
             i = 2;
-        } else if (degrees < 22.5+135){
+        } else if (degrees < 22.5 + 135) {
             i = 3;
-        } else if (degrees < 22.5+180){
+        } else if (degrees < 22.5 + 180) {
             i = 4;
-        } else if (degrees < 22.5+225){
+        } else if (degrees < 22.5 + 225) {
             i = 5;
-        } else if (degrees < 22.5+270){
+        } else if (degrees < 22.5 + 270) {
             i = 6;
-        } else if (degrees < 22.5+315){
+        } else if (degrees < 22.5 + 315) {
             i = 7;
         }
         return elements.get(i);
     }
 
+    @Override
     public void render(MATRIX matrices, int mouseX, int mouseY, float delta){
         checkHovered(mouseX, mouseY);
-        renderBindTexture(TEXTURE);
-        renderSystemBlendColor(1, 1, 1, 1);
-        renderEnableBend();
-        renderDefaultBendFunction();
-        renderEnableDepthText();
+        widget.renderBindTexture(TEXTURE);
+        widget.renderSystemBlendColor(1, 1, 1, 1);
+        widget.renderEnableBend();
+        widget.renderDefaultBendFunction();
+        widget.renderEnableDepthText();
         this.drawTexture(matrices, 0, 0, 0, 0, 2);
         if(this.hovered){
             FastChooseElement part = getActivePart(mouseX, mouseY);
-            if(part != null && doHoverPart(part)){
+            if(part != null && widget.doHoverPart(part)){
                 part.renderHover(matrices);
             }
         }
@@ -108,7 +92,6 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         }
     }
 
-    protected abstract boolean doHoverPart(FastChooseElement part);
 
     /**
      * @param matrices MatrixStack ...
@@ -119,64 +102,62 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
     private void drawTexture(MATRIX matrices, int x, int y, int u, int v, int s){
-        drawableDrawTexture(matrices, this.x + x * this.size / 256, this.y + y * this.size / 256, s * this.size / 2, s * this.size / 2, u, v, s * 128, s * 128, 512, 512);
+        widget.drawableDrawTexture(matrices, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
     }
     private void drawTexture_select(MATRIX matrices, int x, int y, int u, int v, int w, int h){
-        drawableDrawTexture(matrices, this.x + x * this.size / 512, this.y + y * this.size / 512, w * this.size / 2, h * this.size / 2, u, v, w * 128, h * 128, 512, 512);
+        widget.drawableDrawTexture(matrices, widget.x + x * widget.size / 512, widget.y + y * widget.size / 512, w * widget.size / 2, h * widget.size / 2, u, v, w * 128, h * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
-        this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.size && mouseY <= this.y + this.size;
+        this.hovered = mouseX >= widget.x && mouseY >= widget.y && mouseX <= widget.x + widget.size && mouseY <= widget.y + widget.size;
     }
 
-    public boolean emotes_mouseClicked(double mouseX, double mouseY, int button){
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         checkHovered((int) mouseX, (int) mouseY);
-        if(this.hovered && this.isValidClickButton(button)){
+        if(this.hovered && widget.isValidClickButton(button)){
             FastChooseElement element = this.getActivePart((int) mouseX, (int) mouseY);
             if(element != null){
-                return EmotesOnClick(element, button);
+                return widget.EmotesOnClick(element, button);
             }
         }
         return false;
     }
 
 
+    @Override
     public boolean isMouseOver(double mouseX, double mouseY){
         this.checkHovered((int) mouseX, (int) mouseY);
         return this.hovered;
     }
 
-    protected abstract boolean isValidClickButton(int button);
 
-    protected abstract boolean EmotesOnClick(FastChooseElement element, int button);  //What DO I want to do with this element? set or play.
-
-    protected abstract boolean doesShowInvalid();
-
-    protected class FastChooseElement {
+    protected class FastChooseElement implements IChooseWheel.IChooseElement {
         private final float angle;
         private final int id;
-
-        @Nullable
 
         protected FastChooseElement(int num, float angle){
             this.angle = angle;
             this.id = num;
         }
 
+        @Override
         public boolean hasEmote(){
             return ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null;
         }
 
+        @Override
         public void setEmote(@Nullable EmoteHolder emote){
             ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] = emote == null ? null : emote.getUuid();
         }
 
+        @Override
         @Nullable
         public EmoteHolder getEmote(){
             UUID uuid = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id];
             if(uuid != null){
                 EmoteHolder emote = EmoteHolder.list.get(uuid);
-                if(emote == null && doesShowInvalid()){
+                if(emote == null && widget.doesShowInvalid()){
                     emote = new EmoteHolder.Empty(uuid);
                 }
                 return emote;
@@ -186,6 +167,7 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
             }
         }
 
+        @Override
         public void clearEmote(){
             this.setEmote(null);
         }
@@ -194,14 +176,14 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
             UUID emoteID = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] : null;
             IIdentifier identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
             if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons.get()){
-                int s = size / 10;
-                int iconX = (int) (((float) (x + size / 2)) + size * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
-                int iconY = (int) (((float) (y + size / 2)) + size * 0.36 * Math.cos(this.angle * 0.0174533)) - s;
-                renderBindTexture(identifier);
-                drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
+                int s = widget.size / 10;
+                int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
+                int iconY = (int) (((float) (widget.y + widget.size / 2)) + widget.size * 0.36 * Math.cos(this.angle * 0.0174533)) - s;
+                widget.renderBindTexture(identifier);
+                widget.drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             }else{
                 if(((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null){
-                    drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[id]).name, this.angle);
+                    widget.drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[id]).name, this.angle);
                 }else{
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Tried to render non-existing name", true);
                 }
