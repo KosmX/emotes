@@ -13,6 +13,7 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
+import io.github.kosmx.emotes.main.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -367,7 +368,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
 
         @Override
-        protected boolean EmotesOnClick(FastChooseElement element, int button){
+        protected boolean EmotesOnClick(IChooseWheel.IChooseElement element, int button){
             if(activeKeyTime != 0) return false;
             if(button == 1){
                 element.clearEmote();
@@ -383,7 +384,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         }
 
         @Override
-        protected boolean doHoverPart(FastChooseElement part){
+        protected boolean doHoverPart(IChooseWheel.IChooseElement part){
             return activeKeyTime == 0;
         }
 
