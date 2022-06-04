@@ -207,7 +207,7 @@ public class EmoteDataPlayer implements IAnimation {
 
         private EmoteData.KeyFrame findBefore(int pos, float currentState) {
             if (pos == -1) {
-                return (currentTick < data.beginTick || keyframes.length() != 0) ?
+                return (currentTick < data.beginTick) ?
                         new EmoteData.KeyFrame(0, currentState) :
                         (currentTick < data.endTick) ?
                                 new EmoteData.KeyFrame(data.beginTick, keyframes.defaultValue) :
@@ -220,24 +220,14 @@ public class EmoteDataPlayer implements IAnimation {
             if (this.keyframes.length() > pos + 1) {
                 return this.keyframes.keyFrames.get(pos + 1);
             }
-            if(data.isInfinite){
-                return this.getLastFrame();
-            }
-            return currentTick >= data.endTick || this.keyframes.length() != 0 ?
+
+            return currentTick >= data.endTick ?
                     new EmoteData.KeyFrame(data.stopTick, currentState) :
                     currentTick >= getData().beginTick ?
                             new EmoteData.KeyFrame(getData().endTick, keyframes.defaultValue) :
                             new EmoteData.KeyFrame(getData().beginTick, keyframes.defaultValue);
         }
 
-        private EmoteData.KeyFrame getLastFrame() {
-            if(keyframes.length() > 0) {
-                return this.keyframes.keyFrames.get(this.keyframes.length() - 1);
-            }
-            else {
-                return new EmoteData.KeyFrame(getData().beginTick, keyframes.defaultValue);
-            }
-        }
 
         /**
          * Get the current value of this axis.
