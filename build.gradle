@@ -122,8 +122,8 @@ if(keysExists) {
         finalizedBy(tasks.githubRelease)
 
         finalizedBy(':16:publishMod')
-        finalizedBy(':17:publishMod')
         finalizedBy(':18:publishMod')
+        finalizedBy(':19:publishMod')
 
         finalizedBy(':emotesAPI:publish')
         finalizedBy(':executor:publish')
@@ -140,7 +140,7 @@ else {
 task buildAll{
     dependsOn(':bukkit:build')
     dependsOn(':bungee:build')
-    dependsOn(':16:buildAll', ':17:buildAll', ':18:buildAll')
+    dependsOn(':16:buildAll', ':18:buildAll', ':19:buildAll')
 }
 
 task cleanupArtifacts{
@@ -153,7 +153,7 @@ task collectArtifacts{
     dependsOn('cleanupArtifacts')
     dependsOn(':bukkit:copyArtifacts')
     dependsOn(':bungee:copyArtifacts')
-    dependsOn(':16:copyArtifacts', ':17:copyArtifacts', ':18:copyArtifacts')
+    dependsOn(':16:copyArtifacts', ':18:copyArtifacts', ':19:copyArtifacts')
     doLast {
         releaseArtifacts = project.getProjectDir().toPath().resolve("artifacts").toFile().listFiles()
     }

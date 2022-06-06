@@ -1,4 +1,0 @@
-accessWidener v1 named
-
-extendable class net/minecraft/client/model/geom/ModelPart
-#I need it to be mixinable and then castable
