@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "io.github.kosmx.emotes.fabric.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "ServerPlayNetworkInstance"
+  ],
+  "client": [
+    "PlayerModelMixin",
+    "LivingEntityRenderRedirect",
+    "BipedEntityModelMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

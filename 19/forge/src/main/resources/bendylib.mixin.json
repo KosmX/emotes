@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "io.github.kosmx.bendylibForge.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [],
+  "client": [
+    "CuboidMutator",
+    "IModelPartMixin",
+    "QuadMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
