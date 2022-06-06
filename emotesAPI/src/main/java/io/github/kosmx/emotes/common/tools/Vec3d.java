@@ -1,5 +1,8 @@
 package io.github.kosmx.emotes.common.tools;
 
+/**
+ * Three-dimensional double vector
+ */
 public class Vec3d extends Vector3<Double> {
 
     public Vec3d(Double x, Double y, Double z) {

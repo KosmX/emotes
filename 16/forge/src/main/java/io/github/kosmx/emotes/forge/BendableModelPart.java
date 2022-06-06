@@ -6,11 +6,13 @@ import com.mojang.math.Vector3f;
 import io.github.kosmx.bendylibForge.IModelPart;
 import io.github.kosmx.bendylibForge.MutableModelPart;
 import io.github.kosmx.bendylibForge.impl.BendableCuboid;
+import io.github.kosmx.emotes.arch.emote.AnimationApplier;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
+import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.model.geom.ModelPart;
 
 import javax.annotation.Nonnull;
@@ -19,14 +21,14 @@ import javax.annotation.Nullable;
 //Until I don't have to modify bendy-lib, this will work properly
 public class BendableModelPart extends MutableModelPart {
     @Nullable
-    protected SetableSupplier<EmotePlayImpl> emote;
+    protected SetableSupplier<AnimationPlayer> emote;
     protected float axis = 0;
     protected float angl = 0;
 
     //Render after or before bending the torso...
     protected boolean isUpperPart = false;
 
-    public BendableModelPart(ModelPart modelPart, boolean isUpperPart, @Nullable SetableSupplier<EmotePlayImpl> emote){
+    public BendableModelPart(ModelPart modelPart, boolean isUpperPart, @Nullable SetableSupplier<AnimationPlayer> emote){
         super(modelPart);
         this.emote = emote;
         this.isUpperPart = isUpperPart;
@@ -34,7 +36,7 @@ public class BendableModelPart extends MutableModelPart {
         ((IUpperPartHelper) modelPart).setUpperPart(isUpperPart);
     }
 
-    public BendableModelPart(ModelPart modelPart, @Nullable SetableSupplier<EmotePlayImpl> emote){
+    public BendableModelPart(ModelPart modelPart, @Nullable SetableSupplier<AnimationPlayer> emote){
         this(modelPart, false, emote);
     }
 
@@ -77,15 +79,15 @@ public class BendableModelPart extends MutableModelPart {
 
     @Override
     public boolean isActive(){
-        return this.emote != null && EmotePlayImpl.isRunningEmote(this.emote.get()) && angl != 0;
+        return this.emote != null && this.emote.get() != null && this.emote.get().isActive() && angl != 0;
     }
 
-    public void setEmote(@Nullable SetableSupplier<EmotePlayImpl> emote){
+    public void setEmote(@Nullable SetableSupplier<AnimationPlayer> emote){
         this.emote = emote;
     }
 
     @Nullable
-    public SetableSupplier<EmotePlayImpl> getEmote(){
+    public SetableSupplier<AnimationPlayer> getEmote(){
         return emote;
     }
 

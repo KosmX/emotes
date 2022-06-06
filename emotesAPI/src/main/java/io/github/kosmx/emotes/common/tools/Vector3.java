@@ -1,8 +1,10 @@
 package io.github.kosmx.emotes.common.tools;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Vector;
 
 //some Vector implementation. This is only for storing values
+@Immutable
 public class Vector3 <N extends Number>{
     N x, y, z;
 

@@ -33,7 +33,7 @@ public class ForgeWrapper {
 
 
     @SubscribeEvent
-    private void playerStartTrackEvent(PlayerEvent.StartTracking event) {
+    public void playerStartTrackEvent(PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof Player) AbstractServerEmotePlay.getInstance().playerStartTracking(event.getTarget(), event.getPlayer()); //Do not do this in your code
     }
 

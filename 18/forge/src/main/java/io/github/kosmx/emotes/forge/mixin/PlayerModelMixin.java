@@ -2,12 +2,14 @@ package io.github.kosmx.emotes.forge.mixin;
 
 import io.github.kosmx.bendylibForge.ModelPartAccessor;
 import io.github.kosmx.bendylibForge.impl.BendableCuboid;
+import io.github.kosmx.emotes.arch.emote.AnimationApplier;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import io.github.kosmx.emotes.forge.BendableModelPart;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
+import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -39,9 +41,9 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
     public ModelPart leftSleeve;
     @Shadow @Final public ModelPart rightPants;
     @Shadow @Final public ModelPart leftPants;
-    public SetableSupplier<EmotePlayImpl> emoteSupplier = new SetableSupplier<>();
+    public SetableSupplier<AnimationPlayer> emoteSupplier = new SetableSupplier<>();
 
-    private IMutatedBipedModel<BendableModelPart, EmotePlayImpl> thisWithMixin;
+    private IMutatedBipedModel<BendableModelPart> thisWithMixin;
 
     public PlayerModelMixin(ModelPart modelPart, Function<ResourceLocation, RenderType> function) {
         super(modelPart, function);
@@ -50,7 +52,7 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initBendableStuff(ModelPart p_170821_, boolean p_170822_, CallbackInfo ci){
-        thisWithMixin = (IMutatedBipedModel<BendableModelPart, EmotePlayImpl>) this;
+        thisWithMixin = (IMutatedBipedModel<BendableModelPart>) this;
         emoteSupplier.set(null);
 
         thisWithMixin.setEmoteSupplier(emoteSupplier);
@@ -99,22 +101,24 @@ public class PlayerModelMixin<T extends LivingEntity> extends HumanoidModel<T> {
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;copyFrom(Lnet/minecraft/client/model/geom/ModelPart;)V", ordinal = 0))
     private void setEmote(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
-        if(livingEntity instanceof AbstractClientPlayer && ((IEmotePlayerEntity<EmotePlayImpl>)livingEntity).isPlayingEmote()){
-            EmotePlayImpl emote = ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getEmote();
+        if(livingEntity instanceof AbstractClientPlayer && ((IEmotePlayerEntity<EmotePlayImpl>)livingEntity).getAnimation().isActive()){
+            AnimationApplier emote = (AnimationApplier) ((IEmotePlayerEntity<EmotePlayImpl>) livingEntity).getAnimation();
             emoteSupplier.set(emote);
-            emote.head.updateBodyPart(this.head);
-            this.hat.copyFrom(this.head);
-            emote.leftArm.updateBodyPart(this.leftArm);
-            emote.rightArm.updateBodyPart(this.rightArm);
-            emote.leftLeg.updateBodyPart(this.leftLeg);
-            emote.rightLeg.updateBodyPart(this.rightLeg);
-            emote.getPart("torso").updateBodyPart(this.body);
 
-            thisWithMixin.getTorso().bend(emote.torso.getBend());
-            thisWithMixin.getLeftArm().bend(emote.leftArm.getBend());
-            thisWithMixin.getLeftLeg().bend(emote.leftLeg.getBend());
-            thisWithMixin.getRightArm().bend(emote.rightArm.getBend());
-            thisWithMixin.getRightLeg().bend(emote.rightLeg.getBend());
+            emote.updatePart("head", this.head);
+            this.hat.copyFrom(this.head);
+
+            emote.updatePart("leftArm", this.leftArm);
+            emote.updatePart("rightArm", this.rightArm);
+            emote.updatePart("leftLeg", this.leftLeg);
+            emote.updatePart("rightLeg", this.rightLeg);
+            emote.updatePart("torso", this.body);
+
+            thisWithMixin.getTorso().bend(emote.getBend("torso"));
+            thisWithMixin.getLeftArm().bend(emote.getBend("leftArm"));
+            thisWithMixin.getLeftLeg().bend(emote.getBend("leftLeg"));
+            thisWithMixin.getRightArm().bend(emote.getBend("rightArm"));
+            thisWithMixin.getRightLeg().bend(emote.getBend("rightLeg"));
 
         }
         else {

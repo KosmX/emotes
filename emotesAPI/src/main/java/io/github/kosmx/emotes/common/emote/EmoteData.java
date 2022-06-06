@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Supplier;
@@ -38,11 +39,21 @@ public final class EmoteData implements Supplier<UUID> {
     public final StateCollection rightLeg;
     @Deprecated
     public final StateCollection leftLeg;
+    @Deprecated
+    public final StateCollection rightItem;
+    @Deprecated
+    public final StateCollection leftItem;
+    @Deprecated
+    public final StateCollection torso;
     public final boolean isEasingBefore;
     public final boolean nsfw;
 
     //Emote identifier code.
     private final UUID uuid;
+    /**
+     * Is the uuid generated when loading or was loaded from a file
+     */
+    public final boolean isUUIDGenerated;
 
     //Store emote data in the emote object
     @Nullable
@@ -64,7 +75,7 @@ public final class EmoteData implements Supplier<UUID> {
     public boolean isBuiltin = false;
 
 
-    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, HashMap<String, StateCollection> bodyParts, boolean isEasingBefore, boolean nsfw, UUID uuid, @Nullable String name, @Nullable String description, @Nullable String author, EmoteFormat emoteFormat, ByteBuffer iconData, NBS song){
+    private EmoteData(int beginTick, int endTick, int stopTick, boolean isInfinite, int returnToTick, HashMap<String, StateCollection> bodyParts, boolean isEasingBefore, boolean nsfw, UUID uuid, @Nullable String name, @Nullable String description, @Nullable String author, EmoteFormat emoteFormat, ByteBuffer iconData, NBS song) {
         this.beginTick = Math.max(beginTick, 0);
         this.name = name;
         this.description = description;
@@ -76,8 +87,11 @@ public final class EmoteData implements Supplier<UUID> {
         this.bodyParts = bodyParts;
         this.isEasingBefore = isEasingBefore;
         this.nsfw = nsfw;
-        if(uuid == null){
+        if (uuid == null) {
+            this.isUUIDGenerated = true;
             uuid = this.generateUuid();
+        } else {
+            this.isUUIDGenerated = false;
         }
         this.uuid = uuid;
         this.emoteFormat = emoteFormat;
@@ -89,11 +103,15 @@ public final class EmoteData implements Supplier<UUID> {
         leftArm = bodyParts.get("leftArm");
         rightLeg = bodyParts.get("rightLeg");
         leftLeg = bodyParts.get("leftLeg");
+        rightItem = bodyParts.get("rightItem");
+        leftItem = bodyParts.get("leftItem");
+        torso = bodyParts.get("torso");
         assert emoteFormat != null;
     }
 
     /**
      * Some data from source are ignored
+     *
      * @param o
      * @return
      */
@@ -127,7 +145,7 @@ public final class EmoteData implements Supplier<UUID> {
         return result;
     }
 
-    private UUID generateUuid(){
+    private UUID generateUuid() {
         int result = beginTick;
         result = 31 * result + endTick;
         result = 31 * result + stopTick;
@@ -146,12 +164,27 @@ public final class EmoteData implements Supplier<UUID> {
         return new UUID(dataHash << Integer.SIZE + nameHash, descHash << Integer.SIZE + authHash);
     }
 
-    public boolean isPlayingAt(int tick){
+
+    public EmoteData copy() {
+        return this.mutableCopy().build();
+    }
+
+    public EmoteBuilder mutableCopy() {
+        HashMap<String, StateCollection> newParts = new HashMap<>();
+        for (Map.Entry<String, StateCollection> part : this.bodyParts.entrySet()) {
+            newParts.put(part.getKey(), part.getValue().copy());
+        }
+        return new EmoteBuilder(beginTick, endTick, stopTick, isInfinite, returnToTick, newParts, isEasingBefore, nsfw, uuid, name, description, author, emoteFormat, iconData, song);
+    }
+
+
+    public boolean isPlayingAt(int tick) {
         return isInfinite || tick < stopTick && tick > 0;
     }
 
     /**
      * Uuid of the emote. used for key binding and for server-client identification
+     *
      * @return UUID
      */
     public UUID getUuid() {
@@ -165,6 +198,7 @@ public final class EmoteData implements Supplier<UUID> {
 
     /**
      * Will return invalid information if {@link EmoteData#isInfinite} is true
+     *
      * @return The length of the emote in ticks (20 t/s)
      */
     public int getLength() {
@@ -198,15 +232,32 @@ public final class EmoteData implements Supplier<UUID> {
             this.pitch = new State("pitch", pitch, 0, true);
             this.yaw = new State("yaw", yaw, 0, true);
             this.roll = new State("roll", roll, 0, true);
-            if(bendable) {
+            if (bendable) {
                 this.bendDirection = new State("axis", 0, 0, true);
                 this.bend = new State("bend", 0, 0, true);
-            }
-            else {
+            } else {
                 this.bend = null;
                 this.bendDirection = null; //This will causes some errors, but fixes the invalid data problem
             }
             this.isBendable = bendable;
+        }
+
+        public StateCollection(StateCollection stateCollection) {
+            this.name = stateCollection.name;
+            this.x = stateCollection.x.copy();
+            this.y = stateCollection.y.copy();
+            this.z = stateCollection.z.copy();
+            this.pitch = stateCollection.pitch.copy();
+            this.yaw = stateCollection.yaw.copy();
+            this.roll = stateCollection.roll.copy();
+            this.isBendable = stateCollection.isBendable;
+            if (stateCollection.isBendable) {
+                this.bendDirection = stateCollection.bendDirection.copy();
+                this.bend = stateCollection.bend.copy();
+            } else {
+                this.bend = null;
+                this.bendDirection = null;
+            }
         }
 
         @Override
@@ -243,41 +294,55 @@ public final class EmoteData implements Supplier<UUID> {
             return result;
         }
 
-        public void fullyEnablePart(boolean always){
-            if(always || x.isEnabled || y.isEnabled || z.isEnabled || pitch.isEnabled || yaw.isEnabled || roll.isEnabled || (isBendable && (bend.isEnabled || bendDirection.isEnabled))){
+
+        public void fullyEnablePart(boolean always) {
+            if (always || x.isEnabled || y.isEnabled || z.isEnabled || pitch.isEnabled || yaw.isEnabled || roll.isEnabled || (isBendable && (bend.isEnabled || bendDirection.isEnabled))) {
                 x.isEnabled = true;
                 y.isEnabled = true;
                 z.isEnabled = true;
                 pitch.isEnabled = true;
                 yaw.isEnabled = true;
                 roll.isEnabled = true;
-                if(isBendable) {
+                if (isBendable) {
                     bend.isEnabled = true;
                     bendDirection.isEnabled = true;
                 }
             }
         }
 
-        protected void optimize(boolean isLooped, int ret){
+        protected void optimize(boolean isLooped, int ret) {
             x.optimize(isLooped, ret);
             y.optimize(isLooped, ret);
             z.optimize(isLooped, ret);
             pitch.optimize(isLooped, ret);
             yaw.optimize(isLooped, ret);
             roll.optimize(isLooped, ret);
-            if(isBendable) {
+            if (isBendable) {
                 bend.optimize(isLooped, ret);
                 bendDirection.optimize(isLooped, ret);
             }
         }
 
-        public static class State{
+        public StateCollection copy() {
+            return new StateCollection(this);
+        }
+
+        public static class State {
             public final float defaultValue;
             public final float threshold;
             public final List<KeyFrame> keyFrames = new ArrayList<>();
             public final String name;
             private final boolean isAngle;
             public boolean isEnabled = false;
+
+            public State(State state) {
+                this.defaultValue = state.defaultValue;
+                this.threshold = state.threshold;
+                this.keyFrames.addAll(state.keyFrames); //KeyFrames are immutable, copying them is safe
+                this.name = state.name;
+                this.isAngle = state.isAngle;
+                this.isEnabled = state.isEnabled;
+            }
 
             @Override
             public boolean equals(Object o) {
@@ -289,7 +354,7 @@ public final class EmoteData implements Supplier<UUID> {
                 if (Float.compare(state.defaultValue, defaultValue) != 0) return false;
                 if (isAngle != state.isAngle) return false;
                 if (!keyFrames.equals(state.keyFrames)) return false;
-                if (isEnabled != state.isEnabled)return false;
+                if (isEnabled != state.isEnabled) return false;
                 return Objects.equals(name, state.name);
             }
 
@@ -302,10 +367,10 @@ public final class EmoteData implements Supplier<UUID> {
             }
 
             /**
-             * @param name Name (for import stuff)
+             * @param name         Name (for import stuff)
              * @param defaultValue default value
-             * @param threshold threshold for validation
-             * @param isAngle isAngle value (if false then it's a translation)
+             * @param threshold    threshold for validation
+             * @param isAngle      isAngle value (if false then it's a translation)
              */
             private State(String name, float defaultValue, float threshold, boolean isAngle) {
                 this.defaultValue = defaultValue;
@@ -314,18 +379,19 @@ public final class EmoteData implements Supplier<UUID> {
                 this.isAngle = isAngle;
             }
 
-            public int length(){
+            public int length() {
                 return keyFrames.size();
             }
 
             /**
              * Find the last keyframe's number before the tick
+             *
              * @param tick tick
              * @return given keyframe
              */
-            public int findAtTick(int tick){
-                int i = - 1;
-                while(this.keyFrames.size() > i + 1 && this.keyFrames.get(i + 1).tick <= tick){
+            public int findAtTick(int tick) {
+                int i = -1;
+                while (this.keyFrames.size() > i + 1 && this.keyFrames.get(i + 1).tick <= tick) {
                     i++;
                 }
                 return i;
@@ -333,17 +399,18 @@ public final class EmoteData implements Supplier<UUID> {
 
             /**
              * Add a new keyframe to the emote
-             * @param tick where
-             * @param value what value
-             * @param ease with what easing
-             * @param rotate 360 degrees turn
+             *
+             * @param tick    where
+             * @param value   what value
+             * @param ease    with what easing
+             * @param rotate  360 degrees turn
              * @param degrees is the value in degrees (or radians if false
              * @return is the keyframe valid
              */
-            public boolean addKeyFrame(int tick, float value, Ease ease, int rotate, boolean degrees){
-                if(degrees && this.isAngle) value *= 0.01745329251f;
+            public boolean addKeyFrame(int tick, float value, Ease ease, int rotate, boolean degrees) {
+                if (degrees && this.isAngle) value *= 0.01745329251f;
                 boolean bl = this.addKeyFrame(new KeyFrame(tick, value, ease));
-                if(isAngle && rotate != 0){
+                if (isAngle && rotate != 0) {
                     bl = this.addKeyFrame(new KeyFrame(tick, (float) (value + Math.PI * 2d * rotate), ease)) && bl;
                 }
                 return bl;
@@ -351,61 +418,69 @@ public final class EmoteData implements Supplier<UUID> {
 
             /**
              * Add a new keyframe to the emote
-             * @param tick where
+             *
+             * @param tick  where
              * @param value what value
-             * @param ease with what easing
+             * @param ease  with what easing
              * @return is the keyframe valid
              */
-            public boolean addKeyFrame(int tick, float value, Ease ease){
-                if(value == Float.NaN)throw new IllegalArgumentException("value can't be NaN");
+            public boolean addKeyFrame(int tick, float value, Ease ease) {
+                if (Float.isNaN(value)) throw new IllegalArgumentException("value can't be NaN");
                 return this.addKeyFrame(new KeyFrame(tick, value, ease));
             }
 
             /**
              * Internal add keyframe method
+             *
              * @param keyFrame what
              * @return is valid keyframe
              */
-            private boolean addKeyFrame(KeyFrame keyFrame){
+            private boolean addKeyFrame(KeyFrame keyFrame) {
                 this.isEnabled = true;
                 int i = findAtTick(keyFrame.tick) + 1;
                 this.keyFrames.add(i, keyFrame);
                 return this.isAngle || !(Math.abs(this.defaultValue - keyFrame.value) > this.threshold);
             }
 
-            public void replace(KeyFrame keyFrame, int pos){
+            public void replace(KeyFrame keyFrame, int pos) {
                 this.keyFrames.remove(pos);
                 this.keyFrames.add(pos, keyFrame);
             }
 
-            public void replaceEase(int pos, Ease ease){
+            public void replaceEase(int pos, Ease ease) {
                 KeyFrame original = this.keyFrames.get(pos);
                 replace(new KeyFrame(original.tick, original.value, ease), pos);
             }
 
-            protected void optimize(boolean isLooped, int returnToTick){
-                for(int i = 1; i < this.keyFrames.size()-1; i++){
-                    if(keyFrames.get(i - 1).value != keyFrames.get(i).value){
+            protected void optimize(boolean isLooped, int returnToTick) {
+                for (int i = 1; i < this.keyFrames.size() - 1; i++) {
+                    if (keyFrames.get(i - 1).value != keyFrames.get(i).value) {
                         continue;
                     }
-                    if(keyFrames.size() <= i + 1 || keyFrames.get(i).value != keyFrames.get(i+1).value){
+                    if (keyFrames.size() <= i + 1 || keyFrames.get(i).value != keyFrames.get(i + 1).value) {
                         continue;
                     }
-                    if(isLooped && keyFrames.get(i-1).tick < returnToTick && keyFrames.get(i).tick >= returnToTick){
+                    if (isLooped && keyFrames.get(i - 1).tick < returnToTick && keyFrames.get(i).tick >= returnToTick) {
                         continue;
                     }
                     keyFrames.remove(i--);
                 }
             }
+
+            public State copy() {
+                return new State(this);
+            }
         }
     }
-    public static class KeyFrame{
+
+    @Immutable
+    public static class KeyFrame {
 
         public final int tick;
         public final float value;
         public final Ease ease;
 
-        public KeyFrame(int tick, float value, Ease ease){
+        public KeyFrame(int tick, float value, Ease ease) {
             this.tick = tick;
             this.value = value;
             this.ease = ease;
@@ -413,13 +488,12 @@ public final class EmoteData implements Supplier<UUID> {
 
         @Override
         public boolean equals(Object other) {
-            if(other instanceof KeyFrame){
+            if (other instanceof KeyFrame) {
                 return ((KeyFrame) other).ease == this.ease && ((KeyFrame) other).tick == this.tick && ((KeyFrame) other).value == this.value;
-            }
-            else return super.equals(other);
+            } else return super.equals(other);
         }
 
-        public KeyFrame(int tick, float value){
+        public KeyFrame(int tick, float value) {
             this(tick, value, Ease.INOUTSINE);
         }
 
@@ -432,7 +506,7 @@ public final class EmoteData implements Supplier<UUID> {
         }
     }
 
-    public static class EmoteBuilder{
+    public static class EmoteBuilder {
 
         public final StateCollection head;
         public final StateCollection body;
@@ -440,6 +514,12 @@ public final class EmoteData implements Supplier<UUID> {
         public final StateCollection leftArm;
         public final StateCollection rightLeg;
         public final StateCollection leftLeg;
+        ;
+        public final StateCollection leftItem;
+        ;
+        public final StateCollection rightItem;
+        ;
+        public final StateCollection torso;
         public boolean isEasingBefore = false;
         //public float validationThreshold = staticThreshold;
         public boolean nsfw = false;
@@ -472,18 +552,21 @@ public final class EmoteData implements Supplier<UUID> {
         @Nullable
         public ByteBuffer iconData;
 
-        public EmoteBuilder(EmoteFormat source){
+        public EmoteBuilder(EmoteFormat source) {
             this(staticThreshold, source);
         }
 
-        public EmoteBuilder(float validationThreshold, EmoteFormat emoteFormat){
+        public EmoteBuilder(float validationThreshold, EmoteFormat emoteFormat) {
             this.validationThreshold = validationThreshold;
             head = new StateCollection(0, 0, 0, 0, 0, 0, "head", validationThreshold, false);
-            body = new StateCollection(0, 0, 0, 0, 0, 0, "body",validationThreshold / 8f, true);
-            rightArm = new StateCollection(- 5, 2, 0, 0, 0,0f, "rightArm", validationThreshold, true);
-            leftArm = new StateCollection(5, 2, 0, 0, 0,0f, "leftArm", validationThreshold, true);
+            body = new StateCollection(0, 0, 0, 0, 0, 0, "body", validationThreshold / 8f, true);
+            rightArm = new StateCollection(-5, 2, 0, 0, 0, 0f, "rightArm", validationThreshold, true);
+            leftArm = new StateCollection(5, 2, 0, 0, 0, 0f, "leftArm", validationThreshold, true);
             leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);
-            rightLeg = new StateCollection(- 1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
+            rightLeg = new StateCollection(-1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
+            leftItem = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftItem", validationThreshold, false);
+            rightItem = new StateCollection(-1.9f, 12, 0.1f, 0, 0, 0, "rightItem", validationThreshold, false);
+            torso = new StateCollection(-1.9f, 12, 0.1f, 0, 0, 0, "torso", validationThreshold, true);
 
             bodyParts.put("head", head);
             bodyParts.put("body", body);
@@ -491,37 +574,75 @@ public final class EmoteData implements Supplier<UUID> {
             bodyParts.put("rightLeg", rightLeg);
             bodyParts.put("leftArm", leftArm);
             bodyParts.put("leftLeg", leftLeg);
+            bodyParts.put("leftItem", leftItem);
+            bodyParts.put("rightItem", rightItem);
+            bodyParts.put("torso", torso);
             this.emoteEmoteFormat = emoteFormat;
         }
 
-        public EmoteBuilder setDescription(String s){
+        private EmoteBuilder(int beginTick, int endTick, int stopTick, boolean isInfinite,
+                             int returnToTick, HashMap<String, StateCollection> bodyParts, boolean isEasingBefore, boolean nsfw, @Nullable UUID uuid,
+                             @Nullable String name, @Nullable String description, @Nullable String author, EmoteFormat emoteFormat, @Nullable ByteBuffer iconData, @Nullable NBS song) {
+            this.validationThreshold = staticThreshold;
+            this.bodyParts.putAll(bodyParts);
+
+            head = bodyParts.get("head");
+            body = bodyParts.get("body");
+            rightArm = bodyParts.get("rightArm");
+            rightLeg = bodyParts.get("rightLeg");
+            leftArm = bodyParts.get("leftArm");
+            leftLeg = bodyParts.get("leftLeg");
+            leftItem = bodyParts.get("leftItem");
+            rightItem = bodyParts.get("rightItem");
+            torso = bodyParts.get("torso");
+
+            this.beginTick = beginTick;
+            this.endTick = endTick;
+            this.stopTick = stopTick;
+            this.isLooped = isInfinite;
+            this.returnTick = returnToTick;
+            this.isEasingBefore = isEasingBefore;
+            this.nsfw = nsfw;
+            this.uuid = uuid;
+            this.name = name;
+            this.description = description;
+            this.author = author;
+            this.emoteEmoteFormat = emoteFormat;
+            this.iconData = iconData;
+            this.song = song;
+
+        }
+
+        public EmoteBuilder setDescription(String s) {
             description = s;
             return this;
         }
-        public EmoteBuilder setName(String s){
+
+        public EmoteBuilder setName(String s) {
             name = s;
             return this;
         }
-        public EmoteBuilder setAuthor(String s){
+
+        public EmoteBuilder setAuthor(String s) {
             author = s;
             return this;
         }
+
         /**
          * Create a new part. X, Y, Z the default offsets, pitch, yaw, roll are the default rotations.
          *
-         *
-         * @param name name
-         * @param x x
-         * @param y y
-         * @param z z
-         * @param pitch pitch
-         * @param yaw yaw
-         * @param roll roll
+         * @param name     name
+         * @param x        x
+         * @param y        y
+         * @param z        z
+         * @param pitch    pitch
+         * @param yaw      yaw
+         * @param roll     roll
          * @param bendable is it bendable
          * @return ...
          */
-        public StateCollection getOrCreateNewPart(String name, float x, float y, float z, float pitch, float yaw, float roll, boolean bendable){
-            if(!bodyParts.containsKey(name)){
+        public StateCollection getOrCreateNewPart(String name, float x, float y, float z, float pitch, float yaw, float roll, boolean bendable) {
+            if (!bodyParts.containsKey(name)) {
                 bodyParts.put(name, new StateCollection(x, y, z, pitch, yaw, roll, name, validationThreshold, bendable));
             }
             return bodyParts.get(name);
@@ -529,17 +650,18 @@ public final class EmoteData implements Supplier<UUID> {
 
         /**
          * Get a part with a name.
+         *
          * @param name name
          * @return ...
          */
         @Nullable
-        public StateCollection getPart(String name){
+        public StateCollection getPart(String name) {
             return bodyParts.get(name);
         }
 
 
-        public EmoteBuilder fullyEnableParts(){
-            for(Map.Entry<String, StateCollection> part:bodyParts.entrySet()){
+        public EmoteBuilder fullyEnableParts() {
+            for (Map.Entry<String, StateCollection> part : bodyParts.entrySet()) {
                 part.getValue().fullyEnablePart(false);
             }
             return this;
@@ -548,16 +670,15 @@ public final class EmoteData implements Supplier<UUID> {
         /**
          * Remove unnecessary keyframes from this emote.
          * If the keyframe before and after are the same as the currently checked, the keyframe will be removed
-         *
          */
-        public EmoteBuilder optimizeEmote(){
-            for(Map.Entry<String, StateCollection> part:bodyParts.entrySet()){
+        public EmoteBuilder optimizeEmote() {
+            for (Map.Entry<String, StateCollection> part : bodyParts.entrySet()) {
                 part.getValue().optimize(isLooped, returnTick);
             }
             return this;
         }
 
-        public EmoteData build(){
+        public EmoteData build() {
             return new EmoteData(beginTick, endTick, stopTick, isLooped, returnTick, bodyParts, isEasingBefore, nsfw, uuid, name, description, author, emoteEmoteFormat, iconData, song);
         }
 
@@ -567,6 +688,7 @@ public final class EmoteData implements Supplier<UUID> {
         }
 
     }
+
     @Override
     public String toString() {
         return "EmoteBuilder{" +
