@@ -1,10 +1,10 @@
 package io.github.kosmx.emotes.forge.network;
 
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.forge.mixin.ChunkMapAccessor;
 import io.github.kosmx.emotes.forge.mixin.TrackedEntityAccessor;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
@@ -18,7 +18,6 @@ import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;

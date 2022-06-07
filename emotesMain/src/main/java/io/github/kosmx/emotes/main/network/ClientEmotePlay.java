@@ -1,12 +1,11 @@
 package io.github.kosmx.emotes.main.network;
 
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -15,7 +14,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public class ClientEmotePlay {

@@ -2,9 +2,11 @@ package io.github.kosmx.bendylibForge;
 
 import io.github.kosmx.bendylibForge.impl.DummyCuboid;
 import io.github.kosmx.bendylibForge.impl.accessors.IModelPartAccessor;
-import java.util.*;
-
 import net.minecraft.client.model.geom.ModelPart;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Access to children and cuboids in {@link ModelPart}

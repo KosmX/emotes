@@ -4,15 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.arch.gui.screen.IDrawableImpl;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.function.Supplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.AbstractEmoteEntry<E>> extends ObjectSelectionList<E> implements IEmoteListWidgetHelper<PoseStack, GuiEventListener>, IDrawableImpl {
 

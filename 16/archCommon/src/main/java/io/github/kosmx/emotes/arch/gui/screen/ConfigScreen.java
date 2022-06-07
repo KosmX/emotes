@@ -3,15 +3,9 @@ package io.github.kosmx.emotes.arch.gui.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
-import io.github.kosmx.emotes.main.screen.EmoteMenu;
-import net.minecraft.client.BooleanOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.Option;
-import net.minecraft.client.Options;
-import net.minecraft.client.ProgressOption;
+import net.minecraft.client.*;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
@@ -23,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+
 import java.util.List;
 
 

@@ -6,12 +6,10 @@ import com.mojang.math.Vector3f;
 import io.github.kosmx.bendylibForge.IModelPart;
 import io.github.kosmx.bendylibForge.MutableModelPart;
 import io.github.kosmx.bendylibForge.impl.BendableCuboid;
-import io.github.kosmx.emotes.arch.emote.AnimationApplier;
-import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.model.geom.ModelPart;
 

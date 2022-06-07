@@ -1,11 +1,12 @@
 package io.github.kosmx.emotes.testing.common;
 
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.Ease;
-import io.github.kosmx.emotes.api.Pair;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Assertions;
+
 import java.util.Random;
 
 public class EmoteDataHashingTest {

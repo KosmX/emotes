@@ -1,27 +1,17 @@
 package io.github.kosmx.emotes.fabric.mixin;
 
+import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.arch.emote.AnimationApplier;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
 import io.github.kosmx.emotes.common.tools.Vec3d;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
-import com.mojang.authlib.GameProfile;
 import io.github.kosmx.playerAnim.IAnimatedPlayer;
 import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import io.github.kosmx.playerAnim.layered.AnimationContainer;
 import io.github.kosmx.playerAnim.layered.AnimationStack;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.annotation.Nullable;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -31,6 +21,14 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 //Mixin it into the player is way easier than storing it somewhere else...

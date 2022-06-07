@@ -13,7 +13,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class ClientNetworkInstance extends AbstractNetworkInstance {

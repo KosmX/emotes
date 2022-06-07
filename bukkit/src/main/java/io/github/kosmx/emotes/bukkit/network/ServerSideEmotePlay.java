@@ -14,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;

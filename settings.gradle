@@ -35,17 +35,17 @@ include '16:archCommon'
 include '16:fabric'
 include '16:forge'
 
-//Minecraft 1.17 version
-include '17'
-include '17:archCommon'
-include '17:fabric'
-include '17:forge'
-
 //Minecraft 1.18 version
 include '18'
 include '18:archCommon'
 include '18:fabric'
 include '18:forge'
+
+//Minecraft 1.19 version
+include '19'
+include '19:archCommon'
+include '19:fabric'
+//include '19:forge'
 
 //Bukkit plugin stuff
 include 'bukkit'

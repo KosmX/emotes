@@ -9,7 +9,6 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.serializer.BiMapSerializer;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
-import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;

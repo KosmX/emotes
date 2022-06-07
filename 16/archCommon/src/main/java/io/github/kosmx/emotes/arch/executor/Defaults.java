@@ -1,16 +1,14 @@
 package io.github.kosmx.emotes.arch.executor;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
+import io.github.kosmx.emotes.arch.executor.types.Key;
+import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.executor.dataTypes.IDefaultTypes;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
 import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
-import io.github.kosmx.emotes.arch.executor.types.Key;
-import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;

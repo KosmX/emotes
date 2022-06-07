@@ -5,10 +5,8 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
-import java.io.File;
 import java.util.logging.Level;
 
 /**

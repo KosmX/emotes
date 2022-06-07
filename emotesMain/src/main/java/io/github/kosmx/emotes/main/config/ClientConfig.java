@@ -1,16 +1,10 @@
 package io.github.kosmx.emotes.main.config;
 
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.InputKey;
-import io.github.kosmx.emotes.main.EmoteHolder;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class ClientConfig extends SerializableConfig {
 
@@ -24,7 +18,7 @@ public class ClientConfig extends SerializableConfig {
     //expert
     public final ConfigEntry<Boolean> alwaysValidate = new BooleanConfigEntry("alwaysValidateEmote", false, true, expert);
     public final ConfigEntry<Boolean> enablePlayerSafety = new BooleanConfigEntry("playersafety", true, true, expert);
-    public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry<Float>("stopthreshold", "stopThreshold", 0.04f, true, expert, "options.generic_value", -3.912f, 8f, 0f){
+    public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry("stopthreshold", "stopThreshold", 0.04f, true, expert, "options.generic_value", -3.912f, 8f, 0f){
         @Override
         public double getConfigVal() {
             return Math.log(this.get());
@@ -36,7 +30,7 @@ public class ClientConfig extends SerializableConfig {
         }
 
     };
-    public final ConfigEntry<Float> yRatio = new FloatConfigEntry<Integer>("yratio", "yRatio", 0.75f, true, expert, "options.percent_value", 0, 100, 1){
+    public final ConfigEntry<Float> yRatio = new FloatConfigEntry("yratio", "yRatio", 0.75f, true, expert, "options.percent_value", 0, 100, 1){
         @Override
         public double getConfigVal() {
             return this.get()*100f;
@@ -48,8 +42,8 @@ public class ClientConfig extends SerializableConfig {
         }
 
         @Override
-        public Integer getTextVal() {
-            return (int)this.getConfigVal();
+        public double getTextVal() {
+            return this.getConfigVal();
         }
     };
     public final ConfigEntry<Boolean> showHiddenConfig = new BooleanConfigEntry("showHiddenConfig", false, true, expert, false);

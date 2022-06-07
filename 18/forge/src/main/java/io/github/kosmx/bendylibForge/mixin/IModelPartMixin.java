@@ -6,6 +6,7 @@ import io.github.kosmx.bendylibForge.ModelPartAccessor;
 import io.github.kosmx.bendylibForge.MutableCuboid;
 import io.github.kosmx.bendylibForge.impl.accessors.CuboidSideAccessor;
 import io.github.kosmx.bendylibForge.impl.accessors.IModelPartAccessor;
+import net.minecraft.client.model.geom.ModelPart;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.client.model.geom.ModelPart;
 
 @Mixin(ModelPart.class)
 public abstract class IModelPartMixin implements IModelPartAccessor {

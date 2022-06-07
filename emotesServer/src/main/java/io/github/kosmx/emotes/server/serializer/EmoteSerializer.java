@@ -4,11 +4,11 @@ import com.google.gson.*;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.opennbs.NBSFileUtils;
+import io.github.kosmx.emotes.common.quarktool.QuarkReader;
+import io.github.kosmx.emotes.common.tools.Easing;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.common.tools.Easing;
-import io.github.kosmx.emotes.common.quarktool.QuarkReader;
 
 import java.io.*;
 import java.lang.reflect.Type;

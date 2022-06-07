@@ -1,16 +1,13 @@
 package io.github.kosmx.emotes.main.config;
 
 
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
-import io.github.kosmx.emotes.main.EmoteHolder;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
 import java.io.BufferedReader;
-import java.util.List;
 
 public class ClientSerializer extends Serializer {
 

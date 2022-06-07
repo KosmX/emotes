@@ -5,11 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
+import io.github.kosmx.emotes.common.tools.Ease;
+import io.github.kosmx.emotes.common.tools.Easing;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
-import io.github.kosmx.emotes.common.tools.Ease;
-import io.github.kosmx.emotes.common.tools.Easing;
 
 import java.util.ArrayList;
 import java.util.List;

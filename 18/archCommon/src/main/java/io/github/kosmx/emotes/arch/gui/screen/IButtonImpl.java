@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
+import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 

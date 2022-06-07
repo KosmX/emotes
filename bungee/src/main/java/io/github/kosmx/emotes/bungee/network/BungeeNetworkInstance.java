@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;

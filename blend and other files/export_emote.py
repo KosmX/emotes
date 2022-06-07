@@ -1,6 +1,5 @@
-import bpy, os, math
-
-
+import bpy
+import os
 
 emoteName = "name"
 emoteDescription = "description"
