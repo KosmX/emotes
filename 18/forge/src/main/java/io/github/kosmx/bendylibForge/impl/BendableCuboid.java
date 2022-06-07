@@ -10,7 +10,10 @@ import io.github.kosmx.bendylibForge.impl.accessors.DirectionMutator;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**

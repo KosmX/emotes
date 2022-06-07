@@ -9,7 +9,6 @@ import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.main.screen.IScreenSlave;
 import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.main.screen.widget.IChooseWheel;
-import io.github.kosmx.emotes.main.screen.widget.ModernChooseWheel;
 
 /**
  * Stuff to override

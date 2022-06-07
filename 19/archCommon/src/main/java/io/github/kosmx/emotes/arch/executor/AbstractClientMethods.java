@@ -1,6 +1,9 @@
 package io.github.kosmx.emotes.arch.executor;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
+import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
+import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.executor.dataTypes.IClientMethods;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
@@ -8,13 +11,6 @@ import io.github.kosmx.emotes.executor.dataTypes.INativeImageBacketTexture;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
-import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
-import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.UUID;
-
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -22,6 +18,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractClientMethods implements IClientMethods {

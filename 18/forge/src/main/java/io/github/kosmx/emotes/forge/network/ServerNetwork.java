@@ -1,11 +1,10 @@
 package io.github.kosmx.emotes.forge.network;
 
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.forge.mixin.ChunkMapAccessor;
 import io.github.kosmx.emotes.forge.mixin.TrackedEntityAccessor;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;

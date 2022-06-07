@@ -3,14 +3,14 @@
   "package": "io.github.kosmx.emotes.forge.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ServerPlayNetworkInstance",
     "ChunkMapAccessor",
+    "ServerPlayNetworkInstance",
     "TrackedEntityAccessor"
   ],
   "client": [
-    "PlayerModelMixin",
+    "BipedEntityModelMixin",
     "LivingEntityRenderRedirect",
-    "BipedEntityModelMixin"
+    "PlayerModelMixin"
   ],
   "server": [],
   "injectors": {

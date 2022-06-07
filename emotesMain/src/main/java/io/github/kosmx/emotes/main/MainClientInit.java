@@ -1,21 +1,13 @@
 package io.github.kosmx.emotes.main;
 
-import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
-import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
-import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
-import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 
-import java.io.*;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.logging.Level;
 
 /**

@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.fabric.mixin;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.fabric.network.ServerNetwork;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;

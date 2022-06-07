@@ -2,7 +2,10 @@ package io.github.kosmx.playerAnim.layered;
 
 import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.tools.*;
+import io.github.kosmx.emotes.common.tools.Easing;
+import io.github.kosmx.emotes.common.tools.MathHelper;
+import io.github.kosmx.emotes.common.tools.Vec3f;
+import io.github.kosmx.emotes.common.tools.Vector3;
 import io.github.kosmx.playerAnim.TransformType;
 
 import javax.annotation.Nullable;

@@ -106,6 +106,13 @@ jar {
     //}
 }
 
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
 // configure the maven publication
 publishing {
     publications {

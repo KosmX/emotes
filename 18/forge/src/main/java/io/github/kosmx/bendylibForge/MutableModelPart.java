@@ -5,8 +5,9 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.kosmx.bendylibForge.impl.ICuboid;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import javax.annotation.Nullable;
 import net.minecraft.client.model.geom.ModelPart;
+
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 

@@ -17,7 +17,6 @@
   "license": "CC-BY-4.0 License",
   "icon": "emotecraft_mod_logo.png",
   "environment": "*",
-  "accessWidener": "emotes.accesswidener",
   "entrypoints": {
     "main": [
       "io.github.kosmx.emotes.fabric.FabricWrapper"

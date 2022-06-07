@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.main.screen;
 
 import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
+import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 
 import java.util.function.Consumer;

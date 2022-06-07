@@ -1,9 +1,9 @@
 package io.github.kosmx.bendylibForge;
 
 import io.github.kosmx.bendylibForge.impl.ICuboid;
-import javax.annotation.Nullable;
-
 import net.minecraft.util.Tuple;
+
+import javax.annotation.Nullable;
 
 public interface MutableCuboid {
 

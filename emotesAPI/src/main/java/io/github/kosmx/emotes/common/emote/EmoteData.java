@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.common.emote;
 
-import io.github.kosmx.emotes.common.tools.Ease;
 import io.github.kosmx.emotes.common.opennbs.NBS;
+import io.github.kosmx.emotes.common.tools.Ease;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;

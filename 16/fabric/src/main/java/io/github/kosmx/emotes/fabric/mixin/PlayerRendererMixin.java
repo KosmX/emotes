@@ -2,10 +2,10 @@ package io.github.kosmx.emotes.fabric.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.common.tools.Vec3f;
 import io.github.kosmx.emotes.common.tools.Vector3;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.playerAnim.TransformType;
 import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.player.AbstractClientPlayer;

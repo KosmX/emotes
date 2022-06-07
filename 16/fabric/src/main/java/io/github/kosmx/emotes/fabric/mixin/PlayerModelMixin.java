@@ -1,11 +1,11 @@
 package io.github.kosmx.emotes.fabric.mixin;
 
 import io.github.kosmx.emotes.arch.emote.AnimationApplier;
+import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.common.tools.SetableSupplier;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.executor.emotePlayer.IMutatedBipedModel;
 import io.github.kosmx.emotes.fabric.BendableModelPart;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;

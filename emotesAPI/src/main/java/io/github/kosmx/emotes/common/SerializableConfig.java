@@ -23,7 +23,7 @@ public class SerializableConfig {
     public final BooleanConfigEntry showDebug = new BooleanConfigEntry("debug", "showDebug", true, false, expert);
     public final BooleanConfigEntry validateEmote = new BooleanConfigEntry("validate", false, true, expert);
 
-    public final FloatConfigEntry<Float> validThreshold = new FloatConfigEntry<>("validationThreshold", "validThreshold", 8f, true, expert, "options.generic_value", 0.2f, 16f, 0f);
+    public final FloatConfigEntry validThreshold = new FloatConfigEntry("validationThreshold", "validThreshold", 8f, true, expert, "options.generic_value", 0.2f, 16f, 0f);
 
     public final ConfigEntry<Boolean> loadBuiltinEmotes = new BooleanConfigEntry("loadbuiltin", "loadBuiltin", true, true, basics);
     public final BooleanConfigEntry loadEmotesServerSide = new BooleanConfigEntry("emotesFolderOnLogicalServer", false, true, expert, true);
@@ -121,7 +121,7 @@ public class SerializableConfig {
         }
     }
 
-    public static class FloatConfigEntry<T extends Number> extends ConfigEntry<Float> {
+    public static class FloatConfigEntry extends ConfigEntry<Float> {
         final private String formatKey;
         public final float min, max, step;
         public FloatConfigEntry(String name, String oldconfig, Float defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, String formatKey, float min, float max, float step) {
@@ -147,8 +147,8 @@ public class SerializableConfig {
         public void setConfigVal(double newVal){
             this.set((float) Math.pow(newVal, 2));
         }
-        public T getTextVal(){
-            return (T) get();
+        public double getTextVal(){
+            return get();
         }
     }
 

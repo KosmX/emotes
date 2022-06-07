@@ -3,13 +3,11 @@ package io.github.kosmx.emotes.fabric;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import io.github.kosmx.bendylib.ModelPartAccessor;
-import io.github.kosmx.bendylib.MutableCuboid;
 import io.github.kosmx.bendylib.impl.BendableCuboid;
 import io.github.kosmx.emotes.api.Pair;
 import net.minecraft.client.model.geom.ModelPart;
 
 import javax.annotation.Nullable;
-import java.util.function.Consumer;
 
 
 //Until I don't have to modify bendy-lib, this will work properly

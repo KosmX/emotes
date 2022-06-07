@@ -1,21 +1,20 @@
 package io.github.kosmx.emotes.fabric;
 
-import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.tools.SetableSupplier;
-import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import io.github.kosmx.bendylib.IModelPart;
 import io.github.kosmx.bendylib.MutableModelPart;
 import io.github.kosmx.bendylib.impl.BendableCuboid;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.tools.SetableSupplier;
+import io.github.kosmx.emotes.executor.emotePlayer.IUpperPartHelper;
 import io.github.kosmx.playerAnim.impl.AnimationPlayer;
 import net.minecraft.client.model.geom.ModelPart;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 //Until I don't have to modify bendy-lib, this will work properly
 public class BendableModelPart extends MutableModelPart {

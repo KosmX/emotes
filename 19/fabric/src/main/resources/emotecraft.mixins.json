@@ -6,9 +6,9 @@
     "ServerPlayNetworkInstance"
   ],
   "client": [
-    "PlayerModelMixin",
+    "BipedEntityModelMixin",
     "LivingEntityRenderRedirect",
-    "BipedEntityModelMixin"
+    "PlayerModelMixin"
   ],
   "server": [],
   "injectors": {

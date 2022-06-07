@@ -2,6 +2,7 @@ package io.github.kosmx.bendylibForge.impl;
 
 
 import com.mojang.math.Vector3f;
+
 import java.util.Objects;
 
 public class RememberingPos implements IPosWithOrigin{

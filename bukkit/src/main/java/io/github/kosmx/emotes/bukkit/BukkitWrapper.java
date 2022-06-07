@@ -4,11 +4,9 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ConnectionSide;
-import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.MonitorAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import io.github.kosmx.emotes.bukkit.executor.BukkitInstance;
-import io.github.kosmx.emotes.bukkit.network.BukkitNetworkInstance;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
@@ -18,7 +16,6 @@ import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 public class BukkitWrapper extends JavaPlugin {

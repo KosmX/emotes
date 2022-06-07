@@ -2,9 +2,9 @@ package io.github.kosmx.bendylibForge.impl;
 
 import io.github.kosmx.bendylibForge.ICuboidBuilder;
 import io.github.kosmx.bendylibForge.MutableCuboid;
+import net.minecraft.util.Tuple;
 
 import javax.annotation.Nullable;
-import net.minecraft.util.Tuple;
 
 @Deprecated
 public class DummyCuboid implements MutableCuboid {

@@ -3,8 +3,8 @@
   "package": "io.github.kosmx.emotes.arch.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ServerPlayTrackerMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "ServerPlayTrackerMixin"
   ],
   "client": [
     "ArmorFeatureRendererMixin",

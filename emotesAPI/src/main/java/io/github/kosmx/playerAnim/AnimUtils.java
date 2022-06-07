@@ -2,8 +2,6 @@ package io.github.kosmx.playerAnim;
 
 import io.github.kosmx.playerAnim.layered.AnimationStack;
 
-import javax.annotation.Nullable;
-
 public abstract class AnimUtils {
 
     /**

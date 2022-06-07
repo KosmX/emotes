@@ -5,9 +5,7 @@ import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.tools.BiMap;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public class BiMapSerializer implements JsonSerializer<BiMap<UUID, UUID>>, JsonDeserializer<BiMap<UUID, UUID>> {
     @Override

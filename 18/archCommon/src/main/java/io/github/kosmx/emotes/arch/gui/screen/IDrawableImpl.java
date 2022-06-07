@@ -1,14 +1,14 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
+import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
+import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.screen.IRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.GameRenderer;
 
 public interface IDrawableImpl extends IRenderHelper<PoseStack> {

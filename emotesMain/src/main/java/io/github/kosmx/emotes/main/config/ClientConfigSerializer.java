@@ -1,11 +1,10 @@
 package io.github.kosmx.emotes.main.config;
 
 import com.google.gson.*;
-import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.InputKey;
-import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 
 import java.lang.reflect.Type;

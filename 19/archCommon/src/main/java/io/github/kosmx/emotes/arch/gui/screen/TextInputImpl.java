@@ -1,15 +1,15 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
+import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class TextInputImpl extends EditBox implements ITextInputWidget<PoseStack, TextInputImpl> {
     public TextInputImpl(Font textRenderer, int x, int y, int width, int height, Component text) {

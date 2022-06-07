@@ -2,8 +2,8 @@ package io.github.kosmx.emotes.executor;
 
 
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.executor.dataTypes.IDefaultTypes;
 import io.github.kosmx.emotes.executor.dataTypes.IClientMethods;
+import io.github.kosmx.emotes.executor.dataTypes.IDefaultTypes;
 import io.github.kosmx.emotes.executor.dataTypes.IGetters;
 
 import java.io.File;

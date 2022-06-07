@@ -1,14 +1,14 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
-import net.minecraft.client.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
@@ -22,9 +22,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 
@@ -85,8 +85,7 @@ public class ConfigScreen extends OptionsSubScreen {
                             (aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
                     ));
                 }
-            } else if (entry instanceof SerializableConfig.FloatConfigEntry) {
-                SerializableConfig.FloatConfigEntry floatEntry = (SerializableConfig.FloatConfigEntry) entry;
+            } else if (entry instanceof SerializableConfig.FloatConfigEntry floatEntry) {
                 /*options.addBig(new ProgressOption(
                         EmoteInstance.config.validThreshold.getName(), floatEntry.min, floatEntry.max, floatEntry.step,
                         gameOptions -> floatEntry.getConfigVal(),
@@ -96,20 +95,26 @@ public class ConfigScreen extends OptionsSubScreen {
                                 Minecraft.getInstance().font.split(new TranslatableComponent("emotecraft.otherconfig." + entry.getName() + ".tooltip"), 200)
                                 : ImmutableList.of()
                 ));*/
-                options.addBig(new OptionInstance<Integer>(
+
+                int mapSize = 1024; //whatever
+                double range = floatEntry.max - floatEntry.min;
+
+                DecimalFormat formatter = new DecimalFormat("0.00");
+
+                Function<Integer, Double> i2d = integer -> integer / (double) mapSize * range + floatEntry.min;
+                Function<Double, Integer> d2i = aDouble -> (int) ((aDouble - floatEntry.min) / range * mapSize);
+
+                options.addBig(new OptionInstance<>(
                         floatEntry.getName(),
                         floatEntry.hasTooltip ?
                                 minecraft -> o ->
                                         splitTooltip(Component.translatable("emotecraft.otherconfig." + entry.getName() + ".tooltip"))
                                 : OptionInstance.noTooltip(),
-                        Options::genericValueLabel,
-                        new OptionInstance.IntRange(0, 256),
-                        Codec.FLOAT.xmap(
-                                aDouble -> (int) (aDouble / floatEntry.max * 256f),
-                                integer -> integer * floatEntry.max / 256f),
-
-                        (int)((float)floatEntry.get()/floatEntry.max*256f),
-                        integer -> floatEntry.setConfigVal(integer / 256f * floatEntry.max)
+                        (component, object) -> Options.genericValueLabel(component, Component.literal(formatter.format(floatEntry.getTextVal()))),
+                        new OptionInstance.IntRange(0, mapSize),
+                        Codec.DOUBLE.xmap(d2i, i2d),
+                        d2i.apply(floatEntry.getConfigVal()),
+                        integer -> floatEntry.setConfigVal(i2d.apply(integer))
                 ));
             }
         }

@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.testing.common;
 
+import io.github.kosmx.emotes.api.Pair;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.tools.Ease;
-import io.github.kosmx.emotes.api.Pair;
 
 import java.util.Random;
 

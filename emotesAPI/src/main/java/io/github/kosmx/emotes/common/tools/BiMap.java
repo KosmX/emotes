@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.common.tools;
 import io.github.kosmx.emotes.api.Pair;
 
 import javax.annotation.Nonnull;
-import java.io.Serializable;
 import java.util.*;
 
 /**

@@ -101,6 +101,11 @@ jar {
     from "LICENSE"
 }
 
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
 
 
 // configure the maven publication

@@ -7,11 +7,9 @@ import io.github.kosmx.emotes.fabric.network.ServerNetwork;
 import io.github.kosmx.emotes.main.MainLoader;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

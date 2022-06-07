@@ -3,19 +3,11 @@ package io.github.kosmx.emotes.main.emotePlay;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.opennbs.SoundPlayer;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
-import io.github.kosmx.emotes.common.tools.Easing;
-import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.tools.Vector3;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.playerAnim.layered.EmoteDataPlayer;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 // abstract to extend it in every environments
 public abstract class EmotePlayer<T> extends EmoteDataPlayer implements IEmotePlayer {

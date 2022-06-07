@@ -3,13 +3,10 @@ package io.github.kosmx.emotes.common.network.objects;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.common.opennbs.NBS;
 
 import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /*
  * It won't be public until a success read.....

@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.main.mixinFunctions;
 
-import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.api.Pair;
+import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;

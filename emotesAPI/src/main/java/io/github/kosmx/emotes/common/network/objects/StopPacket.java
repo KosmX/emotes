@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class StopPacket extends AbstractNetworkPacket {
 
