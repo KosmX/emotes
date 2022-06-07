@@ -71,16 +71,6 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
     @Override
     public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha){
         if(this.emote.get() != null && this.emote.get().isActive()){
-            this.headParts().forEach((part)->{
-                if(! ((IUpperPartHelper) part).isUpperPart()){
-                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-                }
-            });
-            this.bodyParts().forEach((part)->{
-                if(! ((IUpperPartHelper) part).isUpperPart()){
-                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
-                }
-            });
 
             SetableSupplier<AnimationPlayer> emoteSupplier = this.emote;
             matrices.pushPose();
@@ -96,6 +86,17 @@ public abstract class BipedEntityModelMixin<T extends LivingEntity> extends Agea
                 }
             });
             matrices.popPose();
+
+            this.headParts().forEach((part)->{
+                if(! ((IUpperPartHelper) part).isUpperPart()){
+                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+                }
+            });
+            this.bodyParts().forEach((part)->{
+                if(! ((IUpperPartHelper) part).isUpperPart()){
+                    part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+                }
+            });
         }else super.renderToBuffer(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 
