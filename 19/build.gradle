@@ -57,9 +57,7 @@ if(keysExists) {
             changelog = changes
             releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
-            addGameVersion "1.18"
-            addGameVersion "1.18.1"
-            addGameVersion "1.18.2"
+            addGameVersion "1.19"
             addGameVersion "Fabric"
             //addGameVersion "Java 1.16"
 
