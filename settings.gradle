@@ -45,7 +45,7 @@ include '18:forge'
 include '19'
 include '19:archCommon'
 include '19:fabric'
-//include '19:forge'
+include '19:forge'
 
 //Bukkit plugin stuff
 include 'bukkit'
