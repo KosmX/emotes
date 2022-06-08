@@ -43,7 +43,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
         screen.renderBackground(matrices);
         widget.render(matrices, mouseX, mouseY, delta);
         if(!((ClientConfig)EmoteInstance.config).hideWarningMessage.get()) {
-            int remoteVer = ClientPacketManager.isRemoveAvailable() ? 2 : ClientPacketManager.isAvailableProxy() ? 1 : 0;
+            int remoteVer = ClientPacketManager.isRemoteAvailable() ? 2 : ClientPacketManager.isAvailableProxy() ? 1 : 0;
             if (remoteVer != 2) {
                 drawCenteredText(matrices, remoteVer == 0 ? warn_no_emotecraft : warn_only_proxy, screen.getWidth() / 2, screen.getHeight() / 24 - 1, MathHelper.colorHelper(255, 255, 255, 255));
             }

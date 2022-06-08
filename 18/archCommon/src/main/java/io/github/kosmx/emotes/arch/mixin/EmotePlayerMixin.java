@@ -138,6 +138,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     public void tick() {
         super.tick();
         this.animationStack.tick();
+        this.emoteTick();
     }
 
     @Override

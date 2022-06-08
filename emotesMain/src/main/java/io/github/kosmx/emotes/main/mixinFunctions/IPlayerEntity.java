@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -63,10 +64,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
             if(this.isMainPlayer() && getEmote().perspective == 1 && EmoteInstance.instance.getClientMethods().getPerspective() != TPBPerspective.get()){
                 this.getEmote().perspective = 0;
             }
-            if(!this.isMainPlayer() || EmoteHolder.canRunEmote(this)){
-                this.getEmote().tick();
-            }
-            else {
+            if(this.isMainPlayer() && !this.isForcedEmote() && !ClientPacketManager.isRemoteTracking() && !EmoteHolder.canRunEmote(this)){
                 this.getEmote().stop();
                 ClientEmotePlay.clientStopLocalEmote(this.getEmote().getData());
             }

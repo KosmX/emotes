@@ -115,8 +115,12 @@ public final class ClientPacketManager extends EmotesProxyManager {
         receiveMessage(buffer, player, networkInstance);
     }
 
-    public static boolean isRemoveAvailable(){
+    public static boolean isRemoteAvailable(){
         return defaultNetwork.isActive();
+    }
+
+    public static boolean isRemoteTracking() {
+        return isRemoteAvailable() && defaultNetwork.isServerTrackingPlayState();
     }
 
     public static boolean isAvailableProxy(){
