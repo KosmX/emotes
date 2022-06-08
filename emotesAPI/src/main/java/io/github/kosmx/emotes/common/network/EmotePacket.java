@@ -138,7 +138,7 @@ public class EmotePacket {
                         throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + " sub-packet received");
                     }
                     if (byteBuffer.position() != size + currentPos) {
-                        byteBuffer.position(currentPos + size);
+                        ((Buffer)byteBuffer).position(currentPos + size);
                     }
                 }
                 else {
