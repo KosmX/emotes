@@ -64,7 +64,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
             if(this.isMainPlayer() && getEmote().perspective == 1 && EmoteInstance.instance.getClientMethods().getPerspective() != TPBPerspective.get()){
                 this.getEmote().perspective = 0;
             }
-            if(this.isMainPlayer() && !this.isForcedEmote() && !ClientPacketManager.isRemoteTracking() && !EmoteHolder.canRunEmote(this)){
+            if(this.isMainPlayer() && !this.isForcedEmote() && !EmoteHolder.canRunEmote(this)){
                 this.getEmote().stop();
                 ClientEmotePlay.clientStopLocalEmote(this.getEmote().getData());
             }

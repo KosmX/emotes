@@ -16,6 +16,7 @@ import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -214,7 +215,7 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public static boolean canRunEmote(IEmotePlayerEntity player){
         if(! EmoteInstance.instance.getClientMethods().isAbstractClientEntity(player)) return false;
-        if(player.isNotStanding()) return false;
+        if(player.isNotStanding() && !ClientPacketManager.isRemoteTracking()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
         Vec3d prevPos = player.getPrevPos();
         return ! (player.emotesGetPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio.get(), prevPos.getY(), player.emotesGetPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold.get());
