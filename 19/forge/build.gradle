@@ -29,7 +29,7 @@ group = project.maven_group
 
 
 loom{
-    accessWidenerPath = project(":${project.module_name}:archCommon").loom.accessWidenerPath
+    accessWidenerPath = file("src/main/resources/emotes_forge.accesswidener")
 
     silentMojangMappingsLicense()
     forge {
