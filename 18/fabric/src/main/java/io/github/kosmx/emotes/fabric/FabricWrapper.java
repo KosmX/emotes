@@ -10,13 +10,14 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FabricWrapper implements ModInitializer {
 
-    public static final Logger logger = Logger.getLogger(CommonData.MOD_NAME);
+    public static final Logger logger = LoggerFactory.getLogger(CommonData.MOD_ID);
     public static MinecraftServer SERVER_INSTANCE;
 
     @Override
@@ -37,7 +38,13 @@ public class FabricWrapper implements ModInitializer {
     }
 
     public static void log(Level level, String msg){
-        logger.log(level, msg);
+        if (level.intValue() <= Level.INFO.intValue()) {
+            logger.debug(msg);
+        } else if (level.intValue() <= Level.WARNING.intValue()) {
+            logger.warn(msg);
+        } else {
+            logger.error(msg);
+        }
     }
 
     private static void subscribeEvents() {

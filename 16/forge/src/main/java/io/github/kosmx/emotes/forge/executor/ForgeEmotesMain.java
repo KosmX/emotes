@@ -12,7 +12,7 @@ import java.nio.file.Path;
 public class ForgeEmotesMain extends AbstractEmotesMain {
     @Override
     public Logger getLogger() {
-        return ForgeWrapper.LOGGER::log;
+        return ForgeWrapper::log;
     }
 
     @Override
