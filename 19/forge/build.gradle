@@ -162,7 +162,7 @@ if(keysExists) {
         versionNumber = "${project.mod_version}-MC${project.minecraft_version}-forge"
         versionName = "${project.mod_version}"
 
-        gameVersions = ["1.18", "1.18.1", "1.18.2"]
+        gameVersions = ["1.19"]
         changelog = changes
         loaders = ["forge"]
         failSilently = false
