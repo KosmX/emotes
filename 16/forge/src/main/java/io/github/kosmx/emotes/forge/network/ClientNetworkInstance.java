@@ -10,14 +10,17 @@ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     boolean isRemotePresent = false;
+    private final AtomicInteger connectState = new AtomicInteger(0);
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
@@ -30,11 +33,16 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     }
 
     private void connectServerCallback(ClientPlayerNetworkEvent.LoggedInEvent event){
-        this.isRemotePresent = false;
+        if (connectState.incrementAndGet() == 2) {
+            connectState.set(0);
+            this.sendConfigCallback();
+        }
     }
 
     private void disconnectEvent(ClientPlayerNetworkEvent.LoggedOutEvent event){
         this.disconnect();
+        this.isRemotePresent = false;
+        this.connectState.set(0);
     }
 
     private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
@@ -44,18 +52,31 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     private void registerServerSide(NetworkEvent.ChannelRegistrationChangeEvent event){
         this.isRemotePresent = event.getRegistrationChangeType() == NetworkEvent.RegistrationChangeType.REGISTER;
-        this.sendConfigCallback();
+        if (isRemotePresent && connectState.incrementAndGet() == 2) {
+            connectState.set(0);
+            this.sendConfigCallback();
+        }
     }
 
     void receiveMessage(FriendlyByteBuf buf){
-        if(buf.isDirect()){ //If the received ByteBuf is direct i have to copy that onto the heap
+        if(buf.isDirect()){
             byte[] bytes = new byte[buf.readableBytes()];
             buf.getBytes(buf.readerIndex(), bytes);
             receiveMessage(bytes);
         }
         else {
-            receiveMessage(buf.array()); //if heap, I can just use it's byte-array
+            receiveMessage(buf.array());
         }
+    }
+
+    @Override
+    public HashMap<Byte, Byte> getVersions() {
+        if(disableNBS){
+            HashMap<Byte, Byte> map = new HashMap<>();
+            map.put((byte)3, (byte) 0);
+            return map;
+        }
+        return null;
     }
 
     @Override
@@ -71,10 +92,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     }
 
     public static ServerboundCustomPayloadPacket newC2SEmotePacket(NetData data) throws IOException {
-        ServerboundCustomPayloadPacket packet = new ServerboundCustomPayloadPacket();
-        packet.setName(ServerNetwork.channelID);
-        packet.setData(new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
-        return packet;
+        return new ServerboundCustomPayloadPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
     }
 
     @Override
@@ -83,6 +101,6 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
             builder.configureTarget(target);
         }
         if(Minecraft.getInstance().getConnection() != null)
-        Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
+            Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
     }
 }

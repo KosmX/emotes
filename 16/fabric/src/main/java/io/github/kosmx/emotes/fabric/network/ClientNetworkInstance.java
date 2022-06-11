@@ -15,34 +15,46 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientNetworkInstance extends AbstractNetworkInstance implements C2SPlayChannelEvents.Register, ClientPlayConnectionEvents.Disconnect {
 
-    private int remoteVersion = 0;
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
+    private final AtomicInteger connectState = new AtomicInteger(0);
 
     public void init(){
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
+        ClientPlayConnectionEvents.JOIN.register(this::playerJoin);
         C2SPlayChannelEvents.REGISTER.register(this);
+
         ClientPlayConnectionEvents.DISCONNECT.register(this);
     }
 
     @Override
     public void onChannelRegister(ClientPacketListener handler, PacketSender sender, Minecraft client, List<ResourceLocation> channels) {
-        if(channels.contains(ServerNetwork.channelID)){
+        if(channels.contains(ServerNetwork.channelID) && connectState.incrementAndGet() == 2){
+            connectState.set(0);
             this.sendConfigCallback();
-            EmoteInstance.instance.getLogger().log(Level.INFO, "Sending presence to server");
+        }
+    }
+
+    private void playerJoin(ClientPacketListener clientPacketListener, PacketSender packetSender, Minecraft minecraft) {
+        ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage);
+        if (connectState.incrementAndGet() == 2) {
+            connectState.set(0);
+            this.sendConfigCallback();
         }
     }
 
     @Override
     public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
+        connectState.set(0);
         this.disconnect(); //:D
     }
+
     void receiveMessage(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender){
         if(buf.isDirect() || buf.isReadOnly()){ //If the received ByteBuf is direct i have to copy that onto the heap
             byte[] bytes = new byte[buf.readableBytes()];
@@ -52,6 +64,17 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
         else {
             receiveMessage(buf.array()); //if heap, I can just use it's byte-array
         }
+    }
+
+    private boolean disableNBS = false;
+    @Override
+    public HashMap<Byte, Byte> getVersions() {
+        if(disableNBS){
+            HashMap<Byte, Byte> map = new HashMap<>();
+            map.put((byte)3, (byte) 0);
+            return map;
+        }
+        return null;
     }
 
     @Override
@@ -69,6 +92,10 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
         if(target != null){
             builder.configureTarget(target);
         }
-        ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write().array())));
+        EmotePacket writer = builder.build();
+        ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(writer.write().array())));
+        if(writer.data.emoteData != null && writer.data.emoteData.song != null && !writer.data.writeSong){
+            EmoteInstance.instance.getClientMethods().sendChatMessage(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.song_too_big_to_send"));
+        }
     }
 }

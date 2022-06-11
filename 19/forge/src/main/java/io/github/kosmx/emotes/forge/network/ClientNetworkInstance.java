@@ -15,11 +15,12 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     boolean isRemotePresent = false;
-    private int remoteVersion = 0;
+    private final AtomicInteger connectState = new AtomicInteger(0);
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
@@ -32,11 +33,16 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     }
 
     private void connectServerCallback(ClientPlayerNetworkEvent.LoggedInEvent event){
-        this.isRemotePresent = false;
+        if (connectState.incrementAndGet() == 2) {
+            connectState.set(0);
+            this.sendConfigCallback();
+        }
     }
 
     private void disconnectEvent(ClientPlayerNetworkEvent.LoggedOutEvent event){
         this.disconnect();
+        this.isRemotePresent = false;
+        this.connectState.set(0);
     }
 
     private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
@@ -46,7 +52,10 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     private void registerServerSide(NetworkEvent.ChannelRegistrationChangeEvent event){
         this.isRemotePresent = event.getRegistrationChangeType() == NetworkEvent.RegistrationChangeType.REGISTER;
-        this.sendConfigCallback();
+        if (isRemotePresent && connectState.incrementAndGet() == 2) {
+            connectState.set(0);
+            this.sendConfigCallback();
+        }
     }
 
     void receiveMessage(FriendlyByteBuf buf){
@@ -92,6 +101,6 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
             builder.configureTarget(target);
         }
         if(Minecraft.getInstance().getConnection() != null)
-        Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
+            Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
     }
 }
