@@ -22,7 +22,7 @@ apply plugin: 'com.matthewprenger.cursegradle'
 
 task buildAll{
     dependsOn(":${project.module_name}:fabric:build")
-    //dependsOn(":${project.module_name}:forge:build")
+    dependsOn(":${project.module_name}:forge:build")
 }
 
 task copyArtifacts{
@@ -32,7 +32,7 @@ task copyArtifacts{
             from "${project.projectDir}/fabric/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-fabric.jar"
             into "${rootProject.projectDir}/artifacts"
         }
-        /*
+
         copy{
             from "${project.projectDir}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
             into "${rootProject.projectDir}/artifacts"
@@ -43,7 +43,7 @@ task copyArtifacts{
 if(keysExists) {
     task publishMod {
         finalizedBy(":${project.module_name}:fabric:modrinth")
-        //finalizedBy(":${project.module_name}:forge:modrinth")
+        finalizedBy(":${project.module_name}:forge:modrinth")
         finalizedBy(":${project.module_name}:publishToCF")
     }
 
@@ -77,7 +77,7 @@ if(keysExists) {
                 //displayName = archivesBaseName
             }
         }
-        /*
+
         project {
             id = '403422' //Fabric version
             changelogType = "markdown"
@@ -85,8 +85,7 @@ if(keysExists) {
             changelog = changes
             releaseType = project.cfType
             //addGameVersion project.minecraft_version //TODO set it back
-            addGameVersion "1.18.1"
-            addGameVersion "1.18.2"
+            addGameVersion "1.19"
             addGameVersion "Forge"
 
 

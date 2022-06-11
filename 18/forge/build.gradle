@@ -39,21 +39,25 @@ loom{
 configurations {
     compileModule
     common
+    commonModule
+
+    common.extendsFrom commonModule
+    compileModule.extendsFrom commonModule
+
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
 }
 
 dependencies {
-    common project(':executor')
-    common project(':emotesAPI')
-    common project(':emotesServer')
+    commonModule(project(':executor')) {transitive false}
+    commonModule(project(':emotesAPI')) {transitive false}
+    commonModule(project(':emotesServer')) {transitive false}
+    commonModule(project(':emotesMain')) {transitive false}
 
     common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
-    common(project(':emotesMain')) {transitive false}
 
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")) { transitive false }
-    compileModule(project(':emotesMain')) { transitive false }
 
 
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"

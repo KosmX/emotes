@@ -54,11 +54,11 @@ shadowJar{
 //    input.set shadowJar.archiveFile
 //}
 
-jar{
+task fatJar(type: Jar) {
    from {
        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
    }
-    classifier "dev"
+    classifier "fat"
 }
 
 task publicationJar (type: Jar, dependsOn: classes ){

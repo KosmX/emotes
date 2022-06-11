@@ -6,7 +6,7 @@ version project.mod_version
 
 architectury{
     injectInjectables = false
-    common("fabric")
+    common("fabric", "forge")
     //minecraft = project.minecraft_version
 }
 

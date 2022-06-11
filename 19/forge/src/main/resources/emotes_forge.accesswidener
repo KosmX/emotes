@@ -1,0 +1,12 @@
+accessWidener v2 named
+
+
+extendable class net/minecraft/client/model/geom/ModelPart
+accessible class net/minecraft/client/model/geom/ModelPart$Polygon
+accessible class net/minecraft/client/model/geom/ModelPart$Vertex
+
+extendable class net/minecraft/client/model/geom/ModelPart
+#I need it to be mixinable and then castable
+
+extendable class net/minecraft/client/OptionInstance$ValueSet
+extendable class net/minecraft/client/OptionInstance$SliderableValueSet
