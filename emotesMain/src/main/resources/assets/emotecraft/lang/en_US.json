@@ -29,7 +29,7 @@
   "emotecraft.otherconfig.prespective_redux": "Enable Perspective Mod Redux integration",
   "emotecraft.otherconfig.prespective_redux.tooltip": "Only active when 3rd person perspective is enabled",
   "emotecraft.otherconfig.enableNSFW": "Allow NSFW emotes",
-  "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work). Inappropriate content.\n\nMay contain nudity, intense sexuality, violence or other potentially disturbing subject matter.",
+  "emotecraft.otherconfig.enableNSFW.tooltip": "(Not Safe For Work) Inappropriate content.\n\nMay contain nudity, intense sexuality, violence or other potentially disturbing subject matter.",
   "emotecraft.otherconfig.alwaysValidateEmote": "Always validate received emotes",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Client side option, won't affect internal server.\n\nBy default, client-side validation only happens when receiving emote from an untrusted proxy.\nUse this to always do client-side validation",
   "emotecraft.otherconfig.default3rdPersonFront": "Use front view for 3rd person",
