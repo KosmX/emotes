@@ -38,6 +38,7 @@
   "emotecraft.otherconfig.hideWarning": "Скрыть предупреждение \"мод не установлен на сервере\"",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "НЕ ВКЛЮЧАТЬ!\nЗагрузить эмоции на логический сервер",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "НЕ ВКЛЮЧАЙТЕ ЭТУ ФУНКЦИЮ!\nВнутренний сервер будет загружать клиентские эмоции вместо клиента\nЕсли Вы включите эту функцию, эмоции будут работать только в одиночной игре",
+  "emotecraft.otherconfig.oldChooseWheel": "Использовать старое колесо выбора эмоций",
   "emotecraft.emotelist": "Все эмоции",
   "emotecraft.no_server": "На сервере не установлен Emotecraft! Другие не увидят, проигрываете ли Вы эмоции",
   "emotecraft.different_server": "Сервер имеет другую версию Emotecraft, Ваши эмоции могут проигрываться некорректно для других игроков",
