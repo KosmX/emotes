@@ -564,8 +564,8 @@ public final class EmoteData implements Supplier<UUID> {
             leftArm = new StateCollection(5, 2, 0, 0, 0, 0f, "leftArm", validationThreshold, true);
             leftLeg = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftLeg", validationThreshold, true);
             rightLeg = new StateCollection(-1.9f, 12, 0.1f, 0, 0, 0, "rightLeg", validationThreshold, true);
-            leftItem = new StateCollection(1.9f, 12, 0.1f, 0, 0, 0, "leftItem", validationThreshold, false);
-            rightItem = new StateCollection(-1.9f, 12, 0.1f, 0, 0, 0, "rightItem", validationThreshold, false);
+            leftItem = new StateCollection(0, 0, 0, 0, 0, 0, "leftItem", validationThreshold, false);
+            rightItem = new StateCollection(0, 0, 0, 0, 0, 0, "rightItem", validationThreshold, false);
             torso = new StateCollection(-1.9f, 12, 0.1f, 0, 0, 0, "torso", validationThreshold, true);
 
             bodyParts.put("head", head);
