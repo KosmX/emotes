@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+}
+
+version 'unspecified'
+
+project.archivesBaseName = project.archives_base_name
+project.version = project.mod_version
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name = 'velocitypowered-repo'
+        url = 'https://nexus.velocitypowered.com/repository/maven-public/'
+    }
+}
+
+configurations {
+    compileModule
+}
+
+dependencies {
+
+    compileOnly 'com.velocitypowered:velocity-api:3.0.0'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.0.0'
+
+    implementation project(':emotesAPI')
+
+    implementation project(':executor')
+
+    implementation project(':emotesServer')
+
+    compileModule(project(':emotesAPI'))
+    compileModule(project(':executor'))
+    compileModule(project(':emotesServer'))
+    compileModule(project(':emotesMain')) { transitive = false }
+}
+
+jar {
+    from {
+        configurations.compileModule.collect() { it.isDirectory() ? it : zipTree(it) }
+    }
+    dependsOn(':emotesMain:build')
+    classifier "velocity"
+}
+
+task copyArtifacts {
+    dependsOn('build')
+    doLast {
+        copy {
+            from "${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}-velocity.jar"
+            into "${rootProject.projectDir}/artifacts"
+        }
+    }
+}
+

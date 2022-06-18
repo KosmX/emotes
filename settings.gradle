@@ -53,4 +53,8 @@ include 'bukkit:debug'
 
 //Bungee plugin stuff
 include 'bungee'
+
+//Velocity plugin stuff
+include 'velocity'
+
 //*/

@@ -140,6 +140,7 @@ else {
 task buildAll{
     dependsOn(':bukkit:build')
     dependsOn(':bungee:build')
+    dependsOn(':velocity:build')
     dependsOn(':16:buildAll', ':18:buildAll', ':19:buildAll')
 }
 
@@ -153,6 +154,7 @@ task collectArtifacts{
     dependsOn('cleanupArtifacts')
     dependsOn(':bukkit:copyArtifacts')
     dependsOn(':bungee:copyArtifacts')
+    dependsOn(':velocity:copyArtifacts')
     dependsOn(':16:copyArtifacts', ':18:copyArtifacts', ':19:copyArtifacts')
     doLast {
         releaseArtifacts = project.getProjectDir().toPath().resolve("artifacts").toFile().listFiles()
