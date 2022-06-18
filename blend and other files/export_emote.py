@@ -45,7 +45,7 @@ def Key_Frame_Points(): #Gets the key-frame values as an array.
             
 
 
-def getPartData(name:str, isItem:bool = False):
+def getPartData(name:str, endTick:list[int], isItem:bool = False):
     if str(type(bpy.data.objects[name].animation_data)) == "<class 'NoneType'>":
         return
     if str(type(bpy.data.objects[name].animation_data.action)) == "<class 'NoneType'>":
@@ -73,10 +73,10 @@ def getPartData(name:str, isItem:bool = False):
             if int(keyframe.co[0]) == 0:
                 continue
             if static.first:
-                static.movesText = getTickData(name, typ, keyframe, isLocation, isItem)
+                static.movesText = getTickData(name, typ, keyframe, isLocation, endTick, isItem)
                 static.first = False
             else:
-                static.movesText = '{},{}'.format(static.movesText, getTickData(name, typ, keyframe, isLocation, isItem))
+                static.movesText = '{},{}'.format(static.movesText, getTickData(name, typ, keyframe, isLocation, endTick, isItem))
     
     if name == "head" or name == "leftItem" or name == "rightItem":
         return #Don't read bend from the head
@@ -93,18 +93,20 @@ def getPartData(name:str, isItem:bool = False):
                 if int(keyframe.co[0]) == 0:
                     continue
                 if static.first:
-                    static.movesText = getTickData(name, "bend", keyframe, False)
+                    static.movesText = getTickData(name, "bend", keyframe, False, endTick)
                     static.first = False
                 else:
-                    static.movesText = '{},{}'.format(static.movesText, getTickData(name, "bend", keyframe, False))
+                    static.movesText = '{},{}'.format(static.movesText, getTickData(name, "bend", keyframe, False, endTick))
                     
     
     
     
-def getTickData(name:str, typ:str, keyframe, isL:bool, isItem:bool = False):
+def getTickData(name:str, typ:str, keyframe, isL:bool, endTick:list[int], isItem:bool = False):
     turn = 0
     tick = int(keyframe.co[0])
     value = keyframe.co[1] #calculate correct
+    if (tick > endTick[0]):
+        endTick[0] = tick
 
     ## Find easing
     if(keyframe.easing == "AUTO"):
@@ -162,15 +164,16 @@ def getTickData(name:str, typ:str, keyframe, isL:bool, isItem:bool = False):
             }}'''.format(tick, easing, turn, name, typ, value)
     return text
 
+endTick = [0]
 
-getPartData("head")
-getPartData("torso")
-getPartData("rightArm")
-getPartData("leftArm")
-getPartData("rightLeg")
-getPartData("leftLeg")
-getPartData("rightItem", True)
-getPartData("leftItem", True)
+getPartData("head", endTick)
+getPartData("torso", endTick)
+getPartData("rightArm", endTick)
+getPartData("leftArm", endTick)
+getPartData("rightLeg", endTick)
+getPartData("leftLeg", endTick)
+getPartData("rightItem", endTick, True)
+getPartData("leftItem", endTick, True)
 
 emoteString = '''{{
     "name": "{}",
@@ -187,7 +190,7 @@ emoteString = '''{{
             {}
         ]
     }}
-}}'''.format(emoteName, author, emoteDescription, isLoop, returnTick, bpy.context.scene.frame_start, bpy.context.scene.frame_end, bpy.context.scene.frame_end + 1, static.movesText)
+}}'''.format(emoteName, author, emoteDescription, isLoop, returnTick, bpy.context.scene.frame_start, endTick[0], bpy.context.scene.frame_end + 1, static.movesText)
 
 x = open(os.path.join(os.path.dirname(bpy.data.filepath), "emote.json"), "w")
 x.write(emoteString)
