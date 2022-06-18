@@ -48,7 +48,7 @@ public class EmoteDataPlayer implements IAnimation {
 
         this.currentTick = t;
         if(isInfinite() && t > data.returnToTick){
-            currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
+            currentTick = (t - data.returnToTick)%(data.endTick - data.returnToTick) + data.returnToTick;
         }
     }
 
@@ -56,7 +56,7 @@ public class EmoteDataPlayer implements IAnimation {
     public void tick() {
         if (this.isRunning) {
             this.currentTick++;
-            if (data.isInfinite && this.currentTick >= data.endTick) {
+            if (data.isInfinite && this.currentTick > data.endTick) {
                 this.currentTick = data.returnToTick;
                 this.isLoopStarted = true;
             }
@@ -217,7 +217,7 @@ public class EmoteDataPlayer implements IAnimation {
                                 new EmoteData.KeyFrame(data.endTick, keyframes.defaultValue);
             }
             EmoteData.KeyFrame frame = this.keyframes.keyFrames.get(pos);
-            if (currentTick >= getData().endTick && pos == keyframes.length() - 1 && frame.tick < getData().endTick) {
+            if (!isInfinite() && currentTick >= getData().endTick && pos == keyframes.length() - 1 && frame.tick < getData().endTick) {
                 return new EmoteData.KeyFrame(getData().endTick, frame.value, frame.ease);
             }
             return frame;
@@ -228,7 +228,11 @@ public class EmoteDataPlayer implements IAnimation {
                 return this.keyframes.keyFrames.get(pos + 1);
             }
 
-            if (!isInfinite() && currentTick < getData().endTick && this.keyframes.length() > 0) {
+            if (isInfinite()) {
+                return new EmoteData.KeyFrame(getData().endTick + 1, keyframes.defaultValue);
+            }
+
+            if (currentTick < getData().endTick && this.keyframes.length() > 0) {
                 EmoteData.KeyFrame lastFrame = this.keyframes.keyFrames.get(this.keyframes.length() - 1);
                 return new EmoteData.KeyFrame(getData().endTick, lastFrame.value, lastFrame.ease);
             }
@@ -255,8 +259,8 @@ public class EmoteDataPlayer implements IAnimation {
                     keyBefore = findBefore(keyframes.findAtTick(data.endTick), currentValue);
                 }
                 EmoteData.KeyFrame keyAfter = findAfter(pos, currentValue);
-                if (data.isInfinite && keyAfter.tick >= data.endTick) {
-                    keyAfter = findAfter(keyframes.findAtTick(data.returnToTick - 1), currentValue);
+                if (data.isInfinite && keyAfter.tick > data.endTick) {
+                    keyAfter = findAfter(keyframes.findAtTick(data.returnToTick), currentValue);
                 }
                 return getValueFromKeyframes(keyBefore, keyAfter);
             }
@@ -274,8 +278,8 @@ public class EmoteDataPlayer implements IAnimation {
             int tickBefore = before.tick;
             int tickAfter = after.tick;
             if (tickBefore >= tickAfter) {
-                if (currentTick < tickBefore) tickBefore -= data.endTick - data.returnToTick;
-                else tickAfter += data.endTick - data.returnToTick;
+                if (currentTick < tickBefore) tickBefore -= data.endTick - data.returnToTick + 1;
+                else tickAfter += data.endTick - data.returnToTick + 1;
             }
             if (tickBefore == tickAfter) return before.value;
             float f = (currentTick + tickDelta - (float) tickBefore) / (tickAfter - tickBefore);
