@@ -216,12 +216,21 @@ public class EmoteDataPlayer implements IAnimation {
                                 new EmoteData.KeyFrame(data.beginTick, keyframes.defaultValue) :
                                 new EmoteData.KeyFrame(data.endTick, keyframes.defaultValue);
             }
-            return this.keyframes.keyFrames.get(pos);
+            EmoteData.KeyFrame frame = this.keyframes.keyFrames.get(pos);
+            if (currentTick >= getData().endTick && pos == keyframes.length() - 1 && frame.tick < getData().endTick) {
+                return new EmoteData.KeyFrame(getData().endTick, frame.value, frame.ease);
+            }
+            return frame;
         }
 
         private EmoteData.KeyFrame findAfter(int pos, float currentState) {
             if (this.keyframes.length() > pos + 1) {
                 return this.keyframes.keyFrames.get(pos + 1);
+            }
+
+            if (!isInfinite() && currentTick < getData().endTick && this.keyframes.length() > 0) {
+                EmoteData.KeyFrame lastFrame = this.keyframes.keyFrames.get(this.keyframes.length() - 1);
+                return new EmoteData.KeyFrame(getData().endTick, lastFrame.value, lastFrame.ease);
             }
 
             return currentTick >= data.endTick ?
