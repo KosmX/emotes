@@ -33,6 +33,8 @@ public class BungeeWrapper extends Plugin {
         getProxy().getPluginManager().registerListener(this, networkPlay);
         super.onEnable();
         getLogger().info("Loading Emotecraft as a bukkit plugin...");
+        getLogger().warning("Emotecraft is meant to be used on a server, not on a proxy.");
+        getLogger().warning("Certain features will be unavailable, like server-side API.");
     }
 
     @Override
