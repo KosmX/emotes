@@ -20,6 +20,9 @@ repositories {
 
 configurations {
     compileModule
+
+    compileClasspath.extendsFrom compileModule
+    runtimeClasspath.extendsFrom compileModule
 }
 
 dependencies {
@@ -28,12 +31,12 @@ dependencies {
 
     compileOnly "net.md-5:bungeecord-api:${project.bungee_api}"
 
-    implementation project(':emotesAPI')
+    compileModule project(':emotesAPI')
     //compileModule(project(':emotesAPI')){ transitive = false }
 
-    implementation project(':executor')
+    compileModule project(':executor')
     //compileModule(project(':executor')){ transitive = false }
-    implementation project(':emotesServer')
+    compileModule project(':emotesServer')
     
     //compileModule(project(':emotesServer')){ transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }

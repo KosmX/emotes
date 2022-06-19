@@ -23,7 +23,12 @@ repositories {
 }
 
 configurations {
+
     compileModule
+
+    compileClasspath.extendsFrom compileModule
+    runtimeClasspath.extendsFrom compileModule
+
 }
 
 dependencies {
@@ -33,14 +38,10 @@ dependencies {
     implementation("org.spigotmc:spigot-api:${project.spigot_api}")
     implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.8.0"
 
-    implementation project(':emotesAPI')
-    //compileModule(project(':emotesAPI')){ transitive = false }
-
-    implementation project(':executor')
-    //compileModule(project(':executor')){ transitive = false }
-    implementation project(':emotesServer')
+    compileModule project(':emotesAPI')
+    compileModule project(':executor')
+    compileModule project(':emotesServer')
     
-    //compileModule(project(':emotesServer')){ transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }
 }
 
