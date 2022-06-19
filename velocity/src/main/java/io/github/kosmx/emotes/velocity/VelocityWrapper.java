@@ -56,6 +56,9 @@ public class VelocityWrapper {
         this.networkPlay = new ServerSideEmotePlay(server);
         server.getEventManager().register(this, networkPlay);
         logger.info("Loading Emotecraft as a velocity plugin...");
+
+        logger.warning("Emotecraft is meant to be used on a server, not on a proxy.");
+        logger.warning("Certain features will be unavailable, like server-side API.");
     }
 
     public void shutdown() {
