@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "Exact cât de mult este compensat prea mult",
   "emotecraft.otherconfig.dark": "Roata de alegere rapidă de culoarea închisă",
   "emotecraft.otherconfig.showicon": "Arată iconițe în loc de nume de emoții",
-  "emotecraft.otherconfig.showicon.tooltip": "(dacă este valabil)",
   "emotecraft.otherconfig.stopthreshold": "Oprește emoțiile la acest prag de viteză",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 este viteza de mers)\ncu valoare mare, nu vei înceta să joci emotia. Poți totuși să folosești cheia de oprire a redării",
   "emotecraft.otherconfig.yratio": "Influența în mișcare a axei Y la pragul de oprire",

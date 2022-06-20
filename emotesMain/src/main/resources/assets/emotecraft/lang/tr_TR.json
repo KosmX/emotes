@@ -15,7 +15,6 @@
   "emotecraft.otherconfig.validationThreshold": "Doğrulama eşiği",
   "emotecraft.otherconfig.dark": "Karanlık temalı hızlı menü",
   "emotecraft.otherconfig.showicon": "İfade isimleri yerine simgeleri göster",
-  "emotecraft.otherconfig.showicon.tooltip": "Eğer mevcutsa",
   "emotecraft.otherconfig.stopthreshold": "İfadeyi bu hız sınırında durdur (0.22 yürüme hızıdır)",
   "emotecraft.otherconfig.stopthreshold.tooltip": "büyük bir değere sahipse, ifade oynamayı durdurmayacaktır. Hala oynatmayı durdur tuşunu kullanabilirsiniz",
   "emotecraft.otherconfig.yratio": "Y ekseninde hareket etme, durma sınırının yüzdesini(%) etkiliyor",

@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "Предел возможного смещения персонажа",
   "emotecraft.otherconfig.dark": "Тёмная тема колеса выбора эмоций",
   "emotecraft.otherconfig.showicon": "Показывать иконки вместо названий эмоций",
-  "emotecraft.otherconfig.showicon.tooltip": "Если доступно",
   "emotecraft.otherconfig.stopthreshold": "Остановить эмоцию, когда скорость персонажа достигает этого значения",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 - скорость ходьбы)\nс большим значением Вы не перестанете проигрывать эмоцию. Вы всё еще можете использовать кнопку остановки анимации",
   "emotecraft.otherconfig.yratio": "Влияние перемещения по оси Y на порог остановки",
