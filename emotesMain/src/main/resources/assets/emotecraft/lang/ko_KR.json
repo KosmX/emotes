@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "어느 정도의 지연 시간이 지나친 건지 정확하게 설정",
   "emotecraft.otherconfig.dark": "바로가기 메뉴 어둡게",
   "emotecraft.otherconfig.showicon": "감정표현 이름 대신 아이콘 표시",
-  "emotecraft.otherconfig.showicon.tooltip": "사용 가능하면",
   "emotecraft.otherconfig.stopthreshold": "이 속도 한계값에서 감정표현 중지",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22가 걷는 속도)\n큰 값으로 설정하면 감정표현이 영영 끝나지 않을 것입니다. 재생 중지 버튼을 사용하세요",
   "emotecraft.otherconfig.yratio": "정지 한계값에서 Y축 이동 영향",

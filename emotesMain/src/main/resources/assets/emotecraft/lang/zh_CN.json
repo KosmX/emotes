@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "准确到多少的偏移量会太大",
   "emotecraft.otherconfig.dark": "暗样式的快捷菜单",
   "emotecraft.otherconfig.showicon": "用图标来代替表情名称显示",
-  "emotecraft.otherconfig.showicon.tooltip": "如果可用",
   "emotecraft.otherconfig.stopthreshold": "当运动速度大于该值时停止播放表情。（0.22是正常行走速度）",
   "emotecraft.otherconfig.stopthreshold.tooltip": "如果该值较大，你将不能停止播放该表情。但你仍然可以使用停止播放按键。",
   "emotecraft.otherconfig.yratio": "Y轴方向上移动速度的停止阀值百分比（%）",

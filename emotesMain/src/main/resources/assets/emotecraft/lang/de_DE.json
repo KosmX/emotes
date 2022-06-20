@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "Spezifiziert die Schwelle, ab der die Validation abgelehnt wird",
   "emotecraft.otherconfig.dark": "Dunkles Schnellmenü",
   "emotecraft.otherconfig.showicon": "Zeige Symbole statt Emote-Namen",
-  "emotecraft.otherconfig.showicon.tooltip": "Wenn verfügbar",
   "emotecraft.otherconfig.stopthreshold": "Emote an dieser Geschwindigkeitsgrenze stoppen",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 ist Laufgeschwindigkeit)\nmit großem Wert, du wirst nicht aufhören Emote zu spielen. Du kannst immer noch die Stop-Play-Taste verwenden",
   "emotecraft.otherconfig.yratio": "Y-Achse bewegt sich in Stop-Schwelle",

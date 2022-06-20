@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "Exatamente quanto deslocamento é demasiado",
   "emotecraft.otherconfig.dark": "Menu rápido escuro",
   "emotecraft.otherconfig.showicon": "Mostrar ícones em vez de nomes de gestos",
-  "emotecraft.otherconfig.showicon.tooltip": "Se disponível",
   "emotecraft.otherconfig.stopthreshold": "Parar gesto neste limite de velocidade. (a velocidade de movimento é de 0.22)",
   "emotecraft.otherconfig.stopthreshold.tooltip": "com valor grande não vais parar de executar o gesto. Ainda podes usar a tecla de parar execução",
   "emotecraft.otherconfig.yratio": "Influência de movimentação na direção Y no limite de parada em porcentagem(%)",

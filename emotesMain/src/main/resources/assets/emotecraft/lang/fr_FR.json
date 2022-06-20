@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "La valeur exacte de la compensation est trop élevée",
   "emotecraft.otherconfig.dark": "Dark mode menu-rapide",
   "emotecraft.otherconfig.showicon": "Afficher les icônes au lieu des noms des émotes",
-  "emotecraft.otherconfig.showicon.tooltip": "Si disponible",
   "emotecraft.otherconfig.stopthreshold": "Arrêt de l'emote à ce seuil de vitesse. (0.22 est la vitesse de marche)",
   "emotecraft.otherconfig.stopthreshold.tooltip": "avec une grande valeur, vous n'arrêterez pas de jouer l'emote. Vous pouvez toujours utiliser la touche stop",
   "emotecraft.otherconfig.yratio": "Influence de déplacement de l'axe Y en pourcentages (%)",

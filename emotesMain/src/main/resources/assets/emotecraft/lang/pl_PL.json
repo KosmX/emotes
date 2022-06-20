@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "Jak duże przesunięcie jest zbyt duże",
   "emotecraft.otherconfig.dark": "Ciemne koło szybkiego wyboru",
   "emotecraft.otherconfig.showicon": "Wyświetlaj ikony zamiast nazw reakcji",
-  "emotecraft.otherconfig.showicon.tooltip": "Jeśli dostępne",
   "emotecraft.otherconfig.stopthreshold": "Zatrzymaj reakcję po przekroczeniu tego progu prędkości",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 to prędkość chodzenia)\nwysoka wartość skutkuje nieskończenie długą reakcją. Nadal możesz użyć klawisza zatrzymania reakcji",
   "emotecraft.otherconfig.yratio.tooltip": "większa wartość oznacza większy wpływ",

@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold.tooltip": "Ellenőrzési küszöb beállítása",
   "emotecraft.otherconfig.dark": "Sötét gyorsmenü",
   "emotecraft.otherconfig.showicon": "Ikonok mutatása gesztusnevek helyett",
-  "emotecraft.otherconfig.showicon.tooltip": "Ha elérhető",
   "emotecraft.otherconfig.stopthreshold": "Gesztus leállítása ennél a sebességnél (0,22 a gyaloglás sebessége)",
   "emotecraft.otherconfig.stopthreshold.tooltip": "nagy értékkel, nem fog leállni a gesztus lejátszása. A stop gombot még mindig használhatod",
   "emotecraft.otherconfig.yratio": "Y tengely mozgás százalékos hatása a megállítási küszöbre (%)",
