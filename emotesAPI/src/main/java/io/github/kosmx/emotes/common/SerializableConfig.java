@@ -165,4 +165,10 @@ public class SerializableConfig {
             super(name, defVal, collection, hidden);
         }
     }
+
+    public static class IntegerConfigEntry extends ConfigEntry<Integer> {
+        public IntegerConfigEntry(String name, Integer defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
+            super(name, defVal, hasTooltip, collection);
+        }
+    }
 }
