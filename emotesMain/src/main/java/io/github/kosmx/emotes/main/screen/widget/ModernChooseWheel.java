@@ -29,7 +29,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
 
     public ModernChooseWheel(AbstractFastChooseWidget<MATRIX, WIDGET> widget){
         this.widget = widget;
-        elements.add( new FastChooseElement(0, 22.5f-22.5f));
+        elements.add( new FastChooseElement(0, 0.0f));
         elements.add( new FastChooseElement(1, 67.5f-22.5f));
         elements.add( new FastChooseElement(2, 112.5f-22.5f));
         elements.add( new FastChooseElement(3, 157.5f-22.5f));
@@ -104,6 +104,8 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
         for(FastChooseElement f : elements){
             if(f.hasEmote()) f.render(matrices);
         }
+        widget.textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults()
+                .textFromString(String.valueOf(((ClientConfig) EmoteInstance.config).fastMenuPage.get())), widget.x + widget.size / 2 - 2, widget.y + widget.size / 2 - 3, -1);
     }
 
 

@@ -45,12 +45,20 @@ public class ClientConfigSerializer extends ConfigSerializer {
     }
 
     private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
-        for(int j = 0; j != 10; j++) {
+        for(int j = 0; j != 10; j++){
             if (node.has(Integer.toString(j))) {
-                for (int i = 0; i != 8; i++) {
-                    if (node.get(Integer.toString(j)).getAsJsonObject().has(Integer.toString(i))) {
-                        config.fastMenuEmotes[j][i] = fixer.getEmoteID(node.get(Integer.toString(j)).getAsJsonObject().get(Integer.toString(i)));
+                JsonElement subNode = node.get(Integer.toString(j));
+                // fastmenu config version check
+                if (subNode.isJsonObject()) {
+                    // new version (with pages)
+                    for (int i = 0; i != 8; i++) {
+                        if (node.get(Integer.toString(j)).getAsJsonObject().has(Integer.toString(i))) {
+                            config.fastMenuEmotes[j][i] = fixer.getEmoteID(node.get(Integer.toString(j)).getAsJsonObject().get(Integer.toString(i)));
+                        }
                     }
+                } else {
+                    // old version (without pages) to new version
+                    config.fastMenuEmotes[0][j] = fixer.getEmoteID(node.get(Integer.toString(j)));
                 }
             }
         }
