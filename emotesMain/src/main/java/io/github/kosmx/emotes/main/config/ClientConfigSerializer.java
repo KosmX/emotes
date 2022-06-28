@@ -37,9 +37,6 @@ public class ClientConfigSerializer extends ConfigSerializer {
         return new ClientConfig();
     }
 
-
-
-
     private void clientDeserialize(JsonObject node, SerializableConfig sconfig) {
         ClientConfig config = (ClientConfig) sconfig;
         EmoteFixer emoteFixer = new EmoteFixer(config.configVersion);
@@ -48,9 +45,21 @@ public class ClientConfigSerializer extends ConfigSerializer {
     }
 
     private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
-        for(int i = 0; i != 8; i++){
-            if(node.has(Integer.toString(i))){
-                config.fastMenuEmotes[i] = fixer.getEmoteID(node.get(Integer.toString(i)));
+        for(int j = 0; j != 10; j++){
+            if (node.has(Integer.toString(j))) {
+                JsonElement subNode = node.get(Integer.toString(j));
+                // fastmenu config version check
+                if (subNode.isJsonObject()) {
+                    // new version (with pages)
+                    for (int i = 0; i != 8; i++) {
+                        if (node.get(Integer.toString(j)).getAsJsonObject().has(Integer.toString(i))) {
+                            config.fastMenuEmotes[j][i] = fixer.getEmoteID(node.get(Integer.toString(j)).getAsJsonObject().get(Integer.toString(i)));
+                        }
+                    }
+                } else {
+                    // old version (without pages) to new version
+                    config.fastMenuEmotes[0][j] = fixer.getEmoteID(node.get(Integer.toString(j)));
+                }
             }
         }
     }
@@ -79,9 +88,15 @@ public class ClientConfigSerializer extends ConfigSerializer {
 
     private JsonObject fastMenuSerializer(ClientConfig config){
         JsonObject node = new JsonObject();
-        for(int i = 0; i != 8; i++){
-            if(config.fastMenuEmotes[i] != null){
-                node.addProperty(Integer.toString(i), config.fastMenuEmotes[i].toString());
+        for(int j = 0; j != 10; j++) {
+            if (config.fastMenuEmotes[j] != null) {
+                JsonObject subNode = new JsonObject();
+                for (int i = 0; i != 8; i++) {
+                    if (config.fastMenuEmotes[j][i] != null) {
+                        subNode.addProperty(Integer.toString(i), config.fastMenuEmotes[j][i].toString());
+                        node.add(Integer.toString(j), subNode);
+                    }
+                }
             }
         }
         return node;

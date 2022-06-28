@@ -19,6 +19,7 @@ import java.util.logging.Level;
  */
 public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
 
+    public static int fastMenuPage = 0;
 
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
@@ -29,7 +30,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
 
     public ModernChooseWheel(AbstractFastChooseWidget<MATRIX, WIDGET> widget){
         this.widget = widget;
-        elements.add( new FastChooseElement(0, 22.5f-22.5f));
+        elements.add( new FastChooseElement(0, 0.0f));
         elements.add( new FastChooseElement(1, 67.5f-22.5f));
         elements.add( new FastChooseElement(2, 112.5f-22.5f));
         elements.add( new FastChooseElement(3, 157.5f-22.5f));
@@ -72,6 +73,20 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
         return elements.get(i);
     }
 
+    private Integer getPageButton(int mouseX, int mouseY) {
+        int x = mouseX - widget.x - widget.size / 2;
+        int y = mouseY - widget.y - widget.size / 2;
+        double distanceFromCenter = Math.sqrt(x * x + y * y);
+        if (distanceFromCenter < widget.size * 0.17 || distanceFromCenter > widget.size / 2.0) {
+            if (x > 1) {
+                return 1;
+            } else if (x < 1) {
+                return 0;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public void render(MATRIX matrices, int mouseX, int mouseY, float delta){
         checkHovered(mouseX, mouseY);
@@ -90,6 +105,8 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
         for(FastChooseElement f : elements){
             if(f.hasEmote()) f.render(matrices);
         }
+        widget.textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults()
+                .textFromString(String.valueOf(fastMenuPage)), widget.x + widget.size / 2 - 2, widget.y + widget.size / 2 - 3, -1);
     }
 
 
@@ -119,6 +136,21 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
             FastChooseElement element = this.getActivePart((int) mouseX, (int) mouseY);
             if(element != null){
                 return widget.EmotesOnClick(element, button);
+            } else {
+                Integer selectedPageButton = getPageButton((int) mouseX, (int) mouseY);
+                if (selectedPageButton == 0) {
+                    if (fastMenuPage > 0) {
+                        fastMenuPage -= 1;
+                    } else {
+                        fastMenuPage = 9;
+                    }
+                } else if (selectedPageButton == 1) {
+                    if (fastMenuPage < 9) {
+                        fastMenuPage += 1;
+                    } else {
+                        fastMenuPage = 0;
+                    }
+                }
             }
         }
         return false;
@@ -143,18 +175,18 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
 
         @Override
         public boolean hasEmote(){
-            return ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null;
+            return ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null;
         }
 
         @Override
         public void setEmote(@Nullable EmoteHolder emote){
-            ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] = emote == null ? null : emote.getUuid();
+            ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] = emote == null ? null : emote.getUuid();
         }
 
         @Override
         @Nullable
         public EmoteHolder getEmote(){
-            UUID uuid = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id];
+            UUID uuid = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id];
             if(uuid != null){
                 EmoteHolder emote = EmoteHolder.list.get(uuid);
                 if(emote == null && widget.doesShowInvalid()){
@@ -173,7 +205,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
         }
 
         public void render(MATRIX matrices){
-            UUID emoteID = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] : null;
+            UUID emoteID = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] : null;
             IIdentifier identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
             if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons.get()){
                 int s = widget.size / 10;
@@ -182,8 +214,8 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
                 widget.renderBindTexture(identifier);
                 widget.drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             }else{
-                if(((ClientConfig)EmoteInstance.config).fastMenuEmotes[id] != null){
-                    widget.drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[id]).name, this.angle);
+                if(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null){
+                    widget.drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);
                 }else{
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Tried to render non-existing name", true);
                 }
