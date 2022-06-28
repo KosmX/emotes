@@ -114,6 +114,11 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
         return false;
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return false;
+    }
+
 
     public boolean isMouseOver(double mouseX, double mouseY) {
         this.checkHovered((int) mouseX, (int) mouseY);

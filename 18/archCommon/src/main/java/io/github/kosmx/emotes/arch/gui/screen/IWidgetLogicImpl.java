@@ -14,6 +14,11 @@ public interface IWidgetLogicImpl extends IWidgetLogic<PoseStack, GuiEventListen
     }
 
     @Override
+    default boolean mouseScrolled(double d, double e, double f) {
+        return this.emotes_mouseScrolled(d, e, f);
+    }
+
+    @Override
     default NarrationPriority narrationPriority(){
         return NarrationPriority.NONE; //TODO narration
     }

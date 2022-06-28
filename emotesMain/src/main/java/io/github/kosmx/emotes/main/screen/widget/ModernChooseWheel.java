@@ -73,7 +73,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
         return elements.get(i);
     }
 
-    private Integer getPageButton(int mouseX, int mouseY) {
+    private int getPageButton(int mouseX, int mouseY) {
         int x = mouseX - widget.x - widget.size / 2;
         int y = mouseY - widget.y - widget.size / 2;
         double distanceFromCenter = Math.sqrt(x * x + y * y);
@@ -137,7 +137,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
             if(element != null){
                 return widget.EmotesOnClick(element, button);
             } else {
-                Integer selectedPageButton = getPageButton((int) mouseX, (int) mouseY);
+                int selectedPageButton = getPageButton((int) mouseX, (int) mouseY);
                 if (selectedPageButton == 0) {
                     if (fastMenuPage > 0) {
                         fastMenuPage -= 1;
@@ -151,6 +151,23 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
                         fastMenuPage = 0;
                     }
                 }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        checkHovered((int) mouseX, (int) mouseY);
+        if (amount < 0) {
+            if (fastMenuPage < 9) {
+                fastMenuPage++;
+                return true;
+            }
+        } else {
+            if (fastMenuPage > 0) {
+                fastMenuPage--;
+                return true;
             }
         }
         return false;
