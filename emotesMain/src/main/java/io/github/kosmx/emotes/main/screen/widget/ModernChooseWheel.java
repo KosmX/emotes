@@ -106,7 +106,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
             if(f.hasEmote()) f.render(matrices);
         }
         widget.textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults()
-                .textFromString(String.valueOf(fastMenuPage)), widget.x + widget.size / 2 - 2, widget.y + widget.size / 2 - 3, -1);
+                .textFromString(String.valueOf(fastMenuPage + 1)), widget.x + widget.size / 2f - 2, widget.y + widget.size / 2f - 3, -1);
     }
 
 
