@@ -10,4 +10,9 @@ public interface IWidgetLogicImpl extends IWidgetLogic<PoseStack, GuiEventListen
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
         return this.emotes_mouseClicked(mouseX, mouseY, button);
     }
+
+    @Override
+    default boolean mouseScrolled(double d, double e, double f) {
+        return this.emotes_mouseScrolled(d, e, f);
+    }
 }

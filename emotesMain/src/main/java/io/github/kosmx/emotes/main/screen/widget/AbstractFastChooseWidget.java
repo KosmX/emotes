@@ -53,6 +53,11 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         return this.wheel.mouseClicked(mouseX, mouseY, button);
     }
 
+    @Override
+    public boolean emotes_mouseScrolled(double mouseX, double mouseY, double amount) {
+        return this.wheel.mouseScrolled(mouseX, mouseY, amount);
+    }
+
     public boolean isMouseOver(double mouseX, double mouseY) {
         return this.wheel.isMouseOver(mouseX, mouseY);
     }

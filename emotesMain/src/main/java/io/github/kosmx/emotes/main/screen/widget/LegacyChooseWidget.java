@@ -114,6 +114,11 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
         return false;
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return false;
+    }
+
 
     public boolean isMouseOver(double mouseX, double mouseY) {
         this.checkHovered((int) mouseX, (int) mouseY);
@@ -132,18 +137,21 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
         }
 
         public boolean hasEmote() {
-            return ((ClientConfig) EmoteInstance.config).fastMenuEmotes[id] != null;
+            int fastMenuPage = ModernChooseWheel.fastMenuPage;
+            return ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null;
         }
 
         @Override
         public void setEmote(@Nullable EmoteHolder emote) {
-            ((ClientConfig) EmoteInstance.config).fastMenuEmotes[id] = emote == null ? null : emote.getUuid();
+            int fastMenuPage = ModernChooseWheel.fastMenuPage;
+            ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] = emote == null ? null : emote.getUuid();
         }
 
         @Nullable
         @Override
         public EmoteHolder getEmote() {
-            UUID uuid = ((ClientConfig) EmoteInstance.config).fastMenuEmotes[id];
+            int fastMenuPage = ModernChooseWheel.fastMenuPage;
+            UUID uuid = ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id];
             if (uuid != null) {
                 EmoteHolder emote = EmoteHolder.list.get(uuid);
                 if (emote == null && widget.doesShowInvalid()) {
@@ -161,7 +169,8 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
         }
 
         public void render(MATRIX matrices) {
-            UUID emoteID = ((ClientConfig) EmoteInstance.config).fastMenuEmotes[id] != null ? ((ClientConfig) EmoteInstance.config).fastMenuEmotes[id] : null;
+            int fastMenuPage = ModernChooseWheel.fastMenuPage;
+            UUID emoteID = ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null ? ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] : null;
             IIdentifier identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
             if (identifier != null && ((ClientConfig) EmoteInstance.config).showIcons.get()) {
                 int s = widget.size / 10;
@@ -170,8 +179,8 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
                 widget.renderBindTexture(identifier);
                 widget.drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             } else {
-                if (((ClientConfig) EmoteInstance.config).fastMenuEmotes[id] != null) {
-                    drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig) EmoteInstance.config).fastMenuEmotes[id]).name, this.angle);
+                if (((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null) {
+                    drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);
                 } else {
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Tried to render non-existing name", true);
                 }

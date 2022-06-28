@@ -11,6 +11,8 @@ public interface IChooseWheel<MATRIX> {
 
     boolean mouseClicked(double mouseX, double mouseY, int button);
 
+    boolean mouseScrolled(double mouseX, double mouseY, double amount);
+
     boolean isMouseOver(double mouseX, double mouseY);
 
     interface IChooseElement {

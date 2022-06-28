@@ -7,4 +7,8 @@ public interface IWidgetLogic<MATRIX, WIDGET> extends IRenderHelper<MATRIX>, IWi
     default boolean emotes_mouseClicked(double mouseX, double mouseY, int button) {
         return false;
     }
+
+    default boolean emotes_mouseScrolled(double mouseX, double mouseY, double amount) {
+        return false;
+    }
 }
