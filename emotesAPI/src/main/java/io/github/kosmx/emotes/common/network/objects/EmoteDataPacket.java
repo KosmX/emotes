@@ -98,7 +98,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         }
 
         //EmoteData emote = builder.build();
-        boolean correct = builder.beginTick >= 0 && builder.beginTick < builder.endTick && (! builder.isLooped || builder.returnTick <= builder.endTick && builder.returnTick >= 0);
+        boolean correct = builder.beginTick >= 0 && builder.beginTick < builder.endTick && (! builder.isLooped || builder.returnTick < builder.endTick && builder.returnTick >= 0);
         valid = valid && correct;
 
         config.valid = valid;

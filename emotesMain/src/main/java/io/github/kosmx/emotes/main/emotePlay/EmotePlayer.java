@@ -75,7 +75,11 @@ public abstract class EmotePlayer<T> implements IEmotePlayer {
 
         this.currentTick = t;
         if(isInfinite() && t > data.returnToTick){
-            currentTick = (t - data.returnToTick)%(data.endTick- data.returnToTick) + data.returnToTick;
+            if (data.endTick <= data.returnToTick) {
+                currentTick = data.endTick;
+            } else {
+                currentTick = (t - data.returnToTick) % (data.endTick - data.returnToTick) + data.returnToTick;
+            }
         }
         this.perspective = perspective;
     }

@@ -117,7 +117,7 @@ public class Layer {
          */
         public byte panning = 100;
         /**
-         * The fine pitch of the note block, from -32,768 to 32,767 cents (but the max in Note Block Studio is limited to -1200 and +1200). 0 is no fine-tuning. ±100 cents is a single semitone difference. After reading this, we go back to step 2.
+         * The fine pitch of the note block, from -32,768 to 32,767 cents (but the max in Note Block Studio is limited to -1200 and +1200). 0 is no fine-tuning. +-100 cents is a single semitone difference. After reading this, we go back to step 2.
          */
         public short pitch = 0;
 
