@@ -37,6 +37,7 @@
   "emotecraft.otherconfig.hideWarning": "Masquer l'avertissement \"pas de serveur\"",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "Charger les émotes sur le serveur",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "DÉSACTIVER LE\nLe serveur interne chargera les émotes du client au lieu du client\nSi vous l'activez, les émotes ne fonctionneront qu'en mode solo",
+  "emotecraft.otherconfig.oldChooseWheel": "Utiliser les émotes précédentes",
   "emotecraft.emotelist": "Tous les émotes",
   "emotecraft.no_server": "Le serveur n’a le mod Emotecraft d'installé, les autres joueurs ne verront pas si vous jouez une emote",
   "emotecraft.different_server": "Le serveur utilise une version différente d’Emotecraft, d’autres personnes ne peuvent pas voir correctement vos émotes",
