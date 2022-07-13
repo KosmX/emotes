@@ -32,14 +32,14 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         MinecraftForge.EVENT_BUS.addListener(this::disconnectEvent);
     }
 
-    private void connectServerCallback(ClientPlayerNetworkEvent.LoggedInEvent event){
+    private void connectServerCallback(ClientPlayerNetworkEvent.LoggingIn event){
         if (connectState.incrementAndGet() == 2) {
             connectState.set(0);
             this.sendConfigCallback();
         }
     }
 
-    private void disconnectEvent(ClientPlayerNetworkEvent.LoggedOutEvent event){
+    private void disconnectEvent(ClientPlayerNetworkEvent.LoggingOut event){
         this.disconnect();
         this.isRemotePresent = false;
         this.connectState.set(0);
