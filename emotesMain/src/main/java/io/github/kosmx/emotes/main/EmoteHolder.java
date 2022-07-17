@@ -260,7 +260,7 @@ public class EmoteHolder implements Supplier<UUID> {
 
 
     public static void handleKeyPress(InputKey key){
-        if(EmoteHolder.canRunEmote(EmoteInstance.instance.getClientMethods().getMainPlayer())){
+        if(EmoteInstance.instance != null && EmoteHolder.canRunEmote(EmoteInstance.instance.getClientMethods().getMainPlayer())){
             UUID uuid = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getL(key);
             if(uuid != null){
                 EmoteHolder emoteHolder = list.get(uuid);
