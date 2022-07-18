@@ -44,7 +44,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
     public AbstractServerEmotePlay(){
         try {
-            initMappings(EmoteInstance.instance.getGameDirectory().resolve("config"));
+            initMappings(EmoteInstance.instance.getConfigPath());
             ServerEmoteAPI.INSTANCE = this;
         }catch (IOException e){
             e.printStackTrace();

@@ -32,15 +32,25 @@ public abstract class EmoteInstance {
         return getGameDirectory().resolve(config.emotesDir.get()).toFile();
     }
 
-    public Path getConfigPath(){
-        if(!Files.exists(getGameDirectory().resolve("config"))){
-            try {
-                Files.createDirectories(getGameDirectory().resolve("config"));
+    public Path getConfigPath() {
+        String directoryName = "config";
+
+        try {
+            directoryName = System.getProperty("emotecraftConfigDir", "config");
+            if (directoryName.equals("pluginDefault")) {
+                directoryName = "plugins/emotecraft";
             }
-            catch (IOException ignore){
+
+        } catch(Throwable ignore) { }
+
+
+        if (!Files.exists(getGameDirectory().resolve(directoryName))) {
+            try {
+                Files.createDirectories(getGameDirectory().resolve(directoryName));
+            } catch(IOException ignore) {
             }
         }
-        return getGameDirectory().resolve("config").resolve("emotecraft.json");
+        return getGameDirectory().resolve(directoryName).resolve("emotecraft.json");
     }
 
 }

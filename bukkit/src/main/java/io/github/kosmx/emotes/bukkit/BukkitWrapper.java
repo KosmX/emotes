@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import io.github.kosmx.emotes.bukkit.executor.BukkitInstance;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;

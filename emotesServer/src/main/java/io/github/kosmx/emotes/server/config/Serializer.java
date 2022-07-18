@@ -78,6 +78,7 @@ public class Serializer {
                 return config;
             }catch (IOException | JsonParseException e){
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to read config: " + e.getMessage(), true);
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "If you want to regenerate the config, delete the old files!", true );
                 e.printStackTrace();
             }
         }
@@ -90,7 +91,11 @@ public class Serializer {
     }
 
     protected SerializableConfig readConfig(BufferedReader reader) throws JsonSyntaxException, JsonIOException{
-        if(reader != null) return serializer.fromJson(reader, SerializableConfig.class);
+        if(reader != null){
+            SerializableConfig config = serializer.fromJson(reader, SerializableConfig.class);
+            if (config == null) throw new JsonParseException("Json is empty");
+            return config;
+        }
         return new SerializableConfig();
     }
 }

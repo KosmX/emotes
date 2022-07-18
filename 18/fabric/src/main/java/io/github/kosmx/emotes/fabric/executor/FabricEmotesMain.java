@@ -32,6 +32,10 @@ public class FabricEmotesMain extends AbstractEmotesMain {
 
     @Override
     public Path getConfigPath() {
+        if (System.getProperty("emotecraftConfigDir") != null) {
+            return super.getConfigPath();
+        }
+
         return FabricLoader.getInstance().getConfigDir().resolve("emotecraft.json");
     }
 }

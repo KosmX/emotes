@@ -10,7 +10,11 @@ public class EmoteMappings {
     final BiMap<UUID, UUID> map;
 
     public EmoteMappings(BiMap<UUID, UUID> map){
-        this.map = map;
+        if (map != null) {
+            this.map = map;
+        } else {
+            this.map = new BiMap<>();
+        }
     }
 
     @Nullable
