@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.fabric.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.arch.emote.AnimationApplier;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
-import io.github.kosmx.emotes.common.emote.EmoteData;
+import io.github.kosmx.emotes.common.emote.KeyframeAnimation;
 import io.github.kosmx.emotes.common.opennbs.format.Layer;
 import io.github.kosmx.emotes.common.tools.Vec3d;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -52,7 +52,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     }
 
     @Override
-    public void playEmote(EmoteData emote, int t, boolean isForced) {
+    public void playEmote(KeyframeAnimation emote, int t, boolean isForced) {
         this.emotecraftEmoteContainer.setAnim(new EmotePlayImpl(emote, this::noteConsumer, t));
         this.initEmotePerspective(emotecraftEmoteContainer.getAnim());
         if (this.isMainPlayer()) this.isForcedEmote = isForced;

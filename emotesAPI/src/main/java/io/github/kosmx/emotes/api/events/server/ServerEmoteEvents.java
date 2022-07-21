@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.api.events.server;
 
-import io.github.kosmx.emotes.api.events.impl.Event;
-import io.github.kosmx.emotes.api.events.impl.EventResult;
-import io.github.kosmx.emotes.common.emote.EmoteData;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.impl.event.Event;
+import dev.kosmx.playerAnim.core.impl.event.EventResult;
 
 import java.util.UUID;
 
@@ -43,7 +43,7 @@ public final class ServerEmoteEvents {
          * @param userID
          * @return
          */
-        EventResult verify(EmoteData emote, UUID userID);
+        EventResult verify(KeyframeAnimation emote, UUID userID);
     }
 
 
@@ -65,7 +65,7 @@ public final class ServerEmoteEvents {
          * @param emoteData The played emote data
          * @param userID User ID
          */
-        void onEmotePlay(EmoteData emoteData, UUID userID);
+        void onEmotePlay(KeyframeAnimation emoteData, UUID userID);
     }
 
     public static final Event<EmoteStopEvent> EMOTE_STOP_BY_USER = new Event<>(EmoteStopEvent.class, listeners -> (emoteID, userID) -> {

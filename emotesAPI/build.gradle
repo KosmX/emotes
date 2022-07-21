@@ -12,6 +12,10 @@ version project.mod_version
 
 repositories {
     mavenCentral()
+    maven {
+        name 'KosmX\'s maven'
+        url 'https://maven.kosmx.dev/'
+    }
 }
 
 configurations {
@@ -19,6 +23,8 @@ configurations {
 }
 
 dependencies {
+    implementation "dev.kosmx.player-anim:anim-core:0.0.5"
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }

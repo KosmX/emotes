@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        EmoteData.EmoteBuilder builder = config.getEmoteBuilder();
+        KeyframeAnimation.AnimationBuilder builder = config.getEmoteBuilder();
         builder.name = readString(byteBuffer);
         builder.description = readString(byteBuffer);
         builder.author = readString(byteBuffer);
@@ -28,7 +29,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
-        writeString(byteBuffer, config.emoteData.name);
+        writeString(byteBuffer, config.emoteData.extraData.get("name"));
         writeString(byteBuffer, config.emoteData.description);
         writeString(byteBuffer, config.emoteData.author);
     }

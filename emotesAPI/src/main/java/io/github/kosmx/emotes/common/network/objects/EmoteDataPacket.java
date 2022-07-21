@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import dev.kosmx.playerAnim.core.data.AnimationBinary;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.Ease;
@@ -26,7 +28,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
     public void write(ByteBuffer buf, NetData config){
         this.version = Math.min(config.versions.get(getVer()), CommonData.networkingVersion);
-        EmoteData emote = config.emoteData;
+        KeyframeAnimation emote = config.emoteData;
         buf.putInt(config.tick);
         buf.putInt(emote.beginTick);
         buf.putInt(emote.endTick);
@@ -73,6 +75,8 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
 
     @Override
     public boolean read(ByteBuffer buf, NetData config, int version) throws IOException {
+        AnimationBinary.read()
+
         this.version = version;
         EmoteData.EmoteBuilder builder = config.getEmoteBuilder();
         config.tick = buf.getInt();

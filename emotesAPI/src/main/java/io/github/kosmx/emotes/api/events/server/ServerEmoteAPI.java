@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.api.events.server;
 
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.emote.EmoteData;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ public abstract class ServerEmoteAPI {
      * However this is not recommended for verification. {@link ServerEmoteEvents#EMOTE_VERIFICATION} is used for that
      * @param emote the new emote
      */
-    public static void setPlayerPlayingEmote(UUID player, @Nullable EmoteData emote) {
+    public static void setPlayerPlayingEmote(UUID player, @Nullable KeyframeAnimation emote) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, false);
     }
 
@@ -27,7 +27,7 @@ public abstract class ServerEmoteAPI {
      * Forced emotes can only be stopped by a plugin, or by ending the emote.
      * @param emote the new emote
      */
-    public static void forcePlayEmote(UUID player, @Nullable EmoteData emote) {
+    public static void forcePlayEmote(UUID player, @Nullable KeyframeAnimation emote) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, true);
     }
 
@@ -37,7 +37,7 @@ public abstract class ServerEmoteAPI {
      * @return Emote and time, NULL if not playing
      */
     @Nullable
-    public static Pair<EmoteData, Integer> getPlayedEmote(UUID player) {
+    public static Pair<KeyframeAnimation, Integer> getPlayedEmote(UUID player) {
         return INSTANCE.getPlayedEmoteImpl(player);
     }
 
@@ -46,7 +46,7 @@ public abstract class ServerEmoteAPI {
      * Returns a copy of the list of all loaded emotes
      * @return all server-side loaded emotes
      */
-    public static HashMap<UUID, EmoteData> getLoadedEmotes() {
+    public static HashMap<UUID, KeyframeAnimation> getLoadedEmotes() {
         return INSTANCE.getLoadedEmotesImpl();
     }
 
@@ -54,7 +54,7 @@ public abstract class ServerEmoteAPI {
      *
      * @return The server-side hidden but loaded emotes. You can modify this list.
      */
-    public static UUIDMap<EmoteData> getHiddenEmotes() {
+    public static UUIDMap<KeyframeAnimation> getHiddenEmotes() {
         return INSTANCE.getHiddenEmotesImpl();
     }
 
@@ -69,7 +69,7 @@ public abstract class ServerEmoteAPI {
      *                   `emote`        : Quark emote format UNSAFE
      * @return The serialized emotes, GeckoLib data can contain multiple emotes in one file.
      */
-    public static List<EmoteData> unserializeEmote(InputStream inputStream, @Nullable String quarkName, String format) {
+    public static List<KeyframeAnimation> unserializeEmote(InputStream inputStream, @Nullable String quarkName, String format) {
         return INSTANCE.unserializeEmoteImpl(inputStream, quarkName, format);
     }
 
@@ -79,7 +79,7 @@ public abstract class ServerEmoteAPI {
      * @return Emote or null if no such emote
      */
     @Nullable
-    public static EmoteData getEmote(UUID emoteID) {
+    public static KeyframeAnimation getEmote(UUID emoteID) {
         return INSTANCE.getEmoteImpl(emoteID);
     }
 
@@ -87,15 +87,15 @@ public abstract class ServerEmoteAPI {
 
     protected static ServerEmoteAPI INSTANCE;
 
-    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData, boolean isForced);
-    protected abstract Pair<EmoteData, Integer> getPlayedEmoteImpl(UUID player);
+    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation KeyframeAnimation, boolean isForced);
+    protected abstract Pair<KeyframeAnimation, Integer> getPlayedEmoteImpl(UUID player);
 
-    protected abstract HashMap<UUID, EmoteData> getLoadedEmotesImpl();
+    protected abstract HashMap<UUID, KeyframeAnimation> getLoadedEmotesImpl();
 
-    protected abstract UUIDMap<EmoteData> getHiddenEmotesImpl();
+    protected abstract UUIDMap<KeyframeAnimation> getHiddenEmotesImpl();
 
-    protected abstract List<EmoteData> unserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format);
+    protected abstract List<KeyframeAnimation> unserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format);
 
-    protected abstract EmoteData getEmoteImpl(UUID emoteID);
+    protected abstract KeyframeAnimation getEmoteImpl(UUID emoteID);
 
 }

@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import javax.annotation.Nullable;
@@ -24,8 +24,8 @@ public final class NetData {
     @Nullable
     public UUID stopEmoteID = null;
     @Nullable
-    public EmoteData emoteData = null;
-    private EmoteData.EmoteBuilder emoteBuilder = null;
+    public KeyframeAnimation emoteData = null;
+    private KeyframeAnimation.AnimationBuilder emoteBuilder = null;
     public int tick = 0;
     /**
      * Is the emote is valid (Not validated)
@@ -50,9 +50,9 @@ public final class NetData {
 
     public int sizeLimit = Short.MAX_VALUE;
 
-    public EmoteData.EmoteBuilder getEmoteBuilder(){
+    public KeyframeAnimation.AnimationBuilder getEmoteBuilder(){
         if(emoteBuilder == null){
-             emoteBuilder = new EmoteData.EmoteBuilder(threshold, EmoteFormat.BINARY);
+             emoteBuilder = new KeyframeAnimation.AnimationBuilder(threshold, AnimationFormat.BINARY);
         }
         return emoteBuilder;
     }
@@ -68,9 +68,8 @@ public final class NetData {
         if(purpose == PacketTask.STOP && stopEmoteID == null)return false;
         if(purpose == PacketTask.STREAM && emoteData == null)return false;
         if(purpose == PacketTask.CONFIG && !versionsUpdated)return false;
-        if(emoteData != null && stopEmoteID != null)return false;
+        return emoteData == null || stopEmoteID == null;
         //I won't simplify it because of readability
-        return true;
     }
 
     public NetData copy() {

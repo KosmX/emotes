@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.common.network;
 
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
 import javax.annotation.Nullable;
@@ -205,7 +205,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(EmoteData emoteData, @Nullable UUID player){
+        public Builder configureToStreamEmote(KeyframeAnimation emoteData, @Nullable UUID player){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
@@ -213,7 +213,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToSaveEmote(EmoteData emoteData){
+        public Builder configureToSaveEmote(KeyframeAnimation emoteData){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("already configured?!");
             data.purpose = PacketTask.FILE;
             data.sizeLimit = Integer.MAX_VALUE;
@@ -231,7 +231,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(EmoteData emoteData){
+        public Builder configureToStreamEmote(KeyframeAnimation emoteData){
             return configureToStreamEmote(emoteData, null);
         }
 
