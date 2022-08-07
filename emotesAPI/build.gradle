@@ -10,20 +10,13 @@ version project.mod_version
 //sourceCompatibility = JavaVersion.VERSION_1_8
 //targetCompatibility = JavaVersion.VERSION_1_8
 
-repositories {
-    mavenCentral()
-    maven {
-        name 'KosmX\'s maven'
-        url 'https://maven.kosmx.dev/'
-    }
-}
 
 configurations {
     dev
 }
 
 dependencies {
-    implementation "dev.kosmx.player-anim:anim-core:0.0.5"
+    implementation "dev.kosmx.player-anim:anim-core:${project.player_anim_core}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'

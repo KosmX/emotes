@@ -25,6 +25,8 @@ dependencies {
     implementation project(':emotesAPI')
     implementation project(':executor')
     implementation project(':emotesServer')
+    implementation "dev.kosmx.player-anim:anim-core:${project.player_anim_core}"
+
     compileModule project(':emotesAPI')
     compileModule project(':executor')
     compileModule project(':emotesServer')

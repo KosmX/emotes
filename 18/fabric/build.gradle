@@ -59,9 +59,8 @@ dependencies {
     //include "com.terraformersmc:modmenu:${project.modmenu_version}"
 
 
-    modImplementation "io.github.kosmx:bendy-lib:${project.bendylib_version}"
-    include "io.github.kosmx:bendy-lib:${project.bendylib_version}"
-
+    include modImplementation("io.github.kosmx.bendy-lib:bendy-lib-fabric:${project.bendylib_version}")
+    include modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${project.player_anim}")
 }
 
 

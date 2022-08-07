@@ -61,6 +61,9 @@ dependencies {
 
 
     forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    include modImplementation("io.github.kosmx.bendy-lib:bendy-lib-forge:${project.bendylib_version}")
+    include modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}")
 }
 
 processResources {
