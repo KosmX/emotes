@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.tools;
 
-import io.github.kosmx.emotes.api.Pair;
+
+import dev.kosmx.playerAnim.core.util.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.*;

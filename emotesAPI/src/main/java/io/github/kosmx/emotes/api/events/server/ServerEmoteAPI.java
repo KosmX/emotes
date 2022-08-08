@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.api.events.server;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Pair;
-import io.github.kosmx.emotes.common.tools.UUIDMap;
+import dev.kosmx.playerAnim.core.util.UUIDMap;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
