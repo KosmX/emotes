@@ -4,6 +4,7 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.Buffer;
@@ -43,7 +44,7 @@ public class EmotePacket {
 
     int version;
 
-    protected EmotePacket(@Nullable NetData data) {
+    protected EmotePacket(@Nonnull NetData data) {
         //Make sure every packet has a version...
         if(data.versions == null)data.versions = new HashMap<>();
         defaultVersions.forEach((aByte, bByte) -> {
@@ -250,8 +251,7 @@ public class EmotePacket {
         public Builder configureToConfigExchange(boolean songEnabled){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can't send config with emote or stop data...");
             data.purpose = PacketTask.CONFIG;
-            HashMap<Byte, Byte> versions = new HashMap<>();
-            EmotePacket.defaultVersions.forEach(versions::put);
+            HashMap<Byte, Byte> versions = new HashMap<>(EmotePacket.defaultVersions);
             if(!songEnabled){
                 versions.replace((byte)3, (byte)0);
             }

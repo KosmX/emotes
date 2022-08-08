@@ -25,6 +25,10 @@ test {
     useJUnitPlatform()
 }
 
+compileJava {
+    options.release.set 8 //Build on JDK 1.8
+}
+
 artifacts {
     dev(jar)
 }

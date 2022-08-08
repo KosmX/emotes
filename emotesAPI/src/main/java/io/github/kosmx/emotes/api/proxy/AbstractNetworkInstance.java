@@ -22,6 +22,8 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     protected boolean disableNBS = false;
     protected boolean doesServerTrackEmotePlay = false;
 
+    protected int animationFormat = 1;
+
     /*
      * You have to implement at least one of these three functions
      * EmoteX packet (PacketBuilder) -> ByteBuffer -> byte[]
@@ -29,7 +31,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
 
     /**
      * If you want to send byte array
-     *
+     * <p>
      * You can wrap bytes to Netty
      * {@code Unpooled.wrappedBuffer(bytes)}
      * or to Minecraft's PacketByteBuf (yarn mappings) / FriendlyByteBuf (official mappings)
@@ -55,11 +57,11 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     /**
      * Send not prepared message, if you want to modify the message before sending, override this.
      * You can call the super, but if you do, you'll need to override another.
-     *
-     * For example you want to manipulate the data, before sending,
+     * <p>
+     * For example, you want to manipulate the data, before sending,
      * override this, edit the builder, call its super then override {@link AbstractNetworkInstance#sendMessage(byte[], UUID)}
      * to send the bytes data
-     *
+     * <p>
      *
      * @param builder EmotePacket builder
      * @param target target to send message, if null, everyone in the view distance
@@ -71,7 +73,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     }
 
     /**
-     * Receive message but you don't know who sent this
+     * Receive message, but you don't know who sent this
      * The bytes data has to contain the identity of the sender
      * {@link #trustReceivedPlayer()} should return true as you don't have your own identifier system as alternative
      * @param bytes message
@@ -82,7 +84,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
 
     /**
      * Receive message with or without the sender's identity
-     *
+     * <p>
      * You can convert Netty ByteBuf (or Minecraft's packet buffer) to bytes[] with this snippet
      * <pre>
      *      if(byteBuf.isDirect() || byteBuf.isReadOnly()){
@@ -145,6 +147,9 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
         if (map.containsKey(PacketConfig.SERVER_TRACK_EMOTE_PLAY)) {
             this.doesServerTrackEmotePlay = map.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
         }
+        if (map.containsKey((byte) 0)) {
+            animationFormat = map.get((byte) 0);
+        }
     }
 
     /**
@@ -160,6 +165,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
         if (doesServerTrackEmotePlay) {
             map.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)1);
         }
+        map.put((byte)0, (byte)this.animationFormat);
         return map;
     }
 

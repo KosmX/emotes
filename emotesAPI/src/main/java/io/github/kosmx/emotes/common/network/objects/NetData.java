@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
@@ -25,7 +24,6 @@ public final class NetData {
     public UUID stopEmoteID = null;
     @Nullable
     public KeyframeAnimation emoteData = null;
-    private KeyframeAnimation.AnimationBuilder emoteBuilder = null;
     public int tick = 0;
     /**
      * Is the emote is valid (Not validated)
@@ -50,17 +48,15 @@ public final class NetData {
 
     public int sizeLimit = Short.MAX_VALUE;
 
-    public KeyframeAnimation.AnimationBuilder getEmoteBuilder(){
-        if(emoteBuilder == null){
-             emoteBuilder = new KeyframeAnimation.AnimationBuilder(threshold, AnimationFormat.BINARY);
-        }
-        return emoteBuilder;
-    }
+    HashMap<String, Object> extraData = new HashMap<>();
+    KeyframeAnimation.AnimationBuilder emoteBuilder = null;
+
 
     public boolean prepareAndValidate(){
         if(emoteBuilder != null) {
             if(emoteData != null) return false;
             if(!wasEmoteData)return false;
+            emoteBuilder.extraData.putAll(extraData);
             emoteData = emoteBuilder.build();
         }
 
