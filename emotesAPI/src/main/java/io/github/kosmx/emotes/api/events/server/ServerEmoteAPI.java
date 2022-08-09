@@ -69,8 +69,8 @@ public abstract class ServerEmoteAPI {
      *                   `emote`        : Quark emote format UNSAFE
      * @return The serialized emotes, GeckoLib data can contain multiple emotes in one file.
      */
-    public static List<KeyframeAnimation> unserializeEmote(InputStream inputStream, @Nullable String quarkName, String format) {
-        return INSTANCE.unserializeEmoteImpl(inputStream, quarkName, format);
+    public static List<KeyframeAnimation> deserializeEmote(InputStream inputStream, @Nullable String quarkName, String format) {
+        return INSTANCE.deserializeEmoteImpl(inputStream, quarkName, format);
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class ServerEmoteAPI {
 
     protected abstract UUIDMap<KeyframeAnimation> getHiddenEmotesImpl();
 
-    protected abstract List<KeyframeAnimation> unserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format);
+    protected abstract List<KeyframeAnimation> deserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format);
 
     protected abstract KeyframeAnimation getEmoteImpl(UUID emoteID);
 

@@ -1,7 +1,8 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
+
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -10,13 +11,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public interface IReader {
-    List<EmoteData> read(InputStream reader, String filename) throws EmoteSerializerException;
+    List<KeyframeAnimation> read(InputStream reader, String filename) throws EmoteSerializerException;
 
     default String getFormatExtension(){
         return getFormatType().getExtension();
     }
 
-    EmoteFormat getFormatType();
+    AnimationFormat getFormatType();
 
     default BufferedReader streamReader(InputStream stream){
         return new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));

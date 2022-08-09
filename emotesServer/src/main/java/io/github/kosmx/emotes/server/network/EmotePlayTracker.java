@@ -1,7 +1,8 @@
 package io.github.kosmx.emotes.server.network;
 
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.emote.EmoteData;
+
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.Pair;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -17,7 +18,7 @@ import java.time.Instant;
  */
 public class EmotePlayTracker {
 
-    private EmoteData currentEmote = null;
+    private KeyframeAnimation currentEmote = null;
 
     private Instant startTime = null;
 
@@ -27,15 +28,15 @@ public class EmotePlayTracker {
      * Set the currently played emote.
      * @param data Emote, null if stop playing
      */
-    public void setPlayedEmote(@Nullable EmoteData data, boolean isForced) {
+    public void setPlayedEmote(@Nullable KeyframeAnimation data, boolean isForced) {
         currentEmote = data;
         if (data == null) {
             startTime = null;
-            isForced = false;
+            this.isForced = false;
         }
         else {
             startTime = Instant.now();
-            isForced = isForced;
+            this.isForced = isForced;
         }
     }
 
@@ -57,9 +58,8 @@ public class EmotePlayTracker {
      * @return null if not playing emote
      */
     @Nullable
-    public Pair<EmoteData, Integer> getPlayedEmote() {
+    public Pair<KeyframeAnimation, Integer> getPlayedEmote() {
         if (currentEmote == null) return null;
-        Instant now = Instant.now();
         int tick = (int)(Duration.between(startTime, Instant.now()).toMillis() / 50);
         if (!currentEmote.isInfinite() && currentEmote.getLength() <= tick) {
             currentEmote = null;

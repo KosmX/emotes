@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.server.network;
 
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
@@ -25,7 +25,7 @@ public interface IServerNetworkInstance extends INetworkInstance {
             EmoteInstance.instance.getLogger().log(Level.SEVERE, e.getMessage());
         }
         if(this.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
-            for (EmoteData emote : UniversalEmoteSerializer.serverEmotes.values()) {
+            for (KeyframeAnimation emote : UniversalEmoteSerializer.serverEmotes.values()) {
                 try{
                     this.sendMessage(new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000), null); //1 MB
                 }catch (IOException e){

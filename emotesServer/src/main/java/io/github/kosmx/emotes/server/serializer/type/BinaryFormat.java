@@ -1,12 +1,12 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.common.tools.MathHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +18,11 @@ import java.util.Objects;
 
 public class BinaryFormat implements ISerializer{
     @Override
-    public List<EmoteData> read(InputStream stream, String filename) throws EmoteSerializerException {
+    public List<KeyframeAnimation> read(InputStream stream, String filename) throws EmoteSerializerException {
         try {
             NetData data = new EmotePacket.Builder().build().read(MathHelper.readFromIStream(stream));
             if(data.purpose != PacketTask.FILE) throw new EmoteSerializerException("Binary emote is invalid", getFormatExtension());
-            List<EmoteData> list = new ArrayList<>(1);
+            List<KeyframeAnimation> list = new ArrayList<>(1);
             assert data.emoteData != null;
             list.add(data.emoteData);
             return list;
@@ -32,7 +32,7 @@ public class BinaryFormat implements ISerializer{
     }
 
     @Override
-    public void write(EmoteData emote, OutputStream stream) throws EmoteSerializerException {
+    public void write(KeyframeAnimation emote, OutputStream stream) throws EmoteSerializerException {
         try{
             ByteBuffer byteBuffer = new EmotePacket.Builder().configureToSaveEmote(emote).build().write();
             stream.write(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer(byteBuffer)));
@@ -42,7 +42,7 @@ public class BinaryFormat implements ISerializer{
     }
 
     @Override
-    public EmoteFormat getFormatType() {
-        return EmoteFormat.BINARY;
+    public AnimationFormat getFormatType() {
+        return AnimationFormat.BINARY;
     }
 }

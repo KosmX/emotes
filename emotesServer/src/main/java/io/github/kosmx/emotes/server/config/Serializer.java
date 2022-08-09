@@ -3,21 +3,22 @@ package io.github.kosmx.emotes.server.config;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.tools.BiMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.serializer.BiMapSerializer;
-import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * Serialize Emotecraft related jsons but not animations
+ * To (de)serialize keyframe animations, use {@link dev.kosmx.playerAnim.core.data.gson.AnimationSerializing}
+ */
 public class Serializer {
     public static Gson serializer;
 
@@ -35,8 +36,6 @@ public class Serializer {
 
     protected void registerTypeAdapters(GsonBuilder builder){
         builder.registerTypeAdapter(SerializableConfig.class, new ConfigSerializer());
-        builder.registerTypeAdapter(new TypeToken<List<EmoteData>>(){}.getType(), new EmoteSerializer());
-        builder.registerTypeAdapter(EmoteData.class, new EmoteSerializer());
         builder.registerTypeAdapter(new TypeToken<BiMap<UUID, UUID>>(){}.getType(), new BiMapSerializer());
     }
 
@@ -68,21 +67,16 @@ public class Serializer {
      * @param path config path
      * @return config
      */
-    protected SerializableConfig readConfig(Path path){
-        if(path.toFile().isFile()){
-            BufferedReader reader = null;
-            try{
-                reader = Files.newBufferedReader(path);
-                SerializableConfig config = readConfig(reader);
-                reader.close();
-                return config;
-            }catch (IOException | JsonParseException e){
+    protected SerializableConfig readConfig(Path path) {
+        if (path.toFile().isFile()) {
+            try (BufferedReader reader = Files.newBufferedReader(path)) {
+                return readConfig(reader);
+            } catch(IOException | JsonParseException e) {
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to read config: " + e.getMessage(), true);
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "If you want to regenerate the config, delete the old files!", true );
+                EmoteInstance.instance.getLogger().log(Level.WARNING, "If you want to regenerate the config, delete the old files!", true);
                 e.printStackTrace();
             }
-        }
-        else{
+        } else {
             SerializableConfig config = readConfig((BufferedReader) null);
             saveConfig(config);
             return config;

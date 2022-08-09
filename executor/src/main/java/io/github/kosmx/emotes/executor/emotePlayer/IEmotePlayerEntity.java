@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.executor.emotePlayer;
 
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.tools.Vec3d;
-import io.github.kosmx.playerAnim.impl.AnimationPlayer;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.impl.AnimationProcessor;
+import dev.kosmx.playerAnim.core.util.Vec3d;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -12,9 +12,9 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEnti
 
     //void init();
 
-    void playEmote(EmoteData emote, int tick, boolean isForced);
+    void playEmote(KeyframeAnimation emote, int tick, boolean isForced);
 
-    AnimationPlayer getAnimation();
+    AnimationProcessor getAnimation();
 
     @Nullable
     T getEmote();
@@ -45,5 +45,5 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEnti
     default void emoteTickCallback(){}
     default void emoteStartPlayCallback(){}
 
-    public boolean isForcedEmote();
+    boolean isForcedEmote();
 }
