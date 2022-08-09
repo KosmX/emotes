@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.main.screen;
 
-import io.github.kosmx.emotes.common.tools.MathHelper;
+import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
@@ -63,10 +63,10 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     @Override
     public void emotes_initScreen(){
-        if(warn && ((ClientConfig)EmoteInstance.config).enableQuark.get()){
+        if(warn && EmoteInstance.config.enableQuark.get()){
             warn = false;
             IConfirmScreen csr = createConfigScreen((bool)->{
-                ((ClientConfig)EmoteInstance.config).enableQuark.set(bool);
+                EmoteInstance.config.enableQuark.set(bool);
                 screen.openThisScreen();
             }, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark"), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark2"));
             EmoteInstance.instance.getClientMethods().openScreen(csr);
@@ -312,7 +312,6 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     public void emotes_filesDropped(List<Path> paths){
         addEmotes(paths);
         List<Path> folders = paths.stream().filter(path -> path.toFile().isDirectory()).collect(Collectors.toList());
-        paths = new ArrayList<>();
         for(Path folder : folders){
             List<Path> collect = new ArrayList<>();
             Arrays.stream(Objects.requireNonNull(folder.toFile().listFiles((dir, name) -> name.endsWith(".json")||name.endsWith(".png")))).forEach(file -> collect.add(file.toPath()));

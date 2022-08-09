@@ -1,12 +1,13 @@
 package io.github.kosmx.emotes.main;
 
+import com.google.gson.JsonElement;
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.MathHelper;
+import dev.kosmx.playerAnim.core.util.UUIDMap;
+import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
-import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.common.tools.UUIDMap;
-import io.github.kosmx.emotes.common.tools.Vec3d;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
 import io.github.kosmx.emotes.executor.dataTypes.INativeImageBacketTexture;
@@ -23,6 +24,7 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,11 +33,11 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
- * Class to store an emote and create renderable texts
+ * Wrapper class to store an emote and create renderable texts + some utils
  */
 public class EmoteHolder implements Supplier<UUID> {
 
-    public final EmoteData emote;
+    public final KeyframeAnimation emote;
     public final Text name;
     public final Text description;
     public final Text author;
@@ -58,25 +60,25 @@ public class EmoteHolder implements Supplier<UUID> {
      * Create cache from emote data
      * @param emote emote
      */
-    public EmoteHolder(EmoteData emote) {
+    public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
-        this.name = EmoteInstance.instance.getDefaults().fromJson(emote.name);
-        this.description = EmoteInstance.instance.getDefaults().fromJson(emote.description);
-        this.author = EmoteInstance.instance.getDefaults().fromJson(emote.author);
+        this.name = EmoteInstance.instance.getDefaults().fromJson((JsonElement) emote.extraData.get("name"));
+        this.description = EmoteInstance.instance.getDefaults().fromJson((JsonElement) emote.extraData.get("description"));
+        this.author = EmoteInstance.instance.getDefaults().fromJson((JsonElement) emote.extraData.get("author"));
     }
 
     /**
      *
-     * Emote params are stored in the data {@link EmoteData}
+     * Emote params are stored in the data {@link KeyframeAnimation}
      *
-     * @param emote       {@link EmoteData}
+     * @param emote       {@link KeyframeAnimation}
      * @param name        Emote name
      * @param description Emote decription
      * @param author      Name of the Author
      * @param hash        hash from the serializer
      */
     @Deprecated
-    public EmoteHolder(EmoteData emote, Text name, Text description, Text author, int hash){
+    public EmoteHolder(KeyframeAnimation emote, Text name, Text description, Text author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;
@@ -88,32 +90,29 @@ public class EmoteHolder implements Supplier<UUID> {
      * Does not remove server-emotes
      */
     public static void clearEmotes(){
-        list.removeIf(new Predicate<EmoteHolder>() {
-            @Override
-            public boolean test(EmoteHolder emoteHolder) {
-                if(emoteHolder.fromInstance != null){
-                    return false;
-                }
-                if(emoteHolder.iconIdentifier != null){
-                    EmoteInstance.instance.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
-                    assert emoteHolder.nativeIcon != null;
-                    emoteHolder.nativeIcon.close();
-                }
-                return true;
+        list.removeIf(emoteHolder -> {
+            if(emoteHolder.fromInstance != null){
+                return false;
             }
+            if(emoteHolder.iconIdentifier != null){
+                EmoteInstance.instance.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
+                assert emoteHolder.nativeIcon != null;
+                emoteHolder.nativeIcon.close();
+            }
+            return true;
         });
     }
 
     public IIdentifier getIconIdentifier(){
-        if(iconIdentifier == null && this.emote.iconData != null){
+        if(iconIdentifier == null && this.emote.extraData.containsKey("iconData")){
             try {
-                InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer(this.emote.iconData)));
+                InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))));
                 assignIcon(stream);
                 stream.close();
             }catch (IOException | NullPointerException e){
                 e.printStackTrace();
                 if(!((ClientConfig)EmoteInstance.config).neverRemoveBadIcon.get()){
-                    this.emote.iconData = null;
+                    this.emote.extraData.remove("iconData");
                 }
             }
         }
@@ -141,7 +140,7 @@ public class EmoteHolder implements Supplier<UUID> {
     /**
      * @return Playable EmotePlayer
      */
-    public EmoteData getEmote(){
+    public KeyframeAnimation getEmote(){
         return emote;
     }
 
@@ -149,13 +148,13 @@ public class EmoteHolder implements Supplier<UUID> {
         return list.get(uuid);
     }
 
-    public static void addEmoteToList(Iterable<EmoteData> emotes){
-        for(EmoteData emote : emotes){
+    public static void addEmoteToList(Iterable<KeyframeAnimation> emotes){
+        for(KeyframeAnimation emote : emotes){
             EmoteHolder.list.add(new EmoteHolder(emote));
         }
     }
 
-    public static EmoteHolder addEmoteToList(EmoteData emote){
+    public static EmoteHolder addEmoteToList(KeyframeAnimation emote){
         EmoteHolder newEmote = new EmoteHolder(emote);
         EmoteHolder old = newEmote.findIfPresent();
         if(old == null){
@@ -183,7 +182,7 @@ public class EmoteHolder implements Supplier<UUID> {
         list.add(hold);
     }
 
-    public static boolean playEmote(EmoteData emote, IEmotePlayerEntity player){
+    public static boolean playEmote(KeyframeAnimation emote, IEmotePlayerEntity player){
         return playEmote(emote, player, null);
     }
 
@@ -194,7 +193,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * @param emoteHolder emote holder object
      * @return could be played
      */
-    public static boolean playEmote(EmoteData emote, IEmotePlayerEntity player, @Nullable EmoteHolder emoteHolder){
+    public static boolean playEmote(KeyframeAnimation emote, IEmotePlayerEntity player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
             return ClientEmotePlay.clientStartLocalEmote(emote);
         }else{
@@ -280,7 +279,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public static class Empty extends EmoteHolder{
 
         public Empty(UUID uuid) {
-            super(new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN).setName("{\"color\":\"red\",\"text\":\"INVALID\"}").setUuid(uuid).build());
+            super(new KeyframeAnimation.AnimationBuilder(AnimationFormat.UNKNOWN).setName("{\"color\":\"red\",\"text\":\"INVALID\"}").setUuid(uuid).build());
         }
     }
 }

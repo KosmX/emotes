@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.main.screen;
 
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -11,6 +11,7 @@ import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -26,14 +27,10 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
         int h = 10;
         screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportjson"), //TODO translation key
-                iButton -> {
-                    this.saveAllJson();
-                }));
+                iButton -> this.saveAllJson()));
         screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
                 EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportbin"), //TODO translation key
-                iButton -> {
-                    this.saveAllBinary();
-                }));
+                iButton -> this.saveAllBinary()));
 
         //TODO toast notification
         screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
@@ -42,15 +39,15 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
     }
 
     private void saveAllJson(){
-        exportEmotesInFormat(EmoteFormat.JSON_EMOTECRAFT);
+        exportEmotesInFormat(AnimationFormat.JSON_EMOTECRAFT);
     }
     private void saveAllBinary(){
-        exportEmotesInFormat(EmoteFormat.BINARY);
+        exportEmotesInFormat(AnimationFormat.BINARY);
     }
-    private void exportEmotesInFormat(EmoteFormat format){
+    private void exportEmotesInFormat(AnimationFormat format){
         for(EmoteHolder emoteHolder:EmoteHolder.list){
-            EmoteData emote = emoteHolder.getEmote();
-            if(emote.isBuiltin && !((ClientConfig)EmoteInstance.config).exportBuiltin.get()){
+            KeyframeAnimation emote = emoteHolder.getEmote();
+            if(emote.extraData.containsKey("isBuiltin") && !((ClientConfig)EmoteInstance.config).exportBuiltin.get()){
                 continue;
             }
             EmoteInstance.instance.getLogger().log(Level.FINER, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
@@ -61,16 +58,16 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
                 }
                 Path file = createFileName(emoteHolder, exportDir, format);
                 OutputStream stream = Files.newOutputStream(file);
-                UniversalEmoteSerializer.writeEmoteData(stream, emote, format);
+                UniversalEmoteSerializer.writeKeyframeAnimation(stream, emote, format);
                 stream.close();
 
-                if(format == EmoteFormat.JSON_EMOTECRAFT && emote.iconData != null){
+                if(format == AnimationFormat.JSON_EMOTECRAFT && emote.extraData.containsKey("iconData")){
                     Path iconPath = exportDir.resolve(file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")) + ".png");
                     if(iconPath.toFile().isFile()){
                         throw new IOException("File already exists: " + iconPath);
                     }
                     OutputStream iconStream = Files.newOutputStream(iconPath);
-                    iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer(emote.iconData));
+                    iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) emote.extraData.get("iconData")));
                     iconStream.close();
                 }
             }catch (IOException | EmoteSerializerException | InvalidPathException e) {
@@ -86,7 +83,7 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
         EmoteInstance.instance.getLogger().log(Level.FINER, "All emotes are saved in " + format.getExtension() + " format", true);
     }
 
-    private static Path createFileName(EmoteHolder emote, Path originPath, EmoteFormat format){
+    private static Path createFileName(EmoteHolder emote, Path originPath, AnimationFormat format){
         String name = emote.name.getString().replaceAll("[\\\\/]", "#");
         String finalName = null;
         while (finalName == null){

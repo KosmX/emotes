@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.main.screen.widget;
 
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.tools.MathHelper;
+import dev.kosmx.playerAnim.core.util.MathHelper;
+import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
