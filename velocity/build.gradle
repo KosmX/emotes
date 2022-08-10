@@ -32,6 +32,8 @@ dependencies {
     compileModule(project(':executor'))
     compileModule(project(':emotesServer'))
     compileModule(project(':emotesMain')) { transitive = false }
+
+    compileModule "dev.kosmx.player-anim:anim-core:${project.player_anim_core}"
 }
 
 jar {

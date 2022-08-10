@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.emote;
 
-import io.github.kosmx.emotes.common.emote.KeyframeAnimation;
-import io.github.kosmx.emotes.common.opennbs.format.Layer;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.data.opennbs.format.Layer;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;

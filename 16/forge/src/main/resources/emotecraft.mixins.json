@@ -8,16 +8,8 @@
     "TrackedEntityAccessor"
   ],
   "client": [
-    "ArmorFeatureRendererMixin",
-    "BipedEntityModelMixin",
     "EmotePlayerMixin",
-    "FeatureRendererMixin",
-    "HeldItemMixin",
-    "KeyEventMixin",
-    "LivingEntityRenderRedirect",
-    "ModelPartMixin",
-    "PlayerModelMixin",
-    "PlayerRendererMixin"
+    "KeyEventMixin"
   ],
   "server": [],
   "injectors": {

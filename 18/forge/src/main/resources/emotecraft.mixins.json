@@ -7,11 +7,7 @@
     "ServerPlayNetworkInstance",
     "TrackedEntityAccessor"
   ],
-  "client": [
-    "BipedEntityModelMixin",
-    "LivingEntityRenderRedirect",
-    "PlayerModelMixin"
-  ],
+  "client": [],
   "server": [],
   "injectors": {
     "defaultRequire": 1

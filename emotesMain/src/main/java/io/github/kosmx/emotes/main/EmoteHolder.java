@@ -62,10 +62,11 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
-        this.name = EmoteInstance.instance.getDefaults().fromJson((JsonElement) emote.extraData.get("name"));
-        this.description = EmoteInstance.instance.getDefaults().fromJson((JsonElement) emote.extraData.get("description"));
-        this.author = EmoteInstance.instance.getDefaults().fromJson((JsonElement) emote.extraData.get("author"));
+        this.name = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("name"));
+        this.description = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("description"));
+        this.author = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("author"));
     }
+
 
     /**
      *
@@ -73,7 +74,7 @@ public class EmoteHolder implements Supplier<UUID> {
      *
      * @param emote       {@link KeyframeAnimation}
      * @param name        Emote name
-     * @param description Emote decription
+     * @param description Emote description
      * @param author      Name of the Author
      * @param hash        hash from the serializer
      */

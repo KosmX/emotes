@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.testing.common;
 
-import io.github.kosmx.emotes.api.Pair;
+import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.tools.BiMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

@@ -32,7 +32,6 @@ loom{
     silentMojangMappingsLicense()
     forge {
         mixinConfig "emotecraft.mixins.json"
-        mixinConfig "bendylib.mixin.json"
     }
 }
 

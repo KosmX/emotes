@@ -29,12 +29,11 @@ group = project.maven_group
 
 
 loom{
-    accessWidenerPath = file("src/main/resources/emotes_forge.accesswidener")
+    accessWidenerPath = project(":${project.module_name}:archCommon").loom.accessWidenerPath
 
     silentMojangMappingsLicense()
     forge {
         mixinConfig "emotecraft.mixins.json"
-        mixinConfig "bendylib.mixin.json"
         mixinConfig "emotecraft-arch.mixins.json"
         convertAccessWideners = true
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name

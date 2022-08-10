@@ -20,12 +20,14 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public void write(ByteBuffer buf, NetData config){
         int version = calculateVersion(config);
         assert config.emoteData != null;
+        buf.putInt(config.tick);
         AnimationBinary.write(config.emoteData, buf, version);
     }
 
     @Override
     public boolean read(ByteBuffer buf, NetData config, int version) throws IOException {
         try {
+            config.tick = buf.getInt();
             KeyframeAnimation animation = AnimationBinary.read(buf, version);
 
             config.valid = (boolean) animation.extraData.get("valid");
@@ -36,6 +38,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
 
             return true;
         } catch(IOException|RuntimeException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -74,7 +77,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
     public int calculateSize(NetData config) {
         if(config.emoteData == null)return 0;
-        return AnimationBinary.calculateSize(config.emoteData, calculateVersion(config));
+        return AnimationBinary.calculateSize(config.emoteData, calculateVersion(config)) + 4;
     }
 
 }

@@ -25,6 +25,14 @@ public interface IDefaultTypes {
         }
     }
 
+    default Text fromJson(Object obj) {
+        if (obj == null || obj instanceof String) {
+            return fromJson((String) obj);
+        } else if (obj instanceof JsonElement) {
+            return fromJson((JsonElement) obj);
+        } else throw new IllegalArgumentException("Can not create Text from " + obj.getClass().getName());
+    }
+
     Text newTranslationText(String key);
 
     IIdentifier newIdentifier(String namespace, String id);

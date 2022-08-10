@@ -114,7 +114,7 @@ public class EmotePacket {
             int currentIndex = byteBuffer.position();
             packetSender.write(byteBuffer, this.data);
             if(byteBuffer.position() != currentIndex + len){
-                throw new IOException("Incorrect size calculator");
+                throw new IOException("Incorrect size calculator: " + packetSender.getClass());
             }
         }
     }
