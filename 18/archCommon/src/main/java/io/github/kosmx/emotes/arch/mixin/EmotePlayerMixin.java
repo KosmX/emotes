@@ -44,7 +44,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     }
     @Inject(method = "<init>", at = @At("TAIL"))
     private void emotecraft_init(ClientLevel clientLevel, GameProfile gameProfile, CallbackInfo ci) {
-        ((IPlayer)this).getAnimationStack().addAnimLayer(0, emotecraftEmoteContainer);
+        ((IPlayer)this).getAnimationStack().addAnimLayer(1000, emotecraftEmoteContainer);
     }
 
     @Override
