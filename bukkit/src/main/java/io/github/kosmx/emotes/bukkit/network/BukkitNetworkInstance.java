@@ -28,7 +28,7 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
     }
 
     @Override
-    public HashMap<Byte, Byte> getVersions() {
+    public HashMap<Byte, Byte> getRemoteVersions() {
         return version;
     }
 

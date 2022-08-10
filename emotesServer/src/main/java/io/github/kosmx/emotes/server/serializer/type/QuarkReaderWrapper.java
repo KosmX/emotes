@@ -1,9 +1,10 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
-import io.github.kosmx.emotes.common.quarktool.QuarkParsingError;
-import io.github.kosmx.emotes.common.quarktool.QuarkReader;
+
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.data.quarktool.QuarkParsingError;
+import dev.kosmx.playerAnim.core.data.quarktool.QuarkReader;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,12 +13,12 @@ import java.util.List;
 
 public class QuarkReaderWrapper implements IReader {
     @Override
-    public List<EmoteData> read(InputStream inputStream, String filename) throws EmoteSerializerException {
+    public List<KeyframeAnimation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
         QuarkReader quarkReader = new QuarkReader();
         BufferedReader reader = streamReader(inputStream);
         try {
             quarkReader.deserialize(reader, filename);
-            ArrayList<EmoteData> list = new ArrayList<>();
+            ArrayList<KeyframeAnimation> list = new ArrayList<>();
             list.add(quarkReader.getEmote());
             return list;
         } catch (QuarkParsingError quarkParsingError) {
@@ -26,7 +27,7 @@ public class QuarkReaderWrapper implements IReader {
     }
 
     @Override
-    public EmoteFormat getFormatType() {
-        return EmoteFormat.QUARK;
+    public AnimationFormat getFormatType() {
+        return AnimationFormat.QUARK;
     }
 }

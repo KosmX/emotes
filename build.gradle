@@ -20,6 +20,10 @@ allprojects {
             url = 'https://maven.terraformersmc.com/'
         }
         maven {
+            name "KosmX's maven"
+            url 'https://maven.kosmx.dev/'
+        }
+        maven {
             url "https://libraries.minecraft.net"
         }
     }

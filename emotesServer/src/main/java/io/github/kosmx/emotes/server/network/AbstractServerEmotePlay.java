@@ -2,18 +2,18 @@ package io.github.kosmx.emotes.server.network;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.api.events.impl.EventResult;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import dev.kosmx.playerAnim.core.util.Pair;
+import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.geyser.EmoteMappings;
@@ -36,6 +36,7 @@ import java.util.logging.Level;
  * This will be used for modded servers
  *
  */
+@SuppressWarnings({"ConstantConditions", "rawtypes", "unused"})
 public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     protected EmoteMappings bedrockEmoteMap = new EmoteMappings(new BiMap<>());
 
@@ -52,7 +53,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     public void initMappings(Path configPath) throws IOException{
-        Path filePath = configPath.resolve("emotecraft_emote_map.json");
+        Path filePath = configPath.resolveSibling("emotecraft_emote_map.json");
         if(filePath.toFile().isFile()){
             BufferedReader reader = Files.newBufferedReader(filePath);
             try {
@@ -173,7 +174,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     protected void stopEmote(P player, @Nullable NetData originalMessage) {
-        Pair<EmoteData, Integer> emote = getPlayerNetworkInstance(player).getEmoteTracker().getPlayedEmote();
+        Pair<KeyframeAnimation, Integer> emote = getPlayerNetworkInstance(player).getEmoteTracker().getPlayedEmote();
         getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(null, false);
         if (emote != null) {
             ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.getLeft().getUuid(), getUUIDFromPlayer(player));
@@ -206,14 +207,14 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
     public void playerStartTracking(P tracked, P tracker) {
         if (tracked == null || tracker == null) return;
-        Pair<EmoteData, Integer> playedEmote = getPlayerNetworkInstance(tracked).getEmoteTracker().getPlayedEmote();
+        Pair<KeyframeAnimation, Integer> playedEmote = getPlayerNetworkInstance(tracked).getEmoteTracker().getPlayedEmote();
         if (playedEmote != null) {
             sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.getLeft()).configureEmoteTick(playedEmote.getRight()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, getUUIDFromPlayer(tracker));
         }
     }
 
     @Override
-    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable EmoteData emoteData, boolean isForced) {
+    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation emoteData, boolean isForced) {
         if (emoteData != null) {
             streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player), isForced);
         } else {
@@ -222,7 +223,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     @Override
-    protected Pair<EmoteData, Integer> getPlayedEmoteImpl(UUID player) {
+    protected Pair<KeyframeAnimation, Integer> getPlayedEmoteImpl(UUID player) {
         return getPlayerNetworkInstance(getPlayerFromUUID(player)).getEmoteTracker().getPlayedEmote();
     }
 
@@ -262,25 +263,25 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     @Override
-    protected HashMap<UUID, EmoteData> getLoadedEmotesImpl() {
-        HashMap<UUID, EmoteData> map = new UUIDMap<>();
+    protected HashMap<UUID, KeyframeAnimation> getLoadedEmotesImpl() {
+        HashMap<UUID, KeyframeAnimation> map = new UUIDMap<>();
         map.putAll(UniversalEmoteSerializer.serverEmotes);
         map.putAll(UniversalEmoteSerializer.hiddenServerEmotes);
         return map;
     }
 
     @Override
-    protected UUIDMap<EmoteData> getHiddenEmotesImpl() {
+    protected UUIDMap<KeyframeAnimation> getHiddenEmotesImpl() {
         return UniversalEmoteSerializer.hiddenServerEmotes;
     }
 
     @Override
-    protected List<EmoteData> unserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format) {
+    protected List<KeyframeAnimation> deserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format) {
         return UniversalEmoteSerializer.readData(inputStream, quarkName, format);
     }
 
     @Override
-    protected EmoteData getEmoteImpl(UUID emoteID) {
+    protected KeyframeAnimation getEmoteImpl(UUID emoteID) {
         return UniversalEmoteSerializer.getEmote(emoteID);
     }
 }

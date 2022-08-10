@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import com.google.gson.*;
-import io.github.kosmx.emotes.api.Pair;
+import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.tools.BiMap;
 
 import java.lang.reflect.Type;

@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import io.github.kosmx.emotes.common.opennbs.network.NBSPacket;
+import dev.kosmx.playerAnim.core.data.opennbs.NBS;
+import dev.kosmx.playerAnim.core.data.opennbs.network.NBSPacket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -20,7 +21,7 @@ public class SongPacket extends AbstractNetworkPacket{
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         NBSPacket reader = new NBSPacket();
         reader.read(byteBuffer);
-        config.getEmoteBuilder().song = reader.getSong();
+        config.extraData.put("song", reader.getSong());
         return true;
     }
 
@@ -29,18 +30,19 @@ public class SongPacket extends AbstractNetworkPacket{
         if(!doWrite(config)){
             throw new IOException("You can't write disabled or not existing NBS data");
         }
-        NBSPacket writer = new NBSPacket(config.emoteData.song);
+        assert config.emoteData != null;
+        NBSPacket writer = new NBSPacket((NBS) config.emoteData.extraData.get("song"));
         writer.write(byteBuffer);
     }
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.versions.get(this.getID()) != 0 && config.emoteData != null && config.emoteData.song != null && config.writeSong;
+        return config.versions.get(this.getID()) != 0 && config.emoteData != null && config.emoteData.extraData.containsKey("song") && config.writeSong;
     }
 
     @Override
     public int calculateSize(NetData config) {
-        if(config.emoteData == null || config.emoteData.song == null)return 0;
-        return NBSPacket.calculateMessageSize(config.emoteData.song);
+        if(config.emoteData == null || config.emoteData.extraData.get("song") == null)return 0;
+        return NBSPacket.calculateMessageSize((NBS) config.emoteData.extraData.get("song"));
     }
 }

@@ -1,16 +1,17 @@
 package io.github.kosmx.emotes.main.emotePlay;
 
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.opennbs.SoundPlayer;
-import io.github.kosmx.emotes.common.opennbs.format.Layer;
+import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.data.opennbs.NBS;
+import dev.kosmx.playerAnim.core.data.opennbs.SoundPlayer;
+import dev.kosmx.playerAnim.core.data.opennbs.format.Layer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
-import io.github.kosmx.playerAnim.layered.EmoteDataPlayer;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-// abstract to extend it in every environments
-public abstract class EmotePlayer<T> extends EmoteDataPlayer implements IEmotePlayer {
+// modified keyframe animation player to play songs with animations
+public abstract class EmotePlayer<T> extends KeyframeAnimationPlayer implements IEmotePlayer {
     @Nullable
     final SoundPlayer song;
 
@@ -20,10 +21,10 @@ public abstract class EmotePlayer<T> extends EmoteDataPlayer implements IEmotePl
      * @param noteConsumer {@link Layer.Note} consumer
      * @param t begin playing from tick
      */
-    public EmotePlayer(EmoteData emote, Consumer<Layer.Note> noteConsumer, int t) {
+    public EmotePlayer(KeyframeAnimation emote, Consumer<Layer.Note> noteConsumer, int t) {
         super(emote, t);
-        if (emote.song != null) {
-            this.song = new SoundPlayer(emote.song, noteConsumer, 0);
+        if (emote.extraData.containsKey("song")) {
+            this.song = new SoundPlayer((NBS) emote.extraData.get("song"), noteConsumer, 0);
         }
         else {
             this.song = null;

@@ -23,26 +23,28 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
         if(size != 0) {
             byte[] bytes = new byte[size];
             byteBuffer.get(bytes);
-            config.getEmoteBuilder().iconData = ByteBuffer.wrap(bytes);
+            config.extraData.put("iconData", ByteBuffer.wrap(bytes));
         }
         return true;
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
-        byteBuffer.putInt(config.emoteData.iconData.remaining());
-        ByteBuffer icon = config.emoteData.iconData;
-        byteBuffer.put(icon);
-        ((Buffer)icon).position(0);
+        assert config.emoteData != null;
+        ByteBuffer iconData = (ByteBuffer)config.emoteData.extraData.get("iconData");
+        byteBuffer.putInt(iconData.remaining());
+        byteBuffer.put(iconData);
+        ((Buffer)iconData).position(0);
     }
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.purpose == PacketTask.FILE && config.emoteData.iconData != null;
+        return config.purpose == PacketTask.FILE && config.emoteData != null && config.emoteData.extraData.containsKey("iconData");
     }
 
     @Override
     public int calculateSize(NetData config) {
-        return config.emoteData.iconData.remaining() + 4;
+        if (config.emoteData == null) return 0;
+        return ((ByteBuffer)config.emoteData.extraData.get("iconData")).remaining() + 4;
     }
 }

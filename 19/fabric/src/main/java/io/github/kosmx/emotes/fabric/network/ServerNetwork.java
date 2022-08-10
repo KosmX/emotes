@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.fabric.FabricWrapper;
+import io.github.kosmx.emotes.fabric.mixin.ServerPlayNetworkInstance;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.Unpooled;
@@ -103,8 +104,11 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         PlayerLookup.tracking(player).forEach(serverPlayerEntity -> {
             try {
                 if (serverPlayerEntity != player) {
-                    if (ServerPlayNetworking.canSend(serverPlayerEntity, channelID))
-                        ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+                    if (ServerPlayNetworking.canSend(serverPlayerEntity, channelID)) {
+                        EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
+                        packetBuilder.setVersion(((IServerNetworkInstance)serverPlayerEntity.connection).getRemoteVersions());
+                        ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBuilder.build().write().array())));
+                    }
                     else if (ServerPlayNetworking.canSend(serverPlayerEntity, geyserChannelID) && emotePacket != null)
                         ServerPlayNetworking.send(serverPlayerEntity, geyserChannelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(emotePacket.write())));
                 }
@@ -127,7 +131,9 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     private void targetFinder(ServerPlayer serverPlayerEntity, NetData data, UUID target){
         if (serverPlayerEntity.getUUID().equals(target)) {
             try {
-                ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+                EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
+                packetBuilder.setVersion(((IServerNetworkInstance)serverPlayerEntity.connection).getRemoteVersions());
+                ServerPlayNetworking.send(serverPlayerEntity, channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBuilder.build().write().array())));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,14 +1,13 @@
 package io.github.kosmx.emotes.main.mixinFunctions;
 
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.emote.EmoteData;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import io.github.kosmx.emotes.main.network.ClientPacketManager;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -21,7 +20,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
 
     default void initEmotePlay(){
 
-        Pair<EmoteData, Integer> p = ClientEmotePlay.getEmoteForUUID(this.emotes_getUUID());
+        Pair<KeyframeAnimation, Integer> p = ClientEmotePlay.getEmoteForUUID(this.emotes_getUUID());
         if(p != null){
             this.playEmote(p.getLeft(), p.getRight(), false);
         }

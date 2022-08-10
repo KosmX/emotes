@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
-import io.github.kosmx.emotes.common.emote.EmoteData;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 
 import java.io.OutputStream;
 
 public interface ISerializer extends IReader {
-    void write(EmoteData emote, OutputStream writer) throws EmoteSerializerException;
+    void write(KeyframeAnimation emote, OutputStream writer) throws EmoteSerializerException;
 }

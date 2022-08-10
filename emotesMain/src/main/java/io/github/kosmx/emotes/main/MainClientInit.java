@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.main;
 
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -38,7 +38,7 @@ public class MainClientInit {
     public static void playDebugEmote(){
         EmoteInstance.instance.getLogger().log(Level.INFO, "Playing debug emote");
         Path location = null;
-        for(EmoteFormat source:EmoteFormat.values()){
+        for(AnimationFormat source:AnimationFormat.values()){
             location = EmoteInstance.instance.getGameDirectory().resolve("emote." + source.getExtension());
             if(location.toFile().isFile()){
                 break;

@@ -1,17 +1,15 @@
 package io.github.kosmx.emotes.arch.mixin;
 
 import com.mojang.authlib.GameProfile;
-import io.github.kosmx.emotes.arch.emote.AnimationApplier;
+import dev.kosmx.playerAnim.api.IPlayer;
+import dev.kosmx.playerAnim.api.layered.AnimationContainer;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.data.opennbs.format.Layer;
+import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.opennbs.format.Layer;
-import io.github.kosmx.emotes.common.tools.Vec3d;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
-import io.github.kosmx.playerAnim.IAnimatedPlayer;
-import io.github.kosmx.playerAnim.impl.AnimationPlayer;
-import io.github.kosmx.playerAnim.layered.AnimationContainer;
-import io.github.kosmx.playerAnim.layered.AnimationStack;
+
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -34,13 +32,10 @@ import java.util.UUID;
 
 //Mixin it into the player is way easier than storing it somewhere else...
 @Mixin(AbstractClientPlayer.class)
-public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<ModelPart>, IAnimatedPlayer {
+public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<ModelPart> {
     int emotes_age = 0;
 
     @Shadow @Final public ClientLevel clientLevel;
-
-    private final AnimationStack animationStack = new AnimationStack();
-    private final AnimationApplier animationApplier = new AnimationApplier(animationStack);
 
     AnimationContainer<EmotePlayer<ModelPart>> emotecraftEmoteContainer = new AnimationContainer<>(null);
 
@@ -53,11 +48,11 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void emotecraft_init(ClientLevel clientLevel, GameProfile gameProfile, ProfilePublicKey profilePublicKey, CallbackInfo ci) {
-        animationStack.addAnimLayer(0, emotecraftEmoteContainer);
+        ((IPlayer)this).getAnimationStack().addAnimLayer(1000, emotecraftEmoteContainer);
     }
 
     @Override
-    public void playEmote(EmoteData emote, int t, boolean isForced) {
+    public void playEmote(KeyframeAnimation emote, int t, boolean isForced) {
         this.emotecraftEmoteContainer.setAnim(new EmotePlayImpl(emote, this::noteConsumer, t));
         this.initEmotePerspective(emotecraftEmoteContainer.getAnim());
         if (this.isMainPlayer()) this.isForced = isForced;
@@ -140,22 +135,11 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity<M
     @Override
     public void tick() {
         super.tick();
-        this.animationStack.tick();
         this.emoteTick();
     }
 
     @Override
     public boolean isForcedEmote() {
         return this.isPlayingEmote() && this.isForced;
-    }
-
-    @Override
-    public AnimationPlayer getAnimation() {
-        return this.animationApplier;
-    }
-
-    @Override
-    public AnimationStack getAnimationStack() {
-        return animationStack;
     }
 }

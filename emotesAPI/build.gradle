@@ -10,20 +10,23 @@ version project.mod_version
 //sourceCompatibility = JavaVersion.VERSION_1_8
 //targetCompatibility = JavaVersion.VERSION_1_8
 
-repositories {
-    mavenCentral()
-}
 
 configurations {
     dev
 }
 
 dependencies {
+    implementation "dev.kosmx.player-anim:anim-core:${project.player_anim_core}"
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 test {
     useJUnitPlatform()
+}
+
+compileJava {
+    options.release.set 8 //Build on JDK 1.8
 }
 
 artifacts {
@@ -67,6 +70,18 @@ publishing {
             artifact(jar)
             artifact(sourcesJar)
             artifact(javadocJar)
+
+
+            pom.withXml {
+                def depsNode = asNode().appendNode("dependencies")
+
+                def animatorNode = depsNode.appendNode("dependency")
+                animatorNode.appendNode("groupId", "dev.kosmx.player-anim")
+                animatorNode.appendNode("artifactId", "anim-core")
+                animatorNode.appendNode("version", project.player_anim_core)
+                animatorNode.appendNode("scope", "compile")
+
+            }
 
             pom{
                 name = "emotesApi"

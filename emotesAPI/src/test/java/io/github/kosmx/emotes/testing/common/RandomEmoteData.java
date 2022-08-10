@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.testing.common;
 
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.emote.EmoteData;
-import io.github.kosmx.emotes.common.emote.EmoteFormat;
-import io.github.kosmx.emotes.common.tools.Ease;
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.Ease;
+import dev.kosmx.playerAnim.core.util.Pair;
 
 import java.util.Random;
 
@@ -12,12 +12,12 @@ public class RandomEmoteData {
      * Creates two identical random emote.
      * @return Pair
      */
-    public static Pair<EmoteData.EmoteBuilder, EmoteData.EmoteBuilder> generateEmotes(){
+    public static Pair<KeyframeAnimation.AnimationBuilder, KeyframeAnimation.AnimationBuilder> generateEmotes(){
         Random random = new Random();
         int length = random.nextInt()%1000 + 2000; //make some useable values
 
-        EmoteData.EmoteBuilder builder1 = new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN);
-        EmoteData.EmoteBuilder builder2 = new EmoteData.EmoteBuilder(EmoteFormat.UNKNOWN);
+        KeyframeAnimation.AnimationBuilder builder1 = new KeyframeAnimation.AnimationBuilder(AnimationFormat.UNKNOWN);
+        KeyframeAnimation.AnimationBuilder builder2 = new KeyframeAnimation.AnimationBuilder(AnimationFormat.UNKNOWN);
         builder1.endTick = length;
         builder2.endTick = length;
 

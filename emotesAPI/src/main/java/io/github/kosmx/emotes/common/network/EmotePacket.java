@@ -1,9 +1,10 @@
 package io.github.kosmx.emotes.common.network;
 
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.emote.EmoteData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.Buffer;
@@ -43,7 +44,7 @@ public class EmotePacket {
 
     int version;
 
-    protected EmotePacket(@Nullable NetData data) {
+    protected EmotePacket(@Nonnull NetData data) {
         //Make sure every packet has a version...
         if(data.versions == null)data.versions = new HashMap<>();
         defaultVersions.forEach((aByte, bByte) -> {
@@ -113,7 +114,7 @@ public class EmotePacket {
             int currentIndex = byteBuffer.position();
             packetSender.write(byteBuffer, this.data);
             if(byteBuffer.position() != currentIndex + len){
-                throw new IOException("Incorrect size calculator");
+                throw new IOException("Incorrect size calculator: " + packetSender.getClass());
             }
         }
     }
@@ -205,7 +206,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(EmoteData emoteData, @Nullable UUID player){
+        public Builder configureToStreamEmote(KeyframeAnimation emoteData, @Nullable UUID player){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
@@ -213,7 +214,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToSaveEmote(EmoteData emoteData){
+        public Builder configureToSaveEmote(KeyframeAnimation emoteData){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("already configured?!");
             data.purpose = PacketTask.FILE;
             data.sizeLimit = Integer.MAX_VALUE;
@@ -231,7 +232,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(EmoteData emoteData){
+        public Builder configureToStreamEmote(KeyframeAnimation emoteData){
             return configureToStreamEmote(emoteData, null);
         }
 
@@ -250,8 +251,7 @@ public class EmotePacket {
         public Builder configureToConfigExchange(boolean songEnabled){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can't send config with emote or stop data...");
             data.purpose = PacketTask.CONFIG;
-            HashMap<Byte, Byte> versions = new HashMap<>();
-            EmotePacket.defaultVersions.forEach(versions::put);
+            HashMap<Byte, Byte> versions = new HashMap<>(EmotePacket.defaultVersions);
             if(!songEnabled){
                 versions.replace((byte)3, (byte)0);
             }

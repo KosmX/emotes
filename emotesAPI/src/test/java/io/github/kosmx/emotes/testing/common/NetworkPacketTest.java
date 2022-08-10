@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.testing.common;
 
-import io.github.kosmx.emotes.api.Pair;
-import io.github.kosmx.emotes.common.emote.EmoteData;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import org.junit.jupiter.api.Assertions;
@@ -23,7 +23,7 @@ public class NetworkPacketTest {
         Random random = new Random();
 
         EmotePacket.Builder builder = new EmotePacket.Builder();
-        Pair<EmoteData.EmoteBuilder, EmoteData.EmoteBuilder> pair = RandomEmoteData.generateEmotes();
+        Pair<KeyframeAnimation.AnimationBuilder, KeyframeAnimation.AnimationBuilder> pair = RandomEmoteData.generateEmotes();
         builder.configureToStreamEmote(pair.getLeft().build());
         ByteBuffer byteBuffer = builder.build().write();
         byte[] bytes = byteBuffer.array();

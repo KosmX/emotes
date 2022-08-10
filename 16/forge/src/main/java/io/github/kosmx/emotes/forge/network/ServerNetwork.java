@@ -132,7 +132,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         try {
             sendConsumer(player, (Consumer<ServerPlayer>) serverPlayer -> {
                 try {
-                    PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(data));
+                    PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(data, serverPlayer));
                     if (emotePacket != null && geyserChannel.isRemotePresent(serverPlayer.connection.getConnection())) {
                         PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(geyserChannelID, emotePacket.write()));
                     }
@@ -145,10 +145,13 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         }
     }
 
-    public static Packet newS2CEmotesPacket(NetData data) throws IOException {
+    public static Packet newS2CEmotesPacket(NetData data, ServerPlayer player) throws IOException {
         ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket();
         packet.setName(channelID);
-        packet.setData(new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+
+        EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
+        packetBuilder.setVersion(((IServerNetworkInstance)player.connection).getRemoteVersions());
+        packet.setData(new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBuilder.build().write().array())));
         return packet;//:D
     }
 
@@ -169,7 +172,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     @Override
     protected void sendForPlayer(NetData data, Player player, UUID target) {
         try {
-            PacketDistributor.PLAYER.with(() -> (ServerPlayer) player.getCommandSenderWorld().getPlayerByUUID(target)).send(newS2CEmotesPacket(data));
+            PacketDistributor.PLAYER.with(() -> (ServerPlayer) player.getCommandSenderWorld().getPlayerByUUID(target)).send(newS2CEmotesPacket(data, (ServerPlayer) player));
         }
         catch (IOException e){
             e.printStackTrace();

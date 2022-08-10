@@ -62,8 +62,9 @@ dependencies {
         exclude group: "net.fabricmc.fabric-api"
     }
 
-    modImplementation "io.github.kosmx:bendy-lib:${project.bendylib_version}"
-    include "io.github.kosmx:bendy-lib:${project.bendylib_version}"
+
+    include modImplementation("io.github.kosmx.bendy-lib:bendy-lib-fabric:${project.bendylib_version}")
+    include modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${project.player_anim}")
 }
 
 processResources {

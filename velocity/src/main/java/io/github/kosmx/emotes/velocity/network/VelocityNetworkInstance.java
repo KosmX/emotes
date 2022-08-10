@@ -27,7 +27,7 @@ public class VelocityNetworkInstance extends AbstractNetworkInstance implements 
     }
 
     @Override
-    public HashMap<Byte, Byte> getVersions() {
+    public HashMap<Byte, Byte> getRemoteVersions() {
         return version;
     }
 
