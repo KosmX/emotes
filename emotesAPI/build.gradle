@@ -71,6 +71,18 @@ publishing {
             artifact(sourcesJar)
             artifact(javadocJar)
 
+
+            pom.withXml {
+                def depsNode = asNode().appendNode("dependencies")
+
+                def animatorNode = depsNode.appendNode("dependency")
+                animatorNode.appendNode("groupId", "dev.kosmx.player-anim")
+                animatorNode.appendNode("artifactId", "anim-core")
+                animatorNode.appendNode("version", project.player_anim_core)
+                animatorNode.appendNode("scope", "compile")
+
+            }
+
             pom{
                 name = "emotesApi"
                 description = "Minecraft Emotecraft api"

@@ -97,6 +97,13 @@ publishing {
             pom.withXml {
                 def depsNode = asNode().appendNode("dependencies")
 
+                def animatorNode = depsNode.appendNode("dependency")
+                animatorNode.appendNode("groupId", "dev.kosmx.player-anim")
+                animatorNode.appendNode("artifactId", "anim-core")
+                animatorNode.appendNode("version", project.player_anim_core)
+                animatorNode.appendNode("scope", "compile")
+
+
                 def apiNode = depsNode.appendNode("dependency")
                 apiNode.appendNode("groupId", project.group)
                 apiNode.appendNode("artifactId", "emotesAPI")
@@ -111,7 +118,7 @@ publishing {
 
                 def serverNode = depsNode.appendNode("dependency")
                 serverNode.appendNode("groupId", project.group)
-                serverNode.appendNode("artifactId", "emotesExecutor")
+                serverNode.appendNode("artifactId", "emotesServer")
                 serverNode.appendNode("version", project.version)
                 serverNode.appendNode("scope", "compile")
             }
