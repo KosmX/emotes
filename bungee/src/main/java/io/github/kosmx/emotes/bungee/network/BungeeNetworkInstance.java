@@ -26,7 +26,7 @@ public class BungeeNetworkInstance extends AbstractNetworkInstance implements IS
     }
 
     @Override
-    public HashMap<Byte, Byte> getVersions() {
+    public HashMap<Byte, Byte> getRemoteVersions() {
         return version;
     }
 

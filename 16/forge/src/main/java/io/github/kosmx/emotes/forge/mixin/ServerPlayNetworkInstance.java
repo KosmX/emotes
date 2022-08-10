@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.forge.network.ServerNetwork;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +22,7 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
     private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
     @Shadow public abstract void send(Packet<?> packet);
 
+    @Shadow public ServerPlayer player;
     HashMap<Byte, Byte> versions = new HashMap<>();
     @Override
     public HashMap<Byte, Byte> getRemoteVersions() {
@@ -45,21 +47,15 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
         //sendMessage(builder.build().write(), null);
-        this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData()));
+        this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
     }
 
-    /*
-    @Override
-    public void sendMessage(byte[] bytes, @Nullable IEmotePlayerEntity target) {
-        this.send(new CustomEmotePacket());
-        //this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))));
-    }
-     */
+
     @Override
     public void sendConfigCallback() {
         EmotePacket.Builder builder = new EmotePacket.Builder().configureToConfigExchange(true);
         try{
-            this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData()));
+            this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
         }
         catch (IOException e){
             e.printStackTrace();

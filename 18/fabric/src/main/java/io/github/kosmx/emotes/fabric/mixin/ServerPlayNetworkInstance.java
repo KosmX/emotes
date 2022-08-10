@@ -48,7 +48,7 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
 
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        sendMessage(AbstractNetworkInstance.safeGetBytesFromBuffer(builder.build().write()), null);
+        sendMessage(AbstractNetworkInstance.safeGetBytesFromBuffer(builder.setVersion(getRemoteVersions()).build().write()), null);
     }
 
     public void sendMessage(byte[] bytes, @Nullable UUID target) {

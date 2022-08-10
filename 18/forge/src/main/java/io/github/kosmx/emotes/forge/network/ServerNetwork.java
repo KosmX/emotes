@@ -133,7 +133,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
             sendConsumer(player, serverPlayer -> {
                 try {
                     if (channel.isRemotePresent(serverPlayer.connection.getConnection())){
-                        PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(data));
+                        PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(data, serverPlayer));
                     } else if (emotePacket != null && geyserChannel.isRemotePresent(serverPlayer.connection.getConnection())) {
                         PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(geyserChannelID, emotePacket.write()));
                     }
@@ -146,8 +146,10 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         }
     }
 
-    public static Packet newS2CEmotesPacket(NetData data) throws IOException {
-        return new ClientboundCustomPayloadPacket(channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));//:D
+    public static Packet newS2CEmotesPacket(NetData data, ServerPlayer player) throws IOException {
+        EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
+        packetBuilder.setVersion(((IServerNetworkInstance)player.connection).getRemoteVersions());
+        return new ClientboundCustomPayloadPacket(channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBuilder.build().write().array())));//:D
     }
 
     public static Packet newS2CEmotesPacket(ResourceLocation channelID, byte[] data) throws IOException {
@@ -170,7 +172,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     @Override
     protected void sendForPlayer(NetData data, Player player, UUID target) {
         try {
-            PacketDistributor.PLAYER.with(() -> (ServerPlayer) player.getCommandSenderWorld().getPlayerByUUID(target)).send(newS2CEmotesPacket(data));
+            PacketDistributor.PLAYER.with(() -> (ServerPlayer) player.getCommandSenderWorld().getPlayerByUUID(target)).send(newS2CEmotesPacket(data, (ServerPlayer) player));
         }
         catch (IOException e){
             e.printStackTrace();

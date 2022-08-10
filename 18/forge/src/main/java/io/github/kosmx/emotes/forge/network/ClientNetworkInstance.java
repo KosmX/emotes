@@ -70,16 +70,6 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     }
 
     @Override
-    public HashMap<Byte, Byte> getVersions() {
-        if(disableNBS){
-            HashMap<Byte, Byte> map = new HashMap<>();
-            map.put((byte)3, (byte) 0);
-            return map;
-        }
-        return null;
-    }
-
-    @Override
     public boolean sendPlayerID() {
         return false;
     }
