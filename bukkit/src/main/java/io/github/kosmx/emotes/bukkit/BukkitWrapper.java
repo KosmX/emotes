@@ -3,13 +3,12 @@ package io.github.kosmx.emotes.bukkit;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ConnectionSide;
-import com.comphenix.protocol.events.MonitorAdapter;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import io.github.kosmx.emotes.bukkit.executor.BukkitInstance;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
@@ -60,7 +59,7 @@ public class BukkitWrapper extends JavaPlugin {
     }
 
     public void registerProtocolListener() {
-        protocolManager.addPacketListener(new MonitorAdapter(this, ConnectionSide.SERVER_SIDE) {
+        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
             @Override
             public void onPacketSending(PacketEvent packetEvent) {
                 if (packetEvent.getPacketType().equals(PacketType.Play.Server.NAMED_ENTITY_SPAWN)) {

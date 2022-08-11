@@ -100,8 +100,11 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                 try {
                     //Bukkit server will filter if I really can send, or not.
                     //If else to not spam dumb forge clients.
-                    if(player1.getListeningPluginChannels().contains(BukkitWrapper.EmotePacket))
-                        player1.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
+                    if(player1.getListeningPluginChannels().contains(BukkitWrapper.EmotePacket)) {
+                        EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data.copy());
+                        packetBuilder.setVersion(getPlayerNetworkInstance(player1).getRemoteVersions());
+                        player1.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, packetBuilder.build().write().array());
+                    }
                     else if(emotePacket != null) player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, emotePacket.write());
                 }catch (Exception e){
                     e.printStackTrace();
@@ -113,6 +116,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     @Override
     protected void sendForPlayerInRange(NetData data, Player player, UUID target) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
+        if (targetPlayer == null) return;
         if(targetPlayer.canSee(player)){
             sendForPlayer(data, player, target);
         }
@@ -122,7 +126,9 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     protected void sendForPlayer(NetData data, Player player, UUID target) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
         try {
-            targetPlayer.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
+            EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data.copy());
+            packetBuilder.setVersion(getPlayerNetworkInstance(targetPlayer).getRemoteVersions());
+            targetPlayer.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, packetBuilder.build().write().array());
         }catch (Exception e){
             e.printStackTrace();
         }
