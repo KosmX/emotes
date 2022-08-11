@@ -31,17 +31,13 @@ dependencies {
 
     compileOnly "net.md-5:bungeecord-api:${project.bungee_api}"
 
-    compileModule project(':emotesAPI')
-    //compileModule(project(':emotesAPI')){ transitive = false }
 
-    compileModule project(':executor')
-    //compileModule(project(':executor')){ transitive = false }
-    compileModule project(':emotesServer')
-    
-    //compileModule(project(':emotesServer')){ transitive = false }
+    compileModule(project(':emotesAPI')){ transitive = false }
+    compileModule(project(':executor')){ transitive = false }
+    compileModule(project(':emotesServer')){ transitive = false }
     compileModule(project(':emotesMain')){ transitive = false }
 
-    compileModule "dev.kosmx.player-anim:anim-core:${project.player_anim_core}"
+    compileModule("dev.kosmx.player-anim:anim-core:${project.player_anim_core}"){ transitive = false }
 }
 
 processResources{
