@@ -54,6 +54,11 @@ public class ClientEmotePlay {
         }
     }
 
+    public static boolean isForcedEmote() {
+        IEmotePlayerEntity player = EmoteInstance.instance.getClientMethods().getMainPlayer();
+        return player.isForcedEmote();
+    }
+
     public static void clientStopLocalEmote(KeyframeAnimation emoteData) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         packetBuilder.configureToSendStop(emoteData.getUuid(), EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());

@@ -1,12 +1,16 @@
 package io.github.kosmx.emotes.forge;
 
+import io.github.kosmx.emotes.arch.ServerCommands;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.forge.executor.ForgeEmotesMain;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
 import io.github.kosmx.emotes.main.MainLoader;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -30,6 +34,16 @@ public class ForgeWrapper {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+
+    @SubscribeEvent
+    public void commandRegister(RegisterCommandsEvent event) {
+        ServerCommands.register(event.getDispatcher(), event.getBuildContext(), event.getCommandSelection());
+    }
+
+    @SubscribeEvent
+    public void clientCommandRegister(RegisterClientCommandsEvent event) {
+        ClientCommands.register(event.getDispatcher(), event.getBuildContext());
+    }
 
     private void setup(final FMLCommonSetupEvent event){
         MainLoader.main(new String[]{"FML"});

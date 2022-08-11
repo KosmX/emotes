@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.fabric;
 
+import io.github.kosmx.emotes.arch.ServerCommands;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.fabric.executor.FabricEmotesMain;
@@ -7,6 +8,7 @@ import io.github.kosmx.emotes.fabric.network.ServerNetwork;
 import io.github.kosmx.emotes.main.MainLoader;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
@@ -52,5 +54,7 @@ public class FabricWrapper implements ModInitializer {
         ServerWorldEvents.LOAD.register((server, world) -> {
             SERVER_INSTANCE = server; //keep it for later use
         });
+
+        CommandRegistrationCallback.EVENT.register(ServerCommands::register);
     }
 }
