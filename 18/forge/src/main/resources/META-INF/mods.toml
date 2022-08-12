@@ -8,17 +8,24 @@ issueTrackerURL="https://github.com/KosmX/emotes/issues" #optional
 
 [[mods]] #mandatory
 # The modid of the mod
-modId="emotecraft"
+    modId="emotecraft"
 
-version="${version}"
+    version="${version}"
 
-displayName="Emotecraft"
+    displayName="Emotecraft"
 
 #displayURL="https://kosmx.gitbook.io/emotecraft/"
 #Forge menu was always trying to open this.
 
-logoFile="emotecraft_mod_logo.png" #optional
+    logoFile="emotecraft_mod_logo.png" #optional
 
-authors="KosmX" #optional
+    authors="KosmX" #optional
 
-description="${description}"
+    description="${description}"
+
+    [[dependencies.emotecraft]]
+        modId="playeranimator"
+        mandatory=true
+        versionRange="[0.0.7,)"
+        ordering="NONE"
+        side="BOTH"

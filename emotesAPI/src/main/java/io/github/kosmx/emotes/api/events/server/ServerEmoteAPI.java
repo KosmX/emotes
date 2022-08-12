@@ -32,6 +32,17 @@ public abstract class ServerEmoteAPI {
     }
 
     /**
+     * Set the player to play emote.
+     * Supply with <code>null</code> to stop playing emote
+     * @param player whom to play
+     * @param emote  what to play
+     * @param forced can they stop
+     */
+    public static void playEmote(UUID player, @Nullable KeyframeAnimation emote, boolean forced) {
+        INSTANCE.setPlayerPlayingEmoteImpl(player, emote, forced);
+    }
+
+    /**
      * Get the played emote and the time for the player
      * @param player questionable player
      * @return Emote and time, NULL if not playing
@@ -41,6 +52,15 @@ public abstract class ServerEmoteAPI {
         return INSTANCE.getPlayedEmoteImpl(player);
     }
 
+    /**
+     * Check if the player is forced to play an emote
+     * @param player who
+     * @return forced
+     */
+    public static boolean isForcedEmote(UUID player) {
+        return INSTANCE.isForcedEmoteImpl(player);
+    }
+
 
     /**
      * Returns a copy of the list of all loaded emotes
@@ -48,6 +68,15 @@ public abstract class ServerEmoteAPI {
      */
     public static HashMap<UUID, KeyframeAnimation> getLoadedEmotes() {
         return INSTANCE.getLoadedEmotesImpl();
+    }
+
+    /**
+     * Returns the public emotes.
+     * Modifying the list won't sync deleted/newly added emotes but allows command usage/bedrock translation
+     * @return The server-side public emotes.
+     */
+    public static UUIDMap<KeyframeAnimation> getPublicEmotes() {
+        return INSTANCE.getPublicEmotesImpl();
     }
 
     /**
@@ -90,7 +119,11 @@ public abstract class ServerEmoteAPI {
     protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation KeyframeAnimation, boolean isForced);
     protected abstract Pair<KeyframeAnimation, Integer> getPlayedEmoteImpl(UUID player);
 
+    protected abstract boolean isForcedEmoteImpl(UUID player);
+
     protected abstract HashMap<UUID, KeyframeAnimation> getLoadedEmotesImpl();
+
+    protected abstract UUIDMap<KeyframeAnimation> getPublicEmotesImpl();
 
     protected abstract UUIDMap<KeyframeAnimation> getHiddenEmotesImpl();
 

@@ -150,7 +150,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         if (getPlayerNetworkInstance(player).getEmoteTracker().isForced()) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " is disobeying force play flag and tried to override it");
         }
-        streamEmote(data, player, false);
+        streamEmote(data, player, false, true);
     }
 
     /**
@@ -158,7 +158,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
      * @param data   data
      * @param player source player
      */
-    protected void streamEmote(NetData data, P player, boolean isForced) {
+    protected void streamEmote(NetData data, P player, boolean isForced, boolean isFromPlayer) {
         getPlayerNetworkInstance(player).getEmoteTracker().setPlayedEmote(data.emoteData, isForced);
         ServerEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, getUUIDFromPlayer(player));
         data.isForced = isForced;
@@ -171,6 +171,9 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             geyserEmotePacket.setRuntimeEntityID(getRuntimePlayerID(player));
         }
         sendForEveryoneElse(data, geyserEmotePacket, player);
+        if (!isFromPlayer) {
+            sendForPlayer(data, player, this.getUUIDFromPlayer(player));
+        }
     }
 
     protected void stopEmote(P player, @Nullable NetData originalMessage) {
@@ -216,7 +219,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     @Override
     protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation emoteData, boolean isForced) {
         if (emoteData != null) {
-            streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player), isForced);
+            streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player), isForced, false);
         } else {
             stopEmote(getPlayerFromUUID(player), null);
         }
@@ -225,6 +228,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     @Override
     protected Pair<KeyframeAnimation, Integer> getPlayedEmoteImpl(UUID player) {
         return getPlayerNetworkInstance(getPlayerFromUUID(player)).getEmoteTracker().getPlayedEmote();
+    }
+
+    @Override
+    protected boolean isForcedEmoteImpl(UUID player) {
+        return getPlayerNetworkInstance(player).getEmoteTracker().isForced();
     }
 
     protected abstract void sendForEveryoneElse(GeyserEmotePacket packet, P player);
@@ -268,6 +276,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         map.putAll(UniversalEmoteSerializer.serverEmotes);
         map.putAll(UniversalEmoteSerializer.hiddenServerEmotes);
         return map;
+    }
+
+    @Override
+    protected UUIDMap<KeyframeAnimation> getPublicEmotesImpl() {
+        return UniversalEmoteSerializer.serverEmotes;
     }
 
     @Override

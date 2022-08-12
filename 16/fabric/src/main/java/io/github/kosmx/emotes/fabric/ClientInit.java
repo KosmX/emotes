@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.fabricmc.loader.api.FabricLoader;
@@ -36,6 +37,8 @@ public class ClientInit {
 
             keyBindingFunction.accept(client);
         });
+
+        ClientCommandManager.DISPATCHER.register(ClientCommands.buildClientCommandTree());
     }
 
     private static void initKeyBinding(){

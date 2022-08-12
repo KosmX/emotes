@@ -1,14 +1,17 @@
 package io.github.kosmx.emotes.forge;
 
+import io.github.kosmx.emotes.arch.ServerCommands;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.forge.executor.ForgeEmotesMain;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
 import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import net.minecraft.commands.Commands;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -32,6 +35,11 @@ public class ForgeWrapper {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void commandRegister(RegisterCommandsEvent event) {
+        ServerCommands.register(event.getDispatcher(), event.getEnvironment().equals(Commands.CommandSelection.DEDICATED));
     }
 
 

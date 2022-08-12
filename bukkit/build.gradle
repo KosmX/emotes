@@ -38,13 +38,13 @@ dependencies {
     implementation("org.spigotmc:spigot-api:${project.spigot_api}")
     implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.8.0"
 
-    compileModule project(':emotesAPI')
-    compileModule project(':executor')
-    compileModule project(':emotesServer')
+    compileModule(project(':emotesAPI')){ transitive = false }
+    compileModule(project(':executor')){ transitive = false }
+    compileModule(project(':emotesServer')){ transitive = false }
     
     compileModule(project(':emotesMain')){ transitive = false }
 
-    compileModule "dev.kosmx.player-anim:anim-core:${project.player_anim_core}"
+    compileModule("dev.kosmx.player-anim:anim-core:${project.player_anim_core}"){ transitive = false }
 }
 
 processResources{

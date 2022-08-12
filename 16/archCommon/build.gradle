@@ -11,7 +11,7 @@ plugins {
 version project.mod_version
 
 architectury{
-    common()
+    common("fabric", "forge")
     injectInjectables = false
 }
 

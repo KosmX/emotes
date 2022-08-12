@@ -9,10 +9,13 @@ import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPoseChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -97,8 +100,11 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                 try {
                     //Bukkit server will filter if I really can send, or not.
                     //If else to not spam dumb forge clients.
-                    if(player1.getListeningPluginChannels().contains(BukkitWrapper.EmotePacket))
-                        player1.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
+                    if(player1.getListeningPluginChannels().contains(BukkitWrapper.EmotePacket)) {
+                        EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data.copy());
+                        packetBuilder.setVersion(getPlayerNetworkInstance(player1).getRemoteVersions());
+                        player1.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, packetBuilder.build().write().array());
+                    }
                     else if(emotePacket != null) player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, emotePacket.write());
                 }catch (Exception e){
                     e.printStackTrace();
@@ -110,6 +116,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     @Override
     protected void sendForPlayerInRange(NetData data, Player player, UUID target) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
+        if (targetPlayer == null) return;
         if(targetPlayer.canSee(player)){
             sendForPlayer(data, player, target);
         }
@@ -119,7 +126,9 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     protected void sendForPlayer(NetData data, Player player, UUID target) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
         try {
-            targetPlayer.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
+            EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data.copy());
+            packetBuilder.setVersion(getPlayerNetworkInstance(targetPlayer).getRemoteVersions());
+            targetPlayer.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, packetBuilder.build().write().array());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -136,5 +145,15 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
 
         BukkitNetworkInstance instance = this.player_database.remove(player.getUniqueId());
         if(instance != null)instance.closeConnection();
+    }
+
+    @EventHandler
+    public void playerDies(EntityPoseChangeEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Pose pose = event.getPose();
+            if (pose == Pose.SNEAKING || pose == Pose.DYING || pose == Pose.SWIMMING || pose == Pose.FALL_FLYING || pose == Pose.SLEEPING) {
+                playerEntersInvalidPose((Player) event.getEntity());
+            }
+        }
     }
 }
