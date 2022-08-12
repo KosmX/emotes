@@ -159,9 +159,9 @@ if(keysExists) {
         loaders = ["forge"]
         failSilently = false
 
-        dependencies = [
-                optional.project("bendy-lib"),
-                required.project("playeranimator")
-        ]
+        dependencies {
+            optional.project "bendy-lib"
+            required.project "playeranimator"
+        }
     }
 }

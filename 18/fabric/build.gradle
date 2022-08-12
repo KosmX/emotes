@@ -162,11 +162,11 @@ if(keysExists) {
         loaders = ["fabric", "quilt"]
         failSilently = false
 
-        dependencies = [
-                required.project("fabric-api"),
-                optional.project("modmenu"),
-                embedded.project("bendy-lib"),
-                embedded.project("playeranimator")
-        ]
+        dependencies {
+            required.project "fabric-api"
+            optional.project "modmenu"
+            embedded.project "bendy-lib"
+            embedded.project "playeranimator"
+        }
     }
 }
