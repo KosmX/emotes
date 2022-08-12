@@ -148,7 +148,7 @@ if(keysExists) {
 
         uploadFile = remapJar
 
-        token = project.keys.modrinth_token;
+        token = project.keys.modrinth_token
         // Get the GitHub Access Token you got from the basics part of this tutorial.
         projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
         //System.out.println("Enter the version number:");
@@ -161,8 +161,10 @@ if(keysExists) {
         failSilently = false
 
         dependencies = [
-                new ModDependency("P7dR8mSH", "required"), //Fabric API
-                new ModDependency("mOgUt4GM", "optional") // Mod Menu
+                required.project("fabric-api"),
+                optional.project("modmenu"),
+                embedded.project("bendy-lib"),
+                embedded.project("playeranimator")
         ]
     }
 }

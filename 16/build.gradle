@@ -54,7 +54,6 @@ if(keysExists) {
             //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
             changelog = changes
             releaseType = project.cfType
-            //addGameVersion project.minecraft_version //TODO set it back
             addGameVersion "1.16.5"
             addGameVersion "Fabric"
 
@@ -62,7 +61,8 @@ if(keysExists) {
             relations {
                 requiredDependency 'fabric-api'
                 optionalDependency 'modmenu'
-                //optionalDependency 'perspective-mod-redux'
+                //embeddedLibrary 'playeranimator' //TODO when CF approves the project
+                embeddedLibrary 'bendy-lib'
             }
 
             options {
@@ -80,10 +80,14 @@ if(keysExists) {
             //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
             changelog = changes
             releaseType = project.cfType
-            //addGameVersion project.minecraft_version //TODO set it back
             addGameVersion "1.16.5"
             addGameVersion "Forge"
 
+
+            relations {
+                optionalDependency 'bendy-lib'
+                //requiredDependency 'playeranimator' //TODO even more important here
+            }
 
             options {
                 forgeGradleIntegration = false // ARCHITECTURY MOD
