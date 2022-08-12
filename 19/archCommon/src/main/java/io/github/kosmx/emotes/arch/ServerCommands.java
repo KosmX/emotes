@@ -41,8 +41,12 @@ public final class ServerCommands {
                 .then(literal("play")
                         .then(argument("emote", StringArgumentType.string()).suggests(new EmoteArgumentProvider())
                                 .executes(context -> {
+                                    var player = context.getSource().getPlayerOrException().getUUID();
+                                    boolean admin = context.getSource().hasPermission(2);
                                     var emote = EmoteArgumentProvider.getEmote(context, "emote");
-                                    ServerEmoteAPI.playEmote(context.getSource().getPlayerOrException().getUUID(), emote, false);
+                                    if (!admin && ServerEmoteAPI.isForcedEmote(player))
+                                        throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
+                                    ServerEmoteAPI.playEmote(player, emote, false);
                                     return 0;
                                 })
                                 .then(argument("player", EntityArgument.players()).requires(ctx -> ctx.hasPermission(2))
