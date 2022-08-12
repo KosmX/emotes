@@ -41,7 +41,7 @@ public class ClientConfigSerializer extends ConfigSerializer {
         ClientConfig config = (ClientConfig) sconfig;
         EmoteFixer emoteFixer = new EmoteFixer(config.configVersion);
         if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config, emoteFixer);
-        if(node.has("keys")) keyBindsDeserializer(node.get("keys").getAsJsonObject(), config, emoteFixer);
+        if(node.has("keys")) keyBindsDeserializer(node.get("keys"), config, emoteFixer);
     }
 
     private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
@@ -64,11 +64,11 @@ public class ClientConfigSerializer extends ConfigSerializer {
         }
     }
 
-    private void keyBindsDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
+    private void keyBindsDeserializer(JsonElement node, ClientConfig config, EmoteFixer fixer){
         if(config.configVersion < 4){
             oldKeyBindsSerializer(node.getAsJsonArray(), config, fixer);
         }
-        for(Map.Entry<String, JsonElement> element : node.entrySet()){
+        for(Map.Entry<String, JsonElement> element : node.getAsJsonObject().entrySet()){
             config.emoteKeyMap.put(UUID.fromString(element.getKey()), EmoteInstance.instance.getDefaults().getKeyFromString(element.getValue().getAsString()));
             //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
         }
