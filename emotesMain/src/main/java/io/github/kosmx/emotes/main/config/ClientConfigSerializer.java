@@ -67,10 +67,11 @@ public class ClientConfigSerializer extends ConfigSerializer {
     private void keyBindsDeserializer(JsonElement node, ClientConfig config, EmoteFixer fixer){
         if(config.configVersion < 4){
             oldKeyBindsSerializer(node.getAsJsonArray(), config, fixer);
-        }
-        for(Map.Entry<String, JsonElement> element : node.getAsJsonObject().entrySet()){
-            config.emoteKeyMap.put(UUID.fromString(element.getKey()), EmoteInstance.instance.getDefaults().getKeyFromString(element.getValue().getAsString()));
-            //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
+        } else {
+            for (Map.Entry<String, JsonElement> element : node.getAsJsonObject().entrySet()) {
+                config.emoteKeyMap.put(UUID.fromString(element.getKey()), EmoteInstance.instance.getDefaults().getKeyFromString(element.getValue().getAsString()));
+                //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
+            }
         }
     }
 
