@@ -42,7 +42,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private IEmoteListWidgetHelper<MATRIX, WIDGET> emoteList;
     private FastChooseWidget fastMenu;
     //protected List<buttons> buttons is already exists
-    private static final Text unboundText = EmoteInstance.instance.getDefaults().getUnknownKey().getLocalizedText();
+    private final Text unboundText = EmoteInstance.instance.getDefaults().getUnknownKey().getLocalizedText();
     private IButton setKeyButton;
     public boolean save = false;
     public boolean warn = false;
