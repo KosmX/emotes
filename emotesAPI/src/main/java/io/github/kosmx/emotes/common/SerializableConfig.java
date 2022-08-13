@@ -31,6 +31,8 @@ public class SerializableConfig {
 
     public final StringConfigEntry emotesDir = new StringConfigEntry("emotesDirectory", "emotes", false, expert, true);
 
+    public final BooleanConfigEntry autoFixEmoteStop = new BooleanConfigEntry("autoFixEmoteStop", true, true, expert, false);
+
     public void iterate(Consumer<ConfigEntry<?>> consumer){
         basics.forEach(consumer);
         expert.forEach(consumer);

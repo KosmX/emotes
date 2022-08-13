@@ -38,6 +38,8 @@
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "(DO NOT TURN ON) Load Emotes on Logical Server",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "KEEP THIS DISABLED\n\nCauses the internal server to load your emotes instead of the client\nIf you enable this, emotes will only work in singleplayer.",
   "emotecraft.otherconfig.oldChooseWheel": "Use Old Emote Wheel Style",
+  "emotecraft.otherconfig.autoFixEmoteStop": "Auto patch emotes to stop smoothly",
+  "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "If the stopTick was left on default, Emotecraft will modify it to the last keyframe\nOnly checks JSON emotes",
   "emotecraft.emotelist": "All Emotes",
   "emotecraft.no_server": "Server has no version of Emotecraft installed. Other users won't see your emotes if you play any.",
   "emotecraft.different_server": "Server has a different version of Emotecraft installed. Other users may not see your emotes play correctly.",
