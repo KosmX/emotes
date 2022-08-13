@@ -15,8 +15,11 @@ import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -58,18 +61,20 @@ public class ClientCommands implements ClientCommandRegistrationCallback {
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
             UUIDMap<EmoteHolder> emotes = EmoteHolder.list;
 
+            List<String> suggestions = new LinkedList<>();
             for (var emote : emotes.values()) {
                 if (!emote.name.getString().equals("")) {
                     String name = emote.name.getString();
                     if (name.contains(" ")) {
                         name = "\"" + name + "\"";
                     }
-                    builder.suggest(name);
+                    suggestions.add(name);
+                } else {
+                    suggestions.add(emote.getUuid().toString());
                 }
-                builder.suggest(emote.getUuid().toString());
             }
 
-            return builder.buildFuture();
+            return SharedSuggestionProvider.suggest(suggestions.toArray(String[]::new), builder);
         }
 
         public static KeyframeAnimation getEmote(CommandContext<FabricClientCommandSource> context, String argumentName) throws CommandSyntaxException {

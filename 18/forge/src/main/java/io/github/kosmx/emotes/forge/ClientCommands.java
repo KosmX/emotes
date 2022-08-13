@@ -13,9 +13,12 @@ import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -57,18 +60,20 @@ public class ClientCommands {
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
             UUIDMap<EmoteHolder> emotes = EmoteHolder.list;
 
+            List<String> suggestions = new LinkedList<>();
             for (var emote : emotes.values()) {
                 if (!emote.name.getString().equals("")) {
                     String name = emote.name.getString();
                     if (name.contains(" ")) {
                         name = "\"" + name + "\"";
                     }
-                    builder.suggest(name);
+                    suggestions.add(name);
+                } else {
+                    suggestions.add(emote.getUuid().toString());
                 }
-                builder.suggest(emote.getUuid().toString());
             }
 
-            return builder.buildFuture();
+            return SharedSuggestionProvider.suggest(suggestions.toArray(String[]::new), builder);
         }
 
         public static KeyframeAnimation getEmote(CommandContext<CommandSourceStack> context, String argumentName) throws CommandSyntaxException {

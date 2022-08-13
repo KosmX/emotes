@@ -16,11 +16,11 @@ import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.commands.Commands.*;
@@ -105,22 +105,23 @@ public final class ServerCommands {
     private static class EmoteArgumentProvider implements SuggestionProvider<CommandSourceStack> {
 
         @Override
-        public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) throws CommandSyntaxException {
+        public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
             HashMap<UUID, KeyframeAnimation> emotes = getEmotes(context.getSource().hasPermission(1));
 
+            List<String> suggestions = new LinkedList<>();
             for (var emote : emotes.values()) {
                 if (emote.extraData.containsKey("name")) {
                     String name = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("name")).getString();
                     if (name.contains(" ")) {
                         name = "\"" + name + "\"";
                     }
-                    builder.suggest(name);
+                    suggestions.add(name);
                 } else {
-                    builder.suggest(emote.getUuid().toString());
+                    suggestions.add(emote.getUuid().toString());
                 }
             }
 
-            return builder.buildFuture();
+            return SharedSuggestionProvider.suggest(suggestions.toArray(String[]::new), builder);
         }
 
         private static HashMap<UUID, KeyframeAnimation> getEmotes(boolean allowHidden) {
