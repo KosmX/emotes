@@ -71,7 +71,7 @@ if(!isRelease){
 
 List<File> releaseArtifacts
 
-ext.keysExists = ENV.GH_TOKEN != null || project.getGradle().getStartParameter().isDryRun();
+ext.keysExists = ENV.GH_TOKEN != null || project.getGradle().getStartParameter().isDryRun()
 
 if(keysExists) {
     project.ext.keys = new Properties()
@@ -133,6 +133,7 @@ if(keysExists) {
         finalizedBy(':executor:publish')
         finalizedBy(':emotesServer:publish')
         finalizedBy(':emotesMain:publish')
+        finalizedBy(':bukkit:publish')
 
     }
 }
