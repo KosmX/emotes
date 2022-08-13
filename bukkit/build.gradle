@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     //id "com.github.johnrengelman.shadow" version "6.1.0"
+    id 'maven-publish'
 }
 
 version 'unspecified'
@@ -8,6 +9,8 @@ version 'unspecified'
 project.archivesBaseName = project.archives_base_name
 //project.version = project.mod_version
 project.version = project.mod_version
+group project.maven_group
+
 
 repositories {
     mavenCentral()
@@ -81,3 +84,67 @@ task copyArtifacts{
     }
 }
 
+java {
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+
+            artifactId = 'emotesBukkit'
+
+            artifact(jar) {
+                classifier ''
+            }
+            artifact(sourcesJar)
+
+
+            pom{
+                name = "emotesBukkit"
+                description = "Minecraft Emotecraft Bukkit plugin"
+                url = 'https://github.com/KosmX/emotes'
+                developers {
+                    developer {
+                        id = 'kosmx'
+                        name = 'KosmX'
+                        email = 'kosmx.mc@gmail.com'
+                    }
+                }
+
+                licenses{
+                    license{
+                        name = "CC-BY-4.0 License"
+                        url = "https://creativecommons.org/licenses/by/4.0/legalcode"
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:github.com/kosmx/emotes.git'
+                    developerConnection = 'scm:git:github.com/kosmx/emotes.git'
+                    url = 'https://github.com/KosmX/emotes'
+                }
+            }
+        }
+    }
+
+    // select the repositories you want to publish to
+    repositories {
+        // uncomment to publish to the local maven
+        if (project.keysExists) {
+            repositories {
+                maven {
+                    url = 'https://maven.kosmx.dev/'
+                    credentials {
+                        username = 'kosmx'
+                        password = project.keys.kosmx_maven
+                    }
+                }
+            }
+        }
+        else {
+            mavenLocal()
+        }
+    }
+}
