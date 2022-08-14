@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(KeyMapping.class)
+@Mixin(value = KeyMapping.class, priority = 2000)
 public class KeyEventMixin {
     @Inject(method = "click", at = @At(value = "HEAD"))
     private static void keyPressCallback(InputConstants.Key key, CallbackInfo ci){
