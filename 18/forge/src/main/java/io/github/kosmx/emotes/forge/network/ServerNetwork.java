@@ -174,12 +174,12 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         try {
             PacketDistributor.PLAYER.with(() -> (ServerPlayer) player.getCommandSenderWorld().getPlayerByUUID(target)).send(newS2CEmotesPacket(data, (ServerPlayer) player));
         }
-        catch (IOException e){
+        catch (IOException|RuntimeException e){
             e.printStackTrace();
         }
     }
 
-    private void sendConsumer(Player player, Consumer<ServerPlayer> consumer){
+    public static void sendConsumer(Player player, Consumer<ServerPlayer> consumer){
         TrackedEntityAccessor tracker = ((ChunkMapAccessor)((ServerChunkCache)player.getCommandSenderWorld().getChunkSource()).chunkMap).getTrackedEntity().get(player.getId());
         tracker.getPlayersTracking().forEach(serverPlayerConnection -> consumer.accept(serverPlayerConnection.getPlayer()));
     }

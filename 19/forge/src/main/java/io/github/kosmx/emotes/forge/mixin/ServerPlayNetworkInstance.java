@@ -22,6 +22,9 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
     @Shadow public abstract void send(Packet<?> packet);
 
     @Shadow public ServerPlayer player;
+
+    @Shadow public abstract ServerPlayer getPlayer();
+
     HashMap<Byte, Byte> versions = new HashMap<>();
     @Override
     public HashMap<Byte, Byte> getRemoteVersions() {
@@ -58,6 +61,12 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
         catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void presenceResponse() {
+        IServerNetworkInstance.super.presenceResponse();
+        ServerNetwork.sendConsumer(this.getPlayer(), otherPlayer -> ServerNetwork.getInstance().playerStartTracking(otherPlayer, ServerPlayNetworkInstance.this.player));
     }
 
     @Override
