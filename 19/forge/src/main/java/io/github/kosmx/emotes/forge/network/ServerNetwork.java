@@ -175,7 +175,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         try {
             PacketDistributor.PLAYER.with(() -> (ServerPlayer) player.getCommandSenderWorld().getPlayerByUUID(target)).send(newS2CEmotesPacket(data, (ServerPlayer) player));
         }
-        catch (IOException e){
+        catch (IOException|RuntimeException e){
             e.printStackTrace();
         }
     }
