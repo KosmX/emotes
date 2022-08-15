@@ -179,7 +179,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         }
     }
 
-    private void sendConsumer(Player player, Consumer<ServerPlayer> consumer){
+    public static void sendConsumer(Player player, Consumer<ServerPlayer> consumer){
         TrackedEntityAccessor tracker = ((ChunkMapAccessor)((ServerChunkCache)player.getCommandSenderWorld().getChunkSource()).chunkMap).getTrackedEntity().get(player.getId());
         tracker.getPlayersTracking().forEach(serverPlayerConnection -> consumer.accept(serverPlayerConnection.getPlayer()));
     }

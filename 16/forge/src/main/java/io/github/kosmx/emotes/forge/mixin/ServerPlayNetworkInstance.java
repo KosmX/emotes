@@ -63,6 +63,12 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
     }
 
     @Override
+    public void presenceResponse() {
+        IServerNetworkInstance.super.presenceResponse();
+        ServerNetwork.sendConsumer(this.player, otherPlayer -> ServerNetwork.getInstance().playerStartTracking(otherPlayer, ServerPlayNetworkInstance.this.player));
+    }
+
+    @Override
     public boolean isActive() {
         return false;
     }
