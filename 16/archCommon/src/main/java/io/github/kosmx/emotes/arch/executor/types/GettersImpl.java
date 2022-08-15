@@ -9,6 +9,7 @@ import java.util.UUID;
 public class GettersImpl implements IGetters {
     @Override
     public IEmotePlayerEntity getPlayerFromUUID(UUID uuid) {
+        if (Minecraft.getInstance().level == null) return null;
         return (IEmotePlayerEntity) Minecraft.getInstance().level.getPlayerByUUID(uuid);
     }
 }
