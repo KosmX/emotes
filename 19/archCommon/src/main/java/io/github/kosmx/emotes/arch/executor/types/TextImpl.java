@@ -16,7 +16,7 @@ public class TextImpl implements Text {
 
     @Override
     public String getString() {
-        return this.MCText.getString();
+        return this.MCText.getString().replaceAll("§.", "");
     }
 
     @Override
