@@ -32,6 +32,9 @@ public class ForgeWrapper {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
         MinecraftForge.EVENT_BUS.register(this);
+        if(FMLLoader.getDist() == Dist.CLIENT){
+            ClientInit.initClient();
+        }
     }
 
 
@@ -48,7 +51,7 @@ public class ForgeWrapper {
     private void setup(final FMLCommonSetupEvent event){
         MainLoader.main(new String[]{"FML"});
         if(FMLLoader.getDist() == Dist.CLIENT){
-            ClientInit.initClient();
+            ClientInit.setupClient();
         }
         ServerNetwork.instance.init();
 

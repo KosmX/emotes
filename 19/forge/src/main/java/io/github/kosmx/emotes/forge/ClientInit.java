@@ -17,8 +17,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
@@ -31,10 +31,12 @@ public class ClientInit {
     static KeyMapping debugKey = null;
     static Consumer<Minecraft> keyBindingFunction;
 
-    static void initClient(){
-
+    static void initClient() {
         initKeyBinding();
+        FMLJavaModLoadingContext.get().getModEventBus().register(new ClientInit());
+    }
 
+    static void setupClient() {
         ClientNetworkInstance.networkInstance.init(); //init network
 
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> new EmoteMenuImpl(screen)));
@@ -51,7 +53,7 @@ public class ClientInit {
     }
 
     @SubscribeEvent
-    public static void keyBindingRegister(RegisterKeyMappingsEvent event) {
+    public void keyBindingRegister(RegisterKeyMappingsEvent event) {
         event.register(openMenuKey);
         event.register(stopEmote);
         if (debugKey != null) event.register(debugKey);
