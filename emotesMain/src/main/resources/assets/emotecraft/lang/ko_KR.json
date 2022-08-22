@@ -38,6 +38,7 @@
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "(비활성화 권장) 논리적 서버에서 감정 표현 불러오기",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "비활성화를 권장합니다.\n\n클라이언트 대신 내부 서버가 이모티콘을 불러오도록 해요.\n이걸 켜면, 이모티콘은 싱글플레이에서만 작동해요.",
   "emotecraft.otherconfig.oldChooseWheel": "구버전 감정 표현 메뉴 스타일 사용",
+  "emotecraft.otherconfig.autoFixEmoteStop": "부드럽게 멈추도록 감정 표현 자동 패치",
   "emotecraft.emotelist": "모든 감정 표현",
   "emotecraft.no_server": "서버에 Emotecraft가 설치되지 않았어요. 감정 표현을 해도 다른 플레이어가 볼 수 없어요.",
   "emotecraft.different_server": "다른 버전의 Emotecraft가 서버에 설치됐어요. 감정 표현을 해도 다른 플레이어에게 정확히 보이지 않을 수 있어요.",
