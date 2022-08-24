@@ -38,6 +38,8 @@
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "(НЕ ВМИКАТИ) Завантажувати емоції на логічний сервер",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "ЗАЛИШТЕ ЦЕ ВИМКНЕНИМ! Внутрішній сервер завантажуватиме емоції клієнта замість клієнта\nЯкщо ви ввімкнете це, емоції працюватимуть лише в грі наодинці.",
   "emotecraft.otherconfig.oldChooseWheel": "Використовувати старе колесо вибору емоцій",
+  "emotecraft.otherconfig.autoFixEmoteStop": "Автоматичне виправлення емоцій для плавної зупинки",
+  "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Якщо в емоції параметр stopTick залишено за замовчуванням, Emotecraft перемістить його на останній ключовий кадр\nПеревіряє лише емоції в форматі JSON",
   "emotecraft.emotelist": "Всі емоції",
   "emotecraft.no_server": "На сервері не встановлено Emotecraft, інші гравці не побачать, що ви відтворюєте емоцію.",
   "emotecraft.different_server": "На сервері встановлено іншу версію Emotecraft, інші гравці можуть неправильно бачити ваші емоції.",
@@ -63,5 +65,6 @@
   "emotecraft.export.error.emotecraft": "Не вдалося в формат .emotecraft...",
   "emotecraft.export.done.json": "Експорт в JSON завершено!",
   "emotecraft.export.done.emotecraft": "Експорт в .emotecraft завершено!",
-  "emotecraft.song_too_big_to_send": "Пісня завелика, тому не може бути надіслана на сервер. Надсилається лише емоція..."
+  "emotecraft.song_too_big_to_send": "Пісня завелика, тому не може бути надіслана на сервер. Надсилається лише емоція...",
+  "emotecraft.cant.override.forced": "Ви змушені відтворити поточну емоцію, це неможливо змінити."
 }
