@@ -93,8 +93,8 @@ if(keysExists) {
 
 
             relations {
-                embeddedLibrary 'playeranimator'
-                embeddedLibrary 'bendy-lib'
+                requiredDependency 'playeranimator'
+                optionalDependency 'bendy-lib'
             }
 
             options {
