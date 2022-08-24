@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.main.mixinFunctions;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Pair;
+import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -22,6 +23,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
 
         Pair<KeyframeAnimation, Integer> p = ClientEmotePlay.getEmoteForUUID(this.emotes_getUUID());
         if(p != null){
+            ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(p.getLeft(), this.emotes_getUUID());
             this.playEmote(p.getLeft(), p.getRight(), false);
         }
         if(!this.isMainPlayer() && EmoteInstance.instance.getClientMethods().getMainPlayer() != null && EmoteInstance.instance.getClientMethods().getMainPlayer().isPlayingEmote()){
@@ -37,6 +39,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
             EmoteInstance.instance.getClientMethods().setPerspective(TPBPerspective.get());
         }
     }
+
 
     @Override
     default boolean isPlayingEmote(){
