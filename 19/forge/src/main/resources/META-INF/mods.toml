@@ -22,3 +22,10 @@ logoFile="emotecraft_mod_logo.png" #optional
 authors="KosmX" #optional
 
 description="${description}"
+
+[[dependencies.emotecraft]]
+modId="playeranimator"
+mandatory=true
+versionRange="[0.2.0,)"
+ordering="NONE"
+side="BOTH"

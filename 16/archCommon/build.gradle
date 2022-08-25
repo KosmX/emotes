@@ -12,7 +12,6 @@ version project.mod_version
 
 architectury{
     common("fabric", "forge")
-    injectInjectables = false
 }
 
 loom{

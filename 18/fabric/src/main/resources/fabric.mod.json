@@ -36,7 +36,8 @@
   "depends": {
     "fabricloader": ">=0.12.11",
     "fabric": ">=0.16.4",
-    "minecraft": ["1.18.*"]
+    "minecraft": ["1.18.*"],
+    "player-animator": "*"
   },
   "custom": {
     "modmenu": {

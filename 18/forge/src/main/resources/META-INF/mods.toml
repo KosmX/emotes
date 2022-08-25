@@ -26,6 +26,6 @@ issueTrackerURL="https://github.com/KosmX/emotes/issues" #optional
     [[dependencies.emotecraft]]
         modId="playeranimator"
         mandatory=true
-        versionRange="[0.0.7,)"
+        versionRange="[0.2.0,)"
         ordering="NONE"
         side="BOTH"

@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "io.github.kosmx.emotes.forge.mixin",
   "compatibilityLevel": "JAVA_8",
+  "plugin": "io.github.kosmx.emotes.mixin.EmotesMixinPlugin",
   "mixins": [
     "ChunkMapAccessor",
     "ServerPlayNetworkInstance",
