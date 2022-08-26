@@ -100,8 +100,9 @@ public class UniversalEmoteSerializer {
         EmoteSerializer.serializeEmotes( EmoteInstance.config.loadEmotesServerSide.get() ? serverEmotes : hiddenServerEmotes, EmoteInstance.instance.getExternalEmoteDir());
 
         File serverEmotesDir = EmoteInstance.instance.getExternalEmoteDir().toPath().resolve("server").toFile();
-        if(! serverEmotesDir.isDirectory()) serverEmotesDir.mkdirs();
-        EmoteSerializer.serializeEmotes(serverEmotes, serverEmotesDir);
+        if(serverEmotesDir.isDirectory()) {
+            EmoteSerializer.serializeEmotes(serverEmotes, serverEmotesDir);
+        }
     }
 
     private static void serializeInternalJson(String name){
