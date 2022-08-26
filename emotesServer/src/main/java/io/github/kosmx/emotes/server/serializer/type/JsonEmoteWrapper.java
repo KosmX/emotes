@@ -16,7 +16,9 @@ public class JsonEmoteWrapper implements ISerializer {
     @Override
     public List<KeyframeAnimation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
         try{
-            return fixStopTick(AnimationSerializing.deserializeAnimation(inputStream));
+            List<KeyframeAnimation> deserialized = AnimationSerializing.deserializeAnimation(inputStream);
+            if (deserialized == null) throw new IOException("Can't load emote, " + filename + " is empty.");
+            return fixStopTick(deserialized);
         }catch (JsonParseException | IOException e){
             throw new EmoteSerializerException("Exception has occurred", this.getFormatExtension(), e);
         }
