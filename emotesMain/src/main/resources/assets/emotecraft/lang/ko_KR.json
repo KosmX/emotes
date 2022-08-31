@@ -64,5 +64,6 @@
   "emotecraft.export.error.emotecraft": ".emotecraft로 내보내지 못했어요...",
   "emotecraft.export.done.json": "JSON으로 내보냈어요!",
   "emotecraft.export.done.emotecraft": ".emotecraft로 내보냈어요!",
-  "emotecraft.song_too_big_to_send": "서버에 보내려는 노래가 너무 커요. 감정 표현만 작동할 거에요."
+  "emotecraft.song_too_big_to_send": "서버에 보내려는 노래가 너무 커요. 감정 표현만 작동할 거에요.",
+  "emotecraft.cant.override.forced": "현재 감정 표현을 강제로 재생하여 변경할 수 없습니다."
 }
