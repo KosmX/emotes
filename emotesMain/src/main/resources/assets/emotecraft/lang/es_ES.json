@@ -38,6 +38,8 @@
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "(NO ENCENDER) Cargar emotes en Logical Server.",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "MANTÉN ESTO DESHABILITADO\n\nHace que el servidor interno cargue tus emotes en lugar del cliente.\nSi habilita esto, los gestos solo funcionarán en singleplayer.",
   "emotecraft.otherconfig.oldChooseWheel": "Usar el Estilo Antiguo del Menú de Emotes",
+  "emotecraft.otherconfig.autoFixEmoteStop": "Actualiza automáticamente para que los emotes paren de forma suave",
+  "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Si el stopTick se dejó por defecto, Emotecraft lo modificará al último fotograma clave\nSolo verifica los emotes JSON",
   "emotecraft.emotelist": "Todos los Emotes",
   "emotecraft.no_server": "El servidor no tiene instalado Emotecraft. Otros usuarios no verán tus emotes si reproduces alguno.",
   "emotecraft.different_server": "El servidor tiene una versión diferente de Emotecraft instalada, es posible que otros no vean correctamente tus gestos.",
@@ -63,5 +65,6 @@
   "emotecraft.export.error.emotecraft": "Exportación fallida a .emotecraft...",
   "emotecraft.export.done.json": "¡Exportación JSON terminada!",
   "emotecraft.export.done.emotecraft": "¡Exportación de .emotecraft hecha!",
-  "emotecraft.song_too_big_to_send": "La canción es demasiado grande para enviarla al servidor. Enviando solo emote..."
+  "emotecraft.song_too_big_to_send": "La canción es demasiado grande para enviarla al servidor. Enviando solo emote...",
+  "emotecraft.cant.override.forced": "Estás obligado a jugar con el emote actual, no se puede cambiar."
 }
