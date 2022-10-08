@@ -70,4 +70,46 @@ public final class ClientEmoteEvents {
         void onEmotePlay(KeyframeAnimation emoteData, UUID userID);
     }
 
+    /**
+     * A player is stopping the played emote by command
+     * <p>
+     * NOTE: Emote ending won't trigger any events
+     */
+    public static final Event<EmoteStopEvent> EMOTE_STOP = new Event<>(EmoteStopEvent.class, listeners -> (emote, userID) -> {
+        for (EmoteStopEvent listener : listeners) {
+            listener.onEmoteStop(emote, userID);
+        }
+    });
+
+
+    @FunctionalInterface
+    public interface EmoteStopEvent {
+
+        /**
+         * Used to create emote stop side effects
+         * @param userID User ID
+         */
+        void onEmoteStop(UUID emoteID, UUID userID);
+    }
+
+
+    /**
+     * The client player is stopping its own emote
+     * It will trigger only if the command is from the client
+     */
+    public static final Event<LocalEmoteStopEvent> LOCAL_EMOTE_STOP = new Event<>(LocalEmoteStopEvent.class, listeners -> () -> {
+        for (LocalEmoteStopEvent listener : listeners) {
+            listener.onEmoteStop();
+        }
+    });
+
+
+    @FunctionalInterface
+    public interface LocalEmoteStopEvent {
+
+        /**
+         * Used to create emote stop side effects
+         */
+        void onEmoteStop();
+    }
 }

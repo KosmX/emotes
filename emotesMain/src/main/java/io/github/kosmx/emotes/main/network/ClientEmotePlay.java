@@ -72,6 +72,8 @@ public class ClientEmotePlay extends ClientEmoteAPI {
             packetBuilder.configureToSendStop(emoteData.getUuid(), EmoteInstance.instance.getClientMethods().getMainPlayer().emotes_getUUID());
             ClientPacketManager.send(packetBuilder, null);
             EmoteInstance.instance.getClientMethods().getMainPlayer().stopEmote();
+
+            ClientEmoteEvents.LOCAL_EMOTE_STOP.invoker().onEmoteStop();
             return true;
         }
         return false;
@@ -96,6 +98,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 IEmotePlayerEntity player = EmoteInstance.instance.getGetters().getPlayerFromUUID(data.player);
                 assert data.stopEmoteID != null;
                 if(player != null) {
+                    ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.emotes_getUUID());
                     player.stopEmote(data.stopEmoteID);
                     if(player.isMainPlayer() && !data.isForced){
                         EmoteInstance.instance.getClientMethods().sendChatMessage(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.blockedEmote"));
