@@ -26,6 +26,7 @@ jobs:
       with:
         distribution: 'microsoft'
         java-version: ${{matrix.java}}
+        cache: 'gradle'
     - name: Grant execute permission for gradlew
       if: ${{ runner.os != 'Windows' }}
       run: chmod +x gradlew
