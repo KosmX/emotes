@@ -38,8 +38,8 @@
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "НЕ ВКЛЮЧАТЬ!\nЗагрузить эмоции на логический сервер",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "НЕ ВКЛЮЧАЙТЕ ЭТУ ФУНКЦИЮ!\nВнутренний сервер будет загружать клиентские эмоции вместо клиента\nЕсли Вы включите эту функцию, эмоции будут работать только в одиночной игре",
   "emotecraft.otherconfig.oldChooseWheel": "Использовать старое колесо выбора эмоций",
-  "emotecraft.otherconfig.autoFixEmoteStop": "Авто-патч жестов для плавной остановки эмоции",
-  "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Если stopTick стоит по умолчанию, Emotecraft изменит его на последний ключевой кадр\nПроверяет только JSON эмоции",
+  "emotecraft.otherconfig.autoFixEmoteStop": "Улучшать эмоции для плавной остановки автоматически",
+  "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Если параметр stopTick стоит по умолчанию, Emotecraft изменит его на последний ключевой кадр. Проверяет только JSON-эмоции",
   "emotecraft.emotelist": "Все эмоции",
   "emotecraft.no_server": "На сервере не установлен Emotecraft! Другие игроки не увидят, проигрываете ли Вы эмоции",
   "emotecraft.different_server": "Сервер имеет другую версию Emotecraft, Ваши эмоции могут проигрываться некорректно для других игроков",
@@ -66,5 +66,5 @@
   "emotecraft.export.done.json": "Успешный экспорт в формат JSON!",
   "emotecraft.export.done.emotecraft": "Успешный экспорт в формат Emotecraft!",
   "emotecraft.song_too_big_to_send": "Размер песни слишком большой, отправка на сервер невозможна. Будет отправлена только эмоция",
-  "emotecraft.cant.override.forced": "Вы вынуждены проиграть текущюю эмоцию, это не может быть изменено."
+  "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено."
 }
