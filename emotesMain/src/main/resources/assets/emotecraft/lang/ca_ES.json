@@ -1,1 +1,26 @@
-{}
+{
+  "emotecraft.options.options": "Opcions de Mod",
+  "emotecraft.options.keybind": "Establiu una tecla per a reproduir l'emoticona seleccionada.",
+  "emotecraft.options.fastmenu": "Seleccioneu una emoticona i feu clic a",
+  "emotecraft.options.fastmenu2": "la roda d'emoticona per afegir-la.",
+  "emotecraft.options.fastmenu3": "Feu clic amb el botó dret a una emoticona a la roda per a netejar-la.",
+  "emotecraft.sure": "Sobreescriu el conjunt de tecles",
+  "emotecraft.sure2": "Una altra emoticona ja té aquesta combinació de tecles.\nVoleu sobreescriure aquesta emoticona amb això?",
+  "emotecraft.otherconfig.category.general": "Opcions bàsiques",
+  "emotecraft.otherconfig.category.expert": "Opcions expertes",
+  "emotecraft.otherconfig": "Altres opciones",
+  "emotecraft.otherconfig.debug": "Depuració",
+  "emotecraft.otherconfig.validate": "Valida les emoticones",
+  "emotecraft.otherconfig.validate.tooltip": "Principalment destinat als mons PvP.\n\nDesactiva les emoticones que desplacen massa el jugador.",
+  "emotecraft.otherconfig.validationThreshold": "Llindar de validació",
+  "emotecraft.otherconfig.validationThreshold.tooltip": "Quant de desplaçament és massa.",
+  "emotecraft.otherconfig.dark": "Usa la roda d'emoticones fosca",
+  "emotecraft.otherconfig.showicon": "Mostra només les icones (si està disponible)",
+  "emotecraft.otherconfig.stopthreshold": "Velocitat d'aturada de l'emoticona",
+  "emotecraft.otherconfig.stopthreshold.tooltip": " (0,22 és velocitat de caminar)\n\nAmb un valor prou gran, l'emoticona no s'aturarà. En aquest cas, assegureu-vos que una clau està lligada a 'Deixa de reproduir l'emoticona'",
+  "emotecraft.otherconfig.yratio": "Llindar d'aturada de l'eix Y",
+  "emotecraft.otherconfig.yratio.tooltip": "Quant de moviment de l'eix Y és probable que atura una emoticona. Un valor més gran significa una major probabilitat.",
+  "emotecraft.otherconfig.loadbuiltin": "Carrega les emocions integrades",
+  "emotecraft.otherconfig.loadbuiltin.tooltip": "Si voleu eliminar-los per algun motiu...",
+  "emotecraft.otherconfig.playersafety": "Amaga les emoticones dels jugadors silenciats"
+}
