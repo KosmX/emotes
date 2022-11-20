@@ -26,21 +26,17 @@ jobs:
       with:
         distribution: 'microsoft'
         java-version: ${{matrix.java}}
-        cache: 'gradle'
     - name: Grant execute permission for gradlew
       if: ${{ runner.os != 'Windows' }}
       run: chmod +x gradlew
     - name: Test Gradle buildscript  #Test the full gradle buildscript before use it. Useful to catch publish errors.
-      uses: gradle/gradle-build-action@v1
+      uses: gradle/gradle-build-action@v2
       with:
         arguments: autoPublish --dry-run
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@v1
+      uses: gradle/gradle-build-action@v2
       with:
         arguments: collectArtifacts
-        distributions-cache-enabled: true
-        dependencies-cache-enabled: true
-        configuration-cache-enabled: true
     - name: capture build artifacts
       if: ${{ runner.os == 'Linux' && matrix.java == '17' }}
       uses: actions/upload-artifact@v2
