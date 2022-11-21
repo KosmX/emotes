@@ -38,6 +38,8 @@
   "emotecraft.otherconfig.emotesFolderOnLogicalServer": "(NÃO ATIVAR) Carregar emotes em servidor lógico",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "MANTENHA ISSO DESABILITADO\n\nFaz com que o servidor interno carregue seus emotes em vez do cliente\nSe você ativar isso, emotes só funcionarão no modo de um jogador.",
   "emotecraft.otherconfig.oldChooseWheel": "Usar estilo antigo da roda de emotes",
+  "emotecraft.otherconfig.autoFixEmoteStop": "Auto corrigir emotes para parar suavemente",
+  "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Se o stopTick foi deixado no padrão, o Emotecraft irá modificá-lo para o último quadro-chave\nVerifica apenas emotes JSON",
   "emotecraft.emotelist": "Todos os emotes",
   "emotecraft.no_server": "Esse servidor não tem o Emotecraft instalado, outros jogadores não poderão ver se você usar um emote",
   "emotecraft.different_server": "Esse servidor tem uma versão diferente do Emotecraft instalada, outros jogadores poderão não ver seus emotes corretamente",
@@ -63,5 +65,6 @@
   "emotecraft.export.error.emotecraft": "Falha ao exportar para .emotecraft",
   "emotecraft.export.done.json": "Exportação em .json concluída",
   "emotecraft.export.done.emotecraft": "Exportação em .emotecraft concluída",
-  "emotecraft.song_too_big_to_send": "A música é muito grande, não foi possível enviá-la ao servidor. Enviando apenas o emote"
+  "emotecraft.song_too_big_to_send": "A música é muito grande, não foi possível enviá-la ao servidor. Enviando apenas o emote",
+  "emotecraft.cant.override.forced": "Você é forçado a jogar o emote atual, ele não pode ser alterado."
 }
