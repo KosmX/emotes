@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPoseChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -72,11 +71,17 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
 
     @Override
     protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
-        return player_database.get(getUUIDFromPlayer(player));
+        UUID playerUuid = getUUIDFromPlayer(player);
+        if (!player_database.containsKey(playerUuid)) {
+            EmoteInstance.instance.getLogger().log(Level.INFO, "Player " + player.getName() + " never joined. If it is a fake player, the fake-player plugin forgot to fire join event.");
+            player_database.put(playerUuid, new BukkitNetworkInstance(player));
+        }
+        return player_database.get(playerUuid);
     }
 
     @Override
     protected IServerNetworkInstance getPlayerNetworkInstance(UUID player) {
+        if (!player_database.containsKey(player)) return getPlayerNetworkInstance(getPlayerFromUUID(player));
         return this.player_database.get(player);
     }
 
