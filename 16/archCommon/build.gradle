@@ -71,48 +71,6 @@ jar{
     //}
 }
 
-task sourcesJar(type: Jar, dependsOn: classes){
-    classifier "sources"
-    from sourceSets.main.allSource
-}
-
 artifacts {
     dev(jar)
 }
-
-/*
-publishing{
-    publications{
-        maven(MavenPublication) {
-            groupId = 'io.github.kosmx.emotes'
-            artifactId = 'emotesMain'
-            version = project.version
-
-            //artifact(jar) {
-            //    builtBy shadowJar
-            //}
-            //artifact(remapJar) {
-            //    builtBy remapJar
-            //}
-            artifact shadowJar
-            artifact sourcesJar
-            //from components.java
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
-}
- */
-/* This testing stuff could be useful later...
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-test {
-    useJUnitPlatform()
-}
-
- */
