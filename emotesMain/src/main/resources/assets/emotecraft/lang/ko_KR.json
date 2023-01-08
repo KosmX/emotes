@@ -48,7 +48,7 @@
   "key.emotecraft.debug": "'테스트' 감정 표현 재생하기",
   "key.emotecraft.stop": "감정 표현 정지",
   "emotecraft.openFolder": "감정 표현 폴더 열기",
-  "emotecraft.otherconfig.quark": "Quark Deserializer 활성화",
+  "emotecraft.otherconfig.quark": "Quark Deserializer 사용",
   "emotecraft.otherconfig.quark.tooltip": "매우 불안정하고 완전히 지원되지 않아요.\n\n충돌을 일으킬 수 있기 때문에 사용을 권장하지 않아요.",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "제작자: ",
