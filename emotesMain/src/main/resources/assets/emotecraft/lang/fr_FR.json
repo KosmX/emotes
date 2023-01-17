@@ -63,5 +63,6 @@
   "emotecraft.export.error.emotecraft": "Échec de l'export au format .emotecraft",
   "emotecraft.export.done.json": "Export .json effectué",
   "emotecraft.export.done.emotecraft": "Export .emotecraft effectué",
-  "emotecraft.song_too_big_to_send": "La musique est trop lourde, impossible d'envoyer au serveur. Envoi de l'emote uniquement"
+  "emotecraft.song_too_big_to_send": "La musique est trop lourde, impossible d'envoyer au serveur. Envoi de l'emote uniquement",
+  "emotecraft.cant.override.forced": "Vous êtes obligé de jouer l'emote actuelle, elle ne peut pas être changée."
 }
