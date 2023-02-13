@@ -29,12 +29,6 @@ include 'executor'
 include 'emotesServer'
 include 'emotesMain'
 
-// Minecraft 1.16 version
-include '16'
-include '16:archCommon'
-include '16:fabric'
-include '16:forge'
-
 //Minecraft 1.18 version
 include '18'
 include '18:archCommon'
