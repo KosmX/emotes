@@ -25,8 +25,8 @@ configurations {
 
 dependencies {
 
-    compileOnly 'com.velocitypowered:velocity-api:3.1.0'
-    annotationProcessor 'com.velocitypowered:velocity-api:3.0.0'
+    compileOnly 'com.velocitypowered:velocity-api:3.1.1'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.1.1'
 
     compileModule(project(':emotesAPI')){ transitive = false }
     compileModule(project(':executor')){ transitive = false }
