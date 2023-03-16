@@ -41,7 +41,7 @@ jar {
         configurations.compileModule.collect() { it.isDirectory() ? it : zipTree(it) }
     }
     dependsOn(':emotesMain:build')
-    classifier "velocity"
+   archiveClassifier.set("velocity")
 }
 
 task copyArtifacts {

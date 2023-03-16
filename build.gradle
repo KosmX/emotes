@@ -1,8 +1,8 @@
 plugins{
     id 'java'
-    id 'dev.architectury.loom' version '1.0.+' apply false //Forge loom :D
+    id 'dev.architectury.loom' version '1.1.+' apply false //Forge loom :D
     id "architectury-plugin" version "3.4-SNAPSHOT" apply false
-    id "com.github.johnrengelman.shadow" version "7.1.2" apply false
+    id "com.github.johnrengelman.shadow" version "8.1.0" apply false
     //id "com.dorongold.task-tree" version "1.5" Current version doesn't support gradle 6.8
 
     id 'com.matthewprenger.cursegradle' version '1.4.0' apply false

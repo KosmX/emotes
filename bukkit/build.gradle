@@ -63,7 +63,7 @@ processResources{
 
 //shadowJar{
 //    configurations = [project.configurations.compileModule]
-//    classifier "bukkit"
+//   archiveClassifier.set("bukkit")
 //}
 
 jar{
@@ -71,7 +71,7 @@ jar{
         configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
     }
     dependsOn(':emotesMain:build')
-    classifier "bukkit"
+   archiveClassifier.set("bukkit")
 }
 
 task copyArtifacts{

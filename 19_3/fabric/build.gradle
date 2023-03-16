@@ -84,14 +84,14 @@ tasks.withType(JavaCompile) {
 
 shadowJar{
     configurations = [project.configurations.compileModule]
-    classifier "fabric-dev"
+   archiveClassifier.set("fabric-dev")
 }
 
 remapJar{
     injectAccessWidener = true
     dependsOn shadowJar
     input.set shadowJar.archiveFile
-    classifier "fabric"
+   archiveClassifier.set("fabric")
 }
 
 jar {
