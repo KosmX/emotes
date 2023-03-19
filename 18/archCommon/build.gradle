@@ -26,7 +26,7 @@ dependencies {
 
     //compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
     modImplementation "io.github.kosmx.bendy-lib:bendy-lib:${project.bendylib_version}"
-    modImplementation "dev.kosmx.player-anim:player-animation-lib:${project.player_anim}"
+    modImplementation "dev.kosmx.player-anim:player-animation-lib-fabric:${project.player_anim}"
 
     modImplementation("net.fabricmc:fabric-loader:${project.loader_version}")
 }

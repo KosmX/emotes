@@ -1,0 +1,169 @@
+plugins {
+    //id 'fabric-loom' version '0.6-SNAPSHOT'
+    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
+    //id "architectury-plugin" version "3.0-SNAPSHOT"
+    id 'maven-publish'
+}
+
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.modrinth.minotaur'
+
+architectury{
+    platformSetupLoomIde()
+    forge()
+}
+
+//Import jfrog keys from file (not included in the git repo :D)
+//and well... serialize it
+repositories{
+    mavenLocal()
+    //jcenter()
+}
+
+project.java
+
+archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
+version = project.mod_version
+group = project.maven_group
+
+
+loom{
+    accessWidenerPath = project(":${project.module_name}:archCommon").loom.accessWidenerPath
+
+    silentMojangMappingsLicense()
+    forge {
+        mixinConfig "emotecraft.mixins.json"
+        mixinConfig "emotecraft-arch.mixins.json"
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+    }
+}
+
+configurations {
+    compileModule
+    common
+    commonModule
+
+    common.extendsFrom commonModule
+    compileModule.extendsFrom commonModule
+
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+dependencies {
+    commonModule(project(':executor')) {transitive false}
+    commonModule(project(':emotesAPI')) {transitive false}
+    commonModule(project(':emotesServer')) {transitive false}
+    commonModule(project(':emotesMain')) {transitive false}
+
+    common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
+
+    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")) { transitive false }
+
+
+    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    modRuntimeOnly("io.github.kosmx.bendy-lib:bendy-lib-forge:${project.bendylib_version}")
+    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}")
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "description", rootProject.mod_description
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version, "description": rootProject.mod_description
+    }
+}
+
+
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile) {
+    it.options.encoding = "UTF-8"
+}
+
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+
+shadowJar{
+    configurations = [project.configurations.compileModule]
+   archiveClassifier.set("forge-dev")
+}
+
+remapJar{
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+   archiveClassifier.set("forge")
+}
+
+jar {
+   archiveClassifier.set("dev")
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
+    //from {
+    //    configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
+    //}
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+            artifact(jar) {
+                builtBy remapJar
+            }
+            //artifact("${project.buildDir.absolutePath}/libs/${archivesBaseName}-${project.version}.jar"){
+            //	builtBy remapJar
+            //}
+            artifact(remapJar) {
+                builtBy remapJar
+            }
+        }
+    }
+
+    // select the repositories you want to publish to
+    repositories {
+        // uncomment to publish to the local maven
+        mavenLocal()
+    }
+}
+
+
+if(keysExists) {
+    modrinth {
+        versionType = project.cfType
+
+        uploadFile = remapJar
+
+        token = project.keys.modrinth_token
+        // Get the GitHub Access Token you got from the basics part of this tutorial.
+        projectId = "pZ2wrerK" // Enter your modrinth mod ID here.
+        //System.out.println("Enter the version number:");
+        versionNumber = "${project.mod_version}+${project.minecraft_version}-forge"
+        versionName = "${project.mod_version}"
+
+        gameVersions = ["1.19.3"]
+        changelog = changes
+        loaders = ["forge"]
+        failSilently = false
+
+        dependencies {
+            optional.project "bendy-lib"
+            required.project "playeranimator"
+        }
+    }
+}

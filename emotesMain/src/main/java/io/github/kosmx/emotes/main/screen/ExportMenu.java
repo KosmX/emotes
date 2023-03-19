@@ -110,6 +110,6 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
 
     @Override
     public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float tickDelta) {
-        screen.emotesRenderBackgroundTexture(0);
+        screen.emotesRenderBackgroundTexture(matrices);
     }
 }

@@ -24,7 +24,7 @@ public interface IScreenSlave<MATRIX, SCREEN> extends IScreen<SCREEN> {
     void addToButtons(IButton button);
     void openParent();
     void addButtonsToChildren();
-    void emotesRenderBackgroundTexture(int i);
+    void emotesRenderBackgroundTexture(MATRIX poseStack);
     void renderBackground(MATRIX matrices);
     void openScreen(@Nullable IScreen<SCREEN> screen);
 }

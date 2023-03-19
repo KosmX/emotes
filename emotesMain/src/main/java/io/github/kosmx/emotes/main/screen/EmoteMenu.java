@@ -184,7 +184,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
 
     @Override
     public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
-        screen.emotesRenderBackgroundTexture(0);
+        screen.emotesRenderBackgroundTexture(matrices);
         if(this.emoteList.getSelectedEntry() == null){
             this.setKeyButton.setActive(false);
             //this.resetKey.setActive(false);
