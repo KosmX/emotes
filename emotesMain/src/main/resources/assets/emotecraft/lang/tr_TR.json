@@ -25,6 +25,7 @@
   "emotecraft.otherconfig.playersafety.tooltip": "susturulmuş oyuncuların ifadelerini göstermez (1.16.4+)",
   "emotecraft.otherconfig.perspective": "İfadeleri 3. şahısta oynat",
   "emotecraft.otherconfig.prespective_redux": "Perspective Mod Redux desteğini etkinleştir",
+  "emotecraft.otherconfig.prespective_redux.tooltip": "Sadece 3. bakış açısı açıkken aktif.",
   "emotecraft.otherconfig.enableNSFW": "NSFW ifadelerinin oynatılmasına izin ver",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (İş İçin Güvenli Değil) uygunsuz içerik\n\nÇıplaklık, yoğun cinsellik, şiddet veya rahatsız edici olabilecek diğer konuları içerebilir.",
   "emotecraft.otherconfig.default3rdPersonFront": "3. Şahıs İçin Önden Görünüşü Uygula",
