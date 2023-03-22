@@ -89,17 +89,17 @@ tasks.withType(JavaCompile) {
 
 shadowJar{
     configurations = [project.configurations.compileModule]
-    classifier "forge-dev"
+   archiveClassifier.set("forge-dev")
 }
 
 remapJar{
     dependsOn shadowJar
     input.set shadowJar.archiveFile
-    classifier "forge"
+   archiveClassifier.set("forge")
 }
 
 jar {
-    classifier "dev"
+   archiveClassifier.set("dev")
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}"}
     }

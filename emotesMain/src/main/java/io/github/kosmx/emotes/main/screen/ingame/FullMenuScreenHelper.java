@@ -57,7 +57,7 @@ public abstract class FullMenuScreenHelper<MATRIX, SCREEN, WIDGET> extends Abstr
 
     @Override
     public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
-        screen.emotesRenderBackgroundTexture(0);
+        screen.emotesRenderBackgroundTexture(matrices);
         this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
     }

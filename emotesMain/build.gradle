@@ -46,7 +46,7 @@ tasks.withType(Copy){
 /*
 shadowJar{
     configurations = [project.configurations.compileModule]
-    classifier ""
+   archiveClassifier.set("")
 }
 
 
@@ -60,11 +60,11 @@ task fatJar(type: Jar) {
    from {
        configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
    }
-    classifier "fat"
+   archiveClassifier.set("fat")
 }
 
 task publicationJar (type: Jar, dependsOn: classes ){
-    classifier ""
+   archiveClassifier.set("")
     from sourceSets.main.output
 }
 
@@ -73,7 +73,7 @@ artifacts {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes){
-    classifier "sources"
+   archiveClassifier.set("sources")
     from sourceSets.main.allSource
 }
 

@@ -1,0 +1,5 @@
+accessWidener v2 named
+
+
+extendable class net/minecraft/client/OptionInstance$ValueSet
+extendable class net/minecraft/client/OptionInstance$SliderableValueSet

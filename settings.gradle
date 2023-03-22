@@ -47,6 +47,12 @@ include '19_3:archCommon'
 include '19_3:fabric'
 include '19_3:forge'
 
+//Minecraft 1.19.4 version
+include '19_4'
+include '19_4:archCommon'
+include '19_4:fabric'
+include '19_4:forge'
+
 //Bukkit plugin stuff
 include 'bukkit'
 include 'bukkit:debug'

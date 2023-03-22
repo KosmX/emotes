@@ -31,8 +31,8 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     public final AbstractScreenLogic<PoseStack, Screen> master;
 
     @Override
-    public void emotesRenderBackgroundTexture(int vOffset) {
-        super.renderDirtBackground(vOffset);
+    public void emotesRenderBackgroundTexture(PoseStack poseStack) {
+        super.renderDirtBackground(0);
     }
 
     private int getW() {
