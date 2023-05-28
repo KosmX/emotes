@@ -1,6 +1,16 @@
 # Emotecraft  
-a.k.a. EmoteX  
+a.k.a. EmoteX 
 
+## Download
+When downloading the mod, please **only use** official downloads as others may be infected.  
+Official project (only download the mod from here):
+- [GitHub/KosmX/emotes](https://github.com/KosmX/emotes)
+- [Modrinth/Emotecraft](https://modrinth.com/mod/emotecraft)
+- [CurseForge/Emotecraft](https://www.curseforge.com/minecraft/mc-mods/emotecraft) and [CurseForge/Emotecraft (Forge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
+- [maven.kosmx.dev](https://maven.kosmx.dev/io/github/kosmx/emotes/) this is for developers.
+**Don't download it from any other source!**
+
+## Development
 ---
 how to build
 ```bash
