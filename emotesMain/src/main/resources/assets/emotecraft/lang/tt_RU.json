@@ -1,1 +1,20 @@
-{}
+{
+  "emotecraft.options.options": "Мод көйләүләре",
+  "emotecraft.options.keybind": "Сайланган эмоцияне уйнату өчен төймәсен сайлагыз.",
+  "emotecraft.otherconfig.category.general": "Төп көйләүләр",
+  "emotecraft.otherconfig.category.expert": "Киңәйтелгән көйләүләр",
+  "emotecraft.otherconfig": "Бүтән көйләүләр",
+  "emotecraft.otherconfig.debug": "Төзәтү шарты",
+  "emotecraft.otherconfig.enableNSFW": "NSFW-эмоцияләр уйнатуны рөхсәт итү",
+  "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) — әдәпсез контент.\n\nЯлангач сурәтләр, сексуаль характердагы күренешләре, көчләү күренешләре яки башка мөмкин булган/биздергеч әйберләр була ала.",
+  "emotecraft.emotelist": "Барлык эмоцияләр",
+  "key.emotecraft.debug": "Төзәтү эмоциясен уйнату",
+  "emotecraft.openFolder": "Эмоцияләр папкасы",
+  "category.emotecraft.keybinding": "Emotecraft",
+  "emotecraft.emote.author": "Автор: ",
+  "emotecraft.config": "Эмоцияләр көйләүләре",
+  "emotecraft.resetConfig.title": "Emotecraft көйләүләрен ташлау",
+  "emotecraft.options.export": "Экспортлау менюсы",
+  "emotecraft.export.done.json": "JSON форматта экспортланды!",
+  "emotecraft.export.done.emotecraft": ".emotecraft форматта экспортланды!"
+}
