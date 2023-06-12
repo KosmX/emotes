@@ -39,7 +39,7 @@ dependencies {
     //testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
     implementation("org.spigotmc:spigot-api:${project.spigot_api}")
-    implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.8.0"
+    implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "5.0.0"
 
     compileModule(project(':emotesAPI')){ transitive = false }
     compileModule(project(':executor')){ transitive = false }
