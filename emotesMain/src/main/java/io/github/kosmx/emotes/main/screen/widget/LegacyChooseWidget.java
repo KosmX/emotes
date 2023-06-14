@@ -71,16 +71,16 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
 
     public void render(MATRIX matrices, int mouseX, int mouseY, float delta) {
         checkHovered(mouseX, mouseY);
-        widget.renderBindTexture(TEXTURE);
+        //widget.renderBindTexture(TEXTURE);
         widget.renderSystemBlendColor(1, 1, 1, 1);
         widget.renderEnableBend();
         widget.renderDefaultBendFunction();
         widget.renderEnableDepthText();
-        this.drawTexture(matrices, 0, 0, 0, 0, 2);
+        this.drawTexture(matrices, TEXTURE, 0, 0, 0, 0, 2);
         if (this.hovered) {
             FastChooseElement part = getActivePart(mouseX, mouseY);
             if (part != null && widget.doHoverPart(part)) {
-                part.renderHover(matrices);
+                part.renderHover(matrices, TEXTURE);
             }
         }
         for (FastChooseElement f : elements) {
@@ -96,8 +96,8 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
      * @param v        texture y
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
-    private void drawTexture(MATRIX matrices, int x, int y, int u, int v, int s) {
-        widget.drawableDrawTexture(matrices, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
+    private void drawTexture(MATRIX matrices, IIdentifier texture, int x, int y, int u, int v, int s) {
+        widget.drawableDrawTexture(matrices, texture, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY) {
@@ -177,8 +177,8 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
                 int s = widget.size / 10;
                 int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (widget.y + widget.size / 2)) + widget.size * 0.4 * Math.cos(this.angle * 0.0174533)) - s;
-                widget.renderBindTexture(identifier);
-                widget.drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
+                //widget.renderBindTexture(identifier);
+                widget.drawableDrawTexture(matrices, identifier, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             } else {
                 if (((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null) {
                     drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);
@@ -188,7 +188,7 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
             }
         }
 
-        public void renderHover(MATRIX matrices) {
+        public void renderHover(MATRIX matrices, IIdentifier texture) {
             int textX = 0;
             int textY = 0;
             int x = 0;
@@ -207,7 +207,7 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
             if ((id & 4) == 0) {
                 x = 128;
             }
-            drawTexture(matrices, x, y, textX + x, textY + y, 1);
+            drawTexture(matrices, texture, x, y, textX + x, textY + y, 1);
         }
     }
 }

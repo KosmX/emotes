@@ -64,7 +64,8 @@ public interface IDrawableImpl extends IRenderHelper<PoseStack> {
     }
 
     @Override
-    default void drawableDrawTexture(PoseStack matrices, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight){
+    default void drawableDrawTexture(PoseStack matrices, IIdentifier identifier, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight){
+        renderBindTexture(identifier);
         GuiComponent.blit(matrices, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
