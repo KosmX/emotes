@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.kosmx.emotes.forge.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "ChunkMapAccessor",
+    "ServerPlayNetworkInstance",
+    "TrackedEntityAccessor"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

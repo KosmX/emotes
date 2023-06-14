@@ -90,16 +90,16 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
     @Override
     public void render(MATRIX matrices, int mouseX, int mouseY, float delta){
         checkHovered(mouseX, mouseY);
-        widget.renderBindTexture(TEXTURE);
+        //widget.renderBindTexture(TEXTURE);
         widget.renderSystemBlendColor(1, 1, 1, 1);
         widget.renderEnableBend();
         widget.renderDefaultBendFunction();
         widget.renderEnableDepthText();
-        this.drawTexture(matrices, 0, 0, 0, 0, 2);
+        this.drawTexture(matrices, TEXTURE, 0, 0, 0, 0, 2);
         if(this.hovered){
             FastChooseElement part = getActivePart(mouseX, mouseY);
             if(part != null && widget.doHoverPart(part)){
-                part.renderHover(matrices);
+                part.renderHover(matrices, TEXTURE);
             }
         }
         for(FastChooseElement f : elements){
@@ -118,11 +118,11 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
      * @param v        texture y
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
-    private void drawTexture(MATRIX matrices, int x, int y, int u, int v, int s){
-        widget.drawableDrawTexture(matrices, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
+    private void drawTexture(MATRIX matrices, IIdentifier t, int x, int y, int u, int v, int s){
+        widget.drawableDrawTexture(matrices, t,widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
     }
-    private void drawTexture_select(MATRIX matrices, int x, int y, int u, int v, int w, int h){
-        widget.drawableDrawTexture(matrices, widget.x + x * widget.size / 512, widget.y + y * widget.size / 512, w * widget.size / 2, h * widget.size / 2, u, v, w * 128, h * 128, 512, 512);
+    private void drawTexture_select(MATRIX matrices, IIdentifier t, int x, int y, int u, int v, int w, int h){
+        widget.drawableDrawTexture(matrices, t,widget.x + x * widget.size / 512, widget.y + y * widget.size / 512, w * widget.size / 2, h * widget.size / 2, u, v, w * 128, h * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
@@ -228,8 +228,8 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
                 int s = widget.size / 10;
                 int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (widget.y + widget.size / 2)) + widget.size * 0.36 * Math.cos(this.angle * 0.0174533)) - s;
-                widget.renderBindTexture(identifier);
-                widget.drawableDrawTexture(matrices, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
+                //widget.renderBindTexture(identifier);
+                widget.drawableDrawTexture(matrices, identifier, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
             }else{
                 if(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null){
                     widget.drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);
@@ -239,31 +239,31 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
             }
         }
 
-        public void renderHover(MATRIX matrices){
+        public void renderHover(MATRIX matrices, IIdentifier t){
             switch (id) {
                 case 0:
-                    drawTexture_select(matrices, 0, 256, 0, 384, 2, 1);//0
+                    drawTexture_select(matrices, t,0, 256, 0, 384, 2, 1);//0
                     break;
                 case 1:
-                    drawTexture_select(matrices, 256, 256, 384, 384, 1, 1);//1
+                    drawTexture_select(matrices, t,256, 256, 384, 384, 1, 1);//1
                     break;
                 case 2:
-                    drawTexture_select(matrices, 256, 0, 384, 0, 1, 2);//2
+                    drawTexture_select(matrices, t,256, 0, 384, 0, 1, 2);//2
                     break;
                 case 3:
-                    drawTexture_select(matrices, 256, 0, 384, 256, 1, 1);//3
+                    drawTexture_select(matrices, t,256, 0, 384, 256, 1, 1);//3
                     break;
                 case 4:
-                    drawTexture_select(matrices, 0, 0, 0, 256, 2, 1);//4
+                    drawTexture_select(matrices, t,0, 0, 0, 256, 2, 1);//4
                     break;
                 case 5:
-                    drawTexture_select(matrices, 0, 0, 256, 256, 1, 1); //5
+                    drawTexture_select(matrices, t,0, 0, 256, 256, 1, 1); //5
                     break;
                 case 6:
-                    drawTexture_select(matrices, 0, 0, 256, 0, 1, 2);//6
+                    drawTexture_select(matrices, t,0, 0, 256, 0, 1, 2);//6
                     break;
                 case 7:
-                    drawTexture_select(matrices, 0, 256, 256, 384, 1, 1);//7
+                    drawTexture_select(matrices, t,0, 256, 256, 384, 1, 1);//7
                     break;
             }
         }

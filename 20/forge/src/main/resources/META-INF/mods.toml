@@ -1,0 +1,31 @@
+modLoader="javafml" #junkloader
+
+loaderVersion="[41.0,)" #From mixin.
+
+license="CC-BY-4.0 License"
+
+issueTrackerURL="https://github.com/KosmX/emotes/issues" #optional
+
+[[mods]] #mandatory
+# The modid of the mod
+modId="emotecraft"
+
+version="${version}"
+
+displayName="Emotecraft"
+
+#displayURL="https://kosmx.gitbook.io/emotecraft/"
+#Forge menu was always trying to open this.
+
+logoFile="emotecraft_mod_logo.png" #optional
+
+authors="KosmX" #optional
+
+description="${description}"
+
+[[dependencies.emotecraft]]
+modId="playeranimator"
+mandatory=true
+versionRange="[0.2.0,)"
+ordering="NONE"
+side="BOTH"

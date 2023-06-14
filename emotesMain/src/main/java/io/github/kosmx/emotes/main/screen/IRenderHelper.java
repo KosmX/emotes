@@ -14,6 +14,6 @@ public interface IRenderHelper<MATRIX> {
     void renderDisableBend();
     void renderDefaultBendFunction();
     void renderEnableDepthText();
-    void drawableDrawTexture(MATRIX matrices, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight);
+    void drawableDrawTexture(MATRIX matrices, IIdentifier texture, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight);
     void drawCenteredText(MATRIX matrices, Text text, int centerX, int y, int color);
 }

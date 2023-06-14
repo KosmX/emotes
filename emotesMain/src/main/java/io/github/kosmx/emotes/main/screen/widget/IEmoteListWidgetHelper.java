@@ -47,9 +47,8 @@ public interface IEmoteListWidgetHelper<MATRIX, WIDGET> extends IWidgetLogic<MAT
                 textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.emote.author").formatted(EmotesTextFormatting.GOLD).append(this.getEmote().author), x + 38, y + 23, 8421504);
             if(this.getEmote().getIconIdentifier() != null){
                 renderSystemBlendColor(1, 1, 1, 1); //color4f => blendColor
-                renderBindTexture(this.getEmote().getIconIdentifier());
                 renderEnableBend();
-                drawableDrawTexture(matrices, x, y, 32, 32, 0, 0, 256, 256, 256, 256);
+                drawableDrawTexture(matrices, this.getEmote().getIconIdentifier(), x, y, 32, 32, 0, 0, 256, 256, 256, 256);
                 renderDisableBend();
             }
         }

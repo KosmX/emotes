@@ -1,6 +1,6 @@
 plugins{
     id 'java'
-    id 'dev.architectury.loom' version '1.1.+' apply false //Forge loom :D
+    id 'dev.architectury.loom' version '1.2.+' apply false //Forge loom :D
     id "architectury-plugin" version "3.4-SNAPSHOT" apply false
     id "com.github.johnrengelman.shadow" version "8.1.1" apply false
     //id "com.dorongold.task-tree" version "1.5" Current version doesn't support gradle 6.8
@@ -127,8 +127,8 @@ if(keysExists) {
 
         finalizedBy(':18:publishMod')
         finalizedBy(':19:publishMod')
-        finalizedBy(':19_3:publishMod')
         finalizedBy(':19_4:publishMod')
+        finalizedBy(':20:publishMod')
 
         finalizedBy(':emotesAPI:publish')
         finalizedBy(':executor:publish')
@@ -147,7 +147,7 @@ task buildAll{
     dependsOn(':bukkit:build')
     dependsOn(':bungee:build')
     dependsOn(':velocity:build')
-    dependsOn(':18:buildAll', ':19:buildAll', ':19_3:buildAll', ':19_4:buildAll')
+    dependsOn(':18:buildAll', ':19:buildAll', ':19_4:buildAll', ':20:buildAll')
 }
 
 task cleanupArtifacts{
@@ -161,7 +161,7 @@ task collectArtifacts{
     dependsOn(':bukkit:copyArtifacts')
     dependsOn(':bungee:copyArtifacts')
     dependsOn(':velocity:copyArtifacts')
-    dependsOn(':18:copyArtifacts', ':19:copyArtifacts', '19_3:copyArtifacts', '19_4:copyArtifacts')
+    dependsOn(':18:copyArtifacts', ':19:copyArtifacts', '19_4:copyArtifacts', '20:copyArtifacts')
     doLast {
         releaseArtifacts = project.getProjectDir().toPath().resolve("artifacts").toFile().listFiles()
     }
