@@ -12,6 +12,7 @@
   "emotecraft.otherconfig.prespective_redux": "Perspective Mod Redux белән интеграцияне кушу",
   "emotecraft.otherconfig.enableNSFW": "NSFW-эмоцияләр уйнатуны рөхсәт итү",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) — әдәпсез контент.\n\nЯлангач сурәтләр, сексуаль характердагы күренешләре, көчләү күренешләре яки башка мөмкин булган/биздергеч әйберләр була ала.",
+  "emotecraft.otherconfig.showHiddenConfig": "Яшерен көйләүләрне күрсәтү (яңадан кушу кирәк)",
   "emotecraft.emotelist": "Барлык эмоцияләр",
   "key.emotecraft.debug": "Төзәтү эмоциясен уйнату",
   "key.emotecraft.stop": "Эмоция уйнатуны туктату",
