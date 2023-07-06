@@ -143,11 +143,12 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
                 return;
             }
         }
-        if (data.player != null) {
+        IServerNetworkInstance playerInstance = getPlayerNetworkInstance(player);
+        if (data.player != null && playerInstance.trackPlayState()) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " does not respect server-side emote tracking. Ignoring repeat", true);
             return;
         }
-        if (getPlayerNetworkInstance(player).getEmoteTracker().isForced()) {
+        if (playerInstance.getEmoteTracker().isForced()) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " is disobeying force play flag and tried to override it");
         }
         streamEmote(data, player, false, true);
