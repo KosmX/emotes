@@ -40,6 +40,8 @@
   "emotecraft.otherconfig.oldChooseWheel": "Use Old Emote Wheel Style",
   "emotecraft.otherconfig.autoFixEmoteStop": "Auto patch emotes to stop smoothly",
   "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "If the stopTick was left on default, Emotecraft will modify it to the last keyframe\nOnly checks JSON emotes",
+  "emotecraft.otherconfig.alwaysOpenScreen": "Open emote screen even if camera detached",
+  "emotecraft.otherconfig.alwaysOpenScreen.tooltip": "Some mods (Freecam) may control player even if camera is detached, this config will override emote screen condition",
   "emotecraft.emotelist": "All Emotes",
   "emotecraft.no_server": "Server has no version of Emotecraft installed. Other users won't see your emotes if you play any.",
   "emotecraft.different_server": "Server has a different version of Emotecraft installed. Other users may not see your emotes play correctly.",

@@ -3,8 +3,10 @@ package io.github.kosmx.emotes.fabric;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.arch.executor.AbstractClientMethods;
 import io.github.kosmx.emotes.arch.gui.screen.ingame.FastChosseScreen;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.MainClientInit;
+import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -56,7 +58,7 @@ public class ClientInit {
         keyBindingFunction = client -> {
 
             if(openMenuKey.consumeClick()){
-                if(Minecraft.getInstance().player == Minecraft.getInstance().getCameraEntity()){
+                if(((ClientConfig)EmoteInstance.config).alwaysOpenEmoteScreen.get() || Minecraft.getInstance().player == Minecraft.getInstance().getCameraEntity()){
                     Minecraft.getInstance().setScreen(new FastChosseScreen(null));
                 }
             }
