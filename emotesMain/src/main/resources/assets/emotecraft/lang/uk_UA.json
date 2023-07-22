@@ -40,6 +40,8 @@
   "emotecraft.otherconfig.oldChooseWheel": "Старе колесо емоцій",
   "emotecraft.otherconfig.autoFixEmoteStop": "Виправлення емоцій для плавнішої зупинки",
   "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Якщо в емоції не змінено параметр stopTick, Emotecraft встановить його на останній кадр.\nПеревіряє лише емоції у форматі JSON.",
+  "emotecraft.otherconfig.alwaysOpenScreen": "Відкривати екран емоцій, навіть якщо камеру від’єднано",
+  "emotecraft.otherconfig.alwaysOpenScreen.tooltip": "Деякі моди (Freecam) можуть керувати гравцем, навіть якщо камеру від’єднано, ця конфігурація замінить стан екрана емоцій",
   "emotecraft.emotelist": "Усі емоції",
   "emotecraft.no_server": "На сервері не встановлено Emotecraft, інші гравці не побачать, що ви відтворюєте емоцію.",
   "emotecraft.different_server": "На сервері встановлено іншу версію Emotecraft, інші гравці можуть неправильно бачити ваші емоції.",
