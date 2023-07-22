@@ -40,6 +40,8 @@
   "emotecraft.otherconfig.oldChooseWheel": "Použít starý styl kola emocí",
   "emotecraft.otherconfig.autoFixEmoteStop": "Automaticky opravit emoce pro jejich hladké ukončení",
   "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Pokud zůstalo nastavení stopTick ve výchozí hodnotě, Emotecraft jej změní na poslední klíčový snímek\nKontroluje pouze JSON emoce",
+  "emotecraft.otherconfig.alwaysOpenScreen": "Otevřít obrazovku emocí i v případě odpojení kamery",
+  "emotecraft.otherconfig.alwaysOpenScreen.tooltip": "Některé mody (Freecam) mohou ovládat hráče, i když je kamera odpojena, tato konfigurace přepíše stav obrazovky emocí",
   "emotecraft.emotelist": "Všechny emoce",
   "emotecraft.no_server": "Server nemá nainstalovanou žádnou verzi Emotecrafu. Ostatní uživatelé nebudou vidět vaše emoce, pokud nějakou přehrajete.",
   "emotecraft.different_server": "Server má nainstalovanou jinou verzi Emotecrafu. Ostatní uživatelé nemusí vidět vaše emoce přehrávat správně.",
