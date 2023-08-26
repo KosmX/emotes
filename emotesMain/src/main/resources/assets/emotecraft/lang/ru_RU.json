@@ -35,7 +35,7 @@
   "emotecraft.otherconfig.showHiddenConfig": "Показать скрытые настройки. Требуется перезагрузка",
   "emotecraft.otherconfig.showHiddenConfig.tooltip": "Эти параметры нестабильны или не предназначены для использования без знаний программирования\nБольшинство из них предназначены для отладки",
   "emotecraft.otherconfig.hideWarning": "Скрыть предупреждение \"мод не установлен на сервере\"",
-  "emotecraft.otherconfig.emotesFolderOnLogicalServer": "НЕ ВКЛЮЧАТЬ!\nЗагрузить эмоции на логический сервер",
+  "emotecraft.otherconfig.emotesFolderOnLogicalServer": "НЕ ВКЛЮЧАТЬ! Загрузить эмоции на логический сервер",
   "emotecraft.otherconfig.emotesFolderOnLogicalServer.tooltip": "НЕ ВКЛЮЧАЙТЕ ЭТУ ФУНКЦИЮ!\nВнутренний сервер будет загружать клиентские эмоции вместо клиента\nЕсли Вы включите эту функцию, эмоции будут работать только в одиночной игре",
   "emotecraft.otherconfig.oldChooseWheel": "Использовать старое колесо выбора эмоций",
   "emotecraft.otherconfig.autoFixEmoteStop": "Улучшать эмоции для плавной остановки автоматически",
