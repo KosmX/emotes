@@ -1,1 +1,16 @@
-{}
+{
+  "emotecraft.options.options": "Opzioni Mod",
+  "emotecraft.options.keybind": "Imposta un tasto per riprodurre l'emote selezionata.",
+  "emotecraft.options.fastmenu": "Seleziona una emote, poi cliccaci sopra",
+  "emotecraft.options.fastmenu2": "la ruota delle emote per aggiungerlo.",
+  "emotecraft.options.fastmenu3": "Cliccare con il tasto destro su un emote nella ruota per toglierla.",
+  "emotecraft.sure": "Sovrascrivendo il tasto",
+  "emotecraft.sure2": "Un altra emote ha questo tasto. Vuoi sovrascrivere quell'emote con questa?",
+  "emotecraft.otherconfig.category.general": "Opzioni di base",
+  "emotecraft.otherconfig.category.expert": "Opzioni per esperti",
+  "emotecraft.otherconfig": "Altre opzioni",
+  "emotecraft.otherconfig.debug": "Correggi",
+  "emotecraft.otherconfig.validate": "Valida le emote",
+  "emotecraft.otherconfig.validate.tooltip": "Principalmente pensato per i mondi PvP.\n\nDisabilita le emote che compensano troppo il giocatore.",
+  "emotecraft.otherconfig.validationThreshold": "Soglia Di Validazione"
+}
