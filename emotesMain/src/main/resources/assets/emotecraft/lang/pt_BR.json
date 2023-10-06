@@ -40,6 +40,8 @@
   "emotecraft.otherconfig.oldChooseWheel": "Usar estilo antigo da roda de emotes",
   "emotecraft.otherconfig.autoFixEmoteStop": "Auto corrigir emotes para parar suavemente",
   "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Se o stopTick foi deixado no padrão, o Emotecraft irá modificá-lo para o último quadro-chave\nVerifica apenas emotes JSON",
+  "emotecraft.otherconfig.alwaysOpenScreen": "Abra a tela do emote mesmo com a câmera desconectada",
+  "emotecraft.otherconfig.alwaysOpenScreen.tooltip": "Alguns mods (Freecam) podem controlar o jogador mesmo se a câmera estiver desconectada, esta configuração substituirá a condição da tela do emote",
   "emotecraft.emotelist": "Todos os emotes",
   "emotecraft.no_server": "Esse servidor não tem o Emotecraft instalado, outros jogadores não poderão ver se você usar um emote",
   "emotecraft.different_server": "Esse servidor tem uma versão diferente do Emotecraft instalada, outros jogadores poderão não ver seus emotes corretamente",
