@@ -29,31 +29,11 @@ include 'executor'
 include 'emotesServer'
 include 'emotesMain'
 
-//Minecraft 1.18 version
-include '18'
-include '18:archCommon'
-include '18:fabric'
-include '18:forge'
-
-//Minecraft 1.19 version
-include '19'
-include '19:archCommon'
-include '19:fabric'
-include '19:forge'
-
-
-//Minecraft 1.19.4 version
-include '19_4'
-include '19_4:archCommon'
-include '19_4:fabric'
-include '19_4:forge'
-
-
 //Minecraft 1.20 version
-include '20'
-include '20:archCommon'
-include '20:fabric'
-include '20:forge'
+include 'minecraft'
+include 'minecraft:archCommon'
+include 'minecraft:fabric'
+include 'minecraft:forge'
 
 //Bukkit plugin stuff
 include 'bukkit'
