@@ -9,10 +9,8 @@ import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Pose;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPoseChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -150,15 +148,5 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
 
         BukkitNetworkInstance instance = this.player_database.remove(player.getUniqueId());
         if(instance != null)instance.closeConnection();
-    }
-
-    @EventHandler
-    public void playerDies(EntityPoseChangeEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Pose pose = event.getPose();
-            if (pose == Pose.SNEAKING || pose == Pose.DYING || pose == Pose.SWIMMING || pose == Pose.FALL_FLYING || pose == Pose.SLEEPING) {
-                playerEntersInvalidPose((Player) event.getEntity());
-            }
-        }
     }
 }
