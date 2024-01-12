@@ -6,3 +6,4 @@ api-version: 1.16
 website: https://github.com/KosmX/emotes
 authors: [KomsX]
 depend: [ProtocolLib]
+folia-supported: true
