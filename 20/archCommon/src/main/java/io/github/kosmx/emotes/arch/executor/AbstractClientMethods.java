@@ -84,6 +84,6 @@ public abstract class AbstractClientMethods implements IClientMethods {
 
     @Override
     public void toastExportMessage(int level, Text text, String msg) {
-        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.WORLD_BACKUP, ((TextImpl)text).get(), Component.literal(msg));
+        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastId.WORLD_BACKUP, ((TextImpl)text).get(), Component.literal(msg));
     }
 }

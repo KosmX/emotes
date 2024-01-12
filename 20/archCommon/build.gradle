@@ -5,7 +5,7 @@ plugins {
 version project.mod_version
 
 architectury{
-    common("fabric", "forge")
+    common("fabric", "neoforge")
     //minecraft = project.minecraft_version
 }
 

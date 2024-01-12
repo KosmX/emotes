@@ -4,8 +4,8 @@ import io.github.kosmx.emotes.arch.executor.AbstractEmotesMain;
 import io.github.kosmx.emotes.executor.Logger;
 import io.github.kosmx.emotes.executor.dataTypes.IClientMethods;
 import io.github.kosmx.emotes.forge.ForgeWrapper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.nio.file.Path;
 

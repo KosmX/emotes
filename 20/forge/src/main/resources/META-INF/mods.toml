@@ -1,6 +1,6 @@
 modLoader="javafml" #junkloader
 
-loaderVersion="[41.0,)" #From mixin.
+loaderVersion="*" #From mixin.
 
 license="CC-BY-4.0 License"
 
@@ -22,6 +22,11 @@ logoFile="emotecraft_mod_logo.png" #optional
 authors="KosmX" #optional
 
 description="${description}"
+
+[[mixins]]
+config = "emotecraft.mixins.json"
+[[mixins]]
+config = "emotecraft-arch.mixins.json"
 
 [[dependencies.emotecraft]]
 modId="playeranimator"

@@ -11,7 +11,7 @@ apply plugin: 'com.modrinth.minotaur'
 
 architectury{
     platformSetupLoomIde()
-    forge()
+    neoForge()
 }
 
 //Import jfrog keys from file (not included in the git repo :D)
@@ -32,12 +32,6 @@ loom{
     accessWidenerPath = project(":${project.module_name}:archCommon").loom.accessWidenerPath
 
     silentMojangMappingsLicense()
-    forge {
-        mixinConfig "emotecraft.mixins.json"
-        mixinConfig "emotecraft-arch.mixins.json"
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-    }
 }
 
 configurations {
@@ -50,7 +44,7 @@ configurations {
 
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
+    developmentNeoForge.extendsFrom common
 }
 
 dependencies {
@@ -61,13 +55,13 @@ dependencies {
 
     common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
 
-    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")) { transitive false }
+    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionNeoForge")) { transitive false }
 
 
-    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    neoForge "net.neoforged:neoforge:${project.forge_version}"
 
-    modRuntimeOnly("io.github.kosmx.bendy-lib:bendy-lib-forge:${project.bendylib_version}")
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}")
+    include modImplementation("io.github.kosmx.bendy-lib:bendy-lib-forge:${project.bendylib_version}")
+    include modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}")
 }
 
 processResources {
@@ -97,9 +91,11 @@ shadowJar{
 }
 
 remapJar{
+    atAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
+
     dependsOn shadowJar
     input.set shadowJar.archiveFile
-   archiveClassifier.set("forge")
+    archiveClassifier.set("forge")
 }
 
 jar {
@@ -156,9 +152,9 @@ if(keysExists) {
         versionNumber = "${project.mod_version}+${project.minecraft_version}-forge"
         versionName = "${project.mod_version}"
 
-        gameVersions = ["1.20", "1.20.1"]
+        gameVersions = ["1.20.4"]
         changelog = changes
-        loaders = ["forge"]
+        loaders = ["neoforge"]
         failSilently = false
 
         dependencies {

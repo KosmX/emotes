@@ -1,13 +1,13 @@
 package io.github.kosmx.emotes.forge.mixin;
 
-
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.forge.network.ServerNetwork;
+import io.github.kosmx.emotes.forge.network.packets.ForgeMainEmotePacket;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -19,7 +19,6 @@ import java.util.UUID;
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements IServerNetworkInstance {
     private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
-    @Shadow public abstract void send(Packet<?> packet);
 
     @Shadow public ServerPlayer player;
 
@@ -48,17 +47,19 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
 
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        //sendMessage(builder.build().write(), null);
-        this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
+        PacketDistributor.PLAYER.with(this.player).send(ForgeMainEmotePacket.newEmotePacket(builder.copyAndGetData()));
     }
 
     @Override
     public void sendConfigCallback() {
-        EmotePacket.Builder builder = new EmotePacket.Builder().configureToConfigExchange(true);
-        try{
-            this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
-        }
-        catch (IOException e){
+        try {
+            PacketDistributor.PLAYER.with(this.player)
+                    .send(ForgeMainEmotePacket.newEmotePacket(
+                            new EmotePacket.Builder()
+                                    .configureToConfigExchange(true)
+                                    .copyAndGetData()
+                    ));
+        } catch (IOException e){
             e.printStackTrace();
         }
     }

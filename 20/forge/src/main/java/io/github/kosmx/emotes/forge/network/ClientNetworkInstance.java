@@ -2,14 +2,13 @@ package io.github.kosmx.emotes.forge.network;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.netty.buffer.Unpooled;
+import io.github.kosmx.emotes.forge.network.packets.ForgeMainEmotePacket;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -23,12 +22,13 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     public static ClientNetworkInstance networkInstance = new ClientNetworkInstance();
 
-    public void init(){
-        //ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
-        ServerNetwork.channel.addListener(this::receiveJunk);
-        ServerNetwork.channel.addListener(this::registerServerSide);
-        MinecraftForge.EVENT_BUS.addListener(this::connectServerCallback);
-        MinecraftForge.EVENT_BUS.addListener(this::disconnectEvent);
+    public void init() {
+        // ServerNetwork.channel.addListener(this::registerServerSide);
+
+        registerServerSide(); // TODO
+
+        NeoForge.EVENT_BUS.addListener(this::connectServerCallback);
+        NeoForge.EVENT_BUS.addListener(this::disconnectEvent);
     }
 
     private void connectServerCallback(ClientPlayerNetworkEvent.LoggingIn event){
@@ -44,20 +44,19 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         this.connectState.set(0);
     }
 
-    private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
-        receiveMessage(event.getPayload());
-        event.getSource().get().setPacketHandled(true);
+    protected void receiveJunk(ForgeMainEmotePacket forgeMainEmotePacket, PlayPayloadContext playPayloadContext) {
+        receiveMessage(forgeMainEmotePacket.byteBuf());
     }
 
-    private void registerServerSide(NetworkEvent.ChannelRegistrationChangeEvent event){
-        this.isRemotePresent = event.getRegistrationChangeType() == NetworkEvent.RegistrationChangeType.REGISTER;
+    private void registerServerSide() {
+        this.isRemotePresent = true;
         if (isRemotePresent && connectState.incrementAndGet() == 2) {
             connectState.set(0);
             this.sendConfigCallback();
         }
     }
 
-    void receiveMessage(FriendlyByteBuf buf){
+    void receiveMessage(ByteBuf buf){
         if(buf.isDirect()){
             byte[] bytes = new byte[buf.readableBytes()];
             buf.getBytes(buf.readerIndex(), bytes);
@@ -76,12 +75,8 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     @Override
     public boolean isActive() {
         return Minecraft.getInstance().getConnection() != null
-                && ServerNetwork.channel.isRemotePresent(Minecraft.getInstance().getConnection().getConnection())
+                && Minecraft.getInstance().getConnection().isConnected(ForgeMainEmotePacket.channelID)
                 || this.isRemotePresent;
-    }
-
-    public static ServerboundCustomPayloadPacket newC2SEmotePacket(NetData data) throws IOException {
-        return new ServerboundCustomPayloadPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
     }
 
     @Override
@@ -89,7 +84,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         if(target != null){
             builder.configureTarget(target);
         }
-        if(Minecraft.getInstance().getConnection() != null)
-            Minecraft.getInstance().getConnection().send(newC2SEmotePacket(builder.copyAndGetData()));
+
+        PacketDistributor.SERVER.noArg().send(ForgeMainEmotePacket.newEmotePacket(builder.copyAndGetData()));
     }
 }

@@ -23,11 +23,10 @@ import java.util.UUID;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements IServerNetworkInstance {
-
     private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
-    @Shadow public abstract void send(Packet<?> packet);
 
-    @Shadow public abstract ServerPlayer getPlayer();
+    @Shadow
+    public abstract ServerPlayer getPlayer();
 
     HashMap<Byte, Byte> versions = new HashMap<>();
     @Override
@@ -56,14 +55,14 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
     }
 
     public void sendMessage(byte[] bytes, @Nullable UUID target) {
-        this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))));
+        getPlayer().connection.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))));
     }
 
     @Override
     public void sendConfigCallback() {
         EmotePacket.Builder builder = new EmotePacket.Builder().configureToConfigExchange(true);
         try{
-            this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write()))));
+            getPlayer().connection.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write()))));
         }
         catch (IOException e){
             e.printStackTrace();
