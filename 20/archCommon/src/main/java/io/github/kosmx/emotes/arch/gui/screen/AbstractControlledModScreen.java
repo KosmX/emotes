@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;

@@ -15,7 +15,7 @@ public interface IWidgetLogicImpl extends IWidgetLogic<GuiGraphics, GuiEventList
     }
 
     @Override
-    default boolean mouseScrolled(double d, double e, double f) {
+    default boolean mouseScrolled(double d, double e, double f, double i) {
         return this.emotes_mouseScrolled(d, e, f);
     }
 
