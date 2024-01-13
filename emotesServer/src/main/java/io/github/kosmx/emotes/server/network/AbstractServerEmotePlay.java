@@ -192,12 +192,6 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         }
     }
 
-    public void playerEntersInvalidPose(P player) {
-        if (!getPlayerNetworkInstance(player).getEmoteTracker().isForced()) {
-            stopEmote(player, null);
-        }
-    }
-
     public void receiveGeyserMessage(P player, byte[] data){
         try {
             GeyserEmotePacket packet = new GeyserEmotePacket();
