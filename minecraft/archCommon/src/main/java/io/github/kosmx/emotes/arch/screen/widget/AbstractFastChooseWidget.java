@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.screen.widget;
+package io.github.kosmx.emotes.arch.screen.widget;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;

@@ -1,12 +1,11 @@
 package io.github.kosmx.emotes.arch.gui.screen.ingame;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.arch.gui.screen.AbstractControlledModScreen;
 import io.github.kosmx.emotes.arch.gui.screen.IDrawableImpl;
 import io.github.kosmx.emotes.arch.gui.screen.IWidgetLogicImpl;
-import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.main.screen.IScreenSlave;
-import io.github.kosmx.emotes.main.screen.ingame.FastMenuScreenLogic;
+import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
+import io.github.kosmx.emotes.arch.screen.IScreenSlave;
+import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreenLogic;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;

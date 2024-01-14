@@ -1,12 +1,12 @@
-package io.github.kosmx.emotes.main.screen.ingame;
+package io.github.kosmx.emotes.arch.screen.ingame;
 
+import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.main.screen.IScreenSlave;
-import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
+import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
+import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 
 /**
  * Stuff to override/implement

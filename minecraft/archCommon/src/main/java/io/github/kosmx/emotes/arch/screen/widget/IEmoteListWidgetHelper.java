@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.screen.widget;
+package io.github.kosmx.emotes.arch.screen.widget;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
@@ -7,7 +7,7 @@ import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
-import io.github.kosmx.emotes.main.screen.IRenderHelper;
+import io.github.kosmx.emotes.arch.screen.IRenderHelper;
 
 import java.util.Collection;
 import java.util.LinkedList;

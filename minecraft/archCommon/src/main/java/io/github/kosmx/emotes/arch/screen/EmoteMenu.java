@@ -1,6 +1,9 @@
-package io.github.kosmx.emotes.main.screen;
+package io.github.kosmx.emotes.arch.screen;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
+import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
+import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
+import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.InputKey;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
@@ -13,9 +16,6 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
-import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
-import io.github.kosmx.emotes.main.screen.widget.IChooseWheel;
-import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
 import javax.annotation.Nonnull;

@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.screen;
+package io.github.kosmx.emotes.arch.screen;
 
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;

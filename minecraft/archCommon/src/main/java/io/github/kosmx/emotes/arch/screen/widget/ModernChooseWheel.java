@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.screen.widget;
+package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;

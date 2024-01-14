@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.main.screen;
+package io.github.kosmx.emotes.arch.screen;
 
 import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;

@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.kosmx.emotes.main.screen.widget.IWidgetLogic;
+import io.github.kosmx.emotes.arch.screen.widget.IWidgetLogic;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;

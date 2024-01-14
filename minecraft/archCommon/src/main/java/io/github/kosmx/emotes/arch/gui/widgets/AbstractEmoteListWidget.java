@@ -1,10 +1,9 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.arch.gui.screen.IDrawableImpl;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.screen.widget.IEmoteListWidgetHelper;
+import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;

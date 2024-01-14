@@ -1,9 +1,8 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.main.screen.ExportMenu;
-import io.github.kosmx.emotes.main.screen.IScreenSlave;
+import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
+import io.github.kosmx.emotes.arch.screen.ExportMenu;
+import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;

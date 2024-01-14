@@ -1,14 +1,14 @@
-package io.github.kosmx.emotes.main.screen.ingame;
+package io.github.kosmx.emotes.arch.screen.ingame;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
+import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
+import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.dataTypes.Text;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
-import io.github.kosmx.emotes.main.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.main.screen.IScreenSlave;
-import io.github.kosmx.emotes.main.screen.widget.AbstractFastChooseWidget;
-import io.github.kosmx.emotes.main.screen.widget.IChooseWheel;
+import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
+import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 
 /**
  * Stuff to override
