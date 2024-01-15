@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.main;
 
-import com.google.gson.JsonElement;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.MathHelper;
@@ -28,7 +27,6 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 

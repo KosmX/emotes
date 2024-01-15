@@ -41,7 +41,7 @@ dependencies {
     commonModule(project(':executor')) {transitive false}
     commonModule(project(':emotesAPI')) {transitive false}
     commonModule(project(':emotesServer')) {transitive false}
-    commonModule(project(':emotesMain')) {transitive false}
+    commonModule(project(':emotesAssets')) {transitive false}
 
     common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
 

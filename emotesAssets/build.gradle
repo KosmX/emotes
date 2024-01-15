@@ -12,26 +12,8 @@ plugins {
 group project.maven_group
 version project.mod_version
 
-repositories {
-    mavenCentral()
-}
-
 configurations {
-    compileModule
     dev
-}
-
-dependencies {
-    implementation project(':emotesAPI')
-    implementation project(':executor')
-    implementation project(':emotesServer')
-    implementation "dev.kosmx.player-anim:anim-core:${project.player_anim_core}"
-
-    compileModule project(':emotesAPI')
-    compileModule project(':executor')
-    compileModule project(':emotesServer')
-
-    compileOnly "com.google.code.gson:gson:2.8.0"//That package is compiled into MC
 }
 
 tasks.withType(Copy){
@@ -55,13 +37,6 @@ shadowJar{
 //    dependsOn shadowJar
 //    input.set shadowJar.archiveFile
 //}
-
-task fatJar(type: Jar) {
-   from {
-       configurations.compileModule.collect { it.isDirectory() ? it : zipTree(it) }
-   }
-   archiveClassifier.set("fat")
-}
 
 task publicationJar (type: Jar, dependsOn: classes ) {
     archiveClassifier.set("")

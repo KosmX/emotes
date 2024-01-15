@@ -12,6 +12,6 @@ public class ScreenImpl implements IScreen<Screen> {
 
     @Override
     public Screen getScreen() {
-        return this.MCScreen;
+        return MCScreen;
     }
 }

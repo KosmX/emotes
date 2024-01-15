@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;

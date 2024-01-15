@@ -27,7 +27,7 @@ include 'emotesAPI'
 //include 'oldJunk'
 include 'executor'
 include 'emotesServer'
-include 'emotesMain'
+include 'emotesAssets'
 
 //Minecraft 1.20 version
 include 'minecraft'
