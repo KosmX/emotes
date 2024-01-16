@@ -71,7 +71,7 @@ jar{
     from{
         configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
     }
-    dependsOn(':emotesMain:build')
+    dependsOn(':emotesAssets:build')
    archiveClassifier.set("bukkit")
 }
 
