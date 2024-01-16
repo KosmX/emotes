@@ -8,13 +8,11 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 //Every player will be IEmotePlayer
-public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEntity{
+public interface IEmotePlayerEntity<T extends IEmotePlayer>{
 
     //void init();
 
     void playEmote(KeyframeAnimation emote, int tick, boolean isForced);
-
-    AnimationProcessor getAnimation();
 
     @Nullable
     T getEmote();
@@ -46,4 +44,6 @@ public interface IEmotePlayerEntity<T extends IEmotePlayer > extends IPlayerEnti
     default void emoteStartPlayCallback(){}
 
     boolean isForcedEmote();
+
+    UUID emotes_getUUID();
 }

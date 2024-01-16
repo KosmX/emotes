@@ -10,12 +10,13 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import net.minecraft.client.model.geom.ModelPart;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
 
-public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
+public interface IPlayerEntity extends IEmotePlayerEntity<EmotePlayer<ModelPart>> {
 
     int FPPerspective = 0;
     Supplier<Integer> TPBPerspective = () -> (((ClientConfig)EmoteInstance.config).frontAsTPPerspective.get() ? 2 : 1);
@@ -28,7 +29,7 @@ public interface IPlayerEntity<T> extends IEmotePlayerEntity<EmotePlayer<T>> {
             this.playEmote(p.getLeft(), p.getRight(), false);
         }
         if(!this.isMainPlayer() && TmpGetters.getClientMethods().getMainPlayer() != null && TmpGetters.getClientMethods().getMainPlayer().isPlayingEmote()){
-            IEmotePlayerEntity playerEntity = TmpGetters.getClientMethods().getMainPlayer();
+            IPlayerEntity playerEntity = TmpGetters.getClientMethods().getMainPlayer();
             ClientEmotePlay.clientRepeatLocalEmote(playerEntity.getEmote().getData(), playerEntity.getEmote().getTick(), this.emotes_getUUID());
         }
 
