@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.fabric.executor;
 
+import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.arch.executor.AbstractEmotesMain;
 import io.github.kosmx.emotes.executor.Logger;
 import io.github.kosmx.emotes.executor.dataTypes.IClientMethods;
@@ -17,7 +18,7 @@ public class FabricEmotesMain extends AbstractEmotesMain {
 
     @Override
     public IClientMethods getClientMethods() {
-        return isClient() ? new FabricClientMethods() : null;
+        return isClient() ? new ClientMethods() : null;
     }
 
     @Override

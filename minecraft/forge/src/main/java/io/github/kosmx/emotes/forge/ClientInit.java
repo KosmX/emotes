@@ -1,10 +1,10 @@
 package io.github.kosmx.emotes.forge;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.forge.executor.ForgeClientMethods;
+import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.arch.gui.screen.ingame.FastChosseScreen;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.forge.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -46,7 +46,7 @@ public class ClientInit {
 
     @SubscribeEvent
     public static void endClientTick(TickEvent.ClientTickEvent event){
-        ForgeClientMethods.tick++;
+        ClientMethods.tick++;
     }
 
     @SubscribeEvent

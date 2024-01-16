@@ -1,6 +1,8 @@
 package io.github.kosmx.emotes.arch.executor;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
 import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
 import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
@@ -24,7 +26,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @SuppressWarnings("unchecked")
-public abstract class AbstractClientMethods implements IClientMethods {
+public final class ClientMethods implements IClientMethods {
     public static int tick = 0;
 
     @Override
@@ -55,6 +57,11 @@ public abstract class AbstractClientMethods implements IClientMethods {
     @Override
     public IEmotePlayerEntity<EmotePlayImpl> getMainPlayer() {
         return (IEmotePlayerEntity) Minecraft.getInstance().player;
+    }
+
+    @Override
+    public INetworkInstance getServerNetworkController() {
+        return PlatformTools.getClientNetworkController();
     }
 
     @Override

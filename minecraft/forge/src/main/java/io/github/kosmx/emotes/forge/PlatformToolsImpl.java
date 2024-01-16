@@ -1,5 +1,8 @@
 package io.github.kosmx.emotes.forge;
 
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.forge.network.ClientNetworkInstance;
+
 public class PlatformToolsImpl {
     public static boolean isPlayerAnimLoaded() {
         try {
@@ -8,5 +11,9 @@ public class PlatformToolsImpl {
         } catch(ClassNotFoundException e) {
             return false;
         }
+    }
+
+    public static INetworkInstance getClientNetworkController() {
+        return ClientNetworkInstance.networkInstance;
     }
 }

@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.fabric;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.kosmx.emotes.arch.executor.AbstractClientMethods;
+import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.arch.gui.screen.ingame.FastChosseScreen;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
@@ -35,7 +35,7 @@ public class ClientInit {
         ClientNetworkInstance.networkInstance.init(); //init network
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            AbstractClientMethods.tick++;
+            ClientMethods.tick++;
 
             keyBindingFunction.accept(client);
         });

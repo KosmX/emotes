@@ -24,20 +24,6 @@ public class BungeeInstance extends EmoteInstance {
         return this.logger::log;
     }
 
-    @Override
-    public IDefaultTypes getDefaults() {
-        return null;
-    }
-
-    @Override
-    public IGetters getGetters() {
-        return null;
-    }
-
-    @Override
-    public IClientMethods getClientMethods() {
-        return null;
-    }
 
     @Override
     public boolean isClient() {
