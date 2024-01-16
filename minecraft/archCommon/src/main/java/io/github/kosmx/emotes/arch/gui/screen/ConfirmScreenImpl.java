@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
+import io.github.kosmx.emotes.inline.dataTypes.screen.IConfirmScreen;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;

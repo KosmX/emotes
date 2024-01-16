@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.util.logging.Level;
  */
 public final class ClientPacketManager extends EmotesProxyManager {
 
-    private static final INetworkInstance defaultNetwork = EmoteInstance.instance.getClientMethods().getServerNetworkController();
+    private static final INetworkInstance defaultNetwork = TmpGetters.getClientMethods().getServerNetworkController();
     //that casting should always work
 
     public static void init(){

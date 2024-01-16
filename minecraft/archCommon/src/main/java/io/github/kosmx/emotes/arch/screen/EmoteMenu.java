@@ -5,13 +5,14 @@ import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
-import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
+import io.github.kosmx.emotes.inline.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.other.EmotesTextFormatting;
+import io.github.kosmx.emotes.inline.dataTypes.screen.IConfirmScreen;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -42,7 +43,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private IEmoteListWidgetHelper<MATRIX, WIDGET> emoteList;
     private FastChooseWidget fastMenu;
     //protected List<buttons> buttons is already exists
-    private final Text unboundText = EmoteInstance.instance.getDefaults().getUnknownKey().getLocalizedText();
+    private final Text unboundText = TmpGetters.getDefaults().getUnknownKey().getLocalizedText();
     private IButton setKeyButton;
     public boolean save = false;
     public boolean warn = false;
@@ -50,8 +51,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private List<PositionedText> texts = new ArrayList<>();
     private IButton resetKey;
 
-    private Text resetOneText = EmoteInstance.instance.getDefaults().newTranslationText("controls.reset");
-    private Text resetAllText = EmoteInstance.instance.getDefaults().newTranslationText("controls.resetAll");
+    private Text resetOneText = TmpGetters.getDefaults().newTranslationText("controls.reset");
+    private Text resetAllText = TmpGetters.getDefaults().newTranslationText("controls.resetAll");
     private boolean resetOnlySelected;
     private int keyBoundEmotes = -1;
 
@@ -68,8 +69,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             IConfirmScreen csr = createConfigScreen((bool)->{
                 EmoteInstance.config.enableQuark.set(bool);
                 screen.openThisScreen();
-            }, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark"), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.quark2"));
-            EmoteInstance.instance.getClientMethods().openScreen(csr);
+            }, TmpGetters.getDefaults().newTranslationText("emotecraft.quark"), TmpGetters.getDefaults().newTranslationText("emotecraft.quark2"));
+            TmpGetters.getClientMethods().openScreen(csr);
             csr.setTimeout(56);
         }
 
@@ -86,12 +87,12 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             }
         }
 
-        this.searchBox = newTextInputWidget(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12, 12, (int) (screen.getWidth() / 2.2 - 16), 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.search"));
+        this.searchBox = newTextInputWidget(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12, 12, (int) (screen.getWidth() / 2.2 - 16), 20, TmpGetters.getDefaults().newTranslationText("emotecraft.search"));
 
         this.searchBox.setInputListener((string)->this.emoteList.filter(string::toLowerCase));
         screen.addToChildren(searchBox);
 
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
 
         //this.emoteList = new EmoteListWidget(this.client, (int) (this.getHeight() / 2.2 - 16), this.getHeight(), this);
         this.emoteList = newEmoteList((int) (screen.getWidth()/2.2-16), screen.getHeight());
@@ -100,19 +101,19 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         int x = Math.min(screen.getWidth() / 4, (int) (screen.getHeight() / 2.5));
         this.fastMenu = newFastChooseWidghet(screen.getWidth() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
         screen.addToChildren(fastMenu);
-        screen.addToButtons(newButton(screen.getWidth() - 100, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
-        screen.addToButtons(newButton(screen.getWidth() - 200, 4, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.export"), (button->openExportMenuScreen())));
-        screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
+        screen.addToButtons(newButton(screen.getWidth() - 100, 4, 96, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
+        screen.addToButtons(newButton(screen.getWidth() - 200, 4, 96, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.options.export"), (button->openExportMenuScreen())));
+        screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, TmpGetters.getDefaults().defaultTextsDone(), (button->screen.openParent())));
         setKeyButton = newButton(screen.getWidth() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
         screen.addToButtons(setKeyButton);
-        resetKey = newButton(screen.getWidth() / 2 + 124, 60, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("controls.reset"), (this::resetKeyAction));
+        resetKey = newButton(screen.getWidth() / 2 + 124, 60, 96, 20, TmpGetters.getDefaults().newTranslationText("controls.reset"), (this::resetKeyAction));
         screen.addToButtons(resetKey);
         emoteList.setEmotes(EmoteHolder.list, true);
         screen.setInitialFocus(this.searchBox);
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.keybind"), screen.getWidth() / 2 + 115, 40));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 54));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu2"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 40));
-        this.texts.add(new PositionedText(EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 26));
+        this.texts.add(new PositionedText(TmpGetters.getDefaults().newTranslationText("emotecraft.options.keybind"), screen.getWidth() / 2 + 115, 40));
+        this.texts.add(new PositionedText(TmpGetters.getDefaults().newTranslationText("emotecraft.options.fastmenu"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 54));
+        this.texts.add(new PositionedText(TmpGetters.getDefaults().newTranslationText("emotecraft.options.fastmenu2"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 40));
+        this.texts.add(new PositionedText(TmpGetters.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 26));
         screen.addButtonsToChildren();
     }
 
@@ -136,12 +137,12 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private void resetKeyAction(IButton button){
         if(resetOnlySelected) {
             if (emoteList.getSelectedEntry() == null) return;
-            //emoteList.getSelectedEntry().getEmote().keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
+            //emoteList.getSelectedEntry().getEmote().keyBinding = TmpGetters.getDefaults().getUnknownKey();
             ((ClientConfig)EmoteInstance.config).emoteKeyMap.removeL(emoteList.getSelectedEntry().getEmote().getUuid());
             keyBoundEmotes = -1;
             this.save = true;
         } else {
-            EmoteInstance.instance.getClientMethods().openScreen(
+            TmpGetters.getClientMethods().openScreen(
                     createConfigScreen(
                             aBoolean -> {
                                 if(aBoolean) {
@@ -151,8 +152,8 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
                                 }
                                 screen.openThisScreen();
                             },
-                            EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.resetAllKeys.title"),
-                            EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.resetAllKeys.message").append(" (" + keyBoundEmotes + ")"))
+                            TmpGetters.getDefaults().newTranslationText("emotecraft.resetAllKeys.title"),
+                            TmpGetters.getDefaults().newTranslationText("emotecraft.resetAllKeys.message").append(" (" + keyBoundEmotes + ")"))
             );
         }
     }
@@ -173,7 +174,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     @Override
     public boolean emotes_onMouseClicked(double mouseX, double mouseY, int button){
         if(this.activeKeyTime != 0 && emoteList.getSelectedEntry() != null){
-            return setKey(EmoteInstance.instance.getDefaults().getMouseKeyFromCode(button));
+            return setKey(TmpGetters.getDefaults().getMouseKeyFromCode(button));
         }
         return false;
     }
@@ -191,7 +192,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             resetOnlySelected = false;
         }else{
             this.setKeyButton.setActive(true);
-            //this.resetKey.setActive(! this.emoteList.getSelectedEntry().getEmote().keyBinding.equals(EmoteInstance.instance.getDefaults().getUnknownKey()));
+            //this.resetKey.setActive(! this.emoteList.getSelectedEntry().getEmote().keyBinding.equals(TmpGetters.getDefaults().getUnknownKey()));
             resetOnlySelected = ((ClientConfig)EmoteInstance.config).emoteKeyMap.containsL(this.emoteList.getSelectedEntry().getEmote().getUuid());
         }
         if(resetOnlySelected){
@@ -223,7 +224,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
         if(emoteList.getSelectedEntry() != null){
             bl = true;
             if(! applyKey(false, emoteList.getSelectedEntry().getEmote(), key)){
-                EmoteInstance.instance.getClientMethods().openScreen(createConfigScreen(aBoolean -> confirmReturn(aBoolean, emoteList.getSelectedEntry().getEmote(), key), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.sure"), EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.sure2")));
+                TmpGetters.getClientMethods().openScreen(createConfigScreen(aBoolean -> confirmReturn(aBoolean, emoteList.getSelectedEntry().getEmote(), key), TmpGetters.getDefaults().newTranslationText("emotecraft.sure"), TmpGetters.getDefaults().newTranslationText("emotecraft.sure2")));
             }
         }
         return bl;
@@ -240,10 +241,10 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     private boolean applyKey(boolean force, EmoteHolder emote, InputKey key){
         boolean bl = true;
         for(EmoteHolder emoteHolder : EmoteHolder.list){
-            if(! key.equals(EmoteInstance.instance.getDefaults().getUnknownKey()) && getKey(emoteHolder.getUuid()).equals(key)){
+            if(! key.equals(TmpGetters.getDefaults().getUnknownKey()) && getKey(emoteHolder.getUuid()).equals(key)){
                 bl = false;
                 if(force){
-                    //emoteHolder.keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey();
+                    //emoteHolder.keyBinding = TmpGetters.getDefaults().getUnknownKey();
                     ((ClientConfig)EmoteInstance.config).emoteKeyMap.removeL(emoteHolder.getUuid());
                 }
             }
@@ -261,7 +262,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     public static InputKey getKey(UUID emoteID){
         InputKey key;
         if((key = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getR(emoteID)) == null){
-            return EmoteInstance.instance.getDefaults().getUnknownKey();
+            return TmpGetters.getDefaults().getUnknownKey();
         }
         return key;
     }
@@ -290,7 +291,7 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
             Text message = getKey(emoteList.getSelectedEntry().getEmote().getUuid()).getLocalizedText();
             if(activeKeyTime != 0)
                 //message = (new LiteralText("> ")).append(message.shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW);
-                message = EmoteInstance.instance.getDefaults().textFromString("> ").append(message).formatted(EmotesTextFormatting.YELLOW).append(" <").formatted(EmotesTextFormatting.YELLOW);
+                message = TmpGetters.getDefaults().textFromString("> ").append(message).formatted(EmotesTextFormatting.YELLOW).append(" <").formatted(EmotesTextFormatting.YELLOW);
             setKeyButton.setMessage(message);
         }
     }
@@ -299,10 +300,10 @@ public abstract class EmoteMenu<MATRIX, SCREEN, WIDGET> extends AbstractScreenLo
     public boolean emotes_onKeyPressed(int keyCode, int scanCode, int mod){
         if(emoteList.getSelectedEntry() != null && activeKeyTime != 0) {
             if (keyCode == 256) {
-                return setKey(EmoteInstance.instance.getDefaults().getUnknownKey());
+                return setKey(TmpGetters.getDefaults().getUnknownKey());
             }
             else {
-                return setKey(EmoteInstance.instance.getDefaults().getKeyFromCode(keyCode, scanCode));
+                return setKey(TmpGetters.getDefaults().getKeyFromCode(keyCode, scanCode));
             }
         }
         return false;

@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.main.config;
 
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.dataTypes.InputKey;
 
 import java.util.UUID;
 

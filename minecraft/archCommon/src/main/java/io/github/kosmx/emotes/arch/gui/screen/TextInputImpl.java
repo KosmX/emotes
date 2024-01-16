@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

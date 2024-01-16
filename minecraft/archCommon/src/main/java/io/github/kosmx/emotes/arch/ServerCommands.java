@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -111,7 +112,7 @@ public final class ServerCommands {
             List<String> suggestions = new LinkedList<>();
             for (var emote : emotes.values()) {
                 if (emote.extraData.containsKey("name")) {
-                    String name = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("name")).getString();
+                    String name = TmpGetters.getDefaults().fromJson(emote.extraData.get("name")).getString();
                     if (name.contains(" ")) {
                         name = "\"" + name + "\"";
                     }
@@ -140,7 +141,7 @@ public final class ServerCommands {
 
             for (var emote : emotes.values()) {
                 if (emote.extraData.containsKey("name")) {
-                    String name = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("name")).getString();
+                    String name = TmpGetters.getDefaults().fromJson(emote.extraData.get("name")).getString();
                     if (name.equals(id)) return emote;
                 }
             }

@@ -5,10 +5,10 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
 import io.github.kosmx.emotes.arch.executor.types.Key;
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
-import io.github.kosmx.emotes.executor.dataTypes.IDefaultTypes;
-import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.IDefaultTypes;
+import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
+import io.github.kosmx.emotes.inline.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 

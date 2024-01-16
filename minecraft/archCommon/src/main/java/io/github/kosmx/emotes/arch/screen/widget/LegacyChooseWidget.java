@@ -3,8 +3,9 @@ package io.github.kosmx.emotes.arch.screen.widget;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 
@@ -18,7 +19,7 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
-    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_dark.png") : EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_light.png");
+    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_dark.png") : TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_light.png");
 
     private final AbstractFastChooseWidget<MATRIX, WIDGET> widget;
 

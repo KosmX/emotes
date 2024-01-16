@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.executor.dataTypes;
+package io.github.kosmx.emotes.inline.dataTypes;
 
 
 //II as InterfaceIdentifier

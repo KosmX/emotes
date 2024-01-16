@@ -1,7 +1,8 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
+import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 
@@ -24,7 +25,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
-    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_dark_new.png") : EmoteInstance.instance.getDefaults().newIdentifier("textures/gui/fastchoose_light_new.png");
+    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_dark_new.png") : TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_light_new.png");
 
     private final AbstractFastChooseWidget<MATRIX, WIDGET> widget;
 
@@ -105,7 +106,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
         for(FastChooseElement f : elements){
             if(f.hasEmote()) f.render(matrices);
         }
-        widget.textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults()
+        widget.textDrawWithShadow(matrices, TmpGetters.getDefaults()
                 .textFromString(String.valueOf(fastMenuPage + 1)), widget.x + widget.size / 2f - 2, widget.y + widget.size / 2f - 3, -1);
     }
 

@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.arch.gui.screen.ingame;
 import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.arch.gui.screen.AbstractControlledModScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
-import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
+import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;

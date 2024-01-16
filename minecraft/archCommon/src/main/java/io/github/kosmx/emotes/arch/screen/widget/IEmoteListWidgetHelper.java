@@ -3,8 +3,9 @@ package io.github.kosmx.emotes.arch.screen.widget;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
-import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
+import io.github.kosmx.emotes.inline.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.dataTypes.other.EmotesTextFormatting;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.arch.screen.IRenderHelper;
@@ -44,7 +45,7 @@ public interface IEmoteListWidgetHelper<MATRIX, WIDGET> extends IWidgetLogic<MAT
             textDrawWithShadow(matrices, this.getEmote().name, x + 38, y + 1, 16777215);
             textDrawWithShadow(matrices, this.getEmote().description, x + 38, y + 12, 8421504);
             if(! this.getEmote().author.getString().equals(""))
-                textDrawWithShadow(matrices, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.emote.author").formatted(EmotesTextFormatting.GOLD).append(this.getEmote().author), x + 38, y + 23, 8421504);
+                textDrawWithShadow(matrices, TmpGetters.getDefaults().newTranslationText("emotecraft.emote.author").formatted(EmotesTextFormatting.GOLD).append(this.getEmote().author), x + 38, y + 23, 8421504);
             if(this.getEmote().getIconIdentifier() != null){
                 renderSystemBlendColor(1, 1, 1, 1); //color4f => blendColor
                 renderEnableBend();

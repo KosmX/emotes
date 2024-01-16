@@ -1,8 +1,9 @@
 package io.github.kosmx.emotes.arch.executor.types;
 
 import com.google.gson.JsonElement;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.executor.dataTypes.other.EmotesTextFormatting;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.other.EmotesTextFormatting;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -32,6 +33,11 @@ public class TextImpl implements Text {
     @Override
     public Text append(Text text) {
         return new TextImpl(this.MCText.append(((TextImpl) text).MCText));
+    }
+
+    @Override
+    public Text append(String text) {
+        return append(TmpGetters.getDefaults().textFromString(text));
     }
 
     protected ChatFormatting iFormatToFormat(EmotesTextFormatting emotesTextFormatting){

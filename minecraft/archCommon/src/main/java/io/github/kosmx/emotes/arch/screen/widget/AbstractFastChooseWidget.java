@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.arch.screen.widget;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 
 public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidgetLogic<MATRIX, WIDGET> {

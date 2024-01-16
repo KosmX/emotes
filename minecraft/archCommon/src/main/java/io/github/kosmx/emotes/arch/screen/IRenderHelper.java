@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.screen;
 
-import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
 
 public interface IRenderHelper<MATRIX> {
     void renderSystemBlendColor(float r, float g, float b, float a);

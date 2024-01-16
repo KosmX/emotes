@@ -1,7 +1,7 @@
-package io.github.kosmx.emotes.executor.dataTypes;
+package io.github.kosmx.emotes.inline.dataTypes;
 
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
+import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 
 import java.io.IOException;

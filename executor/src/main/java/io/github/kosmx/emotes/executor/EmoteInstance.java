@@ -16,22 +16,8 @@ public abstract class EmoteInstance {
 
 
     public static SerializableConfig config = null;
+    
     public abstract Logger getLogger();
-
-    @Deprecated
-    public IDefaultTypes getDefaults() {
-        return null;
-    }
-
-    @Deprecated
-    public IGetters getGetters() {
-        return null;
-    }
-
-    @Deprecated
-    public IClientMethods getClientMethods() {
-        return null;
-    }
 
     public abstract boolean isClient();
 

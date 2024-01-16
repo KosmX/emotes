@@ -3,8 +3,8 @@ package io.github.kosmx.emotes.main.config;
 import com.google.gson.*;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 
 import java.lang.reflect.Type;
@@ -69,7 +69,7 @@ public class ClientConfigSerializer extends ConfigSerializer {
             oldKeyBindsSerializer(node.getAsJsonArray(), config, fixer);
         } else {
             for (Map.Entry<String, JsonElement> element : node.getAsJsonObject().entrySet()) {
-                config.emoteKeyMap.put(UUID.fromString(element.getKey()), EmoteInstance.instance.getDefaults().getKeyFromString(element.getValue().getAsString()));
+                config.emoteKeyMap.put(UUID.fromString(element.getKey()), TmpGetters.getDefaults().getKeyFromString(element.getValue().getAsString()));
                 //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
             }
         }
@@ -78,7 +78,7 @@ public class ClientConfigSerializer extends ConfigSerializer {
     private void oldKeyBindsSerializer(JsonArray node, ClientConfig config, EmoteFixer fixer){
         for(JsonElement jsonElement : node){
             JsonObject n = jsonElement.getAsJsonObject();
-            config.emoteKeyMap.add(new Pair<>(fixer.getEmoteID(n.get("id")), EmoteInstance.instance.getDefaults().getKeyFromString(n.get("key").getAsString())));
+            config.emoteKeyMap.add(new Pair<>(fixer.getEmoteID(n.get("id")), TmpGetters.getDefaults().getKeyFromString(n.get("key").getAsString())));
         }
     }
 

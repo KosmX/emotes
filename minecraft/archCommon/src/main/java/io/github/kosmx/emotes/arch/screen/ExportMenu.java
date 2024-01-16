@@ -4,6 +4,7 @@ import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -26,15 +27,15 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
     public void emotes_initScreen() {
         int h = 10;
         screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
-                EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportjson"), //TODO translation key
+                TmpGetters.getDefaults().newTranslationText("emotecraft.exportjson"), //TODO translation key
                 iButton -> this.saveAllJson()));
         screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
-                EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.exportbin"), //TODO translation key
+                TmpGetters.getDefaults().newTranslationText("emotecraft.exportbin"), //TODO translation key
                 iButton -> this.saveAllBinary()));
 
         //TODO toast notification
-        screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().defaultTextsDone(), (button->screen.openParent())));
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
+        screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, TmpGetters.getDefaults().defaultTextsDone(), (button->screen.openParent())));
+        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
         screen.addButtonsToChildren();
     }
 
@@ -72,13 +73,13 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
                 }
             }catch (IOException | EmoteSerializerException | InvalidPathException e) {
                 e.printStackTrace();
-                EmoteInstance.instance.getClientMethods().toastExportMessage( 2,
-                        EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.export.error." + format.getExtension()),
+                TmpGetters.getClientMethods().toastExportMessage( 2,
+                        TmpGetters.getDefaults().newTranslationText("emotecraft.export.error." + format.getExtension()),
                         emoteHolder.name.getString());
             }
         }
-        EmoteInstance.instance.getClientMethods().toastExportMessage(1,
-                EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.export.done." + format.getExtension()),
+        TmpGetters.getClientMethods().toastExportMessage(1,
+                TmpGetters.getDefaults().newTranslationText("emotecraft.export.done." + format.getExtension()),
                 "emotes/" + format.getExtension() + "_export/");
         EmoteInstance.instance.getLogger().log(Level.FINER, "All emotes are saved in " + format.getExtension() + " format", true);
     }

@@ -8,12 +8,13 @@ import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.executor.dataTypes.INativeImageBacketTexture;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
+import io.github.kosmx.emotes.inline.dataTypes.INativeImageBacketTexture;
+import io.github.kosmx.emotes.inline.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
@@ -42,7 +43,7 @@ public class EmoteHolder implements Supplier<UUID> {
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
-    //public InputKey keyBinding = EmoteInstance.instance.getDefaults().getUnknownKey(); // assigned keybinding
+    //public InputKey keyBinding = TmpGetters.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
     public INativeImageBacketTexture nativeIcon = null;
     @Nullable
@@ -60,9 +61,9 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
-        this.name = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("name"));
-        this.description = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("description"));
-        this.author = EmoteInstance.instance.getDefaults().fromJson(emote.extraData.get("author"));
+        this.name = TmpGetters.getDefaults().fromJson(emote.extraData.get("name"));
+        this.description = TmpGetters.getDefaults().fromJson(emote.extraData.get("description"));
+        this.author = TmpGetters.getDefaults().fromJson(emote.extraData.get("author"));
     }
 
 
@@ -94,7 +95,7 @@ public class EmoteHolder implements Supplier<UUID> {
                 return false;
             }
             if(emoteHolder.iconIdentifier != null){
-                EmoteInstance.instance.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
+                TmpGetters.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
                 assert emoteHolder.nativeIcon != null;
                 emoteHolder.nativeIcon.close();
             }
@@ -121,9 +122,9 @@ public class EmoteHolder implements Supplier<UUID> {
     public void assignIcon(InputStream inputStream) {
         try {
 
-            INativeImageBacketTexture nativeImageBackedTexture = EmoteInstance.instance.getClientMethods().readNativeImage(inputStream);
-            this.iconIdentifier = EmoteInstance.instance.getDefaults().newIdentifier("icon" + this.hashCode());
-            EmoteInstance.instance.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
+            INativeImageBacketTexture nativeImageBackedTexture = TmpGetters.getClientMethods().readNativeImage(inputStream);
+            this.iconIdentifier = TmpGetters.getDefaults().newIdentifier("icon" + this.hashCode());
+            TmpGetters.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;
 
         } catch (Throwable var) {
@@ -212,7 +213,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * @return True if possible to play
      */
     public static boolean canRunEmote(IEmotePlayerEntity player){
-        if(! EmoteInstance.instance.getClientMethods().isAbstractClientEntity(player)) return false;
+        if(! TmpGetters.getClientMethods().isAbstractClientEntity(player)) return false;
         if(player.isNotStanding() && !ClientPacketManager.isRemoteTracking()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
         Vec3d prevPos = player.getPrevPos();
@@ -258,7 +259,7 @@ public class EmoteHolder implements Supplier<UUID> {
 
 
     public static void handleKeyPress(InputKey key){
-        if(EmoteInstance.instance != null && EmoteHolder.canRunEmote(EmoteInstance.instance.getClientMethods().getMainPlayer())){
+        if(EmoteInstance.instance != null && EmoteHolder.canRunEmote(TmpGetters.getClientMethods().getMainPlayer())){
             UUID uuid = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getL(key);
             if(uuid != null){
                 EmoteHolder emoteHolder = list.get(uuid);

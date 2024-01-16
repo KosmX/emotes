@@ -4,7 +4,8 @@ import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
@@ -17,8 +18,8 @@ import io.github.kosmx.emotes.arch.screen.IScreenSlave;
  */
 public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
     private FastMenuWidget widget;
-    private static final Text warn_no_emotecraft = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.no_server");
-    private static final Text warn_only_proxy = EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.only_proxy");
+    private static final Text warn_no_emotecraft = TmpGetters.getDefaults().newTranslationText("emotecraft.no_server");
+    private static final Text warn_only_proxy = TmpGetters.getDefaults().newTranslationText("emotecraft.only_proxy");
 
     protected FastMenuScreenLogic(IScreenSlave screen) {
         super(screen);
@@ -31,7 +32,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
         this.widget = newFastMenuWidget((screen.getWidth() - x) / 2, (screen.getHeight() - x) / 2, x);
         screen.addToChildren(widget);
         //this.buttons.add(new ButtonWidget(this.width - 120, this.height - 30, 96, 20, new TranslatableText("emotecraft.config"), (button -> this.client.openScreen(new EmoteMenu(this)))));
-        screen.addToButtons(newButton(screen.getWidth() - 120, screen.getHeight() - 30, 96, 20, EmoteInstance.instance.getDefaults().newTranslationText("emotecraft.emotelist"), (button->screen.openScreen(newFullScreenMenu()))));
+        screen.addToButtons(newButton(screen.getWidth() - 120, screen.getHeight() - 30, 96, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.emotelist"), (button->screen.openScreen(newFullScreenMenu()))));
         screen.addButtonsToChildren();
     }
 
@@ -76,7 +77,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
         @Override
         protected boolean EmotesOnClick(IChooseWheel.IChooseElement element, int button){
             if(element.getEmote() != null){
-                boolean bl = element.getEmote().playEmote(EmoteInstance.instance.getClientMethods().getMainPlayer());
+                boolean bl = element.getEmote().playEmote(TmpGetters.getClientMethods().getMainPlayer());
                 screen.openScreen(null);
                 return bl;
             }

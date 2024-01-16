@@ -1,6 +1,6 @@
-package io.github.kosmx.emotes.executor.dataTypes.screen.widgets;
+package io.github.kosmx.emotes.inline.dataTypes.screen.widgets;
 
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
 
 public interface IButton<T> extends IWidget<T> {
     void setMessage(Text text);

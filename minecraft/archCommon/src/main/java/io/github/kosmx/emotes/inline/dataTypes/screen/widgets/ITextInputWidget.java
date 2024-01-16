@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.executor.dataTypes.screen.widgets;
+package io.github.kosmx.emotes.inline.dataTypes.screen.widgets;
 
 import java.util.function.Consumer;
 

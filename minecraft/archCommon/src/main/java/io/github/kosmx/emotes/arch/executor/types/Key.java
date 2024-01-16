@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.arch.executor.types;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.kosmx.emotes.executor.dataTypes.InputKey;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.InputKey;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
 
 public class Key implements InputKey {
 

@@ -2,12 +2,12 @@ package io.github.kosmx.emotes.arch.gui.screen;
 
 import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.dataTypes.Text;
-import io.github.kosmx.emotes.executor.dataTypes.screen.IConfirmScreen;
-import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.ITextInputWidget;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
+import io.github.kosmx.emotes.inline.dataTypes.Text;
+import io.github.kosmx.emotes.inline.dataTypes.screen.IConfirmScreen;
+import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.arch.screen.IScreenLogicHelper;
 import io.github.kosmx.emotes.arch.screen.IScreenSlave;

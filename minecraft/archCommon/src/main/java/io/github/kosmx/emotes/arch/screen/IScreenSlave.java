@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.arch.screen;
 
-import io.github.kosmx.emotes.executor.dataTypes.screen.IScreen;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IButton;
-import io.github.kosmx.emotes.executor.dataTypes.screen.widgets.IWidget;
+import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
+import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
 
 import javax.annotation.Nullable;
 
