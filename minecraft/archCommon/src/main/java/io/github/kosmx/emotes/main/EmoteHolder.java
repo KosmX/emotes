@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.MathHelper;
@@ -7,17 +8,16 @@ import dev.kosmx.playerAnim.core.util.UUIDMap;
 import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.inline.dataTypes.INativeImageBacketTexture;
-import io.github.kosmx.emotes.inline.dataTypes.InputKey;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,17 +37,17 @@ import java.util.logging.Level;
 public class EmoteHolder implements Supplier<UUID> {
 
     public final KeyframeAnimation emote;
-    public final Text name;
-    public final Text description;
-    public final Text author;
+    public final Component name;
+    public final Component description;
+    public final Component author;
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
     //public InputKey keyBinding = TmpGetters.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
-    public INativeImageBacketTexture nativeIcon = null;
+    public ImplNativeImageBackedTexture nativeIcon = null;
     @Nullable
-    private IIdentifier iconIdentifier = null;
+    private ResourceLocation iconIdentifier = null;
 
     /**
      * Null if imported locally
@@ -78,7 +78,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * @param hash        hash from the serializer
      */
     @Deprecated
-    public EmoteHolder(KeyframeAnimation emote, Text name, Text description, Text author, int hash){
+    public EmoteHolder(KeyframeAnimation emote, Component name, Component description, Component author, int hash){
         this.emote = emote;
         this.name = name;
         this.author = author;
@@ -103,7 +103,7 @@ public class EmoteHolder implements Supplier<UUID> {
         });
     }
 
-    public IIdentifier getIconIdentifier(){
+    public ResourceLocation getIconIdentifier(){
         if(iconIdentifier == null && this.emote.extraData.containsKey("iconData")){
             try {
                 InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))));
@@ -122,7 +122,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public void assignIcon(InputStream inputStream) {
         try {
 
-            INativeImageBacketTexture nativeImageBackedTexture = TmpGetters.getClientMethods().readNativeImage(inputStream);
+            ImplNativeImageBackedTexture nativeImageBackedTexture = TmpGetters.getClientMethods().readNativeImage(inputStream);
             this.iconIdentifier = TmpGetters.getDefaults().newIdentifier("icon" + this.hashCode());
             TmpGetters.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;
@@ -204,7 +204,7 @@ public class EmoteHolder implements Supplier<UUID> {
     private static boolean canPlayEmote(IEmotePlayerEntity entity){
         if(! canRunEmote(entity)) return false;
         if(!entity.isMainPlayer()) return false;
-        return ! (IEmotePlayer.isRunningEmote(entity.getEmote()) && ! entity.getEmote().isLoopStarted());
+        return ! (IEmotePlayer.isRunningEmote(entity.emotecraft$getEmote()) && ! entity.emotecraft$getEmote().isLoopStarted());
     }
 
     /**
@@ -214,10 +214,10 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public static boolean canRunEmote(IEmotePlayerEntity player){
         if(! TmpGetters.getClientMethods().isAbstractClientEntity(player)) return false;
-        if(player.isNotStanding() && !ClientPacketManager.isRemoteTracking()) return false;
+        if(player.emotecraft$isNotStanding() && !ClientPacketManager.isRemoteTracking()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
-        Vec3d prevPos = player.getPrevPos();
-        return ! (player.emotesGetPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio.get(), prevPos.getY(), player.emotesGetPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold.get());
+        Vec3d prevPos = player.emotecraft$getPrevPos();
+        return ! (player.emotecraft$emotesGetPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio.get(), prevPos.getY(), player.emotecraft$emotesGetPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold.get());
     }
 
     public boolean playEmote(IEmotePlayerEntity playerEntity){
@@ -258,7 +258,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
 
-    public static void handleKeyPress(InputKey key){
+    public static void handleKeyPress(InputConstants.Key key){
         if(EmoteInstance.instance != null && EmoteHolder.canRunEmote(TmpGetters.getClientMethods().getMainPlayer())){
             UUID uuid = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getL(key);
             if(uuid != null){

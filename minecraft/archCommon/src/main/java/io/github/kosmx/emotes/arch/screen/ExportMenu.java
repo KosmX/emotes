@@ -9,6 +9,8 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,7 +20,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
-public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MATRIX, SCREEN> {
+public abstract class ExportMenu extends AbstractScreenLogic {
     protected ExportMenu(IScreenSlave screen) {
         super(screen);
     }
@@ -74,7 +76,7 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
             }catch (IOException | EmoteSerializerException | InvalidPathException e) {
                 e.printStackTrace();
                 TmpGetters.getClientMethods().toastExportMessage( 2,
-                        TmpGetters.getDefaults().newTranslationText("emotecraft.export.error." + format.getExtension()),
+                        Component.translatable("emotecraft.export.error." + format.getExtension()),
                         emoteHolder.name.getString());
             }
         }
@@ -110,7 +112,7 @@ public abstract class ExportMenu<MATRIX, SCREEN> extends AbstractScreenLogic<MAT
     }
 
     @Override
-    public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float tickDelta) {
+    public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float tickDelta) {
         screen.emotesRenderBackgroundTexture(matrices);
     }
 }

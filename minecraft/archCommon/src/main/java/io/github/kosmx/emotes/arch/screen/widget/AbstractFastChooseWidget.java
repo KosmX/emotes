@@ -2,11 +2,12 @@ package io.github.kosmx.emotes.arch.screen.widget;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
-public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidgetLogic<MATRIX, WIDGET> {
-    private IChooseWheel<MATRIX> wheel;
+public abstract class AbstractFastChooseWidget implements IWidgetLogic {
+    private IChooseWheel wheel;
 
 
     public final int x;
@@ -21,21 +22,21 @@ public abstract class AbstractFastChooseWidget<MATRIX, WIDGET> implements IWidge
         this.wheel = IChooseWheel.getWheel(this);
     }
 
-    protected void bind(IChooseWheel<MATRIX> wheel) {
+    protected void bind(IChooseWheel wheel) {
         this.wheel = wheel;
     }
 
 
-    public void render(MATRIX matrices, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics matrices, int mouseX, int mouseY, float delta) {
         this.wheel.render(matrices, mouseX, mouseY, delta);
     }
 
 
-    public void drawCenteredText(MATRIX matrixStack, Text stringRenderable, float deg){
+    public void drawCenteredText(GuiGraphics matrixStack, Component stringRenderable, float deg){
         drawCenteredText(matrixStack, stringRenderable, (float) (((float) (this.x + this.size / 2)) + size * 0.4 * Math.sin(deg * 0.0174533)), (float) (((float) (this.y + this.size / 2)) + size * 0.4 * Math.cos(deg * 0.0174533)));
     }
 
-    public void drawCenteredText(MATRIX matrices, Text stringRenderable, float x, float y){
+    public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y){
         int c = ((ClientConfig) EmoteInstance.config).dark.get() ? 255 : 0; //:D
         textDraw(matrices, stringRenderable, x - (float) textRendererGetWidth(stringRenderable) / 2, y - 2, MathHelper.colorHelper(c, c, c, 1));
     }

@@ -14,11 +14,11 @@ public class ExportMenuScreenImpl extends AbstractControlledModScreen {
     }
 
     @Override
-    protected AbstractScreenLogic<GuiGraphics, Screen> newMaster() {
+    protected AbstractScreenLogic newMaster() {
         return new MasterImpl(this);
     }
 
-    private static class MasterImpl extends ExportMenu<GuiGraphics, Screen> implements IScreenHelperImpl {
+    private static class MasterImpl extends ExportMenu implements IScreenHelperImpl {
         protected MasterImpl(IScreenSlave screen) {
             super(screen);
         }

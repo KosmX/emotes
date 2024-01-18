@@ -22,23 +22,23 @@ public class FullScreenListImpl extends AbstractControlledModScreen {
     }
 
     @Override
-    protected AbstractScreenLogic<GuiGraphics, Screen> newMaster() {
+    protected AbstractScreenLogic newMaster() {
         return new FullScreenMenuImpl(this);
     }
 
-    class FullScreenMenuImpl extends FullMenuScreenHelper<GuiGraphics, Screen, GuiEventListener> implements IScreenHelperImpl{
+    class FullScreenMenuImpl extends FullMenuScreenHelper implements IScreenHelperImpl{
 
         protected FullScreenMenuImpl(IScreenSlave screen) {
             super(screen);
         }
 
         @Override
-        public IScreen<Screen> newEmoteMenu() {
+        public IScreen newEmoteMenu() {
             return new EmoteMenuImpl(FullScreenListImpl.this);
         }
 
         @Override
-        protected IEmoteListWidgetHelper<GuiGraphics, GuiEventListener> newEmoteList(int boxSize, int height, int k, int l, int m) {
+        protected IEmoteListWidgetHelper newEmoteList(int boxSize, int height, int k, int l, int m) {
             return new EmoteListFS(Minecraft.getInstance(), boxSize, height, k, l, m, FullScreenListImpl.this);
         }
 

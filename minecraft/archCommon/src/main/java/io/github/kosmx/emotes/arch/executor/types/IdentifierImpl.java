@@ -1,15 +1,15 @@
 package io.github.kosmx.emotes.arch.executor.types;
 
-import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
+import net.minecraft.resources.ResourceLocation;
 
-public class IdentifierImpl implements IIdentifier {
-    final net.minecraft.resources.ResourceLocation MCIdentifier;
+public class IdentifierImpl {
+    final ResourceLocation MCIdentifier;
 
-    public IdentifierImpl(net.minecraft.resources.ResourceLocation mcIdentifier) {
+    public IdentifierImpl(ResourceLocation mcIdentifier) {
         MCIdentifier = mcIdentifier;
     }
 
-    public net.minecraft.resources.ResourceLocation get(){
+    public ResourceLocation get(){
         return MCIdentifier;
     }
 }

@@ -10,13 +10,13 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import net.minecraft.client.model.geom.ModelPart;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 
-public interface IPlayerEntity extends IEmotePlayerEntity<EmotePlayer<ModelPart>> {
+public interface IPlayerEntity extends IEmotePlayerEntity {
 
     int FPPerspective = 0;
     Supplier<Integer> TPBPerspective = () -> (((ClientConfig)EmoteInstance.config).frontAsTPPerspective.get() ? 2 : 1);
@@ -26,11 +26,11 @@ public interface IPlayerEntity extends IEmotePlayerEntity<EmotePlayer<ModelPart>
         Pair<KeyframeAnimation, Integer> p = ClientEmotePlay.getEmoteForUUID(this.emotes_getUUID());
         if(p != null){
             ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(p.getLeft(), this.emotes_getUUID());
-            this.playEmote(p.getLeft(), p.getRight(), false);
+            this.emotecraft$playEmote(p.getLeft(), p.getRight(), false);
         }
         if(!this.isMainPlayer() && TmpGetters.getClientMethods().getMainPlayer() != null && TmpGetters.getClientMethods().getMainPlayer().isPlayingEmote()){
             IPlayerEntity playerEntity = TmpGetters.getClientMethods().getMainPlayer();
-            ClientEmotePlay.clientRepeatLocalEmote(playerEntity.getEmote().getData(), playerEntity.getEmote().getTick(), this.emotes_getUUID());
+            ClientEmotePlay.clientRepeatLocalEmote(playerEntity.emotecraft$getEmote().getData(), playerEntity.emotecraft$getEmote().getTick(), this.emotes_getUUID());
         }
 
     }
@@ -42,10 +42,12 @@ public interface IPlayerEntity extends IEmotePlayerEntity<EmotePlayer<ModelPart>
         }
     }
 
+    @Nullable
+    EmotePlayer emotecraft$getEmote();
 
     @Override
     default boolean isPlayingEmote(){
-        return EmotePlayer.isRunningEmote(this.getEmote());
+        return EmotePlayer.isRunningEmote(this.emotecraft$getEmote());
     }
 
     @Override
@@ -63,33 +65,33 @@ public interface IPlayerEntity extends IEmotePlayerEntity<EmotePlayer<ModelPart>
         }
 
         if(isPlayingEmote()){
-            setBodyYaw(getViewYaw());
+            emotecraft$setBodyYaw(emotecraft$getViewYaw());
             emoteTickCallback();
-            if(this.isMainPlayer() && getEmote().perspective == 1 && TmpGetters.getClientMethods().getPerspective() != TPBPerspective.get()){
-                this.getEmote().perspective = 0;
+            if(this.isMainPlayer() && emotecraft$getEmote().perspective == 1 && TmpGetters.getClientMethods().getPerspective() != TPBPerspective.get()){
+                this.emotecraft$getEmote().perspective = 0;
             }
-            if(this.isMainPlayer() && !this.isForcedEmote() && !EmoteHolder.canRunEmote(this)){
-                this.getEmote().stop();
-                ClientEmotePlay.clientStopLocalEmote(this.getEmote().getData());
+            if(this.isMainPlayer() && !this.emotecraft$isForcedEmote() && !EmoteHolder.canRunEmote(this)){
+                this.emotecraft$getEmote().stop();
+                ClientEmotePlay.clientStopLocalEmote(this.emotecraft$getEmote().getData());
             }
         }
     }
 
     @Override
     default void stopEmote(){
-        if(getEmote() != null) {
-            this.getEmote().stop();
-            this.voidEmote();
+        if(emotecraft$getEmote() != null) {
+            this.emotecraft$getEmote().stop();
+            this.emotecraft$voidEmote();
         }
     }
 
     @Override
     default void stopEmote(UUID emoteID){
-        if(getEmote() != null && getEmote().getData().getUuid().equals(emoteID)){
-            this.getEmote().stop();
-            this.voidEmote();
+        if(emotecraft$getEmote() != null && emotecraft$getEmote().getData().getUuid().equals(emoteID)){
+            this.emotecraft$getEmote().stop();
+            this.emotecraft$voidEmote();
         }
     }
 
-    void voidEmote();
+    void emotecraft$voidEmote();
 }

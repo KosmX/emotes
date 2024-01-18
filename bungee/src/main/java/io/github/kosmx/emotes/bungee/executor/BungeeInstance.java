@@ -3,9 +3,6 @@ package io.github.kosmx.emotes.bungee.executor;
 import io.github.kosmx.emotes.bungee.BungeeWrapper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.Logger;
-import io.github.kosmx.emotes.executor.dataTypes.IClientMethods;
-import io.github.kosmx.emotes.executor.dataTypes.IDefaultTypes;
-import io.github.kosmx.emotes.executor.dataTypes.IGetters;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

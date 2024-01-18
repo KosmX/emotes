@@ -1,25 +1,26 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
+import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
+import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
-import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.arch.screen.IScreenSlave;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 /**
  * Stuff to override
  * isPauseScreen return false
  * render
  */
-public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends AbstractScreenLogic<MATRIX, SCREEN> {
+public abstract class FastMenuScreenLogic extends AbstractScreenLogic {
     private FastMenuWidget widget;
-    private static final Text warn_no_emotecraft = TmpGetters.getDefaults().newTranslationText("emotecraft.no_server");
-    private static final Text warn_only_proxy = TmpGetters.getDefaults().newTranslationText("emotecraft.only_proxy");
+    private static final Component warn_no_emotecraft = TmpGetters.getDefaults().newTranslationText("emotecraft.no_server");
+    private static final Component warn_only_proxy = TmpGetters.getDefaults().newTranslationText("emotecraft.only_proxy");
 
     protected FastMenuScreenLogic(IScreenSlave screen) {
         super(screen);
@@ -36,11 +37,11 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
         screen.addButtonsToChildren();
     }
 
-    protected abstract IScreenSlave<MATRIX, SCREEN> newFullScreenMenu();
+    protected abstract IScreenSlave newFullScreenMenu();
 
 
     @Override
-    public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float delta){
+    public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float delta){
         screen.renderBackground(matrices);
         widget.render(matrices, mouseX, mouseY, delta);
         if(!((ClientConfig)EmoteInstance.config).hideWarningMessage.get()) {
@@ -58,7 +59,7 @@ public abstract class FastMenuScreenLogic<MATRIX, SCREEN, WIDGET> extends Abstra
 
     abstract protected FastMenuWidget newFastMenuWidget(int x, int y, int size);
 
-    protected abstract class FastMenuWidget extends AbstractFastChooseWidget<MATRIX, WIDGET> {
+    protected abstract class FastMenuWidget extends AbstractFastChooseWidget {
 
         public FastMenuWidget(int x, int y, int size){
             super(x, y, size);

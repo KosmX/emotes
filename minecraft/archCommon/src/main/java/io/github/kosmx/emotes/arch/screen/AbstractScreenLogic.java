@@ -1,11 +1,12 @@
 package io.github.kosmx.emotes.arch.screen;
 
+import net.minecraft.client.gui.GuiGraphics;
+
 import java.nio.file.Path;
 import java.util.List;
 
-@SuppressWarnings("unchecked")
-public abstract class AbstractScreenLogic<MATRIX, SCREEN> implements IScreenLogicHelper<MATRIX> {
-    protected final IScreenSlave<MATRIX, SCREEN> screen;
+public abstract class AbstractScreenLogic implements IScreenLogicHelper {
+    protected final IScreenSlave screen;
 
     protected AbstractScreenLogic(IScreenSlave screen) {
         this.screen = screen;
@@ -24,7 +25,7 @@ public abstract class AbstractScreenLogic<MATRIX, SCREEN> implements IScreenLogi
 
     }
     public abstract void emotes_initScreen();
-    public void emotes_renderScreen(MATRIX matrices, int mouseX, int mouseY, float tickDelta){
+    public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float tickDelta){
 
     }
     public boolean emotes_isThisPauseScreen(){

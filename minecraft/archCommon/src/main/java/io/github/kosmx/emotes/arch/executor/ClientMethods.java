@@ -3,39 +3,33 @@ package io.github.kosmx.emotes.arch.executor;
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
 import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
-import io.github.kosmx.emotes.arch.executor.types.TextImpl;
-import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.inline.dataTypes.INativeImageBacketTexture;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-@SuppressWarnings("unchecked")
 public final class ClientMethods {
     public static int tick = 0;
 
-    public void destroyTexture(IIdentifier identifier) {
-        Minecraft.getInstance().getTextureManager().release(((IdentifierImpl)identifier).get());
+    public void destroyTexture(ResourceLocation identifier) {
+        Minecraft.getInstance().getTextureManager().release(identifier);
     }
 
-    public void registerTexture(IIdentifier identifier, INativeImageBacketTexture nativeImageBacketTexture) {
-        Minecraft.getInstance().getTextureManager().register(((IdentifierImpl)identifier).get(), ((ImplNativeImageBackedTexture)nativeImageBacketTexture).get());
+    public void registerTexture(ResourceLocation identifier, ImplNativeImageBackedTexture nativeImageBacketTexture) {
+        Minecraft.getInstance().getTextureManager().register(identifier, nativeImageBacketTexture.get());
     }
 
-    public INativeImageBacketTexture readNativeImage(InputStream inputStream) throws IOException {
+    public ImplNativeImageBackedTexture readNativeImage(InputStream inputStream) throws IOException {
         return new ImplNativeImageBackedTexture(new DynamicTexture(NativeImage.read(inputStream)));
     }
 
@@ -44,7 +38,7 @@ public final class ClientMethods {
     }
 
     public void openScreen(IScreen screen) {
-        Minecraft.getInstance().setScreen(((IScreen<Screen>)screen).getScreen());
+        Minecraft.getInstance().setScreen(screen.getScreen());
     }
 
     public IPlayerEntity getMainPlayer() {
@@ -71,11 +65,11 @@ public final class ClientMethods {
         Minecraft.getInstance().options.setCameraType(CameraType.values()[p]);
     }
 
-    public void sendChatMessage(Text msg) {
-        Minecraft.getInstance().gui.getChat().addMessage(((TextImpl)msg).get());
+    public void sendChatMessage(Component msg) {
+        Minecraft.getInstance().gui.getChat().addMessage(msg);
     }
 
-    public void toastExportMessage(int level, Text text, String msg) {
-        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.WORLD_BACKUP, ((TextImpl)text).get(), Component.literal(msg));
+    public void toastExportMessage(int level, Component text, String msg) {
+        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.WORLD_BACKUP, text, Component.literal(msg));
     }
 }

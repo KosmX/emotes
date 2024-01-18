@@ -1,22 +1,21 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import io.github.kosmx.emotes.arch.executor.types.TextImpl;
+import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
+import io.github.kosmx.emotes.arch.screen.IScreenLogicHelper;
+import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.inline.dataTypes.screen.IConfirmScreen;
 import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
-import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.arch.screen.IScreenLogicHelper;
-import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
@@ -26,9 +25,9 @@ import java.util.function.Consumer;
 /**
  * Interface method redirections, default implementations
  */
-public abstract class AbstractControlledModScreen extends Screen implements IScreenSlave<GuiGraphics, Screen> {
+public abstract class AbstractControlledModScreen extends Screen implements IScreenSlave {
     final Screen parent;
-    public final AbstractScreenLogic<GuiGraphics, Screen> master;
+    public final AbstractScreenLogic master;
 
     @Override
     public void emotesRenderBackgroundTexture(GuiGraphics poseStack) {
@@ -45,27 +44,27 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
         this.master = newMaster();
     }
 
-    protected abstract AbstractScreenLogic<GuiGraphics, Screen> newMaster();
+    protected abstract AbstractScreenLogic newMaster();
 
     @Override
     public Screen getScreen() {
         return this; //This is a screen after all.
     }
 
-    public interface IScreenHelperImpl extends IScreenLogicHelper<GuiGraphics>, IDrawableImpl {
+    public interface IScreenHelperImpl extends IScreenLogicHelper, IDrawableImpl {
         @Override
-        default IButton newButton(int x, int y, int width, int height, Text msg, Consumer<IButton> pressAction) {
-            return new IButtonImpl(x, y, width, height, ((TextImpl) msg).get(), button -> pressAction.accept((IButton) button));
+        default IButton newButton(int x, int y, int width, int height, Component msg, Consumer<IButton> pressAction) {
+            return new IButtonImpl(x, y, width, height, msg, button -> pressAction.accept((IButton) button));
         }
 
         @Override
-        default ITextInputWidget<GuiGraphics, TextInputImpl> newTextInputWidget(int x, int y, int width, int height, Text title) {
-            return new TextInputImpl(x, y, width, height, (TextImpl) title);
+        default ITextInputWidget<TextInputImpl> newTextInputWidget(int x, int y, int width, int height, Component title) {
+            return new TextInputImpl(x, y, width, height, title);
         }
 
         @Override
-        default IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Text title, Text text) {
-            return new ConfirmScreenImpl(consumer::accept, ((TextImpl) title).get(), ((TextImpl) text).get());
+        default IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Component title, Component text) {
+            return new ConfirmScreenImpl(consumer::accept, title, text);
         }
         @Override
         default void openExternalEmotesDir() {
@@ -118,7 +117,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     }
 
     @Override
-    public void openScreen(@Nullable IScreen<Screen> screen) {
+    public void openScreen(@Nullable IScreen screen) {
         if(screen != null) {
             Minecraft.getInstance().setScreen(screen.getScreen());
         }

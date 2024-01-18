@@ -1,9 +1,8 @@
 package io.github.kosmx.emotes.arch.executor.types;
 
-import io.github.kosmx.emotes.inline.dataTypes.INativeImageBacketTexture;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
-public class ImplNativeImageBackedTexture implements INativeImageBacketTexture {
+public class ImplNativeImageBackedTexture {
 
     final DynamicTexture nibt;
 
@@ -15,7 +14,6 @@ public class ImplNativeImageBackedTexture implements INativeImageBacketTexture {
         return nibt;
     }
 
-    @Override
     public void close() {
         nibt.close();
     }

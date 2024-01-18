@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.arch.gui.screen;
 import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import net.minecraft.client.gui.screens.Screen;
 
-public class ScreenImpl implements IScreen<Screen> {
+public class ScreenImpl implements IScreen {
     final Screen MCScreen;
 
     public ScreenImpl(Screen mcScreen) {

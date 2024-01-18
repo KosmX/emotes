@@ -38,7 +38,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     public static boolean clientStartLocalEmote(KeyframeAnimation emote) {
         IEmotePlayerEntity player = TmpGetters.getClientMethods().getMainPlayer();
-        if (player.isForcedEmote()) {
+        if (player.emotecraft$isForcedEmote()) {
             return false;
         }
 
@@ -46,7 +46,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         packetBuilder.configureToStreamEmote(emote, player.emotes_getUUID());
         ClientPacketManager.send(packetBuilder, null);
         ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(emote, player.emotes_getUUID());
-        TmpGetters.getClientMethods().getMainPlayer().playEmote(emote, 0, false);
+        TmpGetters.getClientMethods().getMainPlayer().emotecraft$playEmote(emote, 0, false);
         return true;
     }
 
@@ -58,18 +58,18 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     public static boolean clientStopLocalEmote() {
         if (TmpGetters.getClientMethods().getMainPlayer().isPlayingEmote()) {
-            return clientStopLocalEmote(TmpGetters.getClientMethods().getMainPlayer().getEmote().getData());
+            return clientStopLocalEmote(TmpGetters.getClientMethods().getMainPlayer().emotecraft$getEmote().getData());
         }
         return false;
     }
 
     public static boolean isForcedEmote() {
         IEmotePlayerEntity player = TmpGetters.getClientMethods().getMainPlayer();
-        return player.isForcedEmote();
+        return player.emotecraft$isForcedEmote();
     }
 
     public static boolean clientStopLocalEmote(KeyframeAnimation emoteData) {
-        if (emoteData != null && !TmpGetters.getClientMethods().getMainPlayer().isForcedEmote()) {
+        if (emoteData != null && !TmpGetters.getClientMethods().getMainPlayer().emotecraft$isForcedEmote()) {
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
             packetBuilder.configureToSendStop(emoteData.getUuid(), TmpGetters.getClientMethods().getMainPlayer().emotes_getUUID());
             ClientPacketManager.send(packetBuilder, null);
@@ -130,7 +130,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
             if (result == EventResult.FAIL) return;
             if (playerEntity != null) {
                 ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(emoteData, player);
-                playerEntity.playEmote(emoteData, tick, isForced);
+                playerEntity.emotecraft$playEmote(emoteData, tick, isForced);
             }
             else {
                 addToQueue(new QueueEntry(emoteData, tick, TmpGetters.getClientMethods().getCurrentTick()), player);

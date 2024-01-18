@@ -2,13 +2,12 @@ package io.github.kosmx.emotes.arch.gui;
 
 import io.github.kosmx.emotes.arch.gui.screen.*;
 import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
-import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
+import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -25,11 +24,11 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
 
 
     @Override
-    protected AbstractScreenLogic<GuiGraphics, Screen> newMaster() {
+    protected AbstractScreenLogic newMaster() {
         return new EmoteMenuController(this);
     }
 
-    public class EmoteMenuController extends EmoteMenu<GuiGraphics, Screen, GuiEventListener> implements IScreenHelperImpl{
+    public class EmoteMenuController extends EmoteMenu implements IScreenHelperImpl{
 
         public EmoteMenuController(IScreenSlave screen) {
             super(screen);
@@ -51,7 +50,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
         }
 
         @Override
-        protected IEmoteListWidgetHelper<GuiGraphics, GuiEventListener> newEmoteList(int width, int height) {
+        protected IEmoteListWidgetHelper newEmoteList(int width, int height) {
             return new EmoteListImpl(Minecraft.getInstance(), width, height, 51, height-32, 36, EmoteMenuImpl.this);
             //super(minecraftClient, width, height , 51, height - 32, 36, screen);
         }
@@ -82,7 +81,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
             }
         }
 
-        public class FastMenuImpl extends EmoteMenu<GuiGraphics, Screen, GuiEventListener>.FastChooseWidget implements IDrawableImpl, IWidgetLogicImpl {
+        public class FastMenuImpl extends EmoteMenu.FastChooseWidget implements IDrawableImpl, IWidgetLogicImpl {
             private boolean focused = true;
 
             public FastMenuImpl(int x, int y, int size) {

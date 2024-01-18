@@ -17,23 +17,23 @@ public class FastChosseScreen extends AbstractControlledModScreen {
     }
 
     @Override
-    protected AbstractScreenLogic<GuiGraphics, Screen> newMaster() {
+    protected AbstractScreenLogic newMaster() {
         return new FastMenuScreenLogicImpl(this);
     }
 
-    class FastMenuScreenLogicImpl extends FastMenuScreenLogic<GuiGraphics, Screen, GuiEventListener> implements IScreenHelperImpl{
+    class FastMenuScreenLogicImpl extends FastMenuScreenLogic implements IScreenHelperImpl{
 
         protected FastMenuScreenLogicImpl(IScreenSlave screen) {
             super(screen);
         }
 
         @Override
-        protected IScreenSlave<GuiGraphics, Screen> newFullScreenMenu() {
+        protected IScreenSlave newFullScreenMenu() {
             return new FullScreenListImpl(FastChosseScreen.this);
         }
 
         @Override
-        protected FastMenuScreenLogic<GuiGraphics, Screen, GuiEventListener>.FastMenuWidget newFastMenuWidget(int x, int y, int size) {
+        protected FastMenuScreenLogic.FastMenuWidget newFastMenuWidget(int x, int y, int size) {
             return new FastMenuWidgetImpl(x, y, size);
         }
         class FastMenuWidgetImpl extends FastMenuWidget implements IDrawableImpl, IWidgetLogicImpl {

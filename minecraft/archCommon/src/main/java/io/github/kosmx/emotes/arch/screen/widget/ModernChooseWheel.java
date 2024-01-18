@@ -1,10 +1,11 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -16,20 +17,19 @@ import java.util.logging.Level;
  * void render(MATRIX, int mouseX, int mouseY, float delta)
  * boolean onMouseClicked
  * void isMouseHover
- * @param <MATRIX> Minecraft's MatrixStack
  */
-public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
+public class ModernChooseWheel implements IChooseWheel {
 
     public static int fastMenuPage = 0;
 
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
-    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_dark_new.png") : TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_light_new.png");
+    private final ResourceLocation TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_dark_new.png") : TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_light_new.png");
 
-    private final AbstractFastChooseWidget<MATRIX, WIDGET> widget;
+    private final AbstractFastChooseWidget widget;
 
-    public ModernChooseWheel(AbstractFastChooseWidget<MATRIX, WIDGET> widget){
+    public ModernChooseWheel(AbstractFastChooseWidget widget){
         this.widget = widget;
         elements.add( new FastChooseElement(0, 0.0f));
         elements.add( new FastChooseElement(1, 67.5f-22.5f));
@@ -89,7 +89,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
     }
 
     @Override
-    public void render(MATRIX matrices, int mouseX, int mouseY, float delta){
+    public void render(GuiGraphics matrices, int mouseX, int mouseY, float delta){
         checkHovered(mouseX, mouseY);
         //widget.renderBindTexture(TEXTURE);
         widget.renderSystemBlendColor(1, 1, 1, 1);
@@ -119,10 +119,10 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
      * @param v        texture y
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
-    private void drawTexture(MATRIX matrices, IIdentifier t, int x, int y, int u, int v, int s){
+    private void drawTexture(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int s){
         widget.drawableDrawTexture(matrices, t,widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
     }
-    private void drawTexture_select(MATRIX matrices, IIdentifier t, int x, int y, int u, int v, int w, int h){
+    private void drawTexture_select(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int w, int h){
         widget.drawableDrawTexture(matrices, t,widget.x + x * widget.size / 512, widget.y + y * widget.size / 512, w * widget.size / 2, h * widget.size / 2, u, v, w * 128, h * 128, 512, 512);
     }
 
@@ -222,9 +222,9 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
             this.setEmote(null);
         }
 
-        public void render(MATRIX matrices){
+        public void render(GuiGraphics matrices){
             UUID emoteID = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] : null;
-            IIdentifier identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
+            ResourceLocation identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
             if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons.get()){
                 int s = widget.size / 10;
                 int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
@@ -240,7 +240,7 @@ public class ModernChooseWheel<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
             }
         }
 
-        public void renderHover(MATRIX matrices, IIdentifier t){
+        public void renderHover(GuiGraphics matrices, ResourceLocation t){
             switch (id) {
                 case 0:
                     drawTexture_select(matrices, t,0, 256, 0, 384, 2, 1);//0

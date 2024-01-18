@@ -9,9 +9,9 @@ public interface IEmotePlayer {
         return emotePlayer != null && emotePlayer.isRunning();
     }
 
-    void tick();
-
     boolean isLoopStarted();
+
+    void tick();
 
     KeyframeAnimation getData();
 

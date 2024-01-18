@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.inline.dataTypes.screen.widgets;
 
-import io.github.kosmx.emotes.inline.dataTypes.Text;
+import net.minecraft.network.chat.Component;
 
-public interface IButton<T> extends IWidget<T> {
-    void setMessage(Text text);
+public interface IButton extends IWidget {
+    void setMessage(Component text);
 
     void setActive(boolean b);
 

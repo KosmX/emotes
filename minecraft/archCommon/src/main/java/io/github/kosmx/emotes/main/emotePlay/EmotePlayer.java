@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 // modified keyframe animation player to play songs with animations
-public abstract class EmotePlayer<T> extends KeyframeAnimationPlayer implements IEmotePlayer {
+public abstract class EmotePlayer extends KeyframeAnimationPlayer implements IEmotePlayer {
     @Nullable
     final SoundPlayer song;
 

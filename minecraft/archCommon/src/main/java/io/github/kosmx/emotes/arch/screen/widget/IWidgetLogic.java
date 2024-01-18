@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.arch.screen.widget;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
 import io.github.kosmx.emotes.arch.screen.IRenderHelper;
 
-public interface IWidgetLogic<MATRIX, WIDGET> extends IRenderHelper<MATRIX>, IWidget<WIDGET> {
+public interface IWidgetLogic extends IRenderHelper, IWidget {
     default boolean emotes_mouseClicked(double mouseX, double mouseY, int button) {
         return false;
     }

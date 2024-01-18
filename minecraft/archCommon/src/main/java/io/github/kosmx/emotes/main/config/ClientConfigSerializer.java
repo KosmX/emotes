@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.main.config;
 
 import com.google.gson.*;
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.inline.dataTypes.InputKey;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 
@@ -105,8 +105,8 @@ public class ClientConfigSerializer extends ConfigSerializer {
 
     private JsonObject keyBindsSerializer(ClientConfig config){
         JsonObject array = new JsonObject();
-        for(Pair<UUID, InputKey> emote : config.emoteKeyMap){
-            array.addProperty(emote.getLeft().toString(), emote.getRight().getTranslationKey());
+        for(Pair<UUID, InputConstants.Key> emote : config.emoteKeyMap){
+            array.addProperty(emote.getLeft().toString(), emote.getRight().getName());
         }
         return array;
     }

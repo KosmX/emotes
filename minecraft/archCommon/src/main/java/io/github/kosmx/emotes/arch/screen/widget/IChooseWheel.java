@@ -3,11 +3,12 @@ package io.github.kosmx.emotes.arch.screen.widget;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.client.gui.GuiGraphics;
 
-public interface IChooseWheel<MATRIX> {
+public interface IChooseWheel {
 
 
-    void render(MATRIX matrices, int mouseX, int mouseY, float delta);
+    void render(GuiGraphics matrices, int mouseX, int mouseY, float delta);
 
     boolean mouseClicked(double mouseX, double mouseY, int button);
 
@@ -26,11 +27,11 @@ public interface IChooseWheel<MATRIX> {
         void setEmote(EmoteHolder emote);
     }
 
-    static <MATRIX, WIDGET> IChooseWheel<MATRIX> getWheel(AbstractFastChooseWidget<MATRIX, WIDGET> widget) {
+    static IChooseWheel getWheel(AbstractFastChooseWidget widget) {
         if (((ClientConfig) EmoteInstance.config).oldChooseWheel.get()) {
-            return new LegacyChooseWidget<>(widget);
+            return new LegacyChooseWidget(widget);
         } else {
-            return new ModernChooseWheel<>(widget);
+            return new ModernChooseWheel(widget);
         }
     }
 }

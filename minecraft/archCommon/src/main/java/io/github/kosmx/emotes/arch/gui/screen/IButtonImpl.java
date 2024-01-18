@@ -1,12 +1,10 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import io.github.kosmx.emotes.arch.executor.types.TextImpl;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public class IButtonImpl extends Button implements IButton<IButtonImpl> {
+public class IButtonImpl extends Button implements IButton {
     public IButtonImpl(int x, int y, int width, int height, Component message, OnPress onPress) {
         super(x, y, width, height, message, onPress, DEFAULT_NARRATION);
     }
@@ -16,8 +14,8 @@ public class IButtonImpl extends Button implements IButton<IButtonImpl> {
     }
 
     @Override
-    public void setMessage(Text text) {
-        this.setMessage(((TextImpl)text).get());
+    public void setMessage(Component text) {
+        this.setMessage(text);
     }
 
     @Override

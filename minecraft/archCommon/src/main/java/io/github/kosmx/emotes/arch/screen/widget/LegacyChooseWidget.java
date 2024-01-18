@@ -2,28 +2,29 @@ package io.github.kosmx.emotes.arch.screen.widget;
 
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
+import io.github.kosmx.emotes.arch.executor.Defaults;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> {
+public class LegacyChooseWidget implements IChooseWheel {
 
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
-    private final IIdentifier TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_dark.png") : TmpGetters.getDefaults().newIdentifier("textures/gui/fastchoose_light.png");
+    private final ResourceLocation TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? Defaults.newIdentifier("textures/gui/fastchoose_dark.png") : Defaults.newIdentifier("textures/gui/fastchoose_light.png");
 
-    private final AbstractFastChooseWidget<MATRIX, WIDGET> widget;
+    private final AbstractFastChooseWidget widget;
 
-    public LegacyChooseWidget(AbstractFastChooseWidget<MATRIX, WIDGET> widget) {
+    public LegacyChooseWidget(AbstractFastChooseWidget widget) {
         this.widget = widget;
         elements.add(new FastChooseElement(0, 22.5f));
         elements.add(new FastChooseElement(1, 67.5f));
@@ -36,11 +37,11 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
     }
 
 
-    public void drawCenteredText(MATRIX matrixStack, Text stringRenderable, float deg) {
+    public void drawCenteredText(GuiGraphics matrixStack, Component stringRenderable, float deg) {
         drawCenteredText(matrixStack, stringRenderable, (float) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(deg * 0.0174533)), (float) (((float) (widget.y + widget.size / 2)) + widget.size * 0.4 * Math.cos(deg * 0.0174533)));
     }
 
-    public void drawCenteredText(MATRIX matrices, Text stringRenderable, float x, float y) {
+    public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y) {
         int c = ((ClientConfig) EmoteInstance.config).dark.get() ? 255 : 0; //:D
         widget.textDraw(matrices, stringRenderable, x - (float) widget.textRendererGetWidth(stringRenderable) / 2, y - 2, MathHelper.colorHelper(c, c, c, 1));
     }
@@ -70,7 +71,7 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
         return elements.get(i);
     }
 
-    public void render(MATRIX matrices, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics matrices, int mouseX, int mouseY, float delta) {
         checkHovered(mouseX, mouseY);
         //widget.renderBindTexture(TEXTURE);
         widget.renderSystemBlendColor(1, 1, 1, 1);
@@ -97,7 +98,7 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
      * @param v        texture y
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
-    private void drawTexture(MATRIX matrices, IIdentifier texture, int x, int y, int u, int v, int s) {
+    private void drawTexture(GuiGraphics matrices, ResourceLocation texture, int x, int y, int u, int v, int s) {
         widget.drawableDrawTexture(matrices, texture, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
     }
 
@@ -170,10 +171,10 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
             this.setEmote(null);
         }
 
-        public void render(MATRIX matrices) {
+        public void render(GuiGraphics matrices) {
             int fastMenuPage = ModernChooseWheel.fastMenuPage;
             UUID emoteID = ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null ? ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] : null;
-            IIdentifier identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
+            ResourceLocation identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
             if (identifier != null && ((ClientConfig) EmoteInstance.config).showIcons.get()) {
                 int s = widget.size / 10;
                 int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
@@ -189,7 +190,7 @@ public class LegacyChooseWidget<MATRIX, WIDGET> implements IChooseWheel<MATRIX> 
             }
         }
 
-        public void renderHover(MATRIX matrices, IIdentifier texture) {
+        public void renderHover(GuiGraphics matrices, ResourceLocation texture) {
             int textX = 0;
             int textY = 0;
             int x = 0;

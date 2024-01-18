@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.main.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.inline.dataTypes.InputKey;
 
 import java.util.UUID;
 
@@ -65,7 +65,7 @@ public class ClientConfig extends SerializableConfig {
     //public List<EmoteHolder> emotesWithKey = new ArrayList<>();
     //public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
 
-    public BiMap<UUID, InputKey> emoteKeyMap = new BiMap<>();
+    public BiMap<UUID, InputConstants.Key> emoteKeyMap = new BiMap<>();
     public UUID[][] fastMenuEmotes = new UUID[10][8];
 
     //------------------------ Random tweak stuff ------------------------//

@@ -4,81 +4,84 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.kosmx.emotes.arch.executor.types.IdentifierImpl;
-import io.github.kosmx.emotes.arch.executor.types.Key;
-import io.github.kosmx.emotes.arch.executor.types.TextImpl;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.inline.dataTypes.IIdentifier;
-import io.github.kosmx.emotes.inline.dataTypes.InputKey;
-import io.github.kosmx.emotes.inline.dataTypes.Text;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
 public class Defaults {
-    public InputKey getUnknownKey() {
-        return new Key(InputConstants.UNKNOWN);
+    @Deprecated
+    public InputConstants.Key getUnknownKey() {
+        return InputConstants.UNKNOWN;
     }
 
-    public InputKey getKeyFromString(String str) {
-        return new Key(InputConstants.getKey(str));
+
+    @Deprecated
+    public InputConstants.Key getKeyFromString(String str) {
+        return InputConstants.getKey(str);
     }
 
-    public InputKey getKeyFromCode(int keyCode, int scanCode) {
-        return new Key(InputConstants.getKey(keyCode, scanCode));
+    @Deprecated
+    public InputConstants.Key getKeyFromCode(int keyCode, int scanCode) {
+        return InputConstants.getKey(keyCode, scanCode);
     }
 
-    public InputKey getMouseKeyFromCode(int keyCode) {
-        return new Key(InputConstants.Type.MOUSE.getOrCreate(keyCode));
+    @Deprecated
+    public InputConstants.Key getMouseKeyFromCode(int keyCode) {
+        return InputConstants.Type.MOUSE.getOrCreate(keyCode);
     }
 
-    public Text emptyTex() {
-        return new TextImpl(Component.empty().plainCopy());
+    @Deprecated
+    public MutableComponent textFromString(String str) {
+        return Component.literal(str);
     }
 
-    public Text textFromString(String str) {
-        return new TextImpl(Component.literal(str));
+    @Deprecated
+    public MutableComponent fromJson(JsonElement node) {
+        return Component.Serializer.fromJson(node);
     }
 
-    public Text fromJson(JsonElement node) {
-        return new TextImpl(net.minecraft.network.chat.Component.Serializer.fromJson(node));
+    @Deprecated
+    public MutableComponent newTranslationText(String key) {
+        return Component.translatable(key);
     }
 
-    public Text newTranslationText(String key) {
-        return new TextImpl(Component.translatable(key));
+    @Deprecated
+    public Component defaultTextsDone() {
+        return CommonComponents.GUI_DONE;
     }
 
-    public Text defaultTextsDone() {
-        return new TextImpl(CommonComponents.GUI_DONE.plainCopy());
+    @Deprecated
+    public Component defaultTextCancel() {
+        return CommonComponents.GUI_CANCEL;
     }
 
-    public Text defaultTextCancel() {
-        return new TextImpl(CommonComponents.GUI_CANCEL.plainCopy());
+    @Deprecated
+    public static ResourceLocation newIdentifier(String namespace, String id) {
+        return new ResourceLocation(namespace, id);
     }
 
-    public IIdentifier newIdentifier(String namespace, String id) {
-        return new IdentifierImpl(new net.minecraft.resources.ResourceLocation(namespace, id));
-    }
-
-    public Text fromJson(String json){
+    public static Component fromJson(String json){
         if(json == null){
-            return textFromString("");
+            return Component.literal("");
         }
         try {
-            return fromJson(new JsonParser().parse(json));
+            return Component.Serializer.fromJson(JsonParser.parseString(json));
         }catch (JsonParseException e){
-            return textFromString(json);
+            return Component.literal(json);
         }
     }
 
-    public Text fromJson(Object obj) {
+    public static Component fromJson(Object obj) {
         if (obj == null || obj instanceof String) {
             return fromJson((String) obj);
         } else if (obj instanceof JsonElement) {
-            return fromJson((JsonElement) obj);
+            return Component.Serializer.fromJson((JsonElement) obj);
         } else throw new IllegalArgumentException("Can not create Text from " + obj.getClass().getName());
     }
 
-    public IIdentifier newIdentifier(String id){
+    public static ResourceLocation newIdentifier(String id){
         return newIdentifier(CommonData.MOD_ID, id);
     }
 }
