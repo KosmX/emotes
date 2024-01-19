@@ -1,12 +1,8 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.arch.screen.IScreenLogicHelper;
 import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -49,25 +45,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
         return this; //This is a screen after all.
     }
 
-    public interface IScreenHelperImpl extends IScreenLogicHelper, IDrawableImpl {
-        @Override
-        default IButton newButton(int x, int y, int width, int height, Component msg, Consumer<IButton> pressAction) {
-            return new IButtonImpl(x, y, width, height, msg, button -> pressAction.accept((IButton) button));
-        }
-
-        @Override
-        default ITextInputWidget<TextInputImpl> newTextInputWidget(int x, int y, int width, int height, Component title) {
-            return new TextInputImpl(x, y, width, height, title);
-        }
-
-        @Override
-        default ConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Component title, Component text) {
-            return new ConfirmScreen(consumer::accept, title, text);
-        }
-        @Override
-        default void openExternalEmotesDir() {
-            Util.getPlatform().openFile(EmoteInstance.instance.getExternalEmoteDir());
-        }
+    public interface IScreenHelperImpl {
     }
     @Override
     public void openThisScreen() {
@@ -85,22 +63,17 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     }
 
     @Override
-    public void setInitialFocus(IWidget searchBox) {
-        this.setInitialFocus(searchBox.get());
+    public void setInitialFocus(GuiEventListener searchBox) {
+        setInitialFocus(searchBox);
     }
 
     @Override
-    public void setFocused(IWidget focused) {
-        this.setFocused(focused.get());
+    public void addToChildren(GuiEventListener widget) {
+
     }
 
     @Override
-    public void addToChildren(IWidget widget) {
-        this.addWidget((GuiEventListener & NarratableEntry)widget.get());
-    }
-
-    @Override
-    public void addToButtons(IButton button) {
+    public void addToButtons(IButtonImpl button) {
         this.addRenderableWidget((IButtonImpl) button);
     }
 

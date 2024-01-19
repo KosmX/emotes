@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
@@ -47,7 +48,10 @@ public abstract class FastMenuScreenLogic extends AbstractScreenLogic {
         if(!((ClientConfig)EmoteInstance.config).hideWarningMessage.get()) {
             int remoteVer = ClientPacketManager.isRemoteAvailable() ? 2 : ClientPacketManager.isAvailableProxy() ? 1 : 0;
             if (remoteVer != 2) {
-                drawCenteredText(matrices, remoteVer == 0 ? warn_no_emotecraft : warn_only_proxy, screen.getWidth() / 2, screen.getHeight() / 24 - 1, MathHelper.colorHelper(255, 255, 255, 255));
+                Component text = remoteVer == 0 ? warn_no_emotecraft : warn_only_proxy;
+                int centerX = screen.getWidth() / 2;
+                int y = screen.getHeight() / 24 - 1;
+                matrices.drawCenteredString(Minecraft.getInstance().font, text, centerX, y, MathHelper.colorHelper(255, 255, 255, 255));
             }
         }
     }

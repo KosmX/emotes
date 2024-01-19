@@ -1,15 +1,15 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class TextInputImpl extends EditBox implements ITextInputWidget<TextInputImpl> {
+public class TextInputImpl extends EditBox {
     public TextInputImpl(Font textRenderer, int x, int y, int width, int height, Component text) {
         super(textRenderer, x, y, width, height, text);
     }
@@ -22,12 +22,10 @@ public class TextInputImpl extends EditBox implements ITextInputWidget<TextInput
         super(textRenderer, x, y, width, height, copyFrom, text);
     }
 
-    @Override
     public void setInputListener(Consumer<String> onTextChange) {
         this.setResponder(onTextChange);
     }
 
-    @Override
     public TextInputImpl get() {
         return this;
     }

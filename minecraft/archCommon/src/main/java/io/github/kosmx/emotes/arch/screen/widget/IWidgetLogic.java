@@ -1,9 +1,8 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
-import io.github.kosmx.emotes.arch.screen.IRenderHelper;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 
-public interface IWidgetLogic extends IRenderHelper, IWidget {
+public interface IWidgetLogic {
     default boolean emotes_mouseClicked(double mouseX, double mouseY, int button) {
         return false;
     }
@@ -11,4 +10,6 @@ public interface IWidgetLogic extends IRenderHelper, IWidget {
     default boolean emotes_mouseScrolled(double mouseX, double mouseY, double amount) {
         return false;
     }
+
+    GuiEventListener get();
 }

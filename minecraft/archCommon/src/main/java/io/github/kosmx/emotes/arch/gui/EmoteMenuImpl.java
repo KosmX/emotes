@@ -28,7 +28,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
         return new EmoteMenuController(this);
     }
 
-    public class EmoteMenuController extends EmoteMenu implements IScreenHelperImpl{
+    public class EmoteMenuController extends EmoteMenu implements IScreenHelperImpl {
 
         public EmoteMenuController(IScreenSlave screen) {
             super(screen);
@@ -81,7 +81,7 @@ public class EmoteMenuImpl extends AbstractControlledModScreen {
             }
         }
 
-        public class FastMenuImpl extends EmoteMenu.FastChooseWidget implements IDrawableImpl, IWidgetLogicImpl {
+        public class FastMenuImpl extends EmoteMenu.FastChooseWidget implements IWidgetLogicImpl {
             private boolean focused = true;
 
             public FastMenuImpl(int x, int y, int size) {

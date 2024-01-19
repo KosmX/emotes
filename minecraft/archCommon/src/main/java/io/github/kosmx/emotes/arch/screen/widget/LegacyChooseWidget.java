@@ -1,11 +1,13 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.arch.executor.Defaults;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -43,7 +45,8 @@ public class LegacyChooseWidget implements IChooseWheel {
 
     public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y) {
         int c = ((ClientConfig) EmoteInstance.config).dark.get() ? 255 : 0; //:D
-        widget.textDraw(matrices, stringRenderable, x - (float) widget.textRendererGetWidth(stringRenderable) / 2, y - 2, MathHelper.colorHelper(c, c, c, 1));
+        float x1 = x - (float) Minecraft.getInstance().font.width(stringRenderable) / 2;
+        matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), MathHelper.colorHelper(c, c, c, 1));
     }
 
     @Nullable
@@ -74,10 +77,10 @@ public class LegacyChooseWidget implements IChooseWheel {
     public void render(GuiGraphics matrices, int mouseX, int mouseY, float delta) {
         checkHovered(mouseX, mouseY);
         //widget.renderBindTexture(TEXTURE);
-        widget.renderSystemBlendColor(1, 1, 1, 1);
-        widget.renderEnableBend();
-        widget.renderDefaultBendFunction();
-        widget.renderEnableDepthText();
+        RenderSystem.setShaderColor((float) 1, (float) 1, (float) 1, (float) 1);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
         this.drawTexture(matrices, TEXTURE, 0, 0, 0, 0, 2);
         if (this.hovered) {
             FastChooseElement part = getActivePart(mouseX, mouseY);
@@ -99,7 +102,7 @@ public class LegacyChooseWidget implements IChooseWheel {
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
     private void drawTexture(GuiGraphics matrices, ResourceLocation texture, int x, int y, int u, int v, int s) {
-        widget.drawableDrawTexture(matrices, texture, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
+        matrices.blit(texture, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, (float) u, (float) v, s * 128, s * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY) {
@@ -180,7 +183,7 @@ public class LegacyChooseWidget implements IChooseWheel {
                 int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (widget.y + widget.size / 2)) + widget.size * 0.4 * Math.cos(this.angle * 0.0174533)) - s;
                 //widget.renderBindTexture(identifier);
-                widget.drawableDrawTexture(matrices, identifier, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
+                matrices.blit(identifier, iconX, iconY, s * 2, s * 2, (float) 0, (float) 0, 256, 256, 256, 256);
             } else {
                 if (((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null) {
                     drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);

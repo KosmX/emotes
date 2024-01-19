@@ -1,10 +1,13 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -92,10 +95,10 @@ public class ModernChooseWheel implements IChooseWheel {
     public void render(GuiGraphics matrices, int mouseX, int mouseY, float delta){
         checkHovered(mouseX, mouseY);
         //widget.renderBindTexture(TEXTURE);
-        widget.renderSystemBlendColor(1, 1, 1, 1);
-        widget.renderEnableBend();
-        widget.renderDefaultBendFunction();
-        widget.renderEnableDepthText();
+        RenderSystem.setShaderColor((float) 1, (float) 1, (float) 1, (float) 1);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
         this.drawTexture(matrices, TEXTURE, 0, 0, 0, 0, 2);
         if(this.hovered){
             FastChooseElement part = getActivePart(mouseX, mouseY);
@@ -106,8 +109,9 @@ public class ModernChooseWheel implements IChooseWheel {
         for(FastChooseElement f : elements){
             if(f.hasEmote()) f.render(matrices);
         }
-        widget.textDrawWithShadow(matrices, TmpGetters.getDefaults()
-                .textFromString(String.valueOf(fastMenuPage + 1)), widget.x + widget.size / 2f - 2, widget.y + widget.size / 2f - 3, -1);
+        Component text = TmpGetters.getDefaults()
+                .textFromString(String.valueOf(fastMenuPage + 1));
+        matrices.drawString(Minecraft.getInstance().font, text, (int) (widget.x + widget.size / 2f - 2), (int) (widget.y + widget.size / 2f - 3), -1);
     }
 
 
@@ -120,10 +124,10 @@ public class ModernChooseWheel implements IChooseWheel {
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
     private void drawTexture(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int s){
-        widget.drawableDrawTexture(matrices, t,widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, u, v, s * 128, s * 128, 512, 512);
+        matrices.blit(t, widget.x + x * widget.size / 256, widget.y + y * widget.size / 256, s * widget.size / 2, s * widget.size / 2, (float) u, (float) v, s * 128, s * 128, 512, 512);
     }
     private void drawTexture_select(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int w, int h){
-        widget.drawableDrawTexture(matrices, t,widget.x + x * widget.size / 512, widget.y + y * widget.size / 512, w * widget.size / 2, h * widget.size / 2, u, v, w * 128, h * 128, 512, 512);
+        matrices.blit(t, widget.x + x * widget.size / 512, widget.y + y * widget.size / 512, w * widget.size / 2, h * widget.size / 2, (float) u, (float) v, w * 128, h * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
@@ -230,7 +234,7 @@ public class ModernChooseWheel implements IChooseWheel {
                 int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (widget.y + widget.size / 2)) + widget.size * 0.36 * Math.cos(this.angle * 0.0174533)) - s;
                 //widget.renderBindTexture(identifier);
-                widget.drawableDrawTexture(matrices, identifier, iconX, iconY, s * 2, s * 2, 0, 0, 256, 256, 256, 256);
+                matrices.blit(identifier, iconX, iconY, s * 2, s * 2, (float) 0, (float) 0, 256, 256, 256, 256);
             }else{
                 if(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null){
                     widget.drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);

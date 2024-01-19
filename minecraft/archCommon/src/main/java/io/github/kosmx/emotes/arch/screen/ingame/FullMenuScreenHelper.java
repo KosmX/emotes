@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
+import io.github.kosmx.emotes.arch.gui.screen.TextInputImpl;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
@@ -18,7 +18,7 @@ import net.minecraft.network.chat.Component;
 @SuppressWarnings("unchecked")
 public abstract class FullMenuScreenHelper extends AbstractScreenLogic {
 
-    private ITextInputWidget<ITextInputWidget> searchBox;
+    private TextInputImpl searchBox;
     private IEmoteListWidgetHelper emoteList;
 
     protected FullMenuScreenHelper(IScreenSlave screen) {

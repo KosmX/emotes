@@ -2,14 +2,13 @@ package io.github.kosmx.emotes.arch.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.core.util.MathHelper;
+import io.github.kosmx.emotes.arch.gui.screen.IButtonImpl;
+import io.github.kosmx.emotes.arch.gui.screen.TextInputImpl;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.inline.TmpGetters;
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
-import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -47,12 +46,12 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     private FastChooseWidget fastMenu;
     //protected List<buttons> buttons is already exists
     private final MutableComponent unboundText = InputConstants.UNKNOWN.getDisplayName().plainCopy();
-    private IButton setKeyButton;
+    private IButtonImpl setKeyButton;
     public boolean save = false;
     public boolean warn = false;
-    private ITextInputWidget<ITextInputWidget> searchBox;
+    private TextInputImpl searchBox;
     private List<PositionedText> texts = new ArrayList<>();
-    private IButton resetKey;
+    private IButtonImpl resetKey;
 
     private Component resetOneText = Component.translatable("controls.reset");
     private Component resetAllText = Component.translatable("controls.resetAll");
@@ -131,13 +130,13 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         }
     }
 
-    public void setFocusedElement(@Nullable IWidget focused){
+    public void setFocusedElement(@Nullable TextInputImpl focused){
         if(activeKeyTime == 0){
             screen.setFocused(focused);
         }
     }
 
-    private void resetKeyAction(IButton button){
+    private void resetKeyAction(IButtonImpl button){
         if(resetOnlySelected) {
             if (emoteList.getSelectedEntry() == null) return;
             //emoteList.getSelectedEntry().getEmote().keyBinding = TmpGetters.getDefaults().getUnknownKey();
@@ -416,7 +415,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         }
 
         private void render(GuiGraphics matrixStack) {
-            drawCenteredText(matrixStack, this.str, this.x, this.y, MathHelper.colorHelper(255, 255, 255, 255));
+            matrixStack.drawCenteredString(Minecraft.getInstance().font, this.str, this.x, this.y, MathHelper.colorHelper(255, 255, 255, 255));
             //textRenderer.getClass();
         }
     }

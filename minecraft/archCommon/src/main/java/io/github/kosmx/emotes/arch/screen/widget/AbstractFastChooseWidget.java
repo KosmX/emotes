@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.arch.screen.widget;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
@@ -38,7 +39,8 @@ public abstract class AbstractFastChooseWidget implements IWidgetLogic {
 
     public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y){
         int c = ((ClientConfig) EmoteInstance.config).dark.get() ? 255 : 0; //:D
-        textDraw(matrices, stringRenderable, x - (float) textRendererGetWidth(stringRenderable) / 2, y - 2, MathHelper.colorHelper(c, c, c, 1));
+        float x1 = x - (float) Minecraft.getInstance().font.width(stringRenderable) / 2;
+        matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), MathHelper.colorHelper(c, c, c, 1));
     }
 
 

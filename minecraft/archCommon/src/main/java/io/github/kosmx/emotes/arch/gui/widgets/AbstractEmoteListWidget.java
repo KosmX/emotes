@@ -1,12 +1,10 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
-import io.github.kosmx.emotes.arch.gui.screen.IDrawableImpl;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -15,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.AbstractEmoteEntry<E>> extends ObjectSelectionList<E> implements IEmoteListWidgetHelper, IDrawableImpl {
+public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.AbstractEmoteEntry<E>> extends ObjectSelectionList<E> implements IEmoteListWidgetHelper {
 
     @Override
     public IEmoteEntry getSelectedEntry() {
@@ -89,7 +87,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
         return this;
     }
 
-    public static abstract class AbstractEmoteEntry<T extends AbstractEmoteEntry<T>> extends ObjectSelectionList.Entry<T> implements IEmoteEntry, IDrawableImpl {
+    public static abstract class AbstractEmoteEntry<T extends AbstractEmoteEntry<T>> extends ObjectSelectionList.Entry<T> implements IEmoteEntry {
         protected final Minecraft client;
         public final EmoteHolder emote;
 

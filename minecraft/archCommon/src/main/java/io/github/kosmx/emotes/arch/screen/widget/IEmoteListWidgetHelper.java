@@ -1,15 +1,17 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
-import io.github.kosmx.emotes.arch.screen.IRenderHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,22 +38,26 @@ public interface IEmoteListWidgetHelper extends IWidgetLogic {
         return empties;
     }
 
-    interface IEmoteEntry extends IRenderHelper {
+    interface IEmoteEntry {
         EmoteHolder getEmote();
         default void renderThis(GuiGraphics matrices, int index, int y, int x, int entryWidth, int entryHeitht, int mouseX, int mouseY, boolean hovered, float tickDelta){
             if(hovered){
-                renderSystemBlendColor(1, 1, 1, 1);
-                drawableHelperFill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeitht + 1, MathHelper.colorHelper(66, 66, 66, 128));
+                RenderSystem.setShaderColor((float) 1, (float) 1, (float) 1, (float) 1);
+                matrices.fill(x - 1, y - 1, x + entryWidth - 9, y + entryHeitht + 1, MathHelper.colorHelper(66, 66, 66, 128));
             }
-            textDrawWithShadow(matrices, this.getEmote().name, x + 38, y + 1, 16777215);
-            textDrawWithShadow(matrices, this.getEmote().description, x + 38, y + 12, 8421504);
-            if(! this.getEmote().author.getString().equals(""))
-                textDrawWithShadow(matrices, Component.translatable("emotecraft.emote.author").withStyle(ChatFormatting.GOLD).append(this.getEmote().author), x + 38, y + 23, 8421504);
+            matrices.drawString(Minecraft.getInstance().font, this.getEmote().name, (int) ((float) (x + 38)), (int) ((float) (y + 1)), 16777215);
+            matrices.drawString(Minecraft.getInstance().font, this.getEmote().description, (int) ((float) (x + 38)), (int) ((float) (y + 12)), 8421504);
+            if(! this.getEmote().author.getString().equals("")) {
+                Component text = Component.translatable("emotecraft.emote.author").withStyle(ChatFormatting.GOLD).append(this.getEmote().author);
+                matrices.drawString(Minecraft.getInstance().font, text, (int) ((float) (x + 38)), (int) ((float) (y + 23)), 8421504);
+            }
             if(this.getEmote().getIconIdentifier() != null){
-                renderSystemBlendColor(1, 1, 1, 1); //color4f => blendColor
-                renderEnableBend();
-                drawableDrawTexture(matrices, this.getEmote().getIconIdentifier(), x, y, 32, 32, 0, 0, 256, 256, 256, 256);
-                renderDisableBend();
+                //color4f => blendColor
+                RenderSystem.setShaderColor((float) 1, (float) 1, (float) 1, (float) 1);
+                RenderSystem.enableBlend();
+                ResourceLocation texture = this.getEmote().getIconIdentifier();
+                matrices.blit(texture, x, y, 32, 32, (float) 0, (float) 0, 256, 256, 256, 256);
+                RenderSystem.disableBlend();
             }
         }
     }
