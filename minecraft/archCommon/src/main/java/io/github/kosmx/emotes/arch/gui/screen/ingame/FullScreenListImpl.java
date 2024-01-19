@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.gui.screen.ingame;
 import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
 import io.github.kosmx.emotes.arch.gui.screen.AbstractControlledModScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
-import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
@@ -11,8 +10,6 @@ import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import io.github.kosmx.emotes.arch.screen.ingame.FullMenuScreenHelper;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -33,7 +30,7 @@ public class FullScreenListImpl extends AbstractControlledModScreen {
         }
 
         @Override
-        public IScreen newEmoteMenu() {
+        public IScreenSlave newEmoteMenu() {
             return new EmoteMenuImpl(FullScreenListImpl.this);
         }
 

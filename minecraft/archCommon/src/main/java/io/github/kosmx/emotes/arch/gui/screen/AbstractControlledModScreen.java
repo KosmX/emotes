@@ -4,8 +4,6 @@ import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.arch.screen.IScreenLogicHelper;
 import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.dataTypes.screen.IConfirmScreen;
-import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
@@ -14,9 +12,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -63,8 +61,8 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
         }
 
         @Override
-        default IConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Component title, Component text) {
-            return new ConfirmScreenImpl(consumer::accept, title, text);
+        default ConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Component title, Component text) {
+            return new ConfirmScreen(consumer::accept, title, text);
         }
         @Override
         default void openExternalEmotesDir() {
@@ -88,12 +86,12 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
 
     @Override
     public void setInitialFocus(IWidget searchBox) {
-        this.setInitialFocus((GuiEventListener) searchBox.get());
+        this.setInitialFocus(searchBox.get());
     }
 
     @Override
     public void setFocused(IWidget focused) {
-        this.setFocused((GuiEventListener) focused.get());
+        this.setFocused(focused.get());
     }
 
     @Override
@@ -117,7 +115,7 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     }
 
     @Override
-    public void openScreen(@Nullable IScreen screen) {
+    public void openScreen(IScreenSlave screen) {
         if(screen != null) {
             Minecraft.getInstance().setScreen(screen.getScreen());
         }

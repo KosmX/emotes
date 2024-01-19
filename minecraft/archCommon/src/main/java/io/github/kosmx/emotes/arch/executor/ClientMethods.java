@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
-import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -35,10 +34,6 @@ public final class ClientMethods {
 
     public boolean isAbstractClientEntity(Object entity) {
         return entity instanceof AbstractClientPlayer && Minecraft.getInstance().player == entity; //make sure it'll work
-    }
-
-    public void openScreen(IScreen screen) {
-        Minecraft.getInstance().setScreen(screen.getScreen());
     }
 
     public IPlayerEntity getMainPlayer() {

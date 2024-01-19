@@ -8,6 +8,7 @@ import dev.kosmx.playerAnim.core.util.UUIDMap;
 import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.arch.executor.Defaults;
 import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
@@ -61,9 +62,9 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
-        this.name = TmpGetters.getDefaults().fromJson(emote.extraData.get("name"));
-        this.description = TmpGetters.getDefaults().fromJson(emote.extraData.get("description"));
-        this.author = TmpGetters.getDefaults().fromJson(emote.extraData.get("author"));
+        this.name = Defaults.fromJson(emote.extraData.get("name"));
+        this.description = Defaults.fromJson(emote.extraData.get("description"));
+        this.author = Defaults.fromJson(emote.extraData.get("author"));
     }
 
 
@@ -123,7 +124,7 @@ public class EmoteHolder implements Supplier<UUID> {
         try {
 
             ImplNativeImageBackedTexture nativeImageBackedTexture = TmpGetters.getClientMethods().readNativeImage(inputStream);
-            this.iconIdentifier = TmpGetters.getDefaults().newIdentifier("icon" + this.hashCode());
+            this.iconIdentifier = Defaults.newIdentifier("icon" + this.hashCode());
             TmpGetters.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;
 

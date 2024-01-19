@@ -7,7 +7,6 @@ import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.inline.TmpGetters;
-import io.github.kosmx.emotes.inline.dataTypes.screen.IConfirmScreen;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
@@ -17,7 +16,10 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -67,12 +69,12 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     public void emotes_initScreen(){
         if(warn && EmoteInstance.config.enableQuark.get()){
             warn = false;
-            IConfirmScreen csr = createConfigScreen((bool)->{
+            ConfirmScreen csr = createConfigScreen((bool)->{
                 EmoteInstance.config.enableQuark.set(bool);
                 screen.openThisScreen();
             }, Component.translatable("emotecraft.quark"), Component.translatable("emotecraft.quark2"));
-            TmpGetters.getClientMethods().openScreen(csr);
-            csr.setTimeout(56);
+            Minecraft.getInstance().setScreen(csr);
+            csr.setDelay(56);
         }
 
         this.texts = new ArrayList<>();
@@ -143,7 +145,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
             keyBoundEmotes = -1;
             this.save = true;
         } else {
-            TmpGetters.getClientMethods().openScreen(
+            Minecraft.getInstance().setScreen(
                     createConfigScreen(
                             aBoolean -> {
                                 if(aBoolean) {
@@ -225,7 +227,8 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         if(emoteList.getSelectedEntry() != null){
             bl = true;
             if(! applyKey(false, emoteList.getSelectedEntry().getEmote(), key)){
-                TmpGetters.getClientMethods().openScreen(createConfigScreen(aBoolean -> confirmReturn(aBoolean, emoteList.getSelectedEntry().getEmote(), key), TmpGetters.getDefaults().newTranslationText("emotecraft.sure"), TmpGetters.getDefaults().newTranslationText("emotecraft.sure2")));
+                Screen screen1 = createConfigScreen(aBoolean -> confirmReturn(aBoolean, emoteList.getSelectedEntry().getEmote(), key), TmpGetters.getDefaults().newTranslationText("emotecraft.sure"), TmpGetters.getDefaults().newTranslationText("emotecraft.sure2"));
+                Minecraft.getInstance().setScreen(screen1);
             }
         }
         return bl;

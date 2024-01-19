@@ -1,16 +1,16 @@
 package io.github.kosmx.emotes.arch.screen;
 
-import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IButton;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.IWidget;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 
 import javax.annotation.Nullable;
 
 /**
  * For custom screens
  */
-public interface IScreenSlave extends IScreen {
+public interface IScreenSlave {
 
     void openThisScreen();
 
@@ -27,5 +27,7 @@ public interface IScreenSlave extends IScreen {
     void addButtonsToChildren();
     void emotesRenderBackgroundTexture(GuiGraphics poseStack);
     void renderBackground(GuiGraphics matrices);
-    void openScreen(@Nullable IScreen screen);
+    void openScreen(@Nullable IScreenSlave screen);
+
+    Screen getScreen();
 }

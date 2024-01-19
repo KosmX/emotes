@@ -1,14 +1,12 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
-import io.github.kosmx.emotes.inline.dataTypes.screen.IScreen;
 import io.github.kosmx.emotes.inline.dataTypes.screen.widgets.ITextInputWidget;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
 import io.github.kosmx.emotes.arch.screen.IScreenSlave;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -27,7 +25,7 @@ public abstract class FullMenuScreenHelper extends AbstractScreenLogic {
         super(screen);
     }
 
-    abstract public IScreen newEmoteMenu();
+    abstract public IScreenSlave newEmoteMenu();
 
     @Override
     public void emotes_initScreen(){
