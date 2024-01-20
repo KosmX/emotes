@@ -1,10 +1,11 @@
 package io.github.kosmx.emotes.arch.screen;
 
-import io.github.kosmx.emotes.arch.gui.screen.IButtonImpl;
-import io.github.kosmx.emotes.arch.gui.screen.TextInputImpl;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.network.chat.Component;
 
@@ -40,12 +41,12 @@ public abstract class AbstractScreenLogic {
     }
 
     public void emotes_filesDropped(List<Path> files){}
-    public IButtonImpl newButton(int x, int y, int width, int height, Component msg, Consumer<IButtonImpl> pressAction) {
-        return new IButtonImpl(x, y, width, height, msg, button -> pressAction.accept((IButtonImpl) button));
+    public Button newButton(int x, int y, int width, int height, Component msg, Consumer<Button> pressAction) {
+        return Button.builder(msg, pressAction::accept).pos(x, y).size(width, height).build();
     }
 
-    public TextInputImpl newTextInputWidget(int x, int y, int width, int height, Component title) {
-        return new TextInputImpl(x, y, width, height, title);
+    public EditBox newTextInputWidget(int x, int y, int width, int height, Component title) {
+        return new EditBox(Minecraft.getInstance().font, x, y, width, height, title);
     }
 
     public ConfirmScreen createConfigScreen(Consumer<Boolean> consumer, Component title, Component text) {

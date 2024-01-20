@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -73,8 +74,8 @@ public abstract class AbstractControlledModScreen extends Screen implements IScr
     }
 
     @Override
-    public void addToButtons(IButtonImpl button) {
-        this.addRenderableWidget((IButtonImpl) button);
+    public void addToButtons(Button button) {
+        this.addRenderableWidget(button);
     }
 
     @Override

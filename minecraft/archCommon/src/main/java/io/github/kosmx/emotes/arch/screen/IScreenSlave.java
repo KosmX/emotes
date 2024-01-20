@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.arch.screen;
 
-import io.github.kosmx.emotes.arch.gui.screen.IButtonImpl;
-import io.github.kosmx.emotes.arch.gui.screen.TextInputImpl;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -23,7 +22,7 @@ public interface IScreenSlave {
     void setFocused(GuiEventListener focused);
 
     void addToChildren(GuiEventListener widget);
-    void addToButtons(IButtonImpl button);
+    void addToButtons(Button button);
     void openParent();
     void addButtonsToChildren();
     void emotesRenderBackgroundTexture(GuiGraphics poseStack);

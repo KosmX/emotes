@@ -2,8 +2,6 @@ package io.github.kosmx.emotes.arch.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.core.util.MathHelper;
-import io.github.kosmx.emotes.arch.gui.screen.IButtonImpl;
-import io.github.kosmx.emotes.arch.gui.screen.TextInputImpl;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
@@ -17,6 +15,9 @@ import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -46,12 +47,12 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     private FastChooseWidget fastMenu;
     //protected List<buttons> buttons is already exists
     private final MutableComponent unboundText = InputConstants.UNKNOWN.getDisplayName().plainCopy();
-    private IButtonImpl setKeyButton;
+    private Button setKeyButton;
     public boolean save = false;
     public boolean warn = false;
-    private TextInputImpl searchBox;
+    private EditBox searchBox;
     private List<PositionedText> texts = new ArrayList<>();
-    private IButtonImpl resetKey;
+    private Button resetKey;
 
     private Component resetOneText = Component.translatable("controls.reset");
     private Component resetAllText = Component.translatable("controls.resetAll");
@@ -91,7 +92,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
 
         this.searchBox = newTextInputWidget(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12, 12, (int) (screen.getWidth() / 2.2 - 16), 20, TmpGetters.getDefaults().newTranslationText("emotecraft.search"));
 
-        this.searchBox.setInputListener((string)->this.emoteList.filter(string::toLowerCase));
+        this.searchBox.setResponder((string)-> this.emoteList.filter(string::toLowerCase));
         screen.addToChildren(searchBox);
 
         screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
@@ -130,13 +131,13 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         }
     }
 
-    public void setFocusedElement(@Nullable TextInputImpl focused){
+    public void setFocusedElement(@Nullable GuiEventListener focused){
         if(activeKeyTime == 0){
             screen.setFocused(focused);
         }
     }
 
-    private void resetKeyAction(IButtonImpl button){
+    private void resetKeyAction(Button button){
         if(resetOnlySelected) {
             if (emoteList.getSelectedEntry() == null) return;
             //emoteList.getSelectedEntry().getEmote().keyBinding = TmpGetters.getDefaults().getUnknownKey();
@@ -189,26 +190,26 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float delta){
         screen.emotesRenderBackgroundTexture(matrices);
         if(this.emoteList.getSelectedEntry() == null){
-            this.setKeyButton.setActive(false);
+            this.setKeyButton.active = false;
             //this.resetKey.setActive(false);
             resetOnlySelected = false;
         }else{
-            this.setKeyButton.setActive(true);
+            this.setKeyButton.active = true;
             //this.resetKey.setActive(! this.emoteList.getSelectedEntry().getEmote().keyBinding.equals(TmpGetters.getDefaults().getUnknownKey()));
             resetOnlySelected = ((ClientConfig)EmoteInstance.config).emoteKeyMap.containsL(this.emoteList.getSelectedEntry().getEmote().getUuid());
         }
         if(resetOnlySelected){
-            this.resetKey.setActive(true);
+            this.resetKey.active = true;
             this.resetKey.setMessage(resetOneText);
         }
         else {
             if(keyBoundEmotes < 0) countEmotesWithKeyBind();
             if(keyBoundEmotes > 0){
-                this.resetKey.setActive(true);
+                this.resetKey.active = true;
                 this.resetKey.setMessage(resetAllText.copy().append(" (" + keyBoundEmotes + ")"));
             }
             else {
-                this.resetKey.setActive(false);
+                this.resetKey.active = false;
                 this.resetKey.setMessage(resetOneText);
             }
         }

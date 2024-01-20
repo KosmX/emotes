@@ -35,11 +35,11 @@ public class FullScreenListImpl extends AbstractControlledModScreen {
         }
 
         @Override
-        protected IEmoteListWidgetHelper newEmoteList(int boxSize, int height, int k, int l, int m) {
+        protected EmoteListFS newEmoteList(int boxSize, int height, int k, int l, int m) {
             return new EmoteListFS(Minecraft.getInstance(), boxSize, height, k, l, m, FullScreenListImpl.this);
         }
 
-        public class EmoteListFS extends AbstractEmoteListWidget<EmoteListFS.EmotelistEntryImpl> {
+        public static class EmoteListFS extends AbstractEmoteListWidget<EmoteListFS.EmotelistEntryImpl> {
 
             public EmoteListFS(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
                 super(minecraftClient, i, j, k, l, m, screen);
