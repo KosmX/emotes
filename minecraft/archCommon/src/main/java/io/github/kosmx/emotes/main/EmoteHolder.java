@@ -9,7 +9,6 @@ import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.executor.Defaults;
-import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
@@ -17,6 +16,7 @@ import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -46,7 +46,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
     //public InputKey keyBinding = TmpGetters.getDefaults().getUnknownKey(); // assigned keybinding
     @Nullable
-    public ImplNativeImageBackedTexture nativeIcon = null;
+    public DynamicTexture nativeIcon = null;
     @Nullable
     private ResourceLocation iconIdentifier = null;
 
@@ -123,7 +123,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public void assignIcon(InputStream inputStream) {
         try {
 
-            ImplNativeImageBackedTexture nativeImageBackedTexture = TmpGetters.getClientMethods().readNativeImage(inputStream);
+            DynamicTexture nativeImageBackedTexture = TmpGetters.getClientMethods().readNativeImage(inputStream);
             this.iconIdentifier = Defaults.newIdentifier("icon" + this.hashCode());
             TmpGetters.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;

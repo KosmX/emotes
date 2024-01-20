@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.executor;
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.arch.executor.types.ImplNativeImageBackedTexture;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -24,12 +23,12 @@ public final class ClientMethods {
         Minecraft.getInstance().getTextureManager().release(identifier);
     }
 
-    public void registerTexture(ResourceLocation identifier, ImplNativeImageBackedTexture nativeImageBacketTexture) {
-        Minecraft.getInstance().getTextureManager().register(identifier, nativeImageBacketTexture.get());
+    public void registerTexture(ResourceLocation identifier, DynamicTexture nativeImageBacketTexture) {
+        Minecraft.getInstance().getTextureManager().register(identifier, nativeImageBacketTexture);
     }
 
-    public ImplNativeImageBackedTexture readNativeImage(InputStream inputStream) throws IOException {
-        return new ImplNativeImageBackedTexture(new DynamicTexture(NativeImage.read(inputStream)));
+    public DynamicTexture readNativeImage(InputStream inputStream) throws IOException {
+        return new DynamicTexture(NativeImage.read(inputStream));
     }
 
     public boolean isAbstractClientEntity(Object entity) {
