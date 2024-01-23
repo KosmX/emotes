@@ -2,11 +2,13 @@ package io.github.kosmx.emotes.arch.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.core.util.MathHelper;
+import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
+import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
-import io.github.kosmx.emotes.arch.screen.widget.IEmoteListWidgetHelper;
+import io.github.kosmx.emotes.arch.screen.widget.IWidgetLogic;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -20,14 +22,17 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -40,42 +45,31 @@ import java.util.logging.Level;
  * tick()
  *
  */
-@SuppressWarnings("unchecked")
-public abstract class EmoteMenu extends AbstractScreenLogic {
+public class EmoteMenu extends EmoteConfigScreen {
     protected int activeKeyTime = 0;
-    private IEmoteListWidgetHelper emoteList;
+    private AbstractEmoteListWidget<?> emoteList;
     private FastChooseWidget fastMenu;
     //protected List<buttons> buttons is already exists
     private final MutableComponent unboundText = InputConstants.UNKNOWN.getDisplayName().plainCopy();
     private Button setKeyButton;
-    public boolean save = false;
-    public boolean warn = false;
+    private boolean save = false;
     private EditBox searchBox;
     private List<PositionedText> texts = new ArrayList<>();
     private Button resetKey;
 
-    private Component resetOneText = Component.translatable("controls.reset");
-    private Component resetAllText = Component.translatable("controls.resetAll");
+    private final Component resetOneText = Component.translatable("controls.reset");
+    private final Component resetAllText = Component.translatable("controls.resetAll");
     private boolean resetOnlySelected;
     private int keyBoundEmotes = -1;
 
     private ChangeListener watcher = null;
 
-    public EmoteMenu(IScreenSlave screen) {
-        super(screen);
+    public EmoteMenu(@org.jetbrains.annotations.Nullable Screen parent) {
+        super(Component.translatable("emotecraft.menu"), parent);
     }
 
     @Override
-    public void emotes_initScreen(){
-        if(warn && EmoteInstance.config.enableQuark.get()){
-            warn = false;
-            ConfirmScreen csr = createConfigScreen((bool)->{
-                EmoteInstance.config.enableQuark.set(bool);
-                screen.openThisScreen();
-            }, Component.translatable("emotecraft.quark"), Component.translatable("emotecraft.quark2"));
-            Minecraft.getInstance().setScreen(csr);
-            csr.setDelay(56);
-        }
+    public void init(){
 
         this.texts = new ArrayList<>();
         MainClientInit.loadEmotes();
@@ -90,39 +84,62 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
             }
         }
 
-        this.searchBox = newTextInputWidget(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12, 12, (int) (screen.getWidth() / 2.2 - 16), 20, TmpGetters.getDefaults().newTranslationText("emotecraft.search"));
+        int x1 = this.getWidth() / 2 - (int) (getWidth() / 2.2 - 16) - 12;
+        int width1 = (int) (getWidth() / 2.2 - 16);
+        Component title1 = Component.translatable("emotecraft.search");
+        this.searchBox = new EditBox(Minecraft.getInstance().font, x1, 12, width1, 20, title1);
 
         this.searchBox.setResponder((string)-> this.emoteList.filter(string::toLowerCase));
-        screen.addToChildren(searchBox);
+        this.addRenderableWidget(searchBox);
 
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
+        int x7 = this.getWidth() / 2 - 154;
+        int y1 = this.getHeight() - 30;
+        Component msg4 = Component.translatable("emotecraft.openFolder");
+        this.addRenderableWidget(Button.builder(msg4, ((Consumer<Button>) (buttonWidget) -> PlatformTools.openExternalEmotesDir())::accept).pos(x7, y1).size(150, 20).build());
 
         //this.emoteList = new EmoteListWidget(this.client, (int) (this.getHeight() / 2.2 - 16), this.getHeight(), this);
-        this.emoteList = newEmoteList((int) (screen.getWidth()/2.2-16), screen.getHeight());
-        this.emoteList.emotesSetLeftPos(screen.getWidth() / 2 - (int) (screen.getWidth() / 2.2 - 16) - 12);
-        screen.addToChildren(this.emoteList);
-        int x = Math.min(screen.getWidth() / 4, (int) (screen.getHeight() / 2.5));
-        this.fastMenu = newFastChooseWidghet(screen.getWidth() / 2 + 2, screen.getHeight() / 2 - 8, x - 7);
-        screen.addToChildren(fastMenu);
-        screen.addToButtons(newButton(screen.getWidth() - 100, 4, 96, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.options.options"), (button->openClothConfigScreen())));
-        screen.addToButtons(newButton(screen.getWidth() - 200, 4, 96, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.options.export"), (button->openExportMenuScreen())));
-        screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, TmpGetters.getDefaults().defaultTextsDone(), (button->screen.openParent())));
-        setKeyButton = newButton(screen.getWidth() / 2 + 6, 60, 96, 20, unboundText, button->this.activateKey());
-        screen.addToButtons(setKeyButton);
-        resetKey = newButton(screen.getWidth() / 2 + 124, 60, 96, 20, TmpGetters.getDefaults().newTranslationText("controls.reset"), (this::resetKeyAction));
-        screen.addToButtons(resetKey);
+        this.emoteList = newEmoteList((int) (getWidth()/2.2-16), this.getHeight());
+        this.emoteList.emotesSetLeftPos( getWidth() / 2 - (int) ( getWidth() / 2.2 - 16) - 12);
+        this.addToChildren(this.emoteList);
+        int x = Math.min( getWidth() / 4, (int) ( getHeight() / 2.5));
+        this.fastMenu = newFastChooseWidghet( getWidth() / 2 + 2, this.getHeight() / 2 - 8, x - 7);
+        this.addToChildren(fastMenu);
+        int x6 = this.getWidth() - 100;
+        Component msg3 = Component.translatable("emotecraft.options.options");
+        this.addRenderableWidget(Button.builder(msg3, (button3 -> openClothConfigScreen())).pos(x6, 4).size(96, 20).build());
+        int x5 = this.getWidth() - 200;
+        Component msg2 = Component.translatable("emotecraft.options.export");
+        this.addRenderableWidget(Button.builder(msg2, (button2 -> openExportMenuScreen())).pos(x5, 4).size(96, 20).build());
+        int x4 = this.getWidth() / 2 + 10;
+        int y = this.getHeight() - 30;
+        Component msg1 = CommonComponents.GUI_DONE;
+        this.addRenderableWidget(Button.builder(msg1, (button1 -> this.openParent())).pos(x4, y).size(96, 20).build());
+        int x3 = this.getWidth() / 2 + 6;
+        setKeyButton = Button.builder(unboundText, ((Consumer<Button>) button -> this.activateKey())::accept).pos(x3, 60).size(96, 20).build();
+        this.addRenderableWidget(setKeyButton);
+        int x2 = this.getWidth() / 2 + 124;
+        Component msg = Component.translatable("controls.reset");
+        resetKey = Button.builder(msg, (this::resetKeyAction)).pos(x2, 60).size(96, 20).build();
+        this.addRenderableWidget(resetKey);
         emoteList.setEmotes(EmoteHolder.list, true);
-        screen.setInitialFocus(this.searchBox);
-        this.texts.add(new PositionedText("emotecraft.options.keybind", screen.getWidth() / 2 + 115, 40));
-        this.texts.add(new PositionedText(Component.translatable("emotecraft.options.fastmenu"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 54));
-        this.texts.add(new PositionedText(TmpGetters.getDefaults().newTranslationText("emotecraft.options.fastmenu2"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 40));
-        this.texts.add(new PositionedText(TmpGetters.getDefaults().newTranslationText("emotecraft.options.fastmenu3"), screen.getWidth() / 2 + 10 + x / 2, screen.getHeight() / 2 - 26));
-        screen.addButtonsToChildren();
+        this.setInitialFocus(this.searchBox);
+        this.texts.add(new PositionedText("emotecraft.options.keybind", this.getWidth() / 2 + 115, 40));
+        this.texts.add(new PositionedText(Component.translatable("emotecraft.options.fastmenu"), this.getWidth() / 2 + 10 + x / 2, this.getHeight() / 2 - 54));
+        this.texts.add(new PositionedText(Component.translatable("emotecraft.options.fastmenu2"), this.getWidth() / 2 + 10 + x / 2, this.getHeight() / 2 - 40));
+        this.texts.add(new PositionedText(Component.translatable("emotecraft.options.fastmenu3"), this.getWidth() / 2 + 10 + x / 2, this.getHeight() / 2 - 26));
     }
 
-    protected abstract FastChooseWidget newFastChooseWidghet(int x, int y, int size);
-    abstract public void openClothConfigScreen(); //will we use cloth or nope.
-    abstract public void openExportMenuScreen();
+    protected FastChooseWidget newFastChooseWidghet(int x, int y, int size) {
+        return new FastMenuImpl(x, y, size);
+    }
+
+    public void openClothConfigScreen() {
+        Minecraft.getInstance().setScreen(new ConfigScreen(this));
+    }
+
+    public void openExportMenuScreen() {
+        Minecraft.getInstance().setScreen(new ExportMenu(this));
+    }
 
     private void activateKey(){
         if(emoteList.getSelectedEntry() != null){
@@ -133,7 +150,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
 
     public void setFocusedElement(@Nullable GuiEventListener focused){
         if(activeKeyTime == 0){
-            screen.setFocused(focused);
+            this.setFocused(focused);
         }
     }
 
@@ -145,24 +162,23 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
             keyBoundEmotes = -1;
             this.save = true;
         } else {
+            Component text = Component.translatable("emotecraft.resetAllKeys.message").append(" (" + keyBoundEmotes + ")");
+            //reset :D
             Minecraft.getInstance().setScreen(
-                    createConfigScreen(
-                            aBoolean -> {
-                                if(aBoolean) {
-                                    ((ClientConfig)EmoteInstance.config).emoteKeyMap.clear(); //reset :D
-                                    this.saveConfig();
-                                    keyBoundEmotes = -1;
-                                }
-                                screen.openThisScreen();
-                            },
-                            Component.translatable("emotecraft.resetAllKeys.title"),
-                            Component.translatable("emotecraft.resetAllKeys.message").append(" (" + keyBoundEmotes + ")"))
+                    new ConfirmScreen(((Consumer<Boolean>) aBoolean -> {
+                        if (aBoolean) {
+                            ((ClientConfig) EmoteInstance.config).emoteKeyMap.clear(); //reset :D
+                            this.saveConfig();
+                            keyBoundEmotes = -1;
+                        }
+                        getMinecraft().setScreen(EmoteMenu.this);
+                    })::accept, Component.translatable("emotecraft.resetAllKeys.title"), text)
             );
         }
     }
 
     @Override
-    public void emotes_tickScreen(){
+    public void tick(){
         if(activeKeyTime == 1){
             setFocusedElement(null);
         }
@@ -175,9 +191,9 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     }
 
     @Override
-    public boolean emotes_onMouseClicked(double mouseX, double mouseY, int button){
+    public boolean mouseClicked(double mouseX, double mouseY, int button){
         if(this.activeKeyTime != 0 && emoteList.getSelectedEntry() != null){
-            return setKey(TmpGetters.getDefaults().getMouseKeyFromCode(button));
+            return setKey(InputConstants.Type.MOUSE.getOrCreate(button));
         }
         return false;
     }
@@ -187,8 +203,8 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     }
 
     @Override
-    public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float delta){
-        screen.emotesRenderBackgroundTexture(matrices);
+    public void render(@NotNull GuiGraphics matrices, int mouseX, int mouseY, float delta){
+        this.renderDirtBackground(matrices);
         if(this.emoteList.getSelectedEntry() == null){
             this.setKeyButton.active = false;
             //this.resetKey.setActive(false);
@@ -227,8 +243,10 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         if(emoteList.getSelectedEntry() != null){
             bl = true;
             if(! applyKey(false, emoteList.getSelectedEntry().getEmote(), key)){
-                Screen screen1 = createConfigScreen(aBoolean -> confirmReturn(aBoolean, emoteList.getSelectedEntry().getEmote(), key), TmpGetters.getDefaults().newTranslationText("emotecraft.sure"), TmpGetters.getDefaults().newTranslationText("emotecraft.sure2"));
-                Minecraft.getInstance().setScreen(screen1);
+                Component title1 = Component.translatable("emotecraft.sure");
+                Component text = Component.translatable("emotecraft.sure2");
+                Screen confirmScreen = new ConfirmScreen(((Consumer<Boolean>) aBoolean -> confirmReturn(aBoolean, emoteList.getSelectedEntry().getEmote(), key))::accept, title1, text);
+                Minecraft.getInstance().setScreen(confirmScreen);
             }
         }
         return bl;
@@ -239,13 +257,13 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
             applyKey(true, emoteHolder, key);
             this.saveConfig();
         }
-        screen.openThisScreen();
+        getMinecraft().setScreen(this);
     }
 
     private boolean applyKey(boolean force, EmoteHolder emote, InputConstants.Key key){
         boolean bl = true;
         for(EmoteHolder emoteHolder : EmoteHolder.list){
-            if(! key.equals(TmpGetters.getDefaults().getUnknownKey()) && getKey(emoteHolder.getUuid()).equals(key)){
+            if(! key.equals(InputConstants.UNKNOWN) && getKey(emoteHolder.getUuid()).equals(key)){
                 bl = false;
                 if(force){
                     //emoteHolder.keyBinding = TmpGetters.getDefaults().getUnknownKey();
@@ -272,7 +290,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     }
 
     @Override
-    public void emotes_onRemove(){
+    public void removed(){
         if(save){
             this.saveConfig();
         }
@@ -301,7 +319,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     }
 
     @Override
-    public boolean emotes_onKeyPressed(int keyCode, int scanCode, int mod){
+    public boolean keyPressed(int keyCode, int scanCode, int mod){
         if(emoteList.getSelectedEntry() != null && activeKeyTime != 0) {
             if (keyCode == 256) {
                 return setKey(InputConstants.UNKNOWN);
@@ -314,7 +332,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
     }
 
     @Override
-    public void emotes_filesDropped(List<Path> paths){
+    public void onFilesDrop(@NotNull List<Path> paths){
         addEmotes(paths);
         List<Path> folders = paths.stream().filter(path -> path.toFile().isDirectory()).toList();
         for(Path folder : folders){
@@ -358,7 +376,9 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         }
     }
 
-    protected abstract IEmoteListWidgetHelper newEmoteList(int width, int height);
+    protected AbstractEmoteListWidget<?> newEmoteList(int width, int height) {
+        return new EmoteListImpl(getMinecraft(), width, height, 51, height-32, 36, this);
+    }
 
     protected abstract class FastChooseWidget extends AbstractFastChooseWidget {
 
@@ -372,7 +392,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         }
 
         @Override
-        protected boolean EmotesOnClick(IChooseWheel.IChooseElement element, int button){
+        protected boolean onClick(IChooseWheel.IChooseElement element, int button){
             if(activeKeyTime != 0) return false;
             if(button == 1){
                 element.clearEmote();
@@ -398,7 +418,7 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         }
     }
 
-    private class PositionedText {
+    private static class PositionedText {
         private final Component str;
         private final int x;
         private final int y;
@@ -442,6 +462,51 @@ public abstract class EmoteMenu extends AbstractScreenLogic {
         @Override
         public void close() throws Exception {
             watcher.close();
+        }
+    }
+
+
+    public static class EmoteListImpl extends AbstractEmoteListWidget<EmoteListImpl.EmoteListEntryImpl> {
+
+        public EmoteListImpl(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
+            super(minecraftClient, i, j, k, l, m, screen);
+
+        }
+
+        @Override
+        protected EmoteListEntryImpl newEmoteEntry(Minecraft client, EmoteHolder emoteHolder) {
+            return new EmoteListEntryImpl(client, emoteHolder);
+        }
+
+
+        public class EmoteListEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmoteListEntryImpl>{
+
+            public EmoteListEntryImpl(Minecraft client, EmoteHolder emote) {
+                super(client, emote);
+            }
+
+            @Override
+            protected void onPressed() {
+                EmoteListImpl.this.setSelected(this);
+            }
+        }
+    }
+
+    public class FastMenuImpl extends EmoteMenu.FastChooseWidget implements IWidgetLogic {
+        private boolean focused = true;
+
+        public FastMenuImpl(int x, int y, int size) {
+            super(x, y, size);
+        }
+
+        @Override
+        public void setFocused(boolean bl) {
+            focused = bl;
+        }
+
+        @Override
+        public boolean isFocused() {
+            return focused;
         }
     }
 }

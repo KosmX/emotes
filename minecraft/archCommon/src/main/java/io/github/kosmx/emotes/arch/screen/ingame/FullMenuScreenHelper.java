@@ -1,13 +1,18 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
 import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
-import io.github.kosmx.emotes.inline.TmpGetters;
+import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.arch.screen.IScreenSlave;
+import io.github.kosmx.emotes.arch.screen.EmoteConfigScreen;
+import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Stuff to override/implement
@@ -15,49 +20,82 @@ import net.minecraft.network.chat.Component;
  * isPauseScreen
  * render
  */
-public abstract class FullMenuScreenHelper extends AbstractScreenLogic {
+public class FullMenuScreenHelper extends EmoteConfigScreen {
 
     private EditBox searchBox;
-    private AbstractEmoteListWidget emoteList;
+    private EmoteListFS emoteList;
 
-    protected FullMenuScreenHelper(IScreenSlave screen) {
-        super(screen);
+    protected FullMenuScreenHelper(Screen screen) {
+        super(Component.translatable("emotecraft.emotelist"), screen);
     }
 
-    abstract public IScreenSlave newEmoteMenu();
+    private EmoteConfigScreen newEmoteMenu() {
+        return new EmoteMenu(this);
+    }
 
     @Override
-    public void emotes_initScreen(){
-        int x = (int) Math.min(screen.getWidth() * 0.8, screen.getHeight() - 60);
-        this.searchBox = newTextInputWidget((screen.getWidth() - x) / 2, 12, x, 20, Component.translatable("emotecraft.search"));
+    public void init(){
+        int x = (int) Math.min(getWidth() * 0.8, getHeight() - 60);
+        int x1 = (getWidth() - x) / 2;
+        this.searchBox = new EditBox(Minecraft.getInstance().font, x1, 12, x, 20, Component.translatable("emotecraft.search"));
         this.searchBox.setResponder((string)->emoteList.filter(string::toLowerCase));
-        this.emoteList = newEmoteList(x, screen.getHeight(), screen.getWidth());
-        this.emoteList.emotesSetLeftPos((screen.getWidth() - x) / 2);
+        this.emoteList = newEmoteList(x, getHeight(), getWidth());
+        this.emoteList.emotesSetLeftPos((getWidth() - x) / 2);
         emoteList.setEmotes(EmoteHolder.list, false);
-        screen.addToChildren(searchBox);
-        screen.addToChildren(emoteList);
-        screen.setInitialFocus(this.searchBox);
-        screen.addToButtons(newButton(screen.getWidth() - 120, screen.getHeight() - 30, 96, 20, TmpGetters.getDefaults().defaultTextCancel(), (button->screen.openScreen(null))));
-        screen.addToButtons(newButton(screen.getWidth() - 120, screen.getHeight() - 60, 96, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.config"), (button->screen.openScreen(newEmoteMenu()))));
-        screen.addButtonsToChildren();
+        addToChildren(searchBox);
+        addToChildren(emoteList);
+        setInitialFocus(this.searchBox);
+        int x3 = getWidth() - 120;
+        int y1 = getHeight() - 30;
+        Component msg1 = CommonComponents.GUI_CANCEL;
+        addRenderableWidget(Button.builder(msg1, (button1 -> getMinecraft().setScreen(null))).pos(x3, y1).size(96, 20).build());
+        int x2 = getWidth() - 120;
+        int y = getHeight() - 60;
+        Component msg = Component.translatable("emotecraft.config");
+        addRenderableWidget(Button.builder(msg, (button -> getMinecraft().setScreen(newEmoteMenu()))).pos(x2, y).size(96, 20).build());
     }
 
-    protected AbstractEmoteListWidget newEmoteList(int boxSize, int height, int width){
-        return newEmoteList(boxSize, height, (height-boxSize)/2+10, width > (width + boxSize)/2 + 120 ? (height + boxSize)/2 + 10 : height - 80, 36);
+    private EmoteListFS newEmoteList(int boxSize, int height, int width){
+        int l = width > (width + boxSize)/2 + 120 ? (height + boxSize)/2 + 10 : height - 80;
+        return new EmoteListFS(getMinecraft(), boxSize, height, (height-boxSize)/2+10, l, 36, this);
     }
-
-    protected abstract AbstractEmoteListWidget newEmoteList(int boxSize, int height, int k, int l, int m);
 
     @Override
-    public boolean emotes_isThisPauseScreen(){
+    public boolean isPauseScreen(){
         return false;
     }
 
 
     @Override
-    public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float delta){
-        screen.emotesRenderBackgroundTexture(matrices);
+    public void render(@NotNull GuiGraphics matrices, int mouseX, int mouseY, float delta){
+        renderDirtBackground(matrices);
         this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
+    }
+
+
+    public static class EmoteListFS extends AbstractEmoteListWidget<EmoteListFS.EmotelistEntryImpl> {
+
+        public EmoteListFS(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
+            super(minecraftClient, i, j, k, l, m, screen);
+        }
+
+        @Override
+        protected EmotelistEntryImpl newEmoteEntry(Minecraft client, EmoteHolder emoteHolder) {
+            return new EmotelistEntryImpl(client, emoteHolder);
+        }
+
+        public static class EmotelistEntryImpl extends AbstractEmoteListWidget.AbstractEmoteEntry<EmotelistEntryImpl>{
+
+            public EmotelistEntryImpl(Minecraft client, EmoteHolder emote) {
+                super(client, emote);
+            }
+
+            @Override
+            protected void onPressed() {
+                ClientEmotePlay.clientStartLocalEmote(this.getEmote());
+                Minecraft.getInstance().setScreen(null);
+            }
+        }
     }
 }

@@ -2,8 +2,8 @@ package io.github.kosmx.emotes.forge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.arch.executor.ClientMethods;
-import io.github.kosmx.emotes.arch.gui.EmoteMenuImpl;
-import io.github.kosmx.emotes.arch.gui.screen.ingame.FastChosseScreen;
+import io.github.kosmx.emotes.arch.screen.EmoteMenu;
+import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.forge.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.MainClientInit;
@@ -41,7 +41,7 @@ public class ClientInit {
     static void setupClient() {
         ClientNetworkInstance.networkInstance.init(); //init network
 
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> new EmoteMenuImpl(screen)));
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> new EmoteMenu(screen)));
     }
 
     @SubscribeEvent
@@ -80,7 +80,7 @@ public class ClientInit {
 
             if(openMenuKey.consumeClick()){
                 if(((ClientConfig) EmoteInstance.config).alwaysOpenEmoteScreen.get() || Minecraft.getInstance().player == Minecraft.getInstance().getCameraEntity()){
-                    Minecraft.getInstance().setScreen(new FastChosseScreen(null));
+                    Minecraft.getInstance().setScreen(new FastMenuScreen(null));
                 }
             }
             if(stopEmote.consumeClick()){

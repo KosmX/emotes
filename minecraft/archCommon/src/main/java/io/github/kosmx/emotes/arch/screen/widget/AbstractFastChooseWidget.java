@@ -48,16 +48,16 @@ public abstract class AbstractFastChooseWidget implements IWidgetLogic {
 
     protected abstract boolean isValidClickButton(int button);
 
-    protected abstract boolean EmotesOnClick(IChooseWheel.IChooseElement element, int button);  //What DO I want to do with this element? set or play.
+    protected abstract boolean onClick(IChooseWheel.IChooseElement element, int button);  //What DO I want to do with this element? set or play.
 
     protected abstract boolean doesShowInvalid();
 
-    public boolean emotes_mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return this.wheel.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean emotes_mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         return this.wheel.mouseScrolled(mouseX, mouseY, amount);
     }
 

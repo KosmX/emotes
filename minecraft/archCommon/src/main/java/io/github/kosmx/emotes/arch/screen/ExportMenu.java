@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen;
 
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.inline.TmpGetters;
@@ -10,7 +11,11 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,27 +23,35 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
-public abstract class ExportMenu extends AbstractScreenLogic {
-    protected ExportMenu(IScreenSlave screen) {
-        super(screen);
+public class ExportMenu extends EmoteConfigScreen {
+    protected ExportMenu(Screen screen) {
+        super(Component.translatable("emotecraft.exportMenu"), screen);
     }
 
     @Override
-    public void emotes_initScreen() {
+    public void init() {
         int h = 10;
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
-                TmpGetters.getDefaults().newTranslationText("emotecraft.exportjson"), //TODO translation key
-                iButton -> this.saveAllJson()));
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 100, h += 30, 200, 20,
-                TmpGetters.getDefaults().newTranslationText("emotecraft.exportbin"), //TODO translation key
-                iButton -> this.saveAllBinary()));
+        int x3 = getWidth() / 2 - 100;
+        int y3 = h += 30;
+        Component msg3 = Component.translatable("emotecraft.exportjson");
+        addRenderableWidget(Button.builder(msg3, (iButton1 -> this.saveAllJson())).pos(x3, y3).size(200, 20).build());
+        int x2 = getWidth() / 2 - 100;
+        int y2 = h += 30;
+        Component msg2 = Component.translatable("emotecraft.exportbin");
+        addRenderableWidget(Button.builder(msg2, (iButton -> this.saveAllBinary())).pos(x2, y2).size(200, 20).build());
 
         //TODO toast notification
-        screen.addToButtons(newButton(screen.getWidth() / 2 + 10, screen.getHeight() - 30, 96, 20, TmpGetters.getDefaults().defaultTextsDone(), (button->screen.openParent())));
-        screen.addToButtons(newButton(screen.getWidth() / 2 - 154, screen.getHeight() - 30, 150, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.openFolder"), (buttonWidget)->this.openExternalEmotesDir()));
-        screen.addButtonsToChildren();
+        int x1 = getWidth() / 2 + 10;
+        int y1 = getHeight() - 30;
+        Component msg1 = CommonComponents.GUI_DONE;
+        addRenderableWidget(Button.builder(msg1, (button -> openParent())).pos(x1, y1).size(96, 20).build());
+        int x = getWidth() / 2 - 154;
+        int y = getHeight() - 30;
+        Component msg = Component.translatable("emotecraft.openFolder");
+        addRenderableWidget(Button.builder(msg, ((Consumer<Button>) (buttonWidget) -> PlatformTools.openExternalEmotesDir())::accept).pos(x, y).size(150, 20).build());
     }
 
     private void saveAllJson(){
@@ -81,7 +94,7 @@ public abstract class ExportMenu extends AbstractScreenLogic {
             }
         }
         TmpGetters.getClientMethods().toastExportMessage(1,
-                TmpGetters.getDefaults().newTranslationText("emotecraft.export.done." + format.getExtension()),
+                Component.translatable("emotecraft.export.done." + format.getExtension()),
                 "emotes/" + format.getExtension() + "_export/");
         EmoteInstance.instance.getLogger().log(Level.FINER, "All emotes are saved in " + format.getExtension() + " format", true);
     }
@@ -112,7 +125,8 @@ public abstract class ExportMenu extends AbstractScreenLogic {
     }
 
     @Override
-    public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float tickDelta) {
-        screen.emotesRenderBackgroundTexture(matrices);
+    public void render(@NotNull GuiGraphics matrices, int mouseX, int mouseY, float tickDelta) {
+        renderDirtBackground(matrices);
+        super.render(matrices, mouseX, mouseY, tickDelta);
     }
 }

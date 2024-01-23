@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.fabric.network;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
@@ -12,6 +11,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,7 +84,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance implements C2
         EmotePacket writer = builder.build();
         ClientPlayNetworking.send(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(writer.write().array())));
         if(writer.data.emoteData != null && writer.data.emoteData.extraData.containsKey("song") && !writer.data.writeSong){
-            TmpGetters.getClientMethods().sendChatMessage(TmpGetters.getDefaults().newTranslationText("emotecraft.song_too_big_to_send"));
+            TmpGetters.getClientMethods().sendChatMessage(Component.translatable("emotecraft.song_too_big_to_send"));
         }
     }
 }

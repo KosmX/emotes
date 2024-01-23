@@ -14,6 +14,7 @@ import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -103,7 +104,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                     ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.emotes_getUUID());
                     player.stopEmote(data.stopEmoteID);
                     if(player.isMainPlayer() && !data.isForced){
-                        TmpGetters.getClientMethods().sendChatMessage(TmpGetters.getDefaults().newTranslationText("emotecraft.blockedEmote"));
+                        TmpGetters.getClientMethods().sendChatMessage(Component.translatable("emotecraft.blockedEmote"));
                     }
                 }
                 else {

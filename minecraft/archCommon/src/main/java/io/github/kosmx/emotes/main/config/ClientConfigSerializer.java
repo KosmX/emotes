@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 
 import java.lang.reflect.Type;
@@ -69,7 +68,8 @@ public class ClientConfigSerializer extends ConfigSerializer {
             oldKeyBindsSerializer(node.getAsJsonArray(), config, fixer);
         } else {
             for (Map.Entry<String, JsonElement> element : node.getAsJsonObject().entrySet()) {
-                config.emoteKeyMap.put(UUID.fromString(element.getKey()), TmpGetters.getDefaults().getKeyFromString(element.getValue().getAsString()));
+                String str = element.getValue().getAsString();
+                config.emoteKeyMap.put(UUID.fromString(element.getKey()), InputConstants.getKey(str));
                 //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
             }
         }
@@ -78,7 +78,8 @@ public class ClientConfigSerializer extends ConfigSerializer {
     private void oldKeyBindsSerializer(JsonArray node, ClientConfig config, EmoteFixer fixer){
         for(JsonElement jsonElement : node){
             JsonObject n = jsonElement.getAsJsonObject();
-            config.emoteKeyMap.add(new Pair<>(fixer.getEmoteID(n.get("id")), TmpGetters.getDefaults().getKeyFromString(n.get("key").getAsString())));
+            String str = n.get("key").getAsString();
+            config.emoteKeyMap.add(new Pair<>(fixer.getEmoteID(n.get("id")), InputConstants.getKey(str)));
         }
     }
 

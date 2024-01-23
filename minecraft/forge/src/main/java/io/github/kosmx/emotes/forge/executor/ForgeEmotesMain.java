@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.forge.executor;
 
-import io.github.kosmx.emotes.arch.executor.AbstractEmotesMain;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.Logger;
 import io.github.kosmx.emotes.forge.ForgeWrapper;
 import net.minecraftforge.api.distmarker.Dist;
@@ -8,7 +8,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.nio.file.Path;
 
-public class ForgeEmotesMain extends AbstractEmotesMain {
+public class ForgeEmotesMain extends EmoteInstance {
     @Override
     public Logger getLogger() {
         return ForgeWrapper::log;

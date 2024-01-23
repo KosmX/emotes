@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
 import dev.kosmx.playerAnim.core.util.MathHelper;
-import io.github.kosmx.emotes.arch.screen.AbstractScreenLogic;
-import io.github.kosmx.emotes.arch.screen.IScreenSlave;
+import io.github.kosmx.emotes.arch.screen.EmoteConfigScreen;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.executor.EmoteInstance;
@@ -11,6 +10,8 @@ import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -18,52 +19,58 @@ import net.minecraft.network.chat.Component;
  * isPauseScreen return false
  * render
  */
-public abstract class FastMenuScreenLogic extends AbstractScreenLogic {
+public class FastMenuScreen extends EmoteConfigScreen {
     private FastMenuWidget widget;
-    private static final Component warn_no_emotecraft = TmpGetters.getDefaults().newTranslationText("emotecraft.no_server");
-    private static final Component warn_only_proxy = TmpGetters.getDefaults().newTranslationText("emotecraft.only_proxy");
+    private static final Component warn_no_emotecraft = Component.translatable("emotecraft.no_server");
+    private static final Component warn_only_proxy = Component.translatable("emotecraft.only_proxy");
 
-    protected FastMenuScreenLogic(IScreenSlave screen) {
-        super(screen);
+    public FastMenuScreen(Screen screen) {
+        super(Component.translatable("emotecraft.fastmenu"), screen);
     }
 
 
     @Override
-    public void emotes_initScreen(){
-        int x = (int) Math.min(screen.getWidth() * 0.8, screen.getHeight() * 0.8);
-        this.widget = newFastMenuWidget((screen.getWidth() - x) / 2, (screen.getHeight() - x) / 2, x);
-        screen.addToChildren(widget);
+    public void init(){
+        int x = (int) Math.min(getWidth() * 0.8, getHeight() * 0.8);
+        this.widget = newFastMenuWidget((getWidth() - x) / 2, (getHeight() - x) / 2, x);
+        addToChildren(widget);
         //this.buttons.add(new ButtonWidget(this.width - 120, this.height - 30, 96, 20, new TranslatableText("emotecraft.config"), (button -> this.client.openScreen(new EmoteMenu(this)))));
-        screen.addToButtons(newButton(screen.getWidth() - 120, screen.getHeight() - 30, 96, 20, TmpGetters.getDefaults().newTranslationText("emotecraft.emotelist"), (button->screen.openScreen(newFullScreenMenu()))));
-        screen.addButtonsToChildren();
+        int x1 = getWidth() - 120;
+        int y = getHeight() - 30;
+        Component msg = Component.translatable("emotecraft.emotelist");
+        addRenderableWidget(Button.builder(msg, (button -> getMinecraft().setScreen(newFullScreenMenu()))).pos(x1, y).size(96, 20).build());
     }
 
-    protected abstract IScreenSlave newFullScreenMenu();
+    private Screen newFullScreenMenu() {
+        return new FullMenuScreenHelper(this);
+    }
 
 
     @Override
-    public void emotes_renderScreen(GuiGraphics matrices, int mouseX, int mouseY, float delta){
-        screen.renderBackground(matrices);
+    public void render(GuiGraphics matrices, int mouseX, int mouseY, float delta){
+        renderBackground(matrices);
         widget.render(matrices, mouseX, mouseY, delta);
         if(!((ClientConfig)EmoteInstance.config).hideWarningMessage.get()) {
             int remoteVer = ClientPacketManager.isRemoteAvailable() ? 2 : ClientPacketManager.isAvailableProxy() ? 1 : 0;
             if (remoteVer != 2) {
                 Component text = remoteVer == 0 ? warn_no_emotecraft : warn_only_proxy;
-                int centerX = screen.getWidth() / 2;
-                int y = screen.getHeight() / 24 - 1;
+                int centerX = getWidth() / 2;
+                int y = getHeight() / 24 - 1;
                 matrices.drawCenteredString(Minecraft.getInstance().font, text, centerX, y, MathHelper.colorHelper(255, 255, 255, 255));
             }
         }
     }
 
     @Override
-    public boolean emotes_isThisPauseScreen() {
+    public boolean isPauseScreen() {
         return false;
     }
 
-    abstract protected FastMenuWidget newFastMenuWidget(int x, int y, int size);
+    protected FastMenuWidget newFastMenuWidget(int x, int y, int size) {
+        return new FastMenuWidget(x, y, size);
+    }
 
-    protected abstract class FastMenuWidget extends AbstractFastChooseWidget {
+    protected static class FastMenuWidget extends AbstractFastChooseWidget {
 
         public FastMenuWidget(int x, int y, int size){
             super(x, y, size);
@@ -80,10 +87,10 @@ public abstract class FastMenuScreenLogic extends AbstractScreenLogic {
         }
 
         @Override
-        protected boolean EmotesOnClick(IChooseWheel.IChooseElement element, int button){
+        protected boolean onClick(IChooseWheel.IChooseElement element, int button){
             if(element.getEmote() != null){
                 boolean bl = element.getEmote().playEmote(TmpGetters.getClientMethods().getMainPlayer());
-                screen.openScreen(null);
+                Minecraft.getInstance().setScreen(null);
                 return bl;
             }
             return false;
@@ -92,6 +99,20 @@ public abstract class FastMenuScreenLogic extends AbstractScreenLogic {
         @Override
         protected boolean doesShowInvalid() {
             return false;
+        }
+
+
+        private boolean focused = false;
+
+
+        @Override
+        public void setFocused(boolean bl) {
+            focused = bl;
+        }
+
+        @Override
+        public boolean isFocused() {
+            return focused;
         }
     }
 }

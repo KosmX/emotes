@@ -109,8 +109,7 @@ public class ModernChooseWheel implements IChooseWheel {
         for(FastChooseElement f : elements){
             if(f.hasEmote()) f.render(matrices);
         }
-        Component text = TmpGetters.getDefaults()
-                .textFromString(String.valueOf(fastMenuPage + 1));
+        Component text = Component.literal(String.valueOf(fastMenuPage + 1));
         matrices.drawString(Minecraft.getInstance().font, text, (int) (widget.x + widget.size / 2f - 2), (int) (widget.y + widget.size / 2f - 3), -1);
     }
 
@@ -140,7 +139,7 @@ public class ModernChooseWheel implements IChooseWheel {
         if(this.hovered && widget.isValidClickButton(button)){
             FastChooseElement element = this.getActivePart((int) mouseX, (int) mouseY);
             if(element != null){
-                return widget.EmotesOnClick(element, button);
+                return widget.onClick(element, button);
             } else {
                 int selectedPageButton = getPageButton((int) mouseX, (int) mouseY);
                 if (selectedPageButton == 0) {

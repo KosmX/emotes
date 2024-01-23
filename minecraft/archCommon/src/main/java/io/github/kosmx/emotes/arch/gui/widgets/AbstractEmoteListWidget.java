@@ -82,11 +82,6 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
         return screen.getFocused() == this;
     }
 
-    @Override
-    public AbstractEmoteListWidget<E> get() {
-        return this;
-    }
-
     public static abstract class AbstractEmoteEntry<T extends AbstractEmoteEntry<T>> extends ObjectSelectionList.Entry<T> implements IEmoteEntry {
         protected final Minecraft client;
         public final EmoteHolder emote;

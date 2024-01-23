@@ -114,7 +114,7 @@ public class LegacyChooseWidget implements IChooseWheel {
         if (this.hovered && widget.isValidClickButton(button)) {
             FastChooseElement element = this.getActivePart((int) mouseX, (int) mouseY);
             if (element != null) {
-                return widget.EmotesOnClick(element, button);
+                return widget.onClick(element, button);
             }
         }
         return false;
