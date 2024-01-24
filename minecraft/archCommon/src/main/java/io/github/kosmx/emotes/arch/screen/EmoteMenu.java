@@ -75,7 +75,9 @@ public class EmoteMenu extends EmoteConfigScreen {
         MainClientInit.loadEmotes();
 
         try {
-            watcher = new ChangeListener(EmoteInstance.instance.getExternalEmoteDir().toPath());
+            if (watcher == null) {
+                watcher = new ChangeListener(EmoteInstance.instance.getExternalEmoteDir().toPath());
+            }
         }
         catch (IOException e){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "can't watch emotes dir for changes: " +  e.getMessage());
@@ -294,6 +296,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         if(save){
             this.saveConfig();
         }
+        watcher.close();
     }
 
     private void saveConfig(){
@@ -380,6 +383,11 @@ public class EmoteMenu extends EmoteConfigScreen {
         return new EmoteListImpl(getMinecraft(), width, height, 51, height-32, 36, this);
     }
 
+    @Override
+    public void onClose() {
+        super.onClose();
+    }
+
     protected abstract class FastChooseWidget extends AbstractFastChooseWidget {
 
         public FastChooseWidget(int x, int y, int size){
@@ -460,8 +468,12 @@ public class EmoteMenu extends EmoteConfigScreen {
         }
 
         @Override
-        public void close() throws Exception {
-            watcher.close();
+        public void close() {
+            try {
+                watcher.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
