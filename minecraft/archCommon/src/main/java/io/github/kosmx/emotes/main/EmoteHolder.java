@@ -1,14 +1,15 @@
 package io.github.kosmx.emotes.main;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.NativeImage;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
 import dev.kosmx.playerAnim.core.util.Vec3d;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.arch.executor.Defaults;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
@@ -16,6 +17,7 @@ import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -62,9 +64,9 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
-        this.name = Defaults.fromJson(emote.extraData.get("name"));
-        this.description = Defaults.fromJson(emote.extraData.get("description"));
-        this.author = Defaults.fromJson(emote.extraData.get("author"));
+        this.name = PlatformTools.fromJson(emote.extraData.get("name"));
+        this.description = PlatformTools.fromJson(emote.extraData.get("description"));
+        this.author = PlatformTools.fromJson(emote.extraData.get("author"));
     }
 
 
@@ -96,7 +98,7 @@ public class EmoteHolder implements Supplier<UUID> {
                 return false;
             }
             if(emoteHolder.iconIdentifier != null){
-                TmpGetters.getClientMethods().destroyTexture(emoteHolder.iconIdentifier);
+                Minecraft.getInstance().getTextureManager().release(emoteHolder.iconIdentifier);
                 assert emoteHolder.nativeIcon != null;
                 emoteHolder.nativeIcon.close();
             }
@@ -123,9 +125,9 @@ public class EmoteHolder implements Supplier<UUID> {
     public void assignIcon(InputStream inputStream) {
         try {
 
-            DynamicTexture nativeImageBackedTexture = TmpGetters.getClientMethods().readNativeImage(inputStream);
-            this.iconIdentifier = Defaults.newIdentifier("icon" + this.hashCode());
-            TmpGetters.getClientMethods().registerTexture(this.iconIdentifier, nativeImageBackedTexture);
+            DynamicTexture nativeImageBackedTexture = new DynamicTexture(NativeImage.read(inputStream));
+            this.iconIdentifier = PlatformTools.newIdentifier("icon" + this.hashCode());
+            Minecraft.getInstance().getTextureManager().register(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;
 
         } catch (Throwable var) {

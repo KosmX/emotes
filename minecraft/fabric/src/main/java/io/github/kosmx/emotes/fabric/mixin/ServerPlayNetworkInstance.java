@@ -16,6 +16,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,11 +25,13 @@ import java.util.UUID;
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements IServerNetworkInstance {
 
+    @Unique
     private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
     @Shadow public abstract void send(Packet<?> packet);
 
     @Shadow public abstract ServerPlayer getPlayer();
 
+    @Unique
     HashMap<Byte, Byte> versions = new HashMap<>();
     @Override
     public HashMap<Byte, Byte> getRemoteVersions() {

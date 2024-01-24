@@ -190,6 +190,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         if(watcher != null && watcher.isChanged()){
             reload();
         }
+        super.tick();
     }
 
     @Override
@@ -197,7 +198,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         if(this.activeKeyTime != 0 && emoteList.getSelectedEntry() != null){
             return setKey(InputConstants.Type.MOUSE.getOrCreate(button));
         }
-        return false;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void countEmotesWithKeyBind(){
@@ -238,6 +239,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         this.searchBox.render(matrices, mouseX, mouseY, delta);
         this.fastMenu.render(matrices, mouseX, mouseY, delta);
         updateKeyText();
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     private boolean setKey(InputConstants.Key key){
@@ -331,7 +333,7 @@ public class EmoteMenu extends EmoteConfigScreen {
                 return setKey(InputConstants.getKey(keyCode, scanCode));
             }
         }
-        return false;
+        return super.keyPressed(keyCode, scanCode, mod);
     }
 
     @Override
