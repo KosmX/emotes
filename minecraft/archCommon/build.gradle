@@ -14,10 +14,7 @@ loom{
     silentMojangMappingsLicense()
 }
 
-configurations {
-    compileModule
-    dev
-}
+version = rootProject.mod_version
 
 dependencies {
     implementation project(':emotesAssets')
@@ -42,12 +39,4 @@ tasks.withType(Copy).configureEach {
         //Rename every file to lowercase. This is essential for the translations to work
         //Possibly creates other problems on other operating systems
     }
-}
-
-jar{
-
-}
-
-artifacts {
-    dev(jar)
 }

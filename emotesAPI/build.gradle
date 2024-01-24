@@ -4,8 +4,7 @@ plugins {
     id 'signing' //why not if I can?
 }
 
-group project.maven_group
-version project.mod_version
+version = rootProject.mod_version
 
 //sourceCompatibility = JavaVersion.VERSION_1_8
 //targetCompatibility = JavaVersion.VERSION_1_8

@@ -9,8 +9,7 @@ plugins {
 //apply plugin: "architectury-plugin"
 //apply plugin: 'com.github.johnrengelman.shadow'
 
-group project.maven_group
-version project.mod_version
+version = rootProject.mod_version
 
 configurations {
     dev

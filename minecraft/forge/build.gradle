@@ -24,8 +24,8 @@ repositories{
 project.java
 
 archivesBaseName = "${project.archives_base_name}-for-MC${project.minecraft_version}"
-version = project.mod_version
-group = project.maven_group
+
+version = rootProject.mod_version
 
 
 loom{

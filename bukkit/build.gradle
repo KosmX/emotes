@@ -8,8 +8,7 @@ version 'unspecified'
 
 project.archivesBaseName = project.archives_base_name
 //project.version = project.mod_version
-project.version = project.mod_version
-group project.maven_group
+version = project.mod_version
 
 
 repositories {
