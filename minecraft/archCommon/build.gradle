@@ -3,7 +3,7 @@ plugins {
 }
 
 architectury{
-    common("fabric", "forge")
+    common("fabric", "neoforge")
     //minecraft = project.minecraft_version
 }
 

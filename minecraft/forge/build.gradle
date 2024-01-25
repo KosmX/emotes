@@ -11,7 +11,7 @@ apply plugin: 'com.modrinth.minotaur'
 
 architectury{
     platformSetupLoomIde()
-    forge()
+    neoForge()
 }
 
 //Import jfrog keys from file (not included in the git repo :D)
@@ -32,12 +32,13 @@ loom{
     accessWidenerPath = project(":${project.module_name}:archCommon").loom.accessWidenerPath
 
     silentMojangMappingsLicense()
-    forge {
+    /*
+    neoForge {
         mixinConfig "emotecraft.mixins.json"
         mixinConfig "emotecraft-arch.mixins.json"
         convertAccessWideners = true
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-    }
+    }*/
 }
 
 configurations {
@@ -64,7 +65,7 @@ dependencies {
     compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")) { transitive false }
 
 
-    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    neoForge "net.neoforged:neoforge:${project.neoforge_version}"
 
     modRuntimeOnly("io.github.kosmx.bendy-lib:bendy-lib-forge:${project.bendylib_version}")
     modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}")
