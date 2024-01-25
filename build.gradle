@@ -131,7 +131,7 @@ if(keysExists) {
         finalizedBy(':emotesAPI:publish')
         finalizedBy(':executor:publish')
         finalizedBy(':emotesServer:publish')
-        finalizedBy(':emotesMain:publish')
+        finalizedBy(':emotesAssets:publish')
         finalizedBy(':bukkit:publish')
 
     }
