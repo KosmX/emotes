@@ -71,6 +71,7 @@ public class FullMenuScreenHelper extends EmoteConfigScreen {
         renderDirtBackground(matrices);
         this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
 

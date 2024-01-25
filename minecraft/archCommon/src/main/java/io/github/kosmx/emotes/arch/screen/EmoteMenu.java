@@ -75,7 +75,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         MainClientInit.loadEmotes();
 
         try {
-            if (watcher == null) {
+            if (watcher == null || watcher.isClosed()) {
                 watcher = new ChangeListener(EmoteInstance.instance.getExternalEmoteDir().toPath());
             }
         }
@@ -452,7 +452,7 @@ public class EmoteMenu extends EmoteConfigScreen {
     }
 
     private static class ChangeListener implements AutoCloseable{
-        private final WatchService watcher;
+        private @Nullable WatchService watcher;
 
         ChangeListener(Path path) throws IOException{
             this.watcher = path.getFileSystem().newWatchService();
@@ -462,7 +462,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         boolean isChanged(){
             boolean bl = false;
             WatchKey key;
-            if((key = watcher.poll()) != null){
+            if(watcher != null && (key = watcher.poll()) != null){
                 bl = !key.pollEvents().isEmpty();//there is something...
                 key.reset();
             }
@@ -472,10 +472,17 @@ public class EmoteMenu extends EmoteConfigScreen {
         @Override
         public void close() {
             try {
-                watcher.close();
+                if (watcher != null) {
+                    watcher.close();
+                    watcher = null;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        public boolean isClosed() {
+            return watcher == null;
         }
     }
 

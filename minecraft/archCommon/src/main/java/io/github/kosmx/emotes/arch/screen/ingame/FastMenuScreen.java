@@ -59,6 +59,7 @@ public class FastMenuScreen extends EmoteConfigScreen {
                 matrices.drawCenteredString(Minecraft.getInstance().font, text, centerX, y, MathHelper.colorHelper(255, 255, 255, 255));
             }
         }
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override
