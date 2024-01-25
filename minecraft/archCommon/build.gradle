@@ -2,8 +2,6 @@ plugins {
     id 'java'
 }
 
-version project.mod_version
-
 architectury{
     common("fabric", "forge")
     //minecraft = project.minecraft_version
@@ -30,6 +28,9 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${project.loader_version}")
 }
 
+compileJava {
+    dependsOn(":emotesAssets:publicationJar")
+}
 
 tasks.withType(Copy).configureEach {
     eachFile {

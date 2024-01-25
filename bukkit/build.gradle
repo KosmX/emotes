@@ -4,7 +4,6 @@ plugins {
     id 'maven-publish'
 }
 
-version 'unspecified'
 
 project.archivesBaseName = project.archives_base_name
 //project.version = project.mod_version
@@ -66,19 +65,22 @@ processResources{
 //   archiveClassifier.set("bukkit")
 //}
 
+compileJava {
+    dependsOn(':emotesAssets:publicationJar')
+}
+
 jar{
     from{
         configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
     }
-    dependsOn(':emotesAssets:build')
-   archiveClassifier.set("bukkit")
+    archiveClassifier.set("bukkit")
 }
 
 task copyArtifacts{
     dependsOn('build')
     doLast {
         copy{
-            from "${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}-bukkit.jar"
+            from "${project.layout.buildDirectory}/libs/${project.archives_base_name}-${rootProject.mod_version}-bukkit.jar"
             into "${rootProject.projectDir}/artifacts"
         }
     }

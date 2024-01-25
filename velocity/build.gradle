@@ -36,12 +36,15 @@ dependencies {
     compileModule("dev.kosmx.player-anim:anim-core:${project.player_anim_core}"){ transitive = false }
 }
 
+compileJava {
+    dependsOn(':emotesAssets:publicationJar')
+}
+
 jar {
     from {
         configurations.compileModule.collect() { it.isDirectory() ? it : zipTree(it) }
     }
-    dependsOn(':emotesAssets:build')
-   archiveClassifier.set("velocity")
+    archiveClassifier.set("velocity")
 }
 
 task copyArtifacts {

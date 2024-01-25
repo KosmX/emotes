@@ -55,12 +55,15 @@ processResources{
 //   archiveClassifier.set("bukkit")
 //}
 
+compileJava {
+    dependsOn(':emotesAssets:publicationJar')
+}
+
 jar{
     from{
         configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
     }
-    dependsOn(':emotesAssets:build')
-   archiveClassifier.set("bungee")
+    archiveClassifier.set("bungee")
 }
 
 task copyArtifacts{
