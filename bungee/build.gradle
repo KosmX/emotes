@@ -35,7 +35,7 @@ dependencies {
     compileModule(project(':emotesAPI')){ transitive = false }
     compileModule(project(':executor')){ transitive = false }
     compileModule(project(':emotesServer')){ transitive = false }
-    compileModule(project(':emotesMain')){ transitive = false }
+    compileModule(project(':emotesAssets')){ transitive = false }
 
     compileModule("dev.kosmx.player-anim:anim-core:${project.player_anim_core}"){ transitive = false }
 }
@@ -55,12 +55,15 @@ processResources{
 //   archiveClassifier.set("bukkit")
 //}
 
+compileJava {
+    dependsOn(':emotesAssets:publicationJar')
+}
+
 jar{
     from{
         configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
     }
-    dependsOn(':emotesMain:build')
-   archiveClassifier.set("bungee")
+    archiveClassifier.set("bungee")
 }
 
 task copyArtifacts{

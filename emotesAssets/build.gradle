@@ -1,0 +1,148 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    //id 'forgified-fabric-loom' version '0.6-SNAPSHOT' //Forge loom :D
+    //id "architectury-plugin" version "3.0-SNAPSHOT"
+}
+
+//apply plugin: 'dev.architectury.loom'
+//apply plugin: "architectury-plugin"
+//apply plugin: 'com.github.johnrengelman.shadow'
+
+version = rootProject.mod_version
+
+configurations {
+    dev
+}
+
+tasks.withType(Copy){
+    eachFile{
+        rename{
+            String filename->filename = filename.toLowerCase()
+        }
+        //Rename every file to lowercase. This is essential for the translations to work
+        //Possibly creates other problems on other operating systems
+    }
+}
+/*
+shadowJar{
+    configurations = [project.configurations.compileModule]
+   archiveClassifier.set("")
+}
+
+
+ */
+//remapJar{
+//    dependsOn shadowJar
+//    input.set shadowJar.archiveFile
+//}
+
+task publicationJar (type: Jar, dependsOn: classes ) {
+    archiveClassifier.set("")
+    from sourceSets.main.output
+    dependsOn(jar)
+}
+
+artifacts {
+    dev(jar)
+}
+
+task sourcesJar(type: Jar, dependsOn: classes){
+   archiveClassifier.set("sources")
+    from sourceSets.main.allSource
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // add all the jars that should be included when publishing to maven
+
+            artifactId = 'emotesMain'
+
+            artifact(publicationJar)
+            artifact(sourcesJar)
+            artifact(javadocJar)
+
+
+            pom.withXml {
+                def depsNode = asNode().appendNode("dependencies")
+
+                def animatorNode = depsNode.appendNode("dependency")
+                animatorNode.appendNode("groupId", "dev.kosmx.player-anim")
+                animatorNode.appendNode("artifactId", "anim-core")
+                animatorNode.appendNode("version", project.player_anim_core)
+                animatorNode.appendNode("scope", "compile")
+
+
+                def apiNode = depsNode.appendNode("dependency")
+                apiNode.appendNode("groupId", project.group)
+                apiNode.appendNode("artifactId", "emotesAPI")
+                apiNode.appendNode("version", project.version)
+                apiNode.appendNode("scope", "compile")
+
+                def executorNode = depsNode.appendNode("dependency")
+                executorNode.appendNode("groupId", project.group)
+                executorNode.appendNode("artifactId", "emotesExecutor")
+                executorNode.appendNode("version", project.version)
+                executorNode.appendNode("scope", "compile")
+
+                def serverNode = depsNode.appendNode("dependency")
+                serverNode.appendNode("groupId", project.group)
+                serverNode.appendNode("artifactId", "emotesServer")
+                serverNode.appendNode("version", project.version)
+                serverNode.appendNode("scope", "compile")
+            }
+
+
+            pom {
+                name = "emotesMain"
+                description = "Minecraft Emotecraft main common code"
+                url = 'https://github.com/KosmX/emotes'
+                developers {
+                    developer {
+                        id = 'kosmx'
+                        name = 'KosmX'
+                        email = 'kosmx.mc@gmail.com'
+                    }
+                }
+
+                licenses{
+                    license{
+                        name = "CC-BY-4.0 License"
+                        url = "https://creativecommons.org/licenses/by/4.0/legalcode"
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:github.com/kosmx/emotes.git'
+                    developerConnection = 'scm:git:github.com/kosmx/emotes.git'
+                    url = 'https://github.com/KosmX/emotes'
+                }
+            }
+        }
+    }
+
+    // select the repositories you want to publish to
+    repositories {
+        // uncomment to publish to the local maven
+        if (project.keysExists) {
+            repositories {
+                maven {
+                    url = 'https://maven.kosmx.dev/'
+                    credentials {
+                        username = 'kosmx'
+                        password = project.keys.kosmx_maven
+                    }
+                }
+            }
+        }
+        else {
+            mavenLocal()
+        }
+    }
+}

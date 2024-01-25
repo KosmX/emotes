@@ -4,12 +4,10 @@ plugins {
     id 'maven-publish'
 }
 
-version 'unspecified'
 
 project.archivesBaseName = project.archives_base_name
 //project.version = project.mod_version
-project.version = project.mod_version
-group project.maven_group
+version = project.mod_version
 
 
 repositories {
@@ -44,8 +42,9 @@ dependencies {
     compileModule(project(':emotesAPI')){ transitive = false }
     compileModule(project(':executor')){ transitive = false }
     compileModule(project(':emotesServer')){ transitive = false }
-    
-    compileModule(project(':emotesMain')){ transitive = false }
+
+    // Only for built-in resources, code is not used from here.
+    compileModule(project(':emotesAssets')){ transitive = false }
 
     compileModule("dev.kosmx.player-anim:anim-core:${project.player_anim_core}"){ transitive = false }
 }
@@ -66,19 +65,22 @@ processResources{
 //   archiveClassifier.set("bukkit")
 //}
 
+compileJava {
+    dependsOn(':emotesAssets:publicationJar')
+}
+
 jar{
     from{
         configurations.compileModule.collect() {it.isDirectory() ? it : zipTree(it)}
     }
-    dependsOn(':emotesMain:build')
-   archiveClassifier.set("bukkit")
+    archiveClassifier.set("bukkit")
 }
 
 task copyArtifacts{
     dependsOn('build')
     doLast {
         copy{
-            from "${project.buildDir}/libs/${project.archives_base_name}-${project.mod_version}-bukkit.jar"
+            from "${project.layout.buildDirectory}/libs/${project.archives_base_name}-${rootProject.mod_version}-bukkit.jar"
             into "${rootProject.projectDir}/artifacts"
         }
     }
