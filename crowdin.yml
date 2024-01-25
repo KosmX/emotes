@@ -3,7 +3,7 @@
 #
 "project_id" : "414868"
 "api_token_env" : "CROWDIN_PERSONAL_TOKEN"
-"base_path" : "./emotesMain/src/main/resources/assets/emotecraft"
+"base_path" : "./emotesAssets/src/main/resources/assets/emotecraft"
 "base_url" : "https://api.crowdin.com"
 
 #
