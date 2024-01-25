@@ -6,10 +6,8 @@ import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -27,8 +25,8 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
         //ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientPlayNetworking.registerReceiver(ServerNetwork.channelID, this::receiveMessage));
         ServerNetwork.channel.addListener(this::receiveJunk);
         ServerNetwork.channel.addListener(this::registerServerSide);
-        MinecraftForge.EVENT_BUS.addListener(this::connectServerCallback);
-        MinecraftForge.EVENT_BUS.addListener(this::disconnectEvent);
+        NeoForge.EVENT_BUS.addListener(this::connectServerCallback);
+        NeoForge.EVENT_BUS.addListener(this::disconnectEvent);
     }
 
     private void connectServerCallback(ClientPlayerNetworkEvent.LoggingIn event){
