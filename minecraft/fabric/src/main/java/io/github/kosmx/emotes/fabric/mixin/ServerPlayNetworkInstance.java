@@ -9,9 +9,13 @@ import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,11 +27,14 @@ import java.util.HashMap;
 import java.util.UUID;
 
 @Mixin(ServerGamePacketListenerImpl.class)
-public abstract class ServerPlayNetworkInstance implements IServerNetworkInstance {
+public abstract class ServerPlayNetworkInstance extends ServerCommonPacketListenerImpl implements IServerNetworkInstance {
 
     @Unique
     private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
-    @Shadow public abstract void send(Packet<?> packet);
+
+    public ServerPlayNetworkInstance(MinecraftServer minecraftServer, Connection connection, CommonListenerCookie commonListenerCookie) {
+        super(minecraftServer, connection, commonListenerCookie);
+    }
 
     @Shadow public abstract ServerPlayer getPlayer();
 

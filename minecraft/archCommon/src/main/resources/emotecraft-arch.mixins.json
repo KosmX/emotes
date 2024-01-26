@@ -6,7 +6,8 @@
   "plugin": "io.github.kosmx.emotes.mixin.EmotesMixinPlugin",
   "mixins": [
     "ServerPlayerMixin",
-    "ServerPlayTrackerMixin"
+    "ServerPlayTrackerMixin",
+    "ServerPlayNetworkMixin"
   ],
   "client": [
     "EmotePlayerMixin",

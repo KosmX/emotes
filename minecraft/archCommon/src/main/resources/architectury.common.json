@@ -1,0 +1,5 @@
+{
+  "injected_interfaces": {
+    "net/minecraft/class_3244": ["io/github/kosmx/emotes/network/EmotesMixinNetworkAccessor"]
+  }
+}
