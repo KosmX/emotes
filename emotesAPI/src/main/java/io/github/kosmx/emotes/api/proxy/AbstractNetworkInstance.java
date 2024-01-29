@@ -160,12 +160,12 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     public HashMap<Byte, Byte> getRemoteVersions() {
         HashMap<Byte, Byte> map = new HashMap<>();
         if(disableNBS){
-            map.put((byte)3, (byte) 0);
+            map.put(PacketConfig.NBS_CONFIG, (byte) 0);
         }
         if (doesServerTrackEmotePlay) {
             map.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)1);
         }
-        map.put((byte)0, (byte)this.animationFormat);
+        map.put(PacketConfig.ANIMATION_FORMAT, (byte)this.animationFormat);
         return map;
     }
 
@@ -175,7 +175,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     }
 
     @Override
-    public void sendConfigCallback(){
+    public void sendC2SConfig(){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         //packetBuilder.setVersion(this.getVersions());
         packetBuilder.configureToConfigExchange(true);

@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -234,6 +235,24 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     @Override
     protected boolean isForcedEmoteImpl(UUID player) {
         return getPlayerNetworkInstance(player).getEmoteTracker().isForced();
+    }
+
+    public List<ByteBuffer> getServerEmotes(HashMap<Byte, Byte> compatibilityMap) {
+        try {
+
+            return UniversalEmoteSerializer.serverEmotes.values().stream().map(emote -> {
+                try {
+                    return new EmotePacket.Builder().configureToSaveEmote(emote).setVersion(compatibilityMap).setSizeLimit(0x100000).build().write(); //1 MB
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).toList();
+
+
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     protected abstract void sendForEveryoneElse(GeyserEmotePacket packet, P player);
