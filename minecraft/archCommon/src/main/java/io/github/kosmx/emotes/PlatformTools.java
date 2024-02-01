@@ -10,9 +10,10 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -60,5 +61,16 @@ public final class PlatformTools {
 
     public static ResourceLocation newIdentifier(String id){
         return new ResourceLocation(CommonData.MOD_ID, id);
+    }
+
+
+    public static byte[] unwrap(@NotNull FriendlyByteBuf buf) {
+        if (buf.isDirect()) {
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.readBytes(bytes);
+            return bytes;
+        } else {
+            return buf.array();
+        }
     }
 }

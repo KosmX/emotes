@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.fabric.mixin;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.fabric.network.ServerNetwork;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.Unpooled;
@@ -11,7 +10,6 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;

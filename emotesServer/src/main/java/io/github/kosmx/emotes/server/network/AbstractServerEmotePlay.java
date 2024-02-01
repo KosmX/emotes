@@ -255,6 +255,19 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         }
     }
 
+    public EmotePacket.Builder getS2CConfigPacket(boolean trackPlayState) {
+        NetData configData = new EmotePacket.Builder().configureToConfigExchange(true).build().data;
+        if (trackPlayState) {
+            configData.versions.put((byte)0x80, (byte)0x01);
+        }
+        return new EmotePacket.Builder(configData);
+    }
+
+    /**
+     * Send message to everyone, except for the player. Only geyser packet
+     * @param packet Geyser packet
+     * @param player send around this player
+     */
     protected abstract void sendForEveryoneElse(GeyserEmotePacket packet, P player);
 
     /**

@@ -1,36 +1,56 @@
 package io.github.kosmx.emotes.arch.network;
 
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
+import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.UUID;
 
 /**
  * Wrapper class for Emotes play network implementation
  */
-public class ModdedServerPlayNetwork implements IServerNetworkInstance {
-    private final ServerGamePacketListenerImpl serverGamePacketListener;
+public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IServerNetworkInstance {
+    @NotNull private final ServerGamePacketListenerImpl serverGamePacketListener;
 
-    public ModdedServerPlayNetwork(ServerGamePacketListenerImpl serverGamePacketListener) {
+    @NotNull
+    private final EmotePlayTracker emotePlayTracker = new EmotePlayTracker();
+
+
+
+    public ModdedServerPlayNetwork(@NotNull ServerGamePacketListenerImpl serverGamePacketListener) {
+        super();
         this.serverGamePacketListener = serverGamePacketListener;
     }
 
     @Override
-    public HashMap<Byte, Byte> getRemoteVersions() {
-        return serverGamePacketListener.emotecraft$getConnection().emotecraft$getRemoteVersions();
+    protected @NotNull Connection getServerConnection() {
+        return ((ServerCommonPacketListenerAccessor)serverGamePacketListener).getConnection();
+    }
+
+
+    @Override
+    void sendEmotePacket(ByteBuffer buffer) {
+        sendPlayMessage(buffer);
+    }
+
+
+    @Override
+    public void sendGeyserPacket(ByteBuffer buffer) {
+        serverGamePacketListener.send(new ClientboundCustomPayloadPacket(EmotePacketPayload.geyserPacket(buffer)));
     }
 
     @Override
-    public void setVersions(HashMap<Byte, Byte> map) {
-        serverGamePacketListener.emotecraft$getConnection().emotecraft$setVersions(map);
+    void sendStreamPacket(ByteBuffer buffer) {
+        serverGamePacketListener.send(new ClientboundCustomPayloadPacket(EmotePacketPayload.streamPacket(buffer)));
     }
 
     @Override
@@ -42,29 +62,18 @@ public class ModdedServerPlayNetwork implements IServerNetworkInstance {
         serverGamePacketListener.send(new ClientboundCustomPayloadPacket(EmotePacketPayload.playPacket(bytes)));
     }
 
-
-    @Override
-    public boolean isActive() {
-        return false;
+    public void sendPlayStream(ByteBuffer bytes) {
+        if (getRemoteVersions().getOrDefault(PacketConfig.ALLOW_EMOTE_STREAM, (byte)1) != 0) {
+            streamHelper.sendMessage(bytes);
+        } else {
+            sendPlayMessage(bytes);
+        }
     }
 
-    @Override
-    public int getRemoteVersion() {
-        return 0;
-    }
-
-    @Override
-    public boolean isServerTrackingPlayState() {
-        return false;
-    }
-
-    @Override
-    public int maxDataSize() {
-        return 0;
-    }
+    // TODO isActive
 
     @Override
     public EmotePlayTracker getEmoteTracker() {
-        return serverGamePacketListener.emotecraft$getEmoteTracker();
+        return emotePlayTracker;
     }
 }

@@ -4,7 +4,7 @@ import io.github.kosmx.emotes.arch.ServerCommands;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.fabric.executor.FabricEmotesMain;
-import io.github.kosmx.emotes.fabric.network.ServerNetwork;
+import io.github.kosmx.emotes.fabric.network.ServerNetworkStuff;
 import io.github.kosmx.emotes.main.MainLoader;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
@@ -35,7 +35,7 @@ public class FabricWrapper implements ModInitializer {
             ClientInit.initClient();
         }
 
-        ServerNetwork.instance.init();
+        ServerNetworkStuff.init();
         subscribeEvents();
     }
 

@@ -19,16 +19,16 @@ public record EmotePacketPayload(@NotNull ResourceLocation id, @NotNull ByteBuff
         return id;
     }
 
-    public static EmotePacketPayload playPacket(ByteBuffer bytes) {
+    public static @NotNull EmotePacketPayload playPacket(@NotNull ByteBuffer bytes) {
         return new EmotePacketPayload(new ResourceLocation(CommonData.MOD_ID, CommonData.playEmoteID), bytes);
     }
 
-    public static EmotePacketPayload streamPacket(ByteBuffer bytes) {
+    public static @NotNull EmotePacketPayload streamPacket(@NotNull ByteBuffer bytes) {
         return new EmotePacketPayload(new ResourceLocation(CommonData.MOD_ID, CommonData.emoteStreamID), bytes);
     }
 
 
-    public static EmotePacketPayload geyserPacket(ByteBuffer bytes) {
+    public static @NotNull EmotePacketPayload geyserPacket(@NotNull ByteBuffer bytes) {
         return new EmotePacketPayload(new ResourceLocation("geyser", "emote"), bytes);
     }
 }
