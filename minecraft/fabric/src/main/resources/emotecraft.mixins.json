@@ -4,7 +4,6 @@
   "package": "io.github.kosmx.emotes.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ServerPlayNetworkInstance"
   ],
   "client": [],
   "server": [],
