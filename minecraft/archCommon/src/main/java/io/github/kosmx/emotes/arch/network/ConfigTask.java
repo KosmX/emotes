@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.arch.network;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.network.ConfigurationTask;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 public class ConfigTask implements ConfigurationTask {
     public static final ConfigurationTask.Type TYPE = new Type("emotecraft:config");

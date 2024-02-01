@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.arch.network;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.mixin.ServerChunkCacheAccessor;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
@@ -65,10 +64,14 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
         }
     }
 
+    private static IServerNetworkInstance getHandler(ServerGamePacketListenerImpl handler) {
+        return ((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance();
+    }
+
     public void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
         try
         {
-            receiveMessage(unwrapBuffer(buf), player, (INetworkInstance) handler);
+            receiveMessage(unwrapBuffer(buf), player, getHandler(handler));
         } catch (IOException e) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
@@ -78,9 +81,9 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
         try
         {
             if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreamC2S()) {
-                var packet = ((AbstractServerNetwork)((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance()).receiveStreamChunk(ByteBuffer.wrap(unwrapBuffer(buf)));
+                var packet = ((AbstractServerNetwork)getHandler(handler)).receiveStreamChunk(ByteBuffer.wrap(unwrapBuffer(buf)));
                 if (packet != null) {
-                    receiveMessage(packet.array(), player, (INetworkInstance) handler);
+                    receiveMessage(packet.array(), player, getHandler(handler));
                 }
             } else {
                 handler.disconnect(Component.literal("Emote stream is disabled on this server"));
@@ -90,7 +93,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
         }
     }
 
-    public void receiveGeyserMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
+    public void receiveGeyserMessage(ServerPlayer player, FriendlyByteBuf buf) {
         receiveGeyserMessage(player, unwrapBuffer(buf));
     }
 

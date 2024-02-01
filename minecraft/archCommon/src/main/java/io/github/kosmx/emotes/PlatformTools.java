@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
@@ -25,9 +26,8 @@ public final class PlatformTools {
         throw new AssertionError();
     }
 
-    @ExpectPlatform
     public static INetworkInstance getClientNetworkController() {
-        throw new AssertionError();
+        return ClientNetwork.INSTANCE;
     }
 
 
