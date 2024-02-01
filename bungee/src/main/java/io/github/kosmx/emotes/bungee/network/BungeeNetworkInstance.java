@@ -1,12 +1,14 @@
 package io.github.kosmx.emotes.bungee.network;
 
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -19,6 +21,11 @@ public class BungeeNetworkInstance extends AbstractNetworkInstance implements IS
     @Override
     public EmotePlayTracker getEmoteTracker() {
         return this.emotePlayTracker;
+    }
+
+    @Override
+    public void sendGeyserPacket(ByteBuffer buffer) {
+        player.sendData("geyser:emote", INetworkInstance.safeGetBytesFromBuffer(buffer));
     }
 
     public BungeeNetworkInstance(ProxiedPlayer player) {

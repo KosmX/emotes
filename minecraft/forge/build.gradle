@@ -62,7 +62,7 @@ dependencies {
 
     common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
 
-    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")) { transitive false }
+    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionNeoForge")) { transitive false }
 
 
     neoForge "net.neoforged:neoforge:${project.neoforge_version}"

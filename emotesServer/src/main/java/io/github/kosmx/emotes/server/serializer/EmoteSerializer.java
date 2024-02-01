@@ -56,7 +56,7 @@ public class EmoteSerializer {
                         emote.extraData.put("iconData", MathHelper.readFromIStream(iconStream));
                         iconStream.close();
                     } catch(IOException e) {
-                        e.printStackTrace();
+                        EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                     }
                 });
             }
@@ -68,13 +68,13 @@ public class EmoteSerializer {
                     emotes.get(0).extraData.put("song", NBSFileUtils.read(bis));
                 } catch(IOException exception) {
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while reading song: " + exception.getMessage(), true);
-                    if (EmoteInstance.config.showDebug.get()) exception.printStackTrace();
+                    if (EmoteInstance.config.showDebug.get()) EmoteInstance.instance.getLogger().log(Level.WARNING, exception.getMessage(), exception);
                 }
             }
         } catch(Exception e) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while importing external emote: " + file.getName() + ".", true);
             EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage());
-            if (EmoteInstance.config.showDebug.get()) e.printStackTrace();
+            if (EmoteInstance.config.showDebug.get()) EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
         return emotes;
     }

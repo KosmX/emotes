@@ -50,7 +50,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
                         } catch(IOException exception) {
                             EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
                             if (EmoteInstance.config.showDebug.get()) {
-                                exception.printStackTrace();
+                                EmoteInstance.instance.getLogger().log(Level.WARNING, exception.getMessage(), exception);
                             }
                         }
                     }
@@ -67,7 +67,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
             catch (IOException exception){
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
                 if(EmoteInstance.config.showDebug.get()) {
-                    exception.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, exception.getMessage(), exception);
                 }
             }
         }
@@ -95,7 +95,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
             }
             catch (Exception e){//I don't want to break the whole game with a bad message but I'll warn with the highest level
                 EmoteInstance.instance.getLogger().log(Level.SEVERE, "Critical error has occurred while receiving emote: " + e.getMessage(), true);
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
 
             }
 
@@ -103,7 +103,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
         catch (IOException e){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while receiving packet: " + e.getMessage(), true);
             if(EmoteInstance.config.showDebug.get()) {
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
         }
     }

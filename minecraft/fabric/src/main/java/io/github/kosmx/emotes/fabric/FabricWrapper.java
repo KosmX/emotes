@@ -50,6 +50,16 @@ public class FabricWrapper implements ModInitializer {
         }
     }
 
+    public static void log(Level level, String msg, Throwable throwable){
+        if (level.intValue() <= Level.INFO.intValue()) {
+            logger.debug(msg, throwable);
+        } else if (level.intValue() <= Level.WARNING.intValue()) {
+            logger.warn(msg, throwable);
+        } else {
+            logger.error(msg, throwable);
+        }
+    }
+
     private static void subscribeEvents() {
         ServerWorldEvents.LOAD.register((server, world) -> {
             SERVER_INSTANCE = server; //keep it for later use

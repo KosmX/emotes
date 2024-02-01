@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.executor.Logger;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Level;
 
 public class BukkitInstance extends EmoteInstance {
     final java.util.logging.Logger logger;
@@ -18,7 +19,17 @@ public class BukkitInstance extends EmoteInstance {
 
     @Override
     public Logger getLogger() {
-        return this.logger::log;
+        return new Logger() {
+            @Override
+            public void writeLog(Level level, String msg, Throwable throwable) {
+                logger.log(level, msg, throwable);
+            }
+
+            @Override
+            public void writeLog(Level level, String msg) {
+                logger.log(level, msg);
+            }
+        };
     }
 
 

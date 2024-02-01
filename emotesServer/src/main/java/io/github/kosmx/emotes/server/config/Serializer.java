@@ -50,7 +50,7 @@ public class Serializer {
             writer.close();
             //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
         }catch(IOException e){
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -74,7 +74,7 @@ public class Serializer {
             } catch(IOException | JsonParseException e) {
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to read config: " + e.getMessage(), true);
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "If you want to regenerate the config, delete the old files!", true);
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
         } else {
             SerializableConfig config = readConfig((BufferedReader) null);

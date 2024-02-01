@@ -65,7 +65,7 @@ public final class PlatformTools {
 
 
     public static byte[] unwrap(@NotNull FriendlyByteBuf buf) {
-        if (buf.isDirect()) {
+        if (buf.isDirect() || buf.isReadOnly()) {
             byte[] bytes = new byte[buf.readableBytes()];
             buf.readBytes(bytes);
             return bytes;

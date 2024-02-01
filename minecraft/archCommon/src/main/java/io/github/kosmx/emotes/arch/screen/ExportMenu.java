@@ -87,7 +87,7 @@ public class ExportMenu extends EmoteConfigScreen {
                     iconStream.close();
                 }
             }catch (IOException | EmoteSerializerException | InvalidPathException e) {
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 TmpGetters.getClientMethods().toastExportMessage( 2,
                         Component.translatable("emotecraft.export.error." + format.getExtension()),
                         emoteHolder.name.getString());

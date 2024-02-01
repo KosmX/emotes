@@ -58,7 +58,7 @@ public class MainClientInit {
         }catch(Exception e){
             EmoteInstance.instance.getLogger().log(Level.INFO, "Error while importing debug emote.", true);
             EmoteInstance.instance.getLogger().log(Level.INFO, e.getMessage());
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 }

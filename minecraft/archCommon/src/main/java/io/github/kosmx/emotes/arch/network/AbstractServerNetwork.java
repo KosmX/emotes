@@ -17,7 +17,7 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
 
 
     @NotNull
-    protected abstract Connection getServerConnection();
+    protected abstract EmotesMixinConnection getServerConnection();
 
     @Override
     public HashMap<Byte, Byte> getRemoteVersions() {

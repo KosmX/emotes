@@ -9,10 +9,12 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -63,7 +65,13 @@ public final class ClientNetwork extends AbstractNetworkInstance {
             builder.configureTarget(target);
         }
 
-        var bytes = builder.build().write();
+        var writer = builder.build();
+        var bytes = writer.write();
+        sendMessage(bytes, null);
+
+        if(writer.data.emoteData != null && writer.data.emoteData.extraData.containsKey("song") && !writer.data.writeSong){
+            TmpGetters.getClientMethods().sendChatMessage(Component.translatable("emotecraft.song_too_big_to_send"));
+        }
 
     }
 
@@ -87,22 +95,22 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new ServerboundCustomPayloadPacket(packet));
     }
 
-    public void receiveMessage(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf) {
+    public void receiveMessage(FriendlyByteBuf buf) {
         receiveMessage(PlatformTools.unwrap(buf)); // This will invoke EmotesProxy and handle the message
     }
 
-    public void receiveStreamMessage(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, boolean config) throws IOException {
+    public void receiveStreamMessage(FriendlyByteBuf buf, boolean config) throws IOException {
         @Nullable ByteBuffer buffer = streamHelper.receiveStream(ByteBuffer.wrap(PlatformTools.unwrap(buf)));
         if (buffer != null) {
             if (config) {
-                receiveConfigMessage(client, handler, buf);
+                receiveConfigMessage(buf);
             } else {
                 receiveMessage(buffer, null);
             }
         }
     }
 
-    public void receiveConfigMessage(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf) throws IOException {
+    public void receiveConfigMessage(FriendlyByteBuf buf) throws IOException {
         var packet = new EmotePacket.Builder().build().read(ByteBuffer.wrap(PlatformTools.unwrap(buf)));
         if (packet != null) {
             if (packet.purpose == PacketTask.CONFIG) {

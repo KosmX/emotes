@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<ServerPlayer> {
@@ -69,15 +70,15 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
         {
             receiveMessage(unwrapBuffer(buf), player, (INetworkInstance) handler);
         } catch (IOException e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
     public void receiveStreamMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
         try
         {
-            if (handler.emotecraft$getServerNetworkInstance().allowEmoteStreamC2S()) {
-                var packet = ((AbstractServerNetwork)handler.emotecraft$getServerNetworkInstance()).receiveStreamChunk(ByteBuffer.wrap(unwrapBuffer(buf)));
+            if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreamC2S()) {
+                var packet = ((AbstractServerNetwork)((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance()).receiveStreamChunk(ByteBuffer.wrap(unwrapBuffer(buf)));
                 if (packet != null) {
                     receiveMessage(packet.array(), player, (INetworkInstance) handler);
                 }
@@ -85,7 +86,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
                 handler.disconnect(Component.literal("Emote stream is disabled on this server"));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -100,7 +101,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
             try {
                 this.bedrockEmoteMap = new EmoteMappings(Serializer.serializer.fromJson(reader, new TypeToken<BiMap<UUID, UUID>>() {}.getType()));
             }catch (JsonParseException e){
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
             reader.close();
         }
@@ -135,7 +136,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
 
     @Override
     protected IServerNetworkInstance getPlayerNetworkInstance(ServerPlayer player) {
-        return player.connection.emotecraft$getServerNetworkInstance();
+        return ((EmotesMixinNetwork)player.connection).emotecraft$getServerNetworkInstance();
     }
 
     @Override
@@ -156,7 +157,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
                         playerNetwork.sendGeyserPacket(ByteBuffer.wrap(geyserPacket.write()));
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             }
         });
@@ -171,7 +172,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -184,7 +185,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
             playerNetwork.sendMessage(packetBuilder, null);
         } catch (IOException e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 

@@ -82,7 +82,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         catch (IOException e){
             EmoteInstance.instance.getLogger().log(Level.WARNING, "can't watch emotes dir for changes: " +  e.getMessage());
             if(EmoteInstance.config.showDebug.get()){
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
         }
 
@@ -374,7 +374,7 @@ public class EmoteMenu extends EmoteConfigScreen {
                 }else {
                     EmoteInstance.instance.getLogger().log(Level.FINEST, "Unknown error while copying " + path.getFileName() + ": " + e.getMessage(), true);
                     if(EmoteInstance.config.showDebug.get()){
-                        e.printStackTrace();
+                        EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                     }
                 }
             }
@@ -477,7 +477,7 @@ public class EmoteMenu extends EmoteConfigScreen {
                     watcher = null;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
         }
 

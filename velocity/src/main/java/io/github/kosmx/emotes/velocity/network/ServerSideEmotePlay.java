@@ -43,7 +43,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> {
                     try {
                         this.receiveMessage(event.getData(), player, playerNetwork);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                     }
                 } else {
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player.getUsername() + " is not registered");
@@ -53,8 +53,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> {
             }
         }
         else if (event.getIdentifier().equals(VelocityWrapper.GeyserPacket)) {
-            if (event.getSource() instanceof Player) {
-                Player player = (Player) event.getSource();
+            if (event.getSource() instanceof Player player) {
 
                 receiveGeyserMessage(player, event.getData());
             } else {
@@ -107,7 +106,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> {
                 try {
                     player1.sendPluginMessage(VelocityWrapper.GeyserPacket, packet.write());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -120,7 +119,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> {
                 try {
                     player1.sendPluginMessage(VelocityWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -137,7 +136,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> {
         try {
             targetPlayer.sendPluginMessage(VelocityWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
         } catch (Exception e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 }

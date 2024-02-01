@@ -49,7 +49,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             initMappings(EmoteInstance.instance.getConfigPath());
             ServerEmoteAPI.INSTANCE = this;
         }catch (IOException e){
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             try {
                 this.bedrockEmoteMap = new EmoteMappings(Serializer.serializer.fromJson(reader, new TypeToken<BiMap<UUID, UUID>>() {}.getType()));
             }catch (JsonParseException e){
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
             reader.close();
         }
@@ -206,7 +206,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             packet.setRuntimeEntityID(getRuntimePlayerID(player));
             receiveBEEmote(player, packet);
         }catch (Throwable t){
-            t.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, t.getMessage(), t);
         }
     }
 
@@ -250,7 +250,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
 
         } catch (RuntimeException e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             return null;
         }
     }

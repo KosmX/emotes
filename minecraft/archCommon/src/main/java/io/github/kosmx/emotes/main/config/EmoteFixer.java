@@ -70,7 +70,7 @@ public class EmoteFixer{
                 //data = ClientSerializer.serializer.fromJson(reader, new TypeToken<HashMap<Integer, HashMap<Integer, Integer>>>(){}.getType());
                 data = new JsonParser().parse(reader);
             }catch (JsonParseException | NullPointerException e){
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
         }
         return data.getAsJsonObject();

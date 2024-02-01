@@ -43,7 +43,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                 try {
                     this.receiveMessage(message, player, playerNetwork);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             } else {
                 EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player.getName() + " is not registered");
@@ -92,7 +92,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                 try {
                     player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, packet.write());
                 }catch (Exception e){
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -112,7 +112,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                     }
                     else if(emotePacket != null) player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, emotePacket.write());
                 }catch (Exception e){
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -135,7 +135,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
             packetBuilder.setVersion(getPlayerNetworkInstance(targetPlayer).getRemoteVersions());
             targetPlayer.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, packetBuilder.build().write().array());
         }catch (Exception e){
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 

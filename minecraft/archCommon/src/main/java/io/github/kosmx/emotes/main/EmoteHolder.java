@@ -113,7 +113,7 @@ public class EmoteHolder implements Supplier<UUID> {
                 assignIcon(stream);
                 stream.close();
             }catch (IOException | NullPointerException e){
-                e.printStackTrace();
+                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 if(!((ClientConfig)EmoteInstance.config).neverRemoveBadIcon.get()){
                     this.emote.extraData.remove("iconData");
                 }

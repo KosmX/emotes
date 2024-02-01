@@ -69,7 +69,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
         try {
             receiveMessage(toBytes(buf), player, (INetworkInstance) handler);
         } catch (IOException e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -116,11 +116,11 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
                     }
                 }
                 catch (IOException e){
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             });
         }catch (Throwable e){
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
 
          //*/
@@ -138,11 +138,11 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
                         PacketDistributor.PLAYER.with(() -> serverPlayer).send(newS2CEmotesPacket(geyserChannelID, emotePacket.write()));
                     }
                 }catch (IOException e){
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             });
         } catch (Throwable e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -175,7 +175,7 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
             PacketDistributor.PLAYER.with(() -> (ServerPlayer) player.getCommandSenderWorld().getPlayerByUUID(target)).send(newS2CEmotesPacket(data, (ServerPlayer) player));
         }
         catch (IOException|RuntimeException e){
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 

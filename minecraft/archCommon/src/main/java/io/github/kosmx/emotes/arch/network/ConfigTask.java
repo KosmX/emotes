@@ -30,7 +30,7 @@ public class ConfigTask implements ConfigurationTask {
             var bytes = new EmotePacket.Builder(configData).build().write();
             consumer.accept(new ClientboundCustomPayloadPacket(EmotePacketPayload.playPacket(bytes))); // Config init
         } catch (IOException e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 

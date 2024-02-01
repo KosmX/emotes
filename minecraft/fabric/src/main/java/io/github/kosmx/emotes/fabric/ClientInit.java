@@ -16,7 +16,10 @@ import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
@@ -27,6 +30,7 @@ public class ClientInit {
     static KeyMapping stopEmote;
     static KeyMapping debugKey;
     static Consumer<Minecraft> keyBindingFunction;
+
 
     static void initClient(){
 

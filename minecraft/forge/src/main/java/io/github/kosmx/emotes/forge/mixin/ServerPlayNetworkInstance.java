@@ -59,7 +59,7 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
             this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
         }
         catch (IOException e){
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 

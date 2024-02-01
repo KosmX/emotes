@@ -44,7 +44,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<ProxiedPlayer> 
                     try {
                         this.receiveMessage(event.getData(), player, playerNetwork);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                     }
                 } else {
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player.getName() + " is not registered");
@@ -95,7 +95,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<ProxiedPlayer> 
                 try {
                     player1.sendData(BungeeWrapper.GeyserPacket, packet.write());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -108,7 +108,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<ProxiedPlayer> 
                 try {
                     player1.sendData(BungeeWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -125,7 +125,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<ProxiedPlayer> 
         try {
             targetPlayer.sendData(BungeeWrapper.EmotePacket, new EmotePacket.Builder(data).build().write().array());
         } catch (Exception e) {
-            e.printStackTrace();
+            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
 
