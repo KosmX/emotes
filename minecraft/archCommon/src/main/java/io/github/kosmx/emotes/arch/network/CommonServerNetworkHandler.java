@@ -64,7 +64,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
         }
     }
 
-    private static IServerNetworkInstance getHandler(ServerGamePacketListenerImpl handler) {
+    public static IServerNetworkInstance getHandler(ServerGamePacketListenerImpl handler) {
         return ((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance();
     }
 
@@ -76,17 +76,20 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
             EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
     }
-
     public void receiveStreamMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
+        receiveStreamMessage(player, getHandler(handler), ByteBuffer.wrap(unwrapBuffer(buf)));
+    }
+
+    public void receiveStreamMessage(ServerPlayer player, IServerNetworkInstance handler, ByteBuffer buf) {
         try
         {
             if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreamC2S()) {
-                var packet = ((AbstractServerNetwork)getHandler(handler)).receiveStreamChunk(ByteBuffer.wrap(unwrapBuffer(buf)));
+                var packet = ((AbstractServerNetwork)handler).receiveStreamChunk(buf);
                 if (packet != null) {
-                    receiveMessage(packet.array(), player, getHandler(handler));
+                    receiveMessage(packet.array(), player, handler);
                 }
             } else {
-                handler.disconnect(Component.literal("Emote stream is disabled on this server"));
+                handler.disconnect("Emote stream is disabled on this server");
             }
         } catch (IOException e) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);

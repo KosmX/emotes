@@ -20,4 +20,5 @@ public interface IServerNetworkInstance extends INetworkInstance {
 
     void sendGeyserPacket(ByteBuffer buffer);
 
+    void disconnect(String literal);
 }

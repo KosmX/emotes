@@ -17,12 +17,6 @@ import java.util.logging.Level;
 public class ConfigTask implements ConfigurationTask {
     public static final ConfigurationTask.Type TYPE = new Type("emotecraft:config");
 
-    @NotNull
-    private final ServerConfigurationPacketListenerImpl handler;
-
-    public ConfigTask(@NotNull ServerConfigurationPacketListenerImpl handler) {
-        this.handler = handler;
-    }
 
     @Override
     public void start(@NotNull Consumer<Packet<?>> consumer) {

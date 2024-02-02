@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
-import java.util.function.Function;
 
 public record EmotePacketPayload(@NotNull ResourceLocation id, @NotNull ByteBuffer bytes) implements CustomPacketPayload {
     @Override

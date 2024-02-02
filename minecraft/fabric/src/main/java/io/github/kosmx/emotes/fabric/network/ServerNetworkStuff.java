@@ -25,9 +25,9 @@ public final class ServerNetworkStuff {
             if (ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.EMOTE_CHANNEL_ID) &&
                     ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.STREAM_CHANNEL_ID)) {
 
-                handler.addTask(new ConfigTask(handler));
+                handler.addTask(new ConfigTask());
             } else {
-                EmoteInstance.instance.getLogger().log(Level.INFO, "Client doesn't support emotes, ignoring");
+                EmoteInstance.instance.getLogger().log(Level.FINE, "Client doesn't support emotes, ignoring");
             }
             // No disconnect, vanilla clients can connect
         });

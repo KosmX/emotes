@@ -103,7 +103,18 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         @Nullable ByteBuffer buffer = streamHelper.receiveStream(ByteBuffer.wrap(PlatformTools.unwrap(buf)));
         if (buffer != null) {
             if (config) {
-                receiveConfigMessage(buf);
+                receiveConfigMessage(buffer);
+            } else {
+                receiveMessage(buffer, null);
+            }
+        }
+    }
+
+    public void receiveStreamMessage(@NotNull ByteBuffer buff, boolean config) throws IOException {
+        @Nullable ByteBuffer buffer = streamHelper.receiveStream(buff);
+        if (buffer != null) {
+            if (config) {
+                receiveConfigMessage(buffer);
             } else {
                 receiveMessage(buffer, null);
             }
@@ -111,7 +122,12 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     }
 
     public void receiveConfigMessage(FriendlyByteBuf buf) throws IOException {
-        var packet = new EmotePacket.Builder().build().read(ByteBuffer.wrap(PlatformTools.unwrap(buf)));
+        receiveConfigMessage(ByteBuffer.wrap(PlatformTools.unwrap(buf)));
+    }
+
+    public void receiveConfigMessage(ByteBuffer buf) throws IOException {
+
+        var packet = new EmotePacket.Builder().build().read(buf);
         if (packet != null) {
             if (packet.purpose == PacketTask.CONFIG) {
                 setVersions(packet.versions);
