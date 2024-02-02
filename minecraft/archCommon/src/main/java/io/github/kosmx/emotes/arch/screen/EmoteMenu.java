@@ -382,7 +382,7 @@ public class EmoteMenu extends EmoteConfigScreen {
     }
 
     protected AbstractEmoteListWidget<?> newEmoteList(int width, int height) {
-        return new EmoteListImpl(getMinecraft(), width, height, 51, height-32, 36, this);
+        return new EmoteListImpl(getMinecraft(), width, height, 51, height-32, this);
     }
 
     @Override
@@ -489,8 +489,8 @@ public class EmoteMenu extends EmoteConfigScreen {
 
     public static class EmoteListImpl extends AbstractEmoteListWidget<EmoteListImpl.EmoteListEntryImpl> {
 
-        public EmoteListImpl(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
-            super(minecraftClient, i, j, k, l, m, screen);
+        public EmoteListImpl(Minecraft minecraftClient, int i, int j, int k, int l, Screen screen) {
+            super(minecraftClient, i, j, k, l, screen);
 
         }
 

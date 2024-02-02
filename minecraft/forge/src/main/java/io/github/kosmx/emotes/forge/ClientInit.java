@@ -5,13 +5,13 @@ import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.forge.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
@@ -33,13 +33,12 @@ public class ClientInit {
     static KeyMapping debugKey = null;
     static Consumer<Minecraft> keyBindingFunction;
 
-    static void initClient() {
+    static void initClient(IEventBus modEventBus) {
         initKeyBinding();
-        FMLJavaModLoadingContext.get().getModEventBus().register(new ClientInit());
+        modEventBus.register(new ClientInit());
     }
 
     static void setupClient() {
-        ClientNetworkInstance.networkInstance.init(); //init network
 
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, screen) -> new EmoteMenu(screen)));
     }

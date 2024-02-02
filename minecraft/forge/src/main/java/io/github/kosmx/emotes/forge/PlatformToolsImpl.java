@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.forge;
 
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.forge.network.ClientNetworkInstance;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 
 public class PlatformToolsImpl {
     public static boolean isPlayerAnimLoaded() {
@@ -15,7 +14,7 @@ public class PlatformToolsImpl {
     }
 
     public static INetworkInstance getClientNetworkController() {
-        return ClientNetworkInstance.networkInstance;
+        return ClientNetwork.INSTANCE;
     }
 
 }

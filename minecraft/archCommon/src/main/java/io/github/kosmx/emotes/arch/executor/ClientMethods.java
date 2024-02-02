@@ -41,6 +41,6 @@ public final class ClientMethods {
     }
 
     public void toastExportMessage(int level, Component text, String msg) {
-        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastIds.WORLD_BACKUP, text, Component.literal(msg));
+        SystemToast.add(Minecraft.getInstance().getToasts(), SystemToast.SystemToastId.WORLD_BACKUP, text, Component.literal(msg));
     }
 }

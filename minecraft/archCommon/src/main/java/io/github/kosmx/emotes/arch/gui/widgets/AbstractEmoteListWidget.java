@@ -23,8 +23,8 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
     protected List<E> emotes = new ArrayList<>();
     private final Screen screen;
 
-    public AbstractEmoteListWidget(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen){
-        super(minecraftClient, i, j, k, l, m);
+    public AbstractEmoteListWidget(Minecraft minecraftClient, int i, int j, int k, int l, Screen screen){
+        super(minecraftClient, i, j, k, l);
         this.centerListVertically = false;
         this.screen = screen;
     }
@@ -39,7 +39,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
 
     @Override
     public void emotesSetLeftPos(int left) {
-        this.setLeftPos(left);
+        this.setPosition(left, getY());
     }
 
     @Override
@@ -74,7 +74,7 @@ public abstract class AbstractEmoteListWidget<E extends AbstractEmoteListWidget.
 
     @Override
     protected int getScrollbarPosition(){
-        return this.x1 - 6;
+        return this.getX() + width - 6;
     }
 
     @Override

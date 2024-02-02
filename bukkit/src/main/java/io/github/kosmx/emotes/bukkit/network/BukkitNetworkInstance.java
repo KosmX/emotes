@@ -29,6 +29,11 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
         player.sendPluginMessage(bukkitPlugin, "geyser:emote", buffer.array());
     }
 
+    @Override
+    public void disconnect(String literal) {
+        player.kickPlayer(literal);
+    }
+
     public BukkitNetworkInstance(Player player){
         this.player = player;
     }

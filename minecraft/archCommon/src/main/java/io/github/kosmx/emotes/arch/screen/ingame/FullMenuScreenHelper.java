@@ -78,7 +78,8 @@ public class FullMenuScreenHelper extends EmoteConfigScreen {
     public static class EmoteListFS extends AbstractEmoteListWidget<EmoteListFS.EmotelistEntryImpl> {
 
         public EmoteListFS(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
-            super(minecraftClient, i, j, k, l, m, screen);
+            super(minecraftClient, i, j, k, l, screen);
+            setPosition(getX(), m);
         }
 
         @Override

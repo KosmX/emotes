@@ -52,7 +52,7 @@ public class ConfigScreen extends OptionsSubScreen {
     @Override
     protected void init() {
         super.init();
-        options = new OptionsList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
+        options = new OptionsList(this.minecraft, this.width, this.height, 32, this.height - 32); // 25?
         //I just copy these values from VideoOptionsScreen...
         options.addBig(DummyEntry.of("emotecraft.otherconfig.category.general"));
 
