@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
 import io.github.kosmx.emotes.arch.gui.widgets.AbstractEmoteListWidget;
+import io.github.kosmx.emotes.arch.screen.EmoteConfigScreen;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.arch.screen.EmoteConfigScreen;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

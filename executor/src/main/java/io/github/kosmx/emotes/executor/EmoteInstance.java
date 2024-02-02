@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.executor;
 
 
 import io.github.kosmx.emotes.common.SerializableConfig;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

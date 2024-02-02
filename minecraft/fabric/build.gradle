@@ -132,9 +132,6 @@ publishing {
     }
 }
 
-
-import com.modrinth.minotaur.dependencies.ModDependency
-
 if(keysExists) {
     modrinth {
         versionType = project.cfType

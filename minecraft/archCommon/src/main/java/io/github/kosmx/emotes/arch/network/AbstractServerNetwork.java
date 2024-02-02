@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.network;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
-import net.minecraft.network.Connection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
