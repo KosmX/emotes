@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.network.neoforge;
 
+import io.github.kosmx.emotes.neoforge.network.EmotePacketPayload;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -16,17 +17,7 @@ public class NetworkPlatformToolsImpl {
 
         assert (buf.hasRemaining()); // don't send empty packets
 
-        return new ClientboundCustomPayloadPacket(new CustomPacketPayload() {
-            @Override
-            public void write(@NotNull FriendlyByteBuf friendlyByteBuf) {
-                friendlyByteBuf.writeBytes(buf.duplicate());
-            }
-
-            @Override
-            public @NotNull ResourceLocation id() {
-                return id;
-            }
-        });
+        return new ClientboundCustomPayloadPacket(new EmotePacketPayload(id, buf));
     }
 
     public static boolean canSendPlay(ServerPlayer player, ResourceLocation channel) {

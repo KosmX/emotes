@@ -33,7 +33,7 @@ public class ForgeNetwork {
 
         // Play networking
 
-        var emotes = event.registrar("emotes");
+        var emotes = event.registrar("emotecraft");
         emotes.optional().play(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER, handler -> {
             handler.client((arg, playPayloadContext) -> ClientNetwork.INSTANCE.receiveMessage(arg.bytes(), null));
 
@@ -62,9 +62,10 @@ public class ForgeNetwork {
             });
         });
 
+
         event.registrar("geyser").optional().play(NetworkPlatformTools.GEYSER_CHANNEL_ID, EmotePacketPayload.GEYSER_CHANNEL_READER, handler -> {
             handler.server((arg, playPayloadContext) -> CommonServerNetworkHandler.instance.receiveGeyserMessage((ServerPlayer) playPayloadContext.player().get(), arg.bytes().array()));
-        });
+        }); // I may hack forge later
 
         // Config networking
 

@@ -34,7 +34,7 @@ task copyArtifacts{
         }
 
         copy{
-            from "${project.projectDir}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-neoforge.jar"
+            from "${project.projectDir}/neoforge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-neoforge.jar"
             into "${rootProject.projectDir}/artifacts"
         }//*/
     }

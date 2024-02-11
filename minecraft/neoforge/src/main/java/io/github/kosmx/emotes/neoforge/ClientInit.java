@@ -34,7 +34,8 @@ public class ClientInit {
 
     static void initClient(IEventBus modEventBus) {
         initKeyBinding();
-        modEventBus.register(new ClientInit());
+        //modEventBus.register(new ClientInit());
+        modEventBus.addListener(ClientInit::keyBindingRegister);
     }
 
     static void setupClient() {
@@ -52,8 +53,7 @@ public class ClientInit {
         keyBindingFunction.accept(null);
     }
 
-    @SubscribeEvent
-    public void keyBindingRegister(RegisterKeyMappingsEvent event) {
+    public static void keyBindingRegister(RegisterKeyMappingsEvent event) {
         event.register(openMenuKey);
         event.register(stopEmote);
         if (debugKey != null) event.register(debugKey);

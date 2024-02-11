@@ -100,7 +100,7 @@ shadowJar{
 remapJar{
     dependsOn shadowJar
     input.set shadowJar.archiveFile
-   archiveClassifier.set("forge")
+   archiveClassifier.set("neoforge")
 }
 
 jar {

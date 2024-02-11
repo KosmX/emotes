@@ -24,7 +24,6 @@ authors="KosmX" #optional
 description="${description}"
 
 [[mixins]]
-config = "emotecraft.mixins.json"
 config = "emotecraft-arch.mixins.json"
 
 [[dependencies.emotecraft]]
