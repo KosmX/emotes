@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.forge.network;
+package io.github.kosmx.emotes.neoforge.network;
 
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
@@ -8,7 +8,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.forge.fixingbadsoftware.UnNeoForgifierConfigurationTaskWrapper;
+import io.github.kosmx.emotes.neoforge.fixingbadsoftware.UnNeoForgifierConfigurationTaskWrapper;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.server.level.ServerPlayer;

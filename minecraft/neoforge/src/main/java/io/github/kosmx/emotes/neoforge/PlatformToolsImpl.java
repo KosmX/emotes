@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.forge;
+package io.github.kosmx.emotes.neoforge;
 
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;

@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.forge.network;
+package io.github.kosmx.emotes.neoforge.network;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;

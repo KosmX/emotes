@@ -1,8 +1,8 @@
-package io.github.kosmx.emotes.forge.executor;
+package io.github.kosmx.emotes.neoforge.executor;
 
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.Logger;
-import io.github.kosmx.emotes.forge.ForgeWrapper;
+import io.github.kosmx.emotes.neoforge.ForgeWrapper;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLLoader;
 

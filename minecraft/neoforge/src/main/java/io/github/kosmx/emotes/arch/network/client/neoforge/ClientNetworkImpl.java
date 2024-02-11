@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.network.client.neoforge;
 
-import io.github.kosmx.emotes.forge.network.EmotePacketPayload;
+import io.github.kosmx.emotes.neoforge.network.EmotePacketPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;

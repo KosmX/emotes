@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.forge;
+package io.github.kosmx.emotes.neoforge;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;

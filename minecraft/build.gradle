@@ -22,7 +22,7 @@ apply plugin: 'com.matthewprenger.cursegradle'
 
 task buildAll{
     dependsOn(":${project.module_name}:fabric:build")
-    dependsOn(":${project.module_name}:forge:build")
+    dependsOn(":${project.module_name}:neoforge:build")
 }
 
 task copyArtifacts{
@@ -34,7 +34,7 @@ task copyArtifacts{
         }
 
         copy{
-            from "${project.projectDir}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar"
+            from "${project.projectDir}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-neoforge.jar"
             into "${rootProject.projectDir}/artifacts"
         }//*/
     }
@@ -43,7 +43,7 @@ task copyArtifacts{
 if(keysExists) {
     task publishMod {
         finalizedBy(":${project.module_name}:fabric:modrinth")
-        finalizedBy(":${project.module_name}:forge:modrinth")
+        finalizedBy(":${project.module_name}:neoforge:modrinth")
         finalizedBy(":${project.module_name}:publishToCF")
     }
 
@@ -56,8 +56,7 @@ if(keysExists) {
             //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
             changelog = changes
             releaseType = project.cfType
-            addGameVersion "1.20"
-            addGameVersion "1.20.1"
+            addGameVersion "1.20.4"
             addGameVersion "Fabric"
             addGameVersion "Quilt"
 
@@ -85,9 +84,8 @@ if(keysExists) {
             //changelog = '[See on Github](https://github.com/KosmX/emotes/commits/master)'
             changelog = changes
             releaseType = project.cfType
-            addGameVersion "1.20"
-            addGameVersion "1.20.1"
-            addGameVersion "Forge"
+            addGameVersion "1.20.4"
+            addGameVersion "NeoForge"
 
 
             relations {
@@ -100,7 +98,7 @@ if(keysExists) {
                 javaVersionAutoDetect = false // defaults to true
             }
 
-            mainArtifact("${project.getProjectDir()}/forge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-forge.jar") {
+            mainArtifact("${project.getProjectDir()}/neoforge/build/libs/${project.archives_base_name}-for-MC${project.minecraft_version}-${project.mod_version}-neoforge.jar") {
                 //displayName = archivesBaseName
             }
         }//*/

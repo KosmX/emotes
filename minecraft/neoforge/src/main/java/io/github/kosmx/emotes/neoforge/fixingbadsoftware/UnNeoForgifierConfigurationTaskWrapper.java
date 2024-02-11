@@ -1,6 +1,6 @@
-package io.github.kosmx.emotes.forge.fixingbadsoftware;
+package io.github.kosmx.emotes.neoforge.fixingbadsoftware;
 
-import io.github.kosmx.emotes.forge.ForgeWrapper;
+import io.github.kosmx.emotes.neoforge.ForgeWrapper;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

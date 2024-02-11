@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.kosmx.emotes.forge.mixin",
+  "package": "io.github.kosmx.emotes.neoforge.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ChunkMapAccessor",

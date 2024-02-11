@@ -27,7 +27,7 @@ include 'emotesAssets'
 include 'minecraft'
 include 'minecraft:archCommon'
 include 'minecraft:fabric'
-include 'minecraft:forge'
+include 'minecraft:neoforge'
 
 //Bukkit plugin stuff
 include 'bukkit'

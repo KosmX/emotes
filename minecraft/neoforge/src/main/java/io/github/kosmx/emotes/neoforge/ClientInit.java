@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.forge;
+package io.github.kosmx.emotes.neoforge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.arch.executor.ClientMethods;
