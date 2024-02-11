@@ -52,7 +52,8 @@ public class ConfigScreen extends OptionsSubScreen {
     @Override
     protected void init() {
         super.init();
-        options = new OptionsList(this.minecraft, this.width, this.height, 32, this.height - 32); // 25?
+        options = new OptionsList(this.minecraft, this.width, this.height-25, 32, 25); // 25?
+        options.setHeight(height-64);
         //I just copy these values from VideoOptionsScreen...
         options.addBig(DummyEntry.of("emotecraft.otherconfig.category.general"));
 
@@ -136,10 +137,10 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics, mouseX, mouseY, delta);
+        super.render(graphics, mouseX, mouseY, delta);
         this.options.render(graphics, mouseX, mouseY, delta);
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 5, 16777215);
-        super.render(graphics, mouseX, mouseY, delta);
+        //super.render(graphics, mouseX, mouseY, delta);
     }
 
 

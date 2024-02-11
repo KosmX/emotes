@@ -75,15 +75,14 @@ public class FullMenuScreenHelper extends EmoteConfigScreen {
         super.render(matrices, mouseX, mouseY, delta);
         this.emoteList.renderThis(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
-        super.render(matrices, mouseX, mouseY, delta);
     }
 
 
     public static class EmoteListFS extends AbstractEmoteListWidget<EmoteListFS.EmotelistEntryImpl> {
 
         public EmoteListFS(Minecraft minecraftClient, int i, int j, int k, int l, int m, Screen screen) {
-            super(minecraftClient, i, j, k, l, screen);
-            setPosition(getX(), m);
+            super(minecraftClient, i, j, k, m, screen);
+            setHeight(l - 32);
         }
 
         @Override
