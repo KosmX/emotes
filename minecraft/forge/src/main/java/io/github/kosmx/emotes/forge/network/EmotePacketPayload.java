@@ -1,7 +1,7 @@
-package io.github.kosmx.emotes.arch.network;
+package io.github.kosmx.emotes.forge.network;
 
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -20,17 +20,21 @@ public record EmotePacketPayload(@NotNull ResourceLocation id, @NotNull ByteBuff
         return id;
     }
 
-    public static @NotNull EmotePacketPayload playPacket(@NotNull ByteBuffer bytes) {
-        return new EmotePacketPayload(new ResourceLocation(CommonData.MOD_ID, CommonData.playEmoteID), bytes);
+    public static @NotNull CustomPacketPayload createPacket(@NotNull ResourceLocation id, @NotNull ByteBuffer bytes) {
+        return new EmotePacketPayload(id, bytes);
     }
 
-    public static @NotNull EmotePacketPayload streamPacket(@NotNull ByteBuffer bytes) {
-        return new EmotePacketPayload(new ResourceLocation(CommonData.MOD_ID, CommonData.emoteStreamID), bytes);
+    public static @NotNull CustomPacketPayload playPacket(@NotNull ByteBuffer bytes) {
+        return createPacket(NetworkPlatformTools.EMOTE_CHANNEL_ID, bytes);
+    }
+
+    public static @NotNull CustomPacketPayload streamPacket(@NotNull ByteBuffer bytes) {
+        return createPacket(NetworkPlatformTools.STREAM_CHANNEL_ID, bytes);
     }
 
 
-    public static @NotNull EmotePacketPayload geyserPacket(@NotNull ByteBuffer bytes) {
-        return new EmotePacketPayload(new ResourceLocation("geyser", "emote"), bytes);
+    public static @NotNull CustomPacketPayload geyserPacket(@NotNull ByteBuffer bytes) {
+        return createPacket(new ResourceLocation("geyser", "emote"), bytes);
     }
 
     @NotNull

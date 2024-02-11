@@ -107,6 +107,7 @@ public class ForgeNetwork {
 
     }
 
+    @SubscribeEvent
     public static void registerNetworkConfigTask(final OnGameConfigurationEvent event) {
         if (event.getListener().isConnected(NetworkPlatformTools.EMOTE_CHANNEL_ID)) {
             event.register(UnNeoForgifierConfigurationTaskWrapper.wrap(new ConfigTask()));

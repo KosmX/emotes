@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.network.client;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
@@ -14,9 +13,11 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,12 +45,12 @@ public final class ClientNetwork extends AbstractNetworkInstance {
 
         @Override
         protected void sendPlayPacket(ByteBuffer buffer) {
-            ClientNetwork.sendPlayPacket(EmotePacketPayload.playPacket(buffer));
+            ClientNetwork.sendPlayPacket(playPacket(buffer));
         }
 
         @Override
         protected void sendStreamChunk(ByteBuffer buffer) {
-            ClientNetwork.sendPlayPacket(EmotePacketPayload.streamPacket(buffer));
+            ClientNetwork.sendPlayPacket(streamPacket(buffer));
         }
     };
 
@@ -81,17 +82,18 @@ public final class ClientNetwork extends AbstractNetworkInstance {
 
     @Override
     protected void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
-        sendPlayPacket(EmotePacketPayload.playPacket(byteBuffer));
+        sendPlayPacket(playPacket(byteBuffer));
     }
 
     @ExpectPlatform
+    @Contract
     public static boolean isServerChannelOpen(ResourceLocation id) {
         throw new AssertionError();
     }
 
 
-    public static void sendPlayPacket(CustomPacketPayload packet) {
-        Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new ServerboundCustomPayloadPacket(packet));
+    public static void sendPlayPacket(Packet<?> packet) {
+        Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(packet);
     }
 
     public void receiveMessage(FriendlyByteBuf buf) {
@@ -152,4 +154,28 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         return Short.MAX_VALUE - 16; // channel ID is 12, one extra int makes it 16 (string)
         // this way we have 3 byte error
     }
+
+    @ExpectPlatform
+    public static @NotNull Packet<?> createServerboundPacket(@NotNull ResourceLocation id, @NotNull ByteBuffer buf) {
+        assert (buf.hasRemaining());
+        return new ServerboundCustomPayloadPacket(new CustomPacketPayload() {
+            @Override
+            public void write(@NotNull FriendlyByteBuf friendlyByteBuf) {
+                friendlyByteBuf.writeBytes(buf.duplicate());
+            }
+
+            @Override
+            public @NotNull ResourceLocation id() {
+                return id;
+            }
+        });
+    }
+
+    public static @NotNull Packet<?> playPacket(@NotNull ByteBuffer buf) {
+        return createServerboundPacket(NetworkPlatformTools.EMOTE_CHANNEL_ID, buf);
+    }
+    public static @NotNull Packet<?> streamPacket(@NotNull ByteBuffer buf) {
+        return createServerboundPacket(NetworkPlatformTools.EMOTE_CHANNEL_ID, buf);
+    }
+    // no geyser packet from client. That is geyser plugin only feature
 }

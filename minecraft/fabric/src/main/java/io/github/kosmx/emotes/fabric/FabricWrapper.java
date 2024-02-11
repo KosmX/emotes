@@ -31,9 +31,6 @@ public class FabricWrapper implements ModInitializer {
     }
 
     private static void setupFabric(){
-        if(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            ClientInit.initClient();
-        }
 
         ServerNetworkStuff.init();
         subscribeEvents();

@@ -45,7 +45,7 @@ public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IS
 
     @Override
     public void sendGeyserPacket(ByteBuffer buffer) {
-        serverGamePacketListener.send(new ClientboundCustomPayloadPacket(EmotePacketPayload.geyserPacket(buffer)));
+        serverGamePacketListener.send(NetworkPlatformTools.geyserPacket(buffer));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IS
 
     @Override
     void sendStreamPacket(ByteBuffer buffer) {
-        serverGamePacketListener.send(new ClientboundCustomPayloadPacket(EmotePacketPayload.streamPacket(buffer)));
+        serverGamePacketListener.send(NetworkPlatformTools.streamPacket(buffer));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IS
     }
 
     public void sendPlayMessage(ByteBuffer bytes) {
-        serverGamePacketListener.send(new ClientboundCustomPayloadPacket(EmotePacketPayload.playPacket(bytes)));
+        serverGamePacketListener.send(NetworkPlatformTools.playPacket(bytes));
     }
 
     public void sendPlayStream(ByteBuffer bytes) {

@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.fabric.network;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
 import io.github.kosmx.emotes.arch.network.*;
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
@@ -50,12 +51,12 @@ public final class ServerNetworkStuff {
 
                             @Override
                             protected void sendPlayPacket(ByteBuffer buffer) {
-                                responseSender.sendPacket(EmotePacketPayload.playPacket(buffer));
+                                responseSender.sendPacket(ClientNetwork.playPacket(buffer));
                             }
 
                             @Override
                             protected void sendStreamChunk(ByteBuffer buffer) {
-                                responseSender.sendPacket(EmotePacketPayload.streamPacket(buffer));
+                                responseSender.sendPacket(ClientNetwork.streamPacket(buffer));
                             }
                         }
                 );
