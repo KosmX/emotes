@@ -22,7 +22,6 @@ public class ConfigTask implements ConfigurationTask {
         configData.versions.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)0x01); // track player state
         try {
             var bytes = new EmotePacket.Builder(configData).build().write();
-            bytes.flip();
             consumer.accept(NetworkPlatformTools.createClientboundPacket(NetworkPlatformTools.EMOTE_CHANNEL_ID, bytes)); // Config init
         } catch (IOException e) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);

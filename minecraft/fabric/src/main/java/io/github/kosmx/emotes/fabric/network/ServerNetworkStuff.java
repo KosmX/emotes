@@ -21,6 +21,8 @@ import java.util.logging.Level;
 public final class ServerNetworkStuff {
     public static void init() {
 
+        // Config networking
+
         ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
 
             if (ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.EMOTE_CHANNEL_ID) &&

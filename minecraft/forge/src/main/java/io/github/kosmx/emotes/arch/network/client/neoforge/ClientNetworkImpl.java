@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.arch.network.client.neoforge;
 import io.github.kosmx.emotes.forge.network.EmotePacketPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +19,7 @@ public class ClientNetworkImpl {
     public static Packet<?> createServerboundPacket(@NotNull ResourceLocation id, @NotNull ByteBuffer buf) {
         assert buf.hasRemaining();
 
-        return new ClientboundCustomPayloadPacket(EmotePacketPayload.createPacket(id, buf));
+        return new ServerboundCustomPayloadPacket(EmotePacketPayload.createPacket(id, buf));
     }
 
 }

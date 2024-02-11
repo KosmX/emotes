@@ -10,6 +10,7 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.forge.fixingbadsoftware.UnNeoForgifierConfigurationTaskWrapper;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -50,7 +51,7 @@ public class ForgeNetwork {
         emotes.optional().play(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER, handler -> {
             handler.client((arg, playPayloadContext) -> {
                 try {
-                    ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), false);
+                    ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), null);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -68,7 +69,7 @@ public class ForgeNetwork {
         // Config networking
 
         emotes.optional().configuration(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER, handler -> {
-            handler.client((arg, configurationPayloadContext) -> {
+            handler.server((arg, configurationPayloadContext) -> {
 
                 try {
                     var message = new EmotePacket.Builder().build().read(arg.bytes());
@@ -101,6 +102,24 @@ public class ForgeNetwork {
                 } catch (IOException e) {
                     EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
                     configurationPayloadContext.channelHandlerContext().disconnect();
+                }
+            });
+            handler.client((arg, configurationPayloadContext) -> {
+                try {
+                    ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), p -> configurationPayloadContext.replyHandler().send(((ServerboundCustomPayloadPacket)p).payload()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+
+
+        emotes.optional().configuration(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER, handler -> {
+            handler.client((arg, configurationPayloadContext) -> {
+                try {
+                    ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), p -> configurationPayloadContext.replyHandler().send(((ServerboundCustomPayloadPacket)p).payload()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             });
         });

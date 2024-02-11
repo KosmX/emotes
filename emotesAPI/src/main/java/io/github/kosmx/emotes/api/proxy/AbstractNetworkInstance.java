@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -175,13 +176,13 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     }
 
     @Override
-    public void sendC2SConfig(){
+    public void sendC2SConfig(Consumer<EmotePacket.Builder> consumer){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         //packetBuilder.setVersion(this.getVersions());
         packetBuilder.configureToConfigExchange(true);
 
         try {
-            this.sendMessage(packetBuilder, null);
+            consumer.accept(packetBuilder);
         }
         catch (Exception e){
             EmotesProxyManager.log(Level.WARNING, "Error while writing packet: " + e.getMessage());

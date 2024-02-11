@@ -101,6 +101,7 @@ public class EmotePacket {
             }
         });
         if(ex.get())throw new IOException("Exception while writing sub-packages");
+        ((Buffer)buf).flip(); // make it ready to read
         return buf;
     }
 

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
@@ -100,38 +101,50 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         receiveMessage(PlatformTools.unwrap(buf)); // This will invoke EmotesProxy and handle the message
     }
 
-    public void receiveStreamMessage(FriendlyByteBuf buf, boolean config) throws IOException {
+    public void receiveStreamMessage(FriendlyByteBuf buf, @Nullable Consumer<Packet<?>> configPacketConsumer) throws IOException {
         @Nullable ByteBuffer buffer = streamHelper.receiveStream(ByteBuffer.wrap(PlatformTools.unwrap(buf)));
         if (buffer != null) {
-            if (config) {
-                receiveConfigMessage(buffer);
+            if (configPacketConsumer != null) {
+                receiveConfigMessage(buffer, configPacketConsumer);
             } else {
                 receiveMessage(buffer, null);
             }
         }
     }
 
-    public void receiveStreamMessage(@NotNull ByteBuffer buff, boolean config) throws IOException {
+    /**
+     *
+     * @param buff received data
+     * @param configPacketConsumer if config phase, packet consumer
+     */
+    public void receiveStreamMessage(@NotNull ByteBuffer buff, @Nullable Consumer<Packet<?>> configPacketConsumer) throws IOException {
         @Nullable ByteBuffer buffer = streamHelper.receiveStream(buff);
         if (buffer != null) {
-            if (config) {
-                receiveConfigMessage(buffer);
+            if (configPacketConsumer != null) {
+                receiveConfigMessage(buffer, configPacketConsumer);
             } else {
                 receiveMessage(buffer, null);
             }
         }
     }
 
-    public void receiveConfigMessage(FriendlyByteBuf buf) throws IOException {
-        receiveConfigMessage(ByteBuffer.wrap(PlatformTools.unwrap(buf)));
+    public void receiveConfigMessage(@NotNull FriendlyByteBuf buf, @NotNull Consumer<Packet<?>> consumer) throws IOException {
+        receiveConfigMessage(ByteBuffer.wrap(PlatformTools.unwrap(buf)), consumer);
     }
 
-    public void receiveConfigMessage(ByteBuffer buf) throws IOException {
+    public void receiveConfigMessage(@NotNull ByteBuffer buf, @NotNull Consumer<Packet<?>> consumer) throws IOException {
 
         var packet = new EmotePacket.Builder().build().read(buf);
         if (packet != null) {
             if (packet.purpose == PacketTask.CONFIG) {
                 setVersions(packet.versions);
+                sendC2SConfig(p -> {
+                    try {
+                        consumer.accept(playPacket(p.build().write()));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             } else if (packet.purpose == PacketTask.FILE) {
                 EmoteHolder.addEmoteToList(packet.emoteData).fromInstance = this;
             } else {

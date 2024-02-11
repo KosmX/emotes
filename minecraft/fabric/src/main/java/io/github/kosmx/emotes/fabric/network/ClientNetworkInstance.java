@@ -22,7 +22,7 @@ public class ClientNetworkInstance {
 
         ClientConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (client, handler, buf, responseSender) -> {
             try {
-                network.receiveConfigMessage(buf);
+                network.receiveConfigMessage(buf, responseSender::sendPacket);
             } catch (IOException e) {
                 EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
@@ -30,7 +30,7 @@ public class ClientNetworkInstance {
 
         ClientConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (client, handler, buf, responseSender) -> {
             try {
-                network.receiveStreamMessage(buf, true);
+                network.receiveStreamMessage(buf, responseSender::sendPacket);
             } catch (IOException e) {
                 EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }
@@ -44,7 +44,7 @@ public class ClientNetworkInstance {
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (client, handler, buf, responseSender) -> {
             try {
-                network.receiveStreamMessage(buf, false);
+                network.receiveStreamMessage(buf, null);
             } catch (IOException e) {
                 EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
             }

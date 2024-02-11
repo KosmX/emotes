@@ -9,6 +9,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * To hold information about network
@@ -97,8 +98,7 @@ public interface INetworkInstance {
      * Client is sending config message to server. Vanilla clients will answer to the server configuration phase message.
      * This might get invoked multiple times on the same network instance.
      */
-    default void sendC2SConfig() {
-        sendConfigCallback();
+    default void sendC2SConfig(Consumer<EmotePacket.Builder> consumer) {
     }
 
     /**
