@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<ServerPlayer> {
     public static CommonServerNetworkHandler instance = new CommonServerNetworkHandler();
 
-    private static MinecraftServer server = null;
+    private static MinecraftServer server;
 
     public static void setServer(@NotNull MinecraftServer server) {
         CommonServerNetworkHandler.server = server;
@@ -49,7 +49,6 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
     }
 
     public void init() {
-
     }
 
     private byte[] unwrapBuffer(FriendlyByteBuf buf) {
