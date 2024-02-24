@@ -77,7 +77,8 @@ public class ForgeNetwork {
 
                     if (message == null || message.purpose != PacketTask.CONFIG)
                         throw new IOException("Wrong packet type for config task");
-                    ((EmotesMixinConnection) ((ServerCommonPacketListenerAccessor) handler).getConnection()).emotecraft$setVersions(message.versions);
+                    // TODO get connection handler
+                    connection.emotecraft$setVersions(message.versions);
                     CommonServerNetworkHandler.instance.getServerEmotes(message.versions).forEach(buffer ->
                             new EmoteStreamHelper() {
 
