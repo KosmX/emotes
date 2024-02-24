@@ -61,6 +61,6 @@ public class FabricWrapper implements ModInitializer {
 
     private static void subscribeEvents() {
         CommandRegistrationCallback.EVENT.register(ServerCommands::register);
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> SERVER_INSTANCE = server);
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> SERVER_INSTANCE = server);
     }
 }
