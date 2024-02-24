@@ -1,15 +1,10 @@
 package io.github.kosmx.emotes.arch.network;
 
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.arch.mixin.ServerChunkCacheAccessor;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.common.tools.BiMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.geyser.EmoteMappings;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.network.FriendlyByteBuf;
@@ -22,12 +17,8 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
@@ -42,6 +33,8 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
     public static void setServer(@NotNull MinecraftServer server) {
         CommonServerNetworkHandler.server = server;
     }
+
+    private CommonServerNetworkHandler() {} // make ctor private for singleton class
 
     @NotNull
     public static MinecraftServer getServer() {
@@ -96,31 +89,6 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
 
     public void receiveGeyserMessage(ServerPlayer player, FriendlyByteBuf buf) {
         receiveGeyserMessage(player, unwrapBuffer(buf));
-    }
-
-    public void initMappings(Path configPath) throws IOException{
-        Path filePath = configPath.resolveSibling("emotecraft_emote_map.json");
-        if(filePath.toFile().isFile()){
-            BufferedReader reader = Files.newBufferedReader(filePath);
-            try {
-                this.bedrockEmoteMap = new EmoteMappings(Serializer.serializer.fromJson(reader, new TypeToken<BiMap<UUID, UUID>>() {}.getType()));
-            }catch (JsonParseException e){
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
-            }
-            reader.close();
-        }
-        else {
-            BiMap<UUID, UUID> example = new BiMap<>();
-            example.put(new UUID(0x0011223344556677L, 0x8899aabbccddeeffL), new UUID(0xffeeddccbbaa9988L, 0x7766554433221100L));
-            BufferedWriter writer = Files.newBufferedWriter(filePath);
-            Serializer.serializer.toJson(example, new TypeToken<BiMap<UUID, UUID>>() {}.getType(), writer);
-            writer.close();
-        }
-    }
-
-    @Override
-    protected boolean doValidate() {
-        return EmoteInstance.config.validateEmote.get();
     }
 
     @Override
