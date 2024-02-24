@@ -37,17 +37,6 @@ import java.util.stream.Collectors;
 public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<ServerPlayer> {
     public static CommonServerNetworkHandler instance = new CommonServerNetworkHandler();
 
-    private static MinecraftServer server;
-
-    public static void setServer(@NotNull MinecraftServer server) {
-        CommonServerNetworkHandler.server = server;
-    }
-
-    @NotNull
-    public static MinecraftServer getServer() {
-        return server;
-    }
-
     public void init() {
     }
 
@@ -130,7 +119,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Se
 
     @Override
     protected ServerPlayer getPlayerFromUUID(UUID player) {
-        return server.getPlayerList().getPlayer(player);
+        return NetworkPlatformTools.getServer().getPlayerList().getPlayer(player);
     }
 
     @Override

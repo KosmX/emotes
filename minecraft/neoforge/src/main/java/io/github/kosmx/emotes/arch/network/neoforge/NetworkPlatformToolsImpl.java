@@ -6,12 +6,15 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 
+@SuppressWarnings("unused")
 public class NetworkPlatformToolsImpl {
     public static @NotNull Packet<?> createClientboundPacket(@NotNull ResourceLocation id, @NotNull ByteBuffer buf) {
 
@@ -26,5 +29,9 @@ public class NetworkPlatformToolsImpl {
 
     public static boolean canSendConfig(ServerConfigurationPacketListenerImpl packetListener, ResourceLocation channel) {
         return packetListener.isConnected(channel);
+    }
+
+    public static MinecraftServer getServer() {
+        return ServerLifecycleHooks.getCurrentServer();
     }
 }
