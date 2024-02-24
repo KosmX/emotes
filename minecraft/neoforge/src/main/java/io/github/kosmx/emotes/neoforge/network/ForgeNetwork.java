@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.neoforge.network;
 
 import dev.kosmx.playerAnim.core.util.Pair;
+import io.github.kosmx.emotes.arch.mixin.ConnectionHandlerMixin;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
@@ -8,6 +9,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.neoforge.fixingbadsoftware.PacketListenerExtractor;
 import io.github.kosmx.emotes.neoforge.fixingbadsoftware.UnNeoForgifierConfigurationTaskWrapper;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
@@ -16,6 +18,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.event.OnGameConfigurationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.handling.ConfigurationPayloadContext;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.io.IOException;
@@ -77,8 +80,9 @@ public class ForgeNetwork {
 
                     if (message == null || message.purpose != PacketTask.CONFIG)
                         throw new IOException("Wrong packet type for config task");
-                    // TODO get connection handler
-                    connection.emotecraft$setVersions(message.versions);
+
+                    var connection = PacketListenerExtractor.extract(configurationPayloadContext).getConnection();
+                    ((EmotesMixinConnection)connection).emotecraft$setVersions(message.versions);
                     CommonServerNetworkHandler.instance.getServerEmotes(message.versions).forEach(buffer ->
                             new EmoteStreamHelper() {
 

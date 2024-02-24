@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.mixin;
 
+import io.github.kosmx.emotes.arch.network.EmotesMixinConnection;
 import net.minecraft.network.Connection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,7 +10,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.HashMap;
 
 @Mixin(Connection.class)
-public class ConnectionHandlerMixin implements io.github.kosmx.emotes.arch.network.EmotesMixinConnection {
+public class ConnectionHandlerMixin implements EmotesMixinConnection {
 
     @Unique
     @NotNull
