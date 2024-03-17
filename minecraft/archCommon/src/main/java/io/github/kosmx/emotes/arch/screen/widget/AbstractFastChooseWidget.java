@@ -38,7 +38,7 @@ public abstract class AbstractFastChooseWidget implements IWidgetLogic {
     }
 
     public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y){
-        int c = ((ClientConfig) EmoteInstance.config).dark.get() ? 255 : 0; //:D
+        int c = 255;//TODO ONLY WALTER WHITE //:D
         float x1 = x - (float) Minecraft.getInstance().font.width(stringRenderable) / 2;
         matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), MathHelper.colorHelper(c, c, c, 1));
     }

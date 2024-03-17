@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class ClientConfig extends SerializableConfig {
 
-    public final BooleanConfigEntry dark = new BooleanConfigEntry("dark", true, false, basics);//TODO default value on black? because text look better
+    public final BooleanConfigEntry dark = new BooleanConfigEntry("dark", false, false, basics);
 
     public final BooleanConfigEntry oldChooseWheel = new BooleanConfigEntry("oldChooseWheel", false, false, basics);
     public final ConfigEntry<Boolean> enablePerspective = new BooleanConfigEntry("perspective", true, false, basics);
