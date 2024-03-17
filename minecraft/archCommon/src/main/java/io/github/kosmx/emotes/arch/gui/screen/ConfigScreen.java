@@ -28,8 +28,7 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -88,8 +87,10 @@ public class ConfigScreen extends OptionsSubScreen {
                             (aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
                     ));
                 } else {
-                    options.addBig(OptionInstance.createBoolean("emotecraft.otherconfig." + entry.getName(),
-                            OptionInstance.noTooltip(), ((SerializableConfig.BooleanConfigEntry) entry).get(),
+                    options.addBig(OptionInstance.createBoolean(
+                            "emotecraft.otherconfig." + entry.getName(),
+                            OptionInstance.noTooltip(),
+                            ((SerializableConfig.BooleanConfigEntry) entry).get(),
                             (aBoolean) -> ((SerializableConfig.BooleanConfigEntry) entry).set(aBoolean)
                     ));
                 }
@@ -124,6 +125,24 @@ public class ConfigScreen extends OptionsSubScreen {
                         d2i.apply(floatEntry.getConfigVal()),
                         integer -> floatEntry.setConfigVal(i2d.apply(integer))
                 ));
+            } else if (entry instanceof SerializableConfig.EnumConfigEntry enumEntry) {//TODO ADD ICON & TEXT RENDER
+
+                Map<String, Enum<?>> mapping = new HashMap();
+                Arrays.asList((Enum[])enumEntry.getValues()).forEach((t) -> {
+                    mapping.put(t.name(), t);
+                });
+                options.addBig(new OptionInstance<>(
+                        "emotecraft.otherconfig." + entry.getName(),
+                        enumEntry.hasTooltip ?
+                                o ->
+                                        Tooltip.create(Component.translatable("emotecraft.otherconfig." + entry.getName() + ".tooltip"))
+                                : OptionInstance.noTooltip(),
+                        (component, object) -> Component.translatable(object.name()),
+                        new OptionInstance.Enum(
+                                Arrays.asList((Enum[])enumEntry.getValues()),
+                                Codec.STRING.xmap(mapping::get, Enum::name)),
+                        enumEntry.get(),
+                        enumEntry::set));
             }
         }
     }

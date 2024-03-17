@@ -4,6 +4,7 @@ package io.github.kosmx.emotes.arch.screen.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -16,6 +17,8 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
+
+import static io.github.kosmx.emotes.common.SerializableConfig.Icon.*;
 
 public class LegacyChooseWidget implements IChooseWheel {
 
@@ -39,8 +42,8 @@ public class LegacyChooseWidget implements IChooseWheel {
     }
 
 
-    public void drawCenteredText(GuiGraphics matrixStack, Component stringRenderable, float deg) {
-        drawCenteredText(matrixStack, stringRenderable, (float) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(deg * 0.0174533)), (float) (((float) (widget.y + widget.size / 2)) + widget.size * 0.4 * Math.cos(deg * 0.0174533)));
+    public void drawCenteredText(GuiGraphics matrixStack, Component stringRenderable, float deg, double offset) {
+        drawCenteredText(matrixStack, stringRenderable, (float) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(deg * 0.0174533)), (float) (((float) (widget.y + widget.size / offset)) + widget.size * 0.4 * Math.cos(deg * 0.0174533)));
     }
 
     public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y) {
@@ -178,19 +181,36 @@ public class LegacyChooseWidget implements IChooseWheel {
             int fastMenuPage = ModernChooseWheel.fastMenuPage;
             UUID emoteID = ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null ? ((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] : null;
             ResourceLocation identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
-            if (identifier != null && ((ClientConfig) EmoteInstance.config).showIcons.get()) {
-                int s = widget.size / 10;
-                int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
-                int iconY = (int) (((float) (widget.y + widget.size / 2)) + widget.size * 0.4 * Math.cos(this.angle * 0.0174533)) - s;
-                //widget.renderBindTexture(identifier);
-                matrices.blit(identifier, iconX, iconY, s * 2, s * 2, (float) 0, (float) 0, 256, 256, 256, 256);
+            if (identifier != null) {//TODO ADD ICON & TEXT RENDER
+                switch ((SerializableConfig.Icon) ((ClientConfig) EmoteInstance.config).showIcons.get()) {
+                    case ICON -> renderIcon(matrices,identifier);
+                    case ICON_TEXT -> {
+                        renderIcon(matrices,identifier);
+                        renderText(matrices, fastMenuPage,1.6);
+                    }
+                    case TEXT -> renderText(matrices, fastMenuPage, 2.0);
+                }
             } else {
-                if (((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null) {
-                    drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);
-                } else {
+                if(!renderText(matrices, fastMenuPage, 2.0)) {
                     EmoteInstance.instance.getLogger().log(Level.WARNING, "Tried to render non-existing name", true);
                 }
             }
+        }
+
+        private boolean renderText(GuiGraphics matrices, int fastMenuPage, double offset) {
+            if (((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null) {
+                drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig) EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle, offset);
+                return true;
+            }
+            return false;
+        }
+
+        private void renderIcon(GuiGraphics matrices, ResourceLocation identifier) {
+            int s = widget.size / 10;
+            int iconX = (int) (((float) (widget.x + widget.size / 2)) + widget.size * 0.4 * Math.sin(this.angle * 0.0174533)) - s;
+            int iconY = (int) (((float) (widget.y + widget.size / 2)) + widget.size * 0.4 * Math.cos(this.angle * 0.0174533)) - s;
+            //widget.renderBindTexture(identifier);
+            matrices.blit(identifier, iconX, iconY, s * 2, s * 2, (float) 0, (float) 0, 256, 256, 256, 256);
         }
 
         public void renderHover(GuiGraphics matrices, ResourceLocation texture) {

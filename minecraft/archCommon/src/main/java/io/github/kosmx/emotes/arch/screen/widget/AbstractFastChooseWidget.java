@@ -33,8 +33,8 @@ public abstract class AbstractFastChooseWidget implements IWidgetLogic {
     }
 
 
-    public void drawCenteredText(GuiGraphics matrixStack, Component stringRenderable, float deg){
-        drawCenteredText(matrixStack, stringRenderable, (float) (((float) (this.x + this.size / 2)) + size * 0.4 * Math.sin(deg * 0.0174533)), (float) (((float) (this.y + this.size / 2)) + size * 0.4 * Math.cos(deg * 0.0174533)));
+    public void drawCenteredText(GuiGraphics matrixStack, Component stringRenderable, float deg, double offset){
+        drawCenteredText(matrixStack, stringRenderable, (float) (((float) (this.x + this.size / 2)) + size * 0.4 * Math.sin(deg * 0.0174533)), (float) (((float) (this.y + this.size / offset)) + size * 0.4 * Math.cos(deg * 0.0174533)));
     }
 
     public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y){
