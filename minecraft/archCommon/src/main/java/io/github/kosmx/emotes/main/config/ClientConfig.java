@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.tools.BiMap;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ClientConfig extends SerializableConfig {
@@ -13,7 +14,9 @@ public class ClientConfig extends SerializableConfig {
     public final BooleanConfigEntry oldChooseWheel = new BooleanConfigEntry("oldChooseWheel", false, false, basics);
     public final ConfigEntry<Boolean> enablePerspective = new BooleanConfigEntry("perspective", true, false, basics);
     public final BooleanConfigEntry frontAsTPPerspective = new BooleanConfigEntry("default3rdPersonFront", false, false, basics);
-    public final ConfigEntry<Boolean> showIcons = new BooleanConfigEntry("showicon", "showIcon", true, false, basics);
+
+    public final ConfigEntry<Enum<?>> showIcons = new EnumConfigEntry("showicon", Icon.ICON_TEXT, Icon.values(), false, basics, false);//TODO ADD ICON & TEXT RENDER
+
     public final ConfigEntry<Boolean> enableNSFW = new BooleanConfigEntry("enableNSFW", false, true, basics);
 
     public final ConfigEntry<Boolean> alwaysOpenEmoteScreen = new BooleanConfigEntry("alwaysOpenScreen", false, true, basics);

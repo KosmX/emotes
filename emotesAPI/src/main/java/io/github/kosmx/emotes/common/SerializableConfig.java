@@ -53,6 +53,7 @@ public class SerializableConfig {
     public static abstract class ConfigEntry<T>{
         final String name, oldConfig; //oldconfig for the old config name
         T value;
+        T[] values;
         final T defaultValue;
         final public boolean hasTooltip;
         final boolean isHidden;
@@ -76,6 +77,10 @@ public class SerializableConfig {
         public ConfigEntry(String name, T defVal, List<ConfigEntry<?>> collection, boolean hidden){
             this(name, null, defVal, false, collection, hidden);
         }
+        public ConfigEntry(String name, T defVal, T[] values, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden){
+            this(name, null, defVal, false, collection, hidden);
+            this.values = values;
+        }
 
         public T get(){
             return value;
@@ -83,6 +88,10 @@ public class SerializableConfig {
 
         public void set(T newValue){
             this.value = newValue;
+        }
+
+        public T[] getValues(){
+            return values;
         }
 
         public String getName(){
@@ -166,5 +175,17 @@ public class SerializableConfig {
         public StringConfigEntry(String name, String defVal, List<ConfigEntry<?>> collection, boolean hidden) {
             super(name, defVal, collection, hidden);
         }
+    }
+
+    public static class EnumConfigEntry extends ConfigEntry<Enum<?>> {//TODO ADD ICON & TEXT RENDER
+        public EnumConfigEntry(String name, Enum<?> defVal, Enum<?>[] values, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden) {
+            super(name, defVal, values, hasTooltip, collection, hidden);
+        }
+    }
+
+    public enum Icon {
+        ICON,
+        ICON_TEXT,
+        TEXT
     }
 }

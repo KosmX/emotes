@@ -50,6 +50,11 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
             else if(entry instanceof SerializableConfig.StringConfigEntry){
                 ((SerializableConfig.StringConfigEntry)entry).set(element.getAsString());
             }
+            else if(entry instanceof SerializableConfig.EnumConfigEntry){//TODO ADD ICON & TEXT RENDER
+                if (entry.getName().equals("showIcon")) {
+                    ((SerializableConfig.EnumConfigEntry) entry).set(SerializableConfig.Icon.valueOf(element.getAsString()));
+                }
+            }
         }
     }
 
@@ -70,6 +75,9 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         }
         else if(entry instanceof SerializableConfig.StringConfigEntry){
             node.addProperty(entry.getName(), ((SerializableConfig.StringConfigEntry)entry).get());
+        }
+        else if(entry instanceof SerializableConfig.EnumConfigEntry){//TODO ADD ICON & TEXT RENDER
+            node.addProperty(entry.getName(), ((SerializableConfig.EnumConfigEntry)entry).get().name());
         }
     }
 
