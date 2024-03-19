@@ -137,7 +137,7 @@ public class ConfigScreen extends OptionsSubScreen {
                                 o ->
                                         Tooltip.create(Component.translatable("emotecraft.otherconfig." + entry.getName() + ".tooltip"))
                                 : OptionInstance.noTooltip(),
-                        (component, object) -> Component.translatable(object.name()),
+                        (component, object) -> Component.translatable("emotecraft.otherconfig." + entry.getName() + "." + object.name().toLowerCase()),
                         new OptionInstance.Enum(
                                 Arrays.asList((Enum[])enumEntry.getValues()),
                                 Codec.STRING.xmap(mapping::get, Enum::name)),
