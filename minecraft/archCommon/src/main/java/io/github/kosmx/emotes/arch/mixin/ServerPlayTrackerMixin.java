@@ -21,4 +21,9 @@ public class ServerPlayTrackerMixin {
         if (this.entity instanceof Player) AbstractServerEmotePlay.getInstance().playerStartTracking(this.entity, serverPlayer); //Do not do this in your code
     }
 
+    @Inject(method = "removePairing", at = @At(value = "TAIL"))
+    private void removeTrackingCallback(ServerPlayer serverPlayer, CallbackInfo ci) {
+        if (this.entity instanceof Player) AbstractServerEmotePlay.getInstance().playerStopTracking(this.entity, serverPlayer); //Do not do this in your code
+    }
+
 }

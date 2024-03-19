@@ -26,6 +26,8 @@ public class EmotePacket {
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new PlayerDataPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new PlayerHasModePacket();//TODO HAS MODE
+        defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new DiscoveryPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new StopPacket();
@@ -56,6 +58,7 @@ public class EmotePacket {
         this.data = data;
         subPackets.put(new EmoteDataPacket());
         subPackets.put(new PlayerDataPacket());
+        subPackets.put(new PlayerHasModePacket());//TODO HAS MODE
         subPackets.put(new StopPacket());
         subPackets.put(new DiscoveryPacket());
         subPackets.put(new SongPacket());
@@ -257,6 +260,14 @@ public class EmotePacket {
                 versions.replace((byte)3, (byte)0);
             }
             this.data.versions = versions;
+            return this;
+        }
+
+        public Builder configureToSendPlayerList(UUID uuid, boolean needDelete){//TODO HAS MODE
+            //if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");//TODO WHAT IS DO IT? 8)
+            data.purpose = PacketTask.PLAYER_LIST;
+            data.removeFromList = needDelete;
+            data.player = uuid;
             return this;
         }
 

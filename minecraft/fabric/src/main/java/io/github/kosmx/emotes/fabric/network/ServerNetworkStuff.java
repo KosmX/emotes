@@ -2,15 +2,20 @@ package io.github.kosmx.emotes.fabric.network;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
-import io.github.kosmx.emotes.arch.network.*;
+import io.github.kosmx.emotes.arch.network.CommonServerNetworkHandler;
+import io.github.kosmx.emotes.arch.network.ConfigTask;
+import io.github.kosmx.emotes.arch.network.EmotesMixinConnection;
+import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
 
@@ -29,10 +34,18 @@ public final class ServerNetworkStuff {
                     ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.STREAM_CHANNEL_ID)) {
 
                 handler.addTask(new ConfigTask());
+
+                AbstractServerEmotePlay.getInstance().player_database.put(handler.getOwner().getId(), null);//TODO HAS MODE, but client with old version mod not work in configuration phase, need add JOIN.register?
             } else {
                 EmoteInstance.instance.getLogger().log(Level.FINE, "Client doesn't support emotes, ignoring");
             }
             // No disconnect, vanilla clients can connect
+        });
+
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {//TODO HAS MODE
+
+            AbstractServerEmotePlay.getInstance().player_database.remove(handler.getOwner().getId(), null);
+
         });
 
         ServerConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (server, handler, buf, responseSender) -> {

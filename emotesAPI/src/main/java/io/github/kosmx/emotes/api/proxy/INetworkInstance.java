@@ -89,7 +89,7 @@ public interface INetworkInstance {
      * You are asked to send your config.
      * From 2.2 in the MC configuration phase, the server will initialize config, the client will reply.
      * <p>
-     * @deprecated ambiguous name, use {@link #sendC2SConfig()}
+     * @deprecated ambiguous name, use {@link #sendC2SConfig(Consumer)}
      */
     @Deprecated
     default void sendConfigCallback() {}

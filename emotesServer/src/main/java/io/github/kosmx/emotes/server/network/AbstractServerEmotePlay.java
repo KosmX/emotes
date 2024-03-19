@@ -8,6 +8,7 @@ import dev.kosmx.playerAnim.core.util.Pair;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
@@ -39,6 +40,8 @@ import java.util.logging.Level;
 @SuppressWarnings({"ConstantConditions", "rawtypes", "unused"})
 public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     protected EmoteMappings bedrockEmoteMap = new EmoteMappings(new BiMap<>());
+
+    final public HashMap<UUID, AbstractNetworkInstance> player_database = new HashMap<>();//TODO HAS MODE
 
     //private AbstractServerEmotePlay instance;
 
@@ -214,6 +217,26 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         Pair<KeyframeAnimation, Integer> playedEmote = getPlayerNetworkInstance(tracked).getEmoteTracker().getPlayedEmote();
         if (playedEmote != null) {
             sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.getLeft()).configureEmoteTick(playedEmote.getRight()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, getUUIDFromPlayer(tracker));
+        }
+
+        if (player_database.containsKey(getUUIDFromPlayer(tracker))
+                && player_database.containsKey(getUUIDFromPlayer(tracked))) {//TODO HAS MODE
+            sendForPlayer(
+                    new EmotePacket.Builder().configureToSendPlayerList(getUUIDFromPlayer(tracked),false).configureTarget(getUUIDFromPlayer(tracked)).build().data,
+                    tracked,
+                    getUUIDFromPlayer(tracker)
+            );
+        }
+    }
+
+    public void playerStopTracking(P tracked, P tracker) {//TODO HAS MODE
+        if (tracked == null || tracker == null) return;
+        if (player_database.containsKey(getUUIDFromPlayer(tracker))) {
+            sendForPlayer(
+                    new EmotePacket.Builder().configureToSendPlayerList(getUUIDFromPlayer(tracked),true).configureTarget(getUUIDFromPlayer(tracked)).build().data,
+                    tracked,
+                    getUUIDFromPlayer(tracker)
+            );
         }
     }
 
