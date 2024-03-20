@@ -6,7 +6,7 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class PlayerHasModePacket extends AbstractNetworkPacket{//TODO HAS MODE
+public class PlayerHasModPacket extends AbstractNetworkPacket{//TODO HAS MOD
     @Override
     public byte getID() {
         return 2;
@@ -20,19 +20,19 @@ public class PlayerHasModePacket extends AbstractNetworkPacket{//TODO HAS MODE
     @Override
     public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         config.player = CommonNetwork.readUUID(byteBuffer);
-        config.removeFromList = byteBuffer.get() != 0x00;
+        config.hasMod = byteBuffer.get() != 0x00;
         return true;
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
         CommonNetwork.writeUUID(byteBuffer, config.player);
-        byteBuffer.put(config.removeFromList ? (byte) 0x01 : (byte) 0x00);
+        byteBuffer.put(config.hasMod ? (byte) 0x01 : (byte) 0x00);
     }
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.purpose == PacketTask.PLAYER_LIST && config.player != null;
+        return config.purpose == PacketTask.HAS_MOD && config.player != null;
     }
 
     @Override

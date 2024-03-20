@@ -4,7 +4,7 @@ package io.github.kosmx.emotes.common.network;
 public enum PacketTask {
     UNKNOWN(0, false, false, false),
     STREAM(1, true, false, true),
-    PLAYER_LIST(2,false,false,true),//TODO HAS MODE
+    HAS_MOD(2,false,false,true),//TODO HAS MOD
     CONFIG(8, false, false, false),
     STOP(10, true, false, true),
     FILE(0x10, true, true, false);

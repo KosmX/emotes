@@ -114,15 +114,15 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 break;
             case FILE:
                 EmoteHolder.addEmoteToList(data.emoteData).fromInstance = networkInstance;
-            case PLAYER_LIST:
+            case HAS_MOD:
                 if(MainClientInit.playerHasMode == null) {
                     MainClientInit.playerHasMode = new HashSet<>();
                 }
-                if (data.removeFromList) {
-                    MainClientInit.playerHasMode.remove(data.player);
+                if (data.hasMod) {
+                    MainClientInit.playerHasMode.add(data.player);
                 }
                 else {
-                    MainClientInit.playerHasMode.add(data.player);
+                    MainClientInit.playerHasMode.remove(data.player);
                 }
             case UNKNOWN:
                 if (EmoteInstance.config.showDebug.get()) {

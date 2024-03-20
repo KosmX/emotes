@@ -22,9 +22,9 @@ import java.util.logging.Level;
  */
 public class MainClientInit {
 
-    public static final ResourceLocation TEXTURE_NO_MOD = new ResourceLocation("emotecraft:textures/icons/emotecraft_not_installed.png");//TODO HAS MODE icon
+    public static final ResourceLocation TEXTURE_NO_MOD = new ResourceLocation("emotecraft:textures/icons/emotecraft_not_installed.png");//TODO HAS MOD emotecraft_not_installed(0,1,2) for test
     @Nullable
-    public static HashSet<UUID> playerHasMode = null;//TODO HAS MODE null because check on render if server not have mod/plugin
+    public static HashSet<UUID> playerHasMode = null;//TODO HAS MOD null because check on render if server has no mod/plugin
 
     public static void init(){
         loadEmotes();//:D

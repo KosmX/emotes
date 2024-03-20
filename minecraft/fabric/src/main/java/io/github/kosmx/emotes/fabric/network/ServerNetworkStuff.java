@@ -12,7 +12,6 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -35,16 +34,16 @@ public final class ServerNetworkStuff {
 
                 handler.addTask(new ConfigTask());
 
-                AbstractServerEmotePlay.getInstance().player_database.put(handler.getOwner().getId(), null);//TODO HAS MODE, but client with old version mod not work in configuration phase, need add JOIN.register?
+                EmotePacket.player_has_mod.add(handler.getOwner().getId());//TODO HAS MOD
             } else {
                 EmoteInstance.instance.getLogger().log(Level.FINE, "Client doesn't support emotes, ignoring");
             }
             // No disconnect, vanilla clients can connect
         });
 
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {//TODO HAS MODE
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {//TODO HAS MOD
 
-            AbstractServerEmotePlay.getInstance().player_database.remove(handler.getOwner().getId(), null);
+            EmotePacket.player_has_mod.remove(handler.getOwner().getId());
 
         });
 
