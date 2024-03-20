@@ -15,6 +15,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPoseChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRegisterChannelEvent;
+import org.bukkit.event.player.PlayerUnregisterChannelEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -24,7 +26,6 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     final BukkitWrapper plugin;
 
     final HashMap<UUID, BukkitNetworkInstance> player_database = new HashMap<>();
-
 
     public ServerSideEmotePlay(BukkitWrapper plugin){
         this.plugin = plugin;
@@ -149,7 +150,8 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
         Player player = event.getPlayer();
 
         BukkitNetworkInstance instance = this.player_database.remove(player.getUniqueId());
-        if(instance != null)instance.closeConnection();
+        EmotePacket.player_has_mod.remove(player.getUniqueId());//TODO HAS MOD
+        if(instance != null) instance.closeConnection();
     }
 
     @EventHandler
@@ -158,6 +160,30 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
             Pose pose = event.getPose();
             if (pose == Pose.SNEAKING || pose == Pose.DYING || pose == Pose.SWIMMING || pose == Pose.FALL_FLYING || pose == Pose.SLEEPING) {
                 playerEntersInvalidPose((Player) event.getEntity());
+            }
+        }
+    }
+
+    @EventHandler//TODO HAS MOD
+    public void playerRegisterChannel(PlayerRegisterChannelEvent event) {
+        if(event.getChannel().equals(BukkitWrapper.EmotePacket)) {
+            EmotePacket.player_has_mod.add(event.getPlayer().getUniqueId());
+            for(Player player1 : plugin.getServer().getOnlinePlayers()) {
+                if(event.getPlayer() != player1 && event.getPlayer().canSee(player1)) {
+                    sendHasMode(event.getPlayer(),player1);
+                }
+            }
+        }
+    }
+
+    @EventHandler//TODO HAS MOD need this or not? reinsure
+    public void playerUnregisterChannel(PlayerUnregisterChannelEvent event) {
+        if(event.getChannel().equals(BukkitWrapper.EmotePacket)) {
+            EmotePacket.player_has_mod.remove(event.getPlayer().getUniqueId());
+            for(Player player1 : plugin.getServer().getOnlinePlayers()) {
+                if(event.getPlayer() != player1 && event.getPlayer().canSee(player1)) {
+                    sendHasMode(event.getPlayer(),player1);
+                }
             }
         }
     }

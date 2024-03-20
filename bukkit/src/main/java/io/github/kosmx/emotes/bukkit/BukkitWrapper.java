@@ -59,10 +59,10 @@ public class BukkitWrapper extends JavaPlugin {
     }
 
     public void registerProtocolListener() {
-        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.SPAWN_ENTITY) {//TODO HAS MOD replace deprecate packet? (because not work for me on test HAS MOD 1.20.4)
             @Override
             public void onPacketSending(PacketEvent packetEvent) {
-                if (packetEvent.getPacketType().equals(PacketType.Play.Server.NAMED_ENTITY_SPAWN)) {
+                if (packetEvent.getPacketType().equals(PacketType.Play.Server.SPAWN_ENTITY)) {
                     //Field trackedField = packetEvent.getPacket().getStructures().getField(2);
                     UUID tracked = packetEvent.getPacket().getUUIDs().readSafely(0);
 

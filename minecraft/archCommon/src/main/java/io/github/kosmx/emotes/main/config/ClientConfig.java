@@ -14,6 +14,9 @@ public class ClientConfig extends SerializableConfig {
     public final ConfigEntry<Boolean> enablePerspective = new BooleanConfigEntry("perspective", true, false, basics);
     public final BooleanConfigEntry frontAsTPPerspective = new BooleanConfigEntry("default3rdPersonFront", false, false, basics);
     public final ConfigEntry<Boolean> showIcons = new BooleanConfigEntry("showicon", "showIcon", true, false, basics);
+
+    public final ConfigEntry<Boolean> inWorldIcons = new BooleanConfigEntry("inWorldIcons", true, true, basics);
+
     public final ConfigEntry<Boolean> enableNSFW = new BooleanConfigEntry("enableNSFW", false, true, basics);
 
     public final ConfigEntry<Boolean> alwaysOpenEmoteScreen = new BooleanConfigEntry("alwaysOpenScreen", false, true, basics);

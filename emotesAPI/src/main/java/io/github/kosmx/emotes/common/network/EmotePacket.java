@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,10 +22,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class EmotePacket {
     public static final HashMap<Byte, Byte> defaultVersions = new HashMap<>();
 
+    public static final HashSet<UUID> player_has_mod = new HashSet<>();//TODO HAS MOD
+
     static {
         AbstractNetworkPacket tmp = new EmoteDataPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new PlayerDataPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new PlayerHasModPacket();//TODO HAS MOD
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new DiscoveryPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
@@ -56,6 +61,7 @@ public class EmotePacket {
         this.data = data;
         subPackets.put(new EmoteDataPacket());
         subPackets.put(new PlayerDataPacket());
+        subPackets.put(new PlayerHasModPacket());//TODO HAS MOD
         subPackets.put(new StopPacket());
         subPackets.put(new DiscoveryPacket());
         subPackets.put(new SongPacket());
@@ -257,6 +263,14 @@ public class EmotePacket {
                 versions.replace((byte)3, (byte)0);
             }
             this.data.versions = versions;
+            return this;
+        }
+
+        public Builder configureToSendHasMod(UUID player){//TODO HAS MOD
+            //if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");//TODO WHAT IS DO IT? 8)
+            data.purpose = PacketTask.HAS_MOD;
+            data.player = player;
+            data.hasMod = player_has_mod.contains(player);
             return this;
         }
 

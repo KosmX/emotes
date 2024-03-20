@@ -15,7 +15,8 @@
   ],
   "client": [
     "EmotePlayerMixin",
-    "KeyEventMixin"
+    "KeyEventMixin",
+    "PlayerRendererMixin"
   ],
   "server": [],
   "injectors": {

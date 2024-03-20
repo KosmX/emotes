@@ -2,7 +2,10 @@ package io.github.kosmx.emotes.fabric.network;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
-import io.github.kosmx.emotes.arch.network.*;
+import io.github.kosmx.emotes.arch.network.CommonServerNetworkHandler;
+import io.github.kosmx.emotes.arch.network.ConfigTask;
+import io.github.kosmx.emotes.arch.network.EmotesMixinConnection;
+import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
@@ -11,6 +14,7 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
 
@@ -29,10 +33,18 @@ public final class ServerNetworkStuff {
                     ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.STREAM_CHANNEL_ID)) {
 
                 handler.addTask(new ConfigTask());
+
+                EmotePacket.player_has_mod.add(handler.getOwner().getId());//TODO HAS MOD
             } else {
                 EmoteInstance.instance.getLogger().log(Level.FINE, "Client doesn't support emotes, ignoring");
             }
             // No disconnect, vanilla clients can connect
+        });
+
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {//TODO HAS MOD
+
+            EmotePacket.player_has_mod.remove(handler.getOwner().getId());
+
         });
 
         ServerConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (server, handler, buf, responseSender) -> {

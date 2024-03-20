@@ -42,7 +42,6 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
     //private AbstractServerEmotePlay instance;
 
-
     public AbstractServerEmotePlay(){
         try {
             initMappings(EmoteInstance.instance.getConfigPath());
@@ -214,6 +213,21 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         Pair<KeyframeAnimation, Integer> playedEmote = getPlayerNetworkInstance(tracked).getEmoteTracker().getPlayedEmote();
         if (playedEmote != null) {
             sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.getLeft()).configureEmoteTick(playedEmote.getRight()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, getUUIDFromPlayer(tracker));
+        }
+
+        sendHasMode(tracked,tracker);//TODO HAS MOD
+    }
+
+    public void sendHasMode(P tracked, P tracker) {//TODO HAS MOD
+        //check server config
+        if(!EmoteInstance.config.sendHasModToPlayer.get()) return;
+
+        if(EmotePacket.player_has_mod.contains(getUUIDFromPlayer(tracker))) {
+            sendForPlayer(
+                    new EmotePacket.Builder().configureToSendHasMod(getUUIDFromPlayer(tracked)).build().data,
+                    tracked,
+                    getUUIDFromPlayer(tracker)
+            );
         }
     }
 

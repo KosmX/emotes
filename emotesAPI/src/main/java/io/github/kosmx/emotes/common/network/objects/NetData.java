@@ -41,6 +41,7 @@ public final class NetData {
     //left it null when using Collar
     @Nullable
     public UUID player = null;
+    public boolean hasMod = false;//TODO HAS MOD
     //Forced flag
     //On play, it can not be stopped by the player
     //On stop, the server stops it not because invalid but because event stopped it
@@ -79,6 +80,7 @@ public final class NetData {
         data.versionsUpdated = versionsUpdated;
         data.versions = versions;
         data.player = player;
+        data.hasMod = hasMod;//TODO HAS MOD
         data.sizeLimit = sizeLimit;
         data.isForced = isForced;
         return data;

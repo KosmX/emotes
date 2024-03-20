@@ -13,14 +13,12 @@ import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.MainClientInit;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -116,6 +114,16 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 break;
             case FILE:
                 EmoteHolder.addEmoteToList(data.emoteData).fromInstance = networkInstance;
+            case HAS_MOD:
+                if(MainClientInit.playerHasMode == null) {
+                    MainClientInit.playerHasMode = new HashSet<>();
+                }
+                if (data.hasMod) {
+                    MainClientInit.playerHasMode.add(data.player);
+                }
+                else {
+                    MainClientInit.playerHasMode.remove(data.player);
+                }
             case UNKNOWN:
                 if (EmoteInstance.config.showDebug.get()) {
                     EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible unknown purpose");

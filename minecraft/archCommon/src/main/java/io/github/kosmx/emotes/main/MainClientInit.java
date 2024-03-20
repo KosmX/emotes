@@ -6,10 +6,14 @@ import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -17,6 +21,10 @@ import java.util.logging.Level;
  *
  */
 public class MainClientInit {
+
+    public static final ResourceLocation TEXTURE_NO_MOD = new ResourceLocation("emotecraft:textures/icons/emotecraft_not_installed.png");//TODO HAS MOD emotecraft_not_installed(0,1,2) for test
+    @Nullable
+    public static HashSet<UUID> playerHasMode = null;//TODO HAS MOD null because check on render if server has no mod/plugin
 
     public static void init(){
         loadEmotes();//:D

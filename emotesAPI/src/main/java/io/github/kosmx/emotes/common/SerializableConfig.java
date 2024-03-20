@@ -33,6 +33,8 @@ public class SerializableConfig {
 
     public final BooleanConfigEntry autoFixEmoteStop = new BooleanConfigEntry("autoFixEmoteStop", true, true, expert, false);
 
+    public final BooleanConfigEntry sendHasModToPlayer = new BooleanConfigEntry("sendHasModToPlayer", true, true, expert);//TODO HAS MOD
+
     public void iterate(Consumer<ConfigEntry<?>> consumer){
         basics.forEach(consumer);
         expert.forEach(consumer);
