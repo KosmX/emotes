@@ -53,11 +53,6 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
         ((IPlayer)this).getAnimationStack().addAnimLayer(1000, emotecraftEmoteContainer);
     }
 
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void injectEmoteTick(CallbackInfo ci) {
-        this.emoteTick();
-    }
-
     @Override
     public void emotecraft$playEmote(KeyframeAnimation emote, int t, boolean isForced) {
         this.emotecraftEmoteContainer.setAnim(new EmotePlayImpl(emote, this::emotecraft$noteConsumer, t));
@@ -139,6 +134,11 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     @Override
     public void emotecraft$setBodyYaw(float newYaw) {
         this.yBodyRot = newYaw;
+    }
+
+    @Inject(method = "tick", at = @At(value = "TAIL"))
+    public void tick(CallbackInfo ci) {
+        this.emoteTick();
     }
 
     @Override
