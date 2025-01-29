@@ -20,6 +20,12 @@ Official project (only download the mod from here):
 
 **Don't download it from any other source!**
 
+### Minecraft versions table
+| Minecraft | Emotecraft                                                        |
+|-----------|-------------------------------------------------------------------|
+| 1.21.1    | [2.4.x](https://modrinth.com/plugin/emotecraft/versions?g=1.21.1) |
+| 1.21.4    | [2.5.x](https://modrinth.com/plugin/emotecraft/versions?g=1.21.4) |
+
 ## Development
 
 ---
