@@ -1,4 +1,4 @@
-Emotecraft server-side logic  
-Bukkit plugin thing will compile this without emotesMain  
+### emotesServer
+`emotesServer` contains server-side logic that does not use Minecraft code
 
-Fabric mod will compile both this and emotesMain
+Dependency: `io.github.kosmx.emotes:emotesServer:<version>`
