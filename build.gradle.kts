@@ -4,10 +4,6 @@ plugins{
     id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
     id("com.gradleup.shadow") version "8.3.5" apply false
-
-    id("com.matthewprenger.cursegradle") version "1.4.0" apply false
-    id("com.github.breadmoirai.github-release") version "2.4.1"
-    id("com.modrinth.minotaur") version "2.8.4" apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
 
