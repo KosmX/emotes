@@ -1,7 +1,4 @@
-Executor will contain Interfaces
+### Executor
+`executor` module contains interfaces to be implemented by loader
 
-I'll use these everywhere I can, instead of using MC code directly
-
-I'll implement it in EVERY loader with as few copy-pasting as possible.
-
-It'll depend on EmotecraftCommon (probably)
+Dependency: `io.github.kosmx.emotes:emotesExecutor:<version>`
