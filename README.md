@@ -1,11 +1,11 @@
-<p style="text-align:center">
+<div align="center">
 
 [![Discord](https://img.shields.io/discord/737216980095991838?label=Discord)](https://discord.gg/6NfdRuE)
 [![See on Modrinth - Emotecraft](https://img.shields.io/badge/See_on_Modrinth-Emotecraft-2ea44f?logo=modrinth)](https://modrinth.com/mod/emotecraft) 
 [![See on CurseForge (Fabric) - Emotecraft](https://img.shields.io/badge/See_on_CurseForge-Emotecraft_(Fabric)-orange?logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft)
 [![See on CurseForge (Forge) - Emotecraft](https://img.shields.io/badge/See_on_CurseForge-Emotecraft_(NeoForge)-orange?logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
 [![GitHub Release](https://img.shields.io/github/v/release/KosmX/emotes)](https://github.com/KosmX/emotes/releases/latest)
-</p>
+</div>
 
 
 
