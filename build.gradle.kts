@@ -16,7 +16,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
 
-    group = properties["maven_group"] as String
+    group = "io.github.kosmx.emotes"
 
     repositories {
         maven("https://maven.terraformersmc.com/") {
