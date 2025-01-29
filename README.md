@@ -1,22 +1,46 @@
+<p style="text-align:center">
+
+[![Discord](https://img.shields.io/discord/737216980095991838?label=Discord)](https://discord.gg/6NfdRuE)
+[![See on Modrinth - Emotecraft](https://img.shields.io/badge/See_on_Modrinth-Emotecraft-2ea44f?logo=modrinth)](https://modrinth.com/mod/emotecraft) 
+[![See on CurseForge (Fabric) - Emotecraft](https://img.shields.io/badge/See_on_CurseForge-Emotecraft_(Fabric)-orange?logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft)
+[![See on CurseForge (Forge) - Emotecraft](https://img.shields.io/badge/See_on_CurseForge-Emotecraft_(NeoForge)-orange?logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
+[![GitHub Release](https://img.shields.io/github/v/release/KosmX/emotes)](https://github.com/KosmX/emotes/releases/latest)
+</p>
+
+
+
 # Emotecraft  
 a.k.a. EmoteX 
 
 ## Download
 When downloading the mod, please **only use** official downloads as others may be infected.  
 Official project (only download the mod from here):
-- [GitHub/KosmX/emotes](https://github.com/KosmX/emotes)
+- [Github/KosmX/emotes](https://github.com/KosmX/emotes)
 - [Modrinth/Emotecraft](https://modrinth.com/mod/emotecraft)
 - [CurseForge/Emotecraft](https://www.curseforge.com/minecraft/mc-mods/emotecraft) and [CurseForge/Emotecraft (Forge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
-- [maven.kosmx.dev](https://maven.kosmx.dev/io/github/kosmx/emotes/) this is for developers.
+
 **Don't download it from any other source!**
 
 ## Development
+
 ---
-How to build:
+**Building from source:**
 ```bash
 git clone https://github.com/KosmX/emotes.git
 cd emotes
 ./gradlew build
+```
+**Adding repository:**   
+Gradle Kotlin DSL:
+```kotlin
+maven("https://maven.kosmx.dev/")
+```
+Maven:
+```xml
+<repository>
+    <id>kosmx-maven</id>
+    <url>https://maven.kosmx.dev/</url>
+</repository>
 ```
   
 ### Using in your mod/modpack  
@@ -37,8 +61,7 @@ Emotecraft will invoke the proxy instance when trying to send a message,
 and you can invoke Emotecraft's receiver when you received a message. 
 
 
-Modules:
---------
+### Modules:
 `emotesAPI`: Common library used by Emotecraft, loader-independent, published as **emotesAPI**  
     you can find it in my private maven server: [`https://maven.kosmx.dev`](https://maven.kosmx.dev)  
 `executor`: The interface to be implemented by loader  
@@ -51,5 +74,3 @@ Modules:
 `neoforge`: NeoForge implementation  
 `buildSrc`: Build logic utilities
 
-### If you have any questions about the mod, you can find me on Discord
-[![](https://img.shields.io/discord/737216980095991838?label=Discord)](https://discord.gg/6NfdRuE)
