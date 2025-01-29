@@ -28,7 +28,7 @@ configurations.apply {
 }
 
 dependencies {
-    modImplementation("net.fabricmc:fabric-loader:${rootProject.loader_version}")
+    modImplementation("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
 
     commonModule(project(":executor")) { isTransitive = false }

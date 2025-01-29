@@ -35,8 +35,8 @@ val Project.player_animator_version
 val Project.mod_description
     get() = properties["mod_description"] as String
 
-val Project.loader_version
-    get() = properties["loader_version"] as String
+val Project.fabric_loader_version
+    get() = properties["fabric_loader_version"] as String
 
 val Project.fabric_api_version
     get() = properties["fabric_api_version"] as String
