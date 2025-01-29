@@ -20,9 +20,6 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots") {
         name = "BucketMaven"
     }
-    maven("https://repo.dmulloy2.net/repository/public/") {
-        name = "dmulloy2"
-    }
 }
 
 val compileModule = configurations.register("compileModule").get()
