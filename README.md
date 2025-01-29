@@ -8,8 +8,6 @@
 [![GitHub Release](https://img.shields.io/github/v/release/KosmX/emotes)](https://github.com/KosmX/emotes/releases/latest)
 </div>
 
-
-
 # Emotecraft  
 a.k.a. EmoteX 
 
@@ -18,7 +16,7 @@ When downloading the mod, please **only use** official downloads as others may b
 Official project (only download the mod from here):
 - [Github/KosmX/emotes](https://github.com/KosmX/emotes)
 - [Modrinth/Emotecraft](https://modrinth.com/mod/emotecraft)
-- [CurseForge/Emotecraft](https://www.curseforge.com/minecraft/mc-mods/emotecraft) and [CurseForge/Emotecraft (Forge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
+- [CurseForge/Emotecraft (Fabric)](https://www.curseforge.com/minecraft/mc-mods/emotecraft) and [CurseForge/Emotecraft (NeoForge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
 
 **Don't download it from any other source!**
 
@@ -36,19 +34,12 @@ Gradle Kotlin DSL:
 ```kotlin
 maven("https://maven.kosmx.dev/")
 ```
-Maven:
-```xml
-<repository>
-    <id>kosmx-maven</id>
-    <url>https://maven.kosmx.dev/</url>
-</repository>
-```
   
 ### Using in your mod/modpack  
 
-`Fabric` optionally depends on [**Mod Menu**](https://github.com/TerraformersMC/ModMenu)   and FabricMC mods: **Fabric-loader**, **Fabric-API**, **Minecraft**.
+`Fabric` optionally depends on [**Mod Menu**](https://github.com/TerraformersMC/ModMenu)   and FabricMC mods: **Fabric-Loader**, **Fabric-API**, **Minecraft**.
 
-`Forge` version has no dependencies (except **Forge** and **Minecraft**)
+`NeoForge` version has no dependencies (except **NeoForge** and **Minecraft**)
 
 ### Emotes proxy
 Emotecraft is doing the emote synchronization using a server-side mod.  
@@ -63,10 +54,9 @@ and you can invoke Emotecraft's receiver when you received a message.
 
 
 ### Modules:
-`emotesAPI`: Common library used by Emotecraft, loader-independent, published as **emotesAPI**  
-    you can find it in my private maven server: [`https://maven.kosmx.dev`](https://maven.kosmx.dev)  
+`emotesAPI`: Common library used by Emotecraft, loader-independent  
 `executor`: The interface to be implemented by loader  
-`emotesMain`: Common assets
+`emotesAssets`: Common assets, published as **emotesMain**  
 `emotesMc`: Common serverside Minecraft code
 `emotesServer`: Server-side logic
 `archCommon`: Common (both Fabric and NeoForge) Minecraft dependent stuff. using [architectury](https://github.com/architectury/forgified-fabric-loom) loom  
