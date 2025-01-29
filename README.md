@@ -74,5 +74,5 @@ and you can invoke Emotecraft's receiver when you received a message.
 `neoforge`: NeoForge implementation  
 `buildSrc`: Build logic utilities
 
-_More info can be found in ABOUT.md files inside modules directory_
+_More info can be found in ABOUT.md files inside module directory_
 
