@@ -79,8 +79,6 @@ java {
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
-            // add all the jars that should be included when publishing to maven
-
             artifactId = "emotesBukkit"
 
             // jar only with classes from this module, dependencies will be included in pom
