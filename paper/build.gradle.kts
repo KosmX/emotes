@@ -13,14 +13,6 @@ plugins {
 base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
 version = mod_version
 
-
-repositories {
-    mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots") {
-        name = "BucketMaven"
-    }
-}
-
 val compileApi = configurations.register("compileApi").get()
 configurations.api.configure { extendsFrom(compileApi) }
 
