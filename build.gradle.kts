@@ -55,6 +55,7 @@ if (releaseType != "stable") {
 version = mod_version
 
 shouldPublishMaven = providers.environmentVariable("KOSMX_TOKEN").getOrElse("").isNotBlank()
+        && !gradle.startParameter.isDryRun
 
 publishMods {
     changelog = changes
