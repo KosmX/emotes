@@ -66,7 +66,7 @@ and you can invoke Emotecraft's receiver when you received a message.
 `emotesAssets`: Common assets, published as **emotesMain**  
 `emotesMc`: Common serverside Minecraft code  
 `emotesServer`: Server-side logic  
-`archCommon`: Common (both Fabric and NeoForge) Minecraft dependent stuff. using [architectury](https://github.com/architectury/forgified-fabric-loom) loom  
+`archCommon`: Common (both Fabric and NeoForge) Minecraft dependent stuff. using [architectury](https://github.com/architectury/architectury-loom) loom  
 `fabric`: Fabric implementation  
 `neoforge`: NeoForge implementation  
 `buildSrc`: Build logic utilities
