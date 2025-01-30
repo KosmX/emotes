@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +50,7 @@ public final class NetData {
     /**
      * net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket#MAX_PAYLOAD_SIZE
      */
-    public int sizeLimit = 1048576;
+    public int sizeLimit = CommonData.MAX_PACKET_SIZE;
     public boolean strictSizeLimit = true;
 
     HashMap<String, Object> extraData = new HashMap<>();

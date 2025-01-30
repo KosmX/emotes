@@ -35,9 +35,9 @@ public class BukkitWrapper extends JavaPlugin {
 
         EmoteInstance.instance = new BukkitInstance(this);
 
-        try {
+        try { // Trying to increase the packet limit since the paper server is crap and severely limited
             StreamCodecUtils.replaceFallback(StreamCodecUtils.getThis(ServerboundCustomPayloadPacket.STREAM_CODEC),
-                    (id) -> DiscardedPayload.codec(id, 1048576 /*ClientboundCustomPayloadPacket.MAX_PAYLOAD_SIZE*/)
+                    (id) -> DiscardedPayload.codec(id, CommonData.MAX_PACKET_SIZE)
             );
         } catch (ReflectiveOperationException e) {
             EmoteInstance.instance.getLogger().writeLog(Level.SEVERE, "Failed to hack size! Try update your paper!", e);

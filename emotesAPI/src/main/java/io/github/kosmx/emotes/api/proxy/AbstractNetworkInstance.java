@@ -192,6 +192,6 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
 
     @Override
     public int maxDataSize() {
-        return 1048576;
+        return CommonData.MAX_PACKET_SIZE;
     }
 }

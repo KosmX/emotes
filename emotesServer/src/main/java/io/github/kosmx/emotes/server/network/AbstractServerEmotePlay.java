@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
-import java.util.stream.Stream;
 
 /**
  * This will be used for modded servers
@@ -216,9 +215,14 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     @Override
-    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation emoteData, boolean isForced) {
+    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation emoteData, int tick, boolean isForced) {
         if (emoteData != null) {
-            streamEmote(new EmotePacket.Builder().configureToStreamEmote(emoteData).build().data, getPlayerFromUUID(player), isForced, false);
+            EmotePacket packet = new EmotePacket.Builder()
+                    .configureToStreamEmote(emoteData)
+                    .configureEmoteTick(tick)
+                    .build();
+
+            streamEmote(packet.data, getPlayerFromUUID(player), isForced, false);
         } else {
             stopEmote(getPlayerFromUUID(player), null);
         }
