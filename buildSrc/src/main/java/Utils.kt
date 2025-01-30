@@ -17,20 +17,20 @@ private fun runCommand(cmd: String): Pair<Int, String> {
     return p.waitFor() to p.inputReader().readText().trim()
 }
 
-fun getGitShortRevision(): String {
-    return runCommand("git rev-parse --verify --short HEAD").second
+val gitShortRevision by lazy {
+    runCommand("git rev-parse --verify --short HEAD").second
 }
 
-fun getGitRevision(): String {
-    return runCommand("git rev-parse --verify HEAD").second
+val gitRevision by lazy {
+    runCommand("git rev-parse --verify HEAD").second
 }
 
-fun getGitBranch(): String? {
+fun getGitBranch(): String {
     return runCommand("git rev-parse --abbrev-ref HEAD").second
 }
 
 fun getRemoteUrlForCurrentBranch(): String? {
-    val currentBranch = getGitBranch() ?: return null
+    val currentBranch = getGitBranch()
 
     // Get the remote name for the current branch
     val (ex, remoteName) = runCommand("git config --get branch.$currentBranch.remote")

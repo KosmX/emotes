@@ -1,6 +1,6 @@
 import me.modmuss50.mpp.ReleaseType
 
-plugins{
+plugins {
     id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
     id("com.gradleup.shadow") version "8.3.5" apply false
@@ -49,8 +49,8 @@ releaseType = ENV["RELEASE_TYPE"] ?: "alpha"
 changes = ENV["CHANGELOG"]?.replace("\\\\n", "\n") ?: ""
 mod_version = project.version_base
 
-if(releaseType != "stable"){
-    mod_version = "${project.version_base}-${releaseType[0]}.${ ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: getGitShortRevision()}"
+if (releaseType != "stable") {
+    mod_version = "${version_base}-${releaseType[0]}.${ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: gitShortRevision}"
 }
 version = mod_version
 
@@ -63,7 +63,7 @@ publishMods {
 
     github {
         tagName = project.mod_version
-        commitish = getGitRevision()
+        commitish = gitRevision
         repository = getGitRepository()
         accessToken = providers.environmentVariable("GH_TOKEN")
         displayName = "Emotecraft-${project.mod_version}"
