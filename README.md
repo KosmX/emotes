@@ -43,8 +43,9 @@ maven("https://maven.kosmx.dev/")
   
 ### Using in your mod/modpack  
 
-`Fabric` optionally depends on [**Mod Menu**](https://github.com/TerraformersMC/ModMenu)   and FabricMC mods: **Fabric-Loader**, **Fabric-API**, **Minecraft**.
-
+`Fabric` optionally depends on [**Mod Menu**](https://github.com/TerraformersMC/ModMenu) and FabricMC mods: **Fabric-Loader**, **Fabric-API**, **Minecraft**.  
+`Forge` version depends on [**PlayerAnimator**](https://github.com/KosmX/minecraftPlayerAnimator)   
+**bendy-lib** is compiled into the forge version  
 `NeoForge` version has no dependencies (except **NeoForge** and **Minecraft**)
 
 ### Emotes proxy
