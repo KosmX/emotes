@@ -28,7 +28,7 @@ configurations.apply {
 }
 
 dependencies {
-    neoForge("net.neoforged:neoforge:${rootProject.neoforge_version}")
+    neoForge("net.neoforged:neoforge:${neoforge_version}")
 
     commonModule(project(":executor")) { isTransitive = false }
     commonModule(project(":emotesAPI")) { isTransitive = false }
@@ -36,7 +36,7 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${rootProject.player_animator_version}") {
+    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}") {
         include(this)
         pomCompile(this)
     }
@@ -54,11 +54,11 @@ dependencies {
 }
 
 tasks.processResources {
-    inputs.property("version", project.version)
-    inputs.property("description", rootProject.mod_description)
+    inputs.property("version", version)
+    inputs.property("description", mod_description)
 
     filesMatching("META-INF/neoforge.mods.toml") {
-        expand("version" to project.version, "description" to rootProject.mod_description)
+        expand("version" to version, "description" to mod_description)
     }
 }
 
@@ -91,7 +91,7 @@ tasks.jar {
 }
 
 components.getByName<AdhocComponentWithVariants>("java") {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements.get()) {
+    withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) {
         skip()
     }
 }
@@ -108,17 +108,14 @@ tasks.build {
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
-
             artifactId = "emotesNeo"
 
             // add all the jars that should be included when publishing to maven
             artifact(tasks.named("devJar"))
-
             artifact(tasks.remapJar) {
                 builtBy(tasks.remapJar)
                 classifier = ""
             }
-
             artifact(tasks.sourcesJar)
 
             addDeps(project, pomCompile, "compile")
@@ -126,7 +123,7 @@ publishing {
     }
 
     repositories {
-        if (project.shouldPublishMaven) {
+        if (shouldPublishMaven) {
             kosmxRepo(project)
         } else {
             mavenLocal()
@@ -151,7 +148,7 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${project.mod_version}+${project.minecraft_version}-forge"
+        version = "${mod_version}+${minecraft_version}-forge"
 
         embeds("playeranimator")
     }

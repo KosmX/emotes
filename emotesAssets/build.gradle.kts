@@ -2,7 +2,7 @@ plugins {
     `maven-publish`
 }
 
-version = rootProject.mod_version
+version = mod_version
 
 tasks.withType<Copy> {
     eachFile {
@@ -27,7 +27,7 @@ publishing {
         }
     }
     repositories {
-        if (project.shouldPublishMaven) {
+        if (shouldPublishMaven) {
             kosmxRepo(project)
         } else {
             mavenLocal()

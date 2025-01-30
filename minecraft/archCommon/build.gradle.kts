@@ -7,7 +7,7 @@ loom {
 }
 
 dependencies {
-    modImplementation("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
+    modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
     implementation(project(":emotesAssets"))
     implementation(project(":emotesAPI"))
@@ -15,8 +15,8 @@ dependencies {
     implementation(project(":emotesServer"))
     api(project(path = ":emotesMc", configuration = "namedElements"))
 
-    modApi("dev.kosmx.player-anim:player-animation-lib:${rootProject.player_animator_version}")
-    modImplementation("dev.kosmx.player-anim:anim-core:${rootProject.player_animator_version}")
+    modApi("dev.kosmx.player-anim:player-animation-lib:${player_animator_version}")
+    modImplementation("dev.kosmx.player-anim:anim-core:${player_animator_version}")
 }
 
 java {
@@ -41,7 +41,7 @@ publishing {
     }
 
     repositories {
-        if (project.shouldPublishMaven) {
+        if (shouldPublishMaven) {
             kosmxRepo(project)
         } else {
             mavenLocal()

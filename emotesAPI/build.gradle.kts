@@ -4,10 +4,10 @@ plugins {
     `maven-publish`
 }
 
-version = rootProject.mod_version
+version = mod_version
 
 dependencies {
-    api("dev.kosmx.player-anim:anim-core:${rootProject.player_animator_version}")
+    api("dev.kosmx.player-anim:anim-core:${player_animator_version}")
     implementation("com.google.code.gson:gson:2.11.0") // gson for MC 1.21.4
     api("org.jetbrains:annotations:24.0.1")
 
@@ -43,7 +43,7 @@ publishing {
     }
 
     repositories {
-        if (project.shouldPublishMaven) {
+        if (shouldPublishMaven) {
             kosmxRepo(project)
         } else {
             mavenLocal()

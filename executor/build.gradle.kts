@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 
-version = rootProject.mod_version
+version = mod_version
 
 dependencies {
     api(project(":emotesAPI"))
@@ -26,7 +26,7 @@ publishing {
     }
 
     repositories {
-        if (project.shouldPublishMaven) {
+        if (shouldPublishMaven) {
             kosmxRepo(project)
         } else {
             mavenLocal()

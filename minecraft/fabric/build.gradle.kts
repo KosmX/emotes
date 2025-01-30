@@ -28,8 +28,8 @@ configurations.apply {
 }
 
 dependencies {
-    modImplementation("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
+    modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
     commonModule(project(":executor")) { isTransitive = false }
     commonModule(project(":emotesAPI")) { isTransitive = false }
@@ -37,11 +37,11 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("com.terraformersmc:modmenu:${rootProject.modmenu_version}") {
+    modImplementation("com.terraformersmc:modmenu:${modmenu_version}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${rootProject.player_animator_version}") {
+    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${player_animator_version}") {
         include(this)
         pomCompile(this)
     }
@@ -57,11 +57,11 @@ dependencies {
 
 
 tasks.processResources {
-    inputs.property("version", project.version)
-    inputs.property("description", rootProject.mod_description)
+    inputs.property("version", version)
+    inputs.property("description", mod_description)
 
     filesMatching("fabric.mod.json") {
-        expand("version" to project.version, "description" to rootProject.mod_description)
+        expand("version" to version, "description" to mod_description)
     }
 }
 
@@ -131,7 +131,7 @@ publishing {
     }
 
     repositories {
-        if (project.shouldPublishMaven) {
+        if (shouldPublishMaven) {
             kosmxRepo(project)
         } else {
             mavenLocal()
@@ -157,7 +157,7 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${project.mod_version}+${project.minecraft_version}-fabric"
+        version = "${mod_version}+${minecraft_version}-fabric"
 
         requires("fabric-api")
         embeds("playeranimator")
