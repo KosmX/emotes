@@ -61,14 +61,7 @@ publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             artifactId = "emotesBukkit"
-
-            // jar only with classes from this module, dependencies will be included in pom
-            artifact(tasks.jar) {
-                classifier = ""
-            }
-            artifact(tasks.sourcesJar)
-            addDeps(project, compileApi, "compile")
-            addDeps(project, configurations.implementation.get(), "runtime")
+            from(components["java"])
             withCustomPom("emotesBukkit", "Minecraft Emotecraft Paper plugin")
         }
     }
