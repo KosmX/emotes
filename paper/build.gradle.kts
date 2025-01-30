@@ -21,46 +21,36 @@ repositories {
     }
 }
 
-val compileModule = configurations.register("compileModule").get()
-configurations.implementation.configure { extendsFrom(compileModule) }
-
 val compileApi = configurations.register("compileApi").get()
 configurations.api.configure { extendsFrom(compileApi) }
 
 dependencies {
-    paperweight.paperDevBundle("${rootProject.minecraft_version}-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("${minecraft_version}-R0.1-SNAPSHOT")
 
     compileApi(project(":emotesServer")) {
-        isTransitive = true
         exclude(group = "org.jetbrains", module = "annotations")
+        exclude(module = "gson")
     }
     compileApi(project(":emotesAssets"))
     compileApi(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 }
 
 tasks.runServer {
-    minecraftVersion(rootProject.minecraft_version)
+    minecraftVersion(minecraft_version)
 }
 
 tasks.processResources {
-
-    inputs.property("version", project.version)
-    inputs.property("description", rootProject.mod_description)
+    inputs.property("version", version)
+    inputs.property("description", mod_description)
 
     filesMatching("paper-plugin.yml") {
-        expand("version" to project.version, "description" to rootProject.mod_description)
+        expand("version" to version, "description" to mod_description)
     }
 }
 
 tasks.shadowJar {
-    configurations = listOf(compileModule, compileApi)
+    configurations = listOf(compileApi)
     archiveClassifier.set("")
-
-    dependencies {
-        exclude {
-            return@exclude it.moduleGroup.startsWith("com.google")
-        }
-    }
 }
 
 tasks.jar {
