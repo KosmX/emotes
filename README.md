@@ -16,7 +16,7 @@ When downloading the mod, please **only use** official downloads as others may b
 Official project (only download the mod from here):
 - [Github/KosmX/emotes](https://github.com/KosmX/emotes)
 - [Modrinth/Emotecraft](https://modrinth.com/mod/emotecraft)
-- [CurseForge/Emotecraft (Fabric)](https://www.curseforge.com/minecraft/mc-mods/emotecraft) and [CurseForge/Emotecraft (NeoForge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
+- [CurseForge/Emotecraft (Fabric)](https://www.curseforge.com/minecraft/mc-mods/emotecraft) and [CurseForge/Emotecraft (Forge/NeoForge)](https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge)
 
 **Don't download it from any other source!**
 
