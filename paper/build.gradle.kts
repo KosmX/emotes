@@ -11,8 +11,7 @@ plugins {
 
 
 base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
-//project.version = project.mod_version
-version = project.mod_version
+version = mod_version
 
 
 repositories {
@@ -93,7 +92,7 @@ publishing {
     }
 
     repositories {
-        if (project.shouldPublishMaven) {
+        if (shouldPublishMaven) {
             kosmxRepo(project)
         } else {
             mavenLocal()
@@ -119,6 +118,6 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${project.mod_version}+${project.minecraft_version}-paper"
+        version = "${mod_version}+${minecraft_version}-paper"
     }
 }
