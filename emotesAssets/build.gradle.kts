@@ -21,9 +21,9 @@ java {
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
-            artifactId = "emotesMain"
+            artifactId = "emotesAssets"
             from(components["java"])
-            withCustomPom("emotesMain", "Minecraft Emotecraft Assets")
+            withCustomPom("emotesAssets", "Minecraft Emotecraft Assets")
         }
     }
     repositories {

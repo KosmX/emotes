@@ -63,7 +63,7 @@ and you can invoke Emotecraft's receiver when you received a message.
 ### Modules:
 `emotesAPI`: Common library used by Emotecraft, loader-independent  
 `executor`: The interface to be implemented by loader  
-`emotesAssets`: Common assets, published as **emotesMain**  
+`emotesAssets`: Common assets
 `emotesMc`: Common serverside Minecraft code  
 `emotesServer`: Server-side logic  
 `archCommon`: Common (both Fabric and NeoForge) Minecraft dependent stuff. using [architectury](https://github.com/architectury/architectury-loom) loom  
