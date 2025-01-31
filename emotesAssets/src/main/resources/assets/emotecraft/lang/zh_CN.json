@@ -1,4 +1,5 @@
 {
+  "modmenu.descriptionTranslation.emotecraft": "在 Minecraft 中播放表情动作\n打开菜单以设置你的表情轮盘\n\n你可以添加自定义表情动作，即使其他人没有这些动作，你也可以使用它们。\n\n特别感谢：\n Kale Ko 创作了表情动作并协助了UI设计\n Orsond 给予了我灵感并提供了 CollarMC\n Architectury 提供了 Forge 构建工具。",
   "emotecraft.menu": "表情配置",
   "emotecraft.options.options": "模组选项",
   "emotecraft.options.keybind": "设置自定义按键以播放所选的表情。",
@@ -30,6 +31,8 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "仅在启用第三人称视角时激活。",
   "emotecraft.otherconfig.enableNSFW": "允许 NSFW 表情",
   "emotecraft.otherconfig.enableNSFW.tooltip": "（不宜在工作场所观看）\n\n允许潜在的不雅内容。\n\n可能包含裸体、激烈的性行为、暴力或其他可能令人不安的主题。",
+  "emotecraft.otherconfig.checkPose": "检查姿势",
+  "emotecraft.otherconfig.checkPose.tooltip": "如果姿势不正确，Emotecraft 会停止播放表情动作（关闭此选项可能会导致在切换时无法停止表情动作）。",
   "emotecraft.otherconfig.alwaysValidateEmote": "始终验证接收到的表情",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "客户端选项；不会影响内部服务器。\n\n默认情况下，仅在从不受信任的代理接收表情时，才会进行客户端验证。\n使用此选项来始终执行客户端验证。",
   "emotecraft.otherconfig.default3rdPersonFront": "使用第三人称的前视图",
