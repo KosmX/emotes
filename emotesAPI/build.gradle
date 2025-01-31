@@ -18,7 +18,7 @@ dependencies {
     implementation "dev.kosmx.player-anim:anim-core:${rootProject.player_animator_version}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
 }
 test {
     useJUnitPlatform()
