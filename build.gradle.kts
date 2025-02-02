@@ -84,7 +84,7 @@ publishMods {
         username = "Emotecraft Updates"
         content = """
             # Emotecraft $mod_version for Minecraft $minecraft_version is out!
-            ### Changes:
+            ### Changes:  
             $changes
         """.trimIndent()
         publishResults.setFrom(
