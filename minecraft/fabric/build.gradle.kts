@@ -138,3 +138,35 @@ publishing {
         }
     }
 }
+
+publishMods {
+    modLoaders.add("fabric")
+    modLoaders.add("quilt")
+    file.set(tasks.remapJar.get().archiveFile)
+    type = ReleaseType.of(releaseType)
+    changelog = changes
+    dryRun = gradle.startParameter.isDryRun
+    github {
+        accessToken = providers.environmentVariable("GH_TOKEN")
+        parent(rootProject.tasks.named("publishGithub"))
+    }
+    modrinth {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = providers.gradleProperty("modrinth_id")
+        minecraftVersions.add(minecraft_version)
+        displayName = mod_version
+        version = "${mod_version}+${minecraft_version}-fabric"
+        requires("fabric-api")
+        embeds("playeranimator")
+    }
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = providers.gradleProperty("curseforge_id_fabric")
+        projectSlug = providers.gradleProperty("curseforge_slug_fabric")
+        changelogType = "markdown"
+        displayName = base.archivesName.get() + "-$mod_version"
+        minecraftVersions.add(minecraft_version)
+        requires("fabric-api")
+        embeds("playeranimator")
+    }
+}
