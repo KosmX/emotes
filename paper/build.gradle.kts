@@ -104,7 +104,7 @@ tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
 
 hangarPublish.publications.register("plugin") {
     version = "${mod_version}+${minecraft_version}-paper"
-    channel = when (releaseType) {
+    channel = when (releaseType) { // convert to set channel names
         "stable" -> "Release"
         "beta" -> "Beta"
         else -> "Alpha"
