@@ -48,7 +48,7 @@ subprojects {
 //---------------- Publishing ----------------
 
 releaseType = ENV["RELEASE_TYPE"] ?: "alpha"
-changes = ENV["CHANGELOG"]?.replace("\\\\n", "\n") ?: ""
+changes = ENV["CHANGELOG"]?.replace("\\n", "\n") ?: ""
 mod_version = version_base
 
 if (releaseType != "stable") {
