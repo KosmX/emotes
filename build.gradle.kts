@@ -88,10 +88,10 @@ publishMods {
             $changes
         """.trimIndent()
         publishResults.setFrom(
-            project(":minecraft").publishResult("modrinthNeoForge"),
-            project(":minecraft").publishResult("modrinthFabric"),
-            project(":minecraft").publishResult("curseforgeNeoForge"),
-            project(":minecraft").publishResult("curseforgeFabric"),
+            project(":minecraft:neoforge").publishResult("modrinth"),
+            project(":minecraft:fabric").publishResult("modrinth"),
+            project(":minecraft:neoforge").publishResult("curseforge"),
+            project(":minecraft:fabric").publishResult("curseforge"),
             project(":paper").publishResult("modrinth"))
     }
 
