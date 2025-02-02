@@ -81,7 +81,7 @@ publishMods {
         }
 
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK")
-        username = ""
+        username = "Emotecraft Updates"
         content = """
             # Emotecraft $mod_version for Minecraft $minecraft_version is out!
             ### Changes:
