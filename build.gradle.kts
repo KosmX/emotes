@@ -82,7 +82,7 @@ publishMods {
 
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK")
         username = "Emotecraft Updates"
-        val changelog = changes.replace("<br>", "\n")
+        val changelog = changes.replace("<br>", "  \n")
         content = "# Emotecraft $mod_version for Minecraft $minecraft_version is out!\n### Changes:  \n$changelog"
         publishResults.setFrom(
             project(":minecraft:neoforge").publishResult("modrinth"),
