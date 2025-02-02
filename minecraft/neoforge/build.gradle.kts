@@ -142,6 +142,7 @@ publishMods {
         parent(rootProject.tasks.named("publishGithub"))
     }
     modrinth {
+        announcementTitle = "Modrinth (NeoForge)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
@@ -150,6 +151,7 @@ publishMods {
         embeds("playeranimator")
     }
     curseforge {
+        announcementTitle = "CurseForge (NeoForge)"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = providers.gradleProperty("curseforge_id_forge")
         projectSlug = providers.gradleProperty("curseforge_slug_forge")

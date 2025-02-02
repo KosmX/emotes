@@ -91,7 +91,7 @@ publishMods {
     }
 
     modrinth {
-        announcementTitle = "Modrinth/Paper"
+        announcementTitle = "Modrinth (Paper)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
