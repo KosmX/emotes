@@ -21,8 +21,8 @@ val gitShortRevision by lazy {
     runCommand("git rev-parse --verify --short HEAD").second
 }
 
-val gitRevision by lazy {
-    runCommand("git rev-parse --verify HEAD").second
+fun getGitRevision(): String {
+    return runCommand("git rev-parse --verify HEAD").second
 }
 
 fun getGitBranch(): String {

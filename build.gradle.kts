@@ -66,7 +66,7 @@ publishMods {
 
     github {
         tagName = mod_version
-        commitish = gitRevision
+        commitish = getGitRevision()
         repository = getGitRepository()
         accessToken = providers.environmentVariable("GH_TOKEN")
         displayName = "Emotecraft-${mod_version}"
