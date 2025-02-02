@@ -17,8 +17,8 @@ private fun runCommand(cmd: String): Pair<Int, String> {
     return p.waitFor() to p.inputReader().readText().trim()
 }
 
-val gitShortRevision by lazy {
-    runCommand("git rev-parse --verify --short HEAD").second
+fun getGitShortRevision(): String {
+    return runCommand("git rev-parse --verify --short HEAD").second
 }
 
 fun getGitRevision(): String {

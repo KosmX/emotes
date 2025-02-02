@@ -35,6 +35,11 @@ subprojects {
     }
 }
 
+tasks.publishMods {
+    dependsOn("fabric:build")
+    dependsOn("neoforge:build")
+}
+
 publishMods {
     type = ReleaseType.of(releaseType)
     changelog = changes

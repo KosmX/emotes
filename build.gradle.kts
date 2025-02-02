@@ -52,7 +52,7 @@ changes = ENV["CHANGELOG"]?.replace("\\\\n", "\n") ?: ""
 mod_version = version_base
 
 if (releaseType != "stable") {
-    mod_version = "${version_base}-${releaseType[0]}.${ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: gitShortRevision}"
+    mod_version = "${version_base}-${releaseType[0]}.${ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: getGitShortRevision()}"
 }
 version = mod_version
 
