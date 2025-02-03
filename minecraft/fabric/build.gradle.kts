@@ -40,6 +40,10 @@ dependencies {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
+    modImplementation("me.lucko:fabric-permissions-api:${properties["fabric_permissions_api"] as String}") {
+        pomCompile(this)
+    }
+
     modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
         include(this)
         pomCompile(this)
