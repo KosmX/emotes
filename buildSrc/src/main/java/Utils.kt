@@ -17,27 +17,12 @@ private fun runCommand(cmd: String): Pair<Int, String> {
     return p.waitFor() to p.inputReader().readText().trim()
 }
 
-val gitShortRevision by lazy {
-    runCommand("git rev-parse --verify --short HEAD").second
+fun getGitShortRevision(): String {
+    return runCommand("git rev-parse --verify --short HEAD").second
 }
 
-val gitRevision by lazy {
-    runCommand("git rev-parse --verify HEAD").second
-}
-
-fun getGitBranch(): String {
-    return runCommand("git rev-parse --abbrev-ref HEAD").second
-}
-
-fun getRemoteUrlForCurrentBranch(): String? {
-    val currentBranch = getGitBranch()
-
-    // Get the remote name for the current branch
-    val (ex, remoteName) = runCommand("git config --get branch.$currentBranch.remote")
-    if (ex != 0 || remoteName.isEmpty()) return null
-
-    val (ex2, remoteUrl) = runCommand("git config --get remote.$remoteName.url")
-    return if (ex2 == 0) remoteUrl else null
+fun getGitRevision(): String {
+    return runCommand("git rev-parse --verify HEAD").second
 }
 
 fun MavenPublication.removeDependencies(artifactIds: List<String>) {

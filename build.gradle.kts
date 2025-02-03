@@ -46,11 +46,11 @@ subprojects {
 //---------------- Publishing ----------------
 
 releaseType = ENV["RELEASE_TYPE"] ?: "alpha"
-changes = ENV["CHANGELOG"]?.replace("\\\\n", "\n") ?: ""
+changes = ENV["CHANGELOG"]?.replace("\\n", "\n") ?: ""
 mod_version = version_base
 
 if (releaseType != "stable") {
-    mod_version = "${version_base}-${releaseType[0]}.${ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: gitShortRevision}"
+    mod_version = "${version_base}-${releaseType[0]}.${ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: getGitShortRevision()}"
 }
 version = mod_version
 
@@ -64,11 +64,34 @@ publishMods {
 
     github {
         tagName = mod_version
-        commitish = gitRevision
-        repository = "KosmX/emotes"
+        commitish = getGitRevision()
+        repository = providers.environmentVariable("GITHUB_REPOSITORY").orElse("KosmX/emotes")
         accessToken = providers.environmentVariable("GH_TOKEN")
         displayName = "Emotecraft-${mod_version}"
         allowEmptyFiles = true
     }
 
+    discord {
+        style {
+            look = "MODERN"
+            color = "#%06X".format(kotlin.random.Random.nextInt(0x000000, 0x1000000))
+            link = "BUTTON"
+        }
+
+        webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK")
+        username = "Emotecraft Updates"
+        val changelog = changes.replace("<br>", "  \n")
+        content = "# Emotecraft $mod_version for Minecraft $minecraft_version is out!\n### Changes:  \n$changelog"
+        publishResults.setFrom(
+            project(":minecraft:neoforge").publishResult("modrinth"),
+            project(":minecraft:fabric").publishResult("modrinth"),
+            project(":minecraft:neoforge").publishResult("curseforge"),
+            project(":minecraft:fabric").publishResult("curseforge"),
+            project(":paper").publishResult("modrinth"))
+    }
+}
+
+@Suppress("UnstableApiUsage")
+fun Project.publishResult(platformName: String): RegularFileProperty {
+    return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
 }

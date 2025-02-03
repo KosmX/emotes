@@ -153,6 +153,7 @@ publishMods {
     }
 
     modrinth {
+        announcementTitle = "Modrinth (Fabric)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
@@ -164,8 +165,10 @@ publishMods {
     }
 
     curseforge {
+        announcementTitle = "CurseForge (Fabric)"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = providers.gradleProperty("curseforge_id_fabric")
+        projectSlug = providers.gradleProperty("curseforge_slug_fabric")
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
         minecraftVersions.add(minecraft_version)

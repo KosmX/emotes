@@ -7,6 +7,7 @@ plugins {
     `maven-publish`
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
+    id("io.papermc.hangar-publish-plugin") version "0.1.2"
 }
 
 
@@ -79,7 +80,7 @@ publishMods {
     modLoaders.add("paper")
     modLoaders.add("folia")
     file.set(tasks.shadowJar.get().archiveFile)
-    type = ReleaseType.of(if (releaseType == "release") "stable" else releaseType)
+    type = ReleaseType.of(releaseType)
     changelog = changes
     dryRun = gradle.startParameter.isDryRun
 
@@ -89,6 +90,7 @@ publishMods {
     }
 
     modrinth {
+        announcementTitle = "Modrinth (Paper)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
@@ -96,3 +98,22 @@ publishMods {
         version = "${mod_version}+${minecraft_version}-paper"
     }
 }
+
+tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
+
+hangarPublish.publications.register("plugin") {
+    version = "${mod_version}+${minecraft_version}-paper"
+    channel = when (releaseType) { // convert to set channel names
+        "stable" -> "Release"
+        "beta" -> "Beta"
+        else -> "Alpha"
+    }
+    id = providers.gradleProperty("hangar_id")
+    apiKey = providers.environmentVariable("HANGAR_TOKEN")
+    changelog = changes
+    platforms.register("PAPER") {
+        jar = tasks.shadowJar.flatMap { it.archiveFile }
+        platformVersions = listOf(minecraft_version)
+    }
+}
+
