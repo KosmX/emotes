@@ -11,7 +11,10 @@ public class ServiceLoaderUtil {
 
     public static <T extends IEmotecraftService> T loadService(Class<T> serviceClass, Supplier<? extends T> defaultService) {
         ModuleLayer layer = ServiceLoaderUtil.class.getModule().getLayer(); // NeoForge compat?
-        ServiceLoader<T> loader = layer == null ? ServiceLoader.load(serviceClass) : ServiceLoader.load(layer, serviceClass);
+
+        ServiceLoader<T> loader = layer == null ? ServiceLoader.load(serviceClass,
+                ServiceLoaderUtil.class.getClassLoader()
+        ) : ServiceLoader.load(layer, serviceClass);
 
         return loader.stream()
                 .map(ServiceLoader.Provider::get)
