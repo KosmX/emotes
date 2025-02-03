@@ -150,6 +150,7 @@ publishMods {
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
         version = "${mod_version}+${minecraft_version}-forge"
+
         embeds("playeranimator")
     }
 
