@@ -41,6 +41,9 @@ val Project.fabric_loader_version
 val Project.fabric_api_version
     get() = properties["fabric_api_version"] as String
 
+val Project.fabric_permissions_api
+    get() = properties["fabric_permissions_api"] as String
+
 val Project.modmenu_version
     get() = properties["modmenu_version"] as String
 

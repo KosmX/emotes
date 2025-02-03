@@ -77,6 +77,7 @@ java {
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
     archiveClassifier.set("")
+    mergeServiceFiles()
 }
 
 tasks.remapJar {

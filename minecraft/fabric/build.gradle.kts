@@ -41,6 +41,11 @@ dependencies {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
+    modImplementation("me.lucko:fabric-permissions-api:${fabric_permissions_api}") {
+        include(this)
+        pomCompile(this)
+    }
+
     modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${player_animator_version}") {
         include(this)
         pomCompile(this)
@@ -83,6 +88,7 @@ java {
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
     archiveClassifier.set("")
+    mergeServiceFiles()
 }
 
 tasks.remapJar {

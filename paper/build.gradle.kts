@@ -43,6 +43,7 @@ tasks.processResources {
 tasks.shadowJar {
     configurations = listOf(compileApi)
     archiveClassifier.set("")
+    mergeServiceFiles()
 }
 
 tasks.jar {
