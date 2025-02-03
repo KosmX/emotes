@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
+import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.commands.CommandBuildContext;
@@ -26,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 import static net.minecraft.commands.Commands.*;
 
@@ -161,5 +163,9 @@ public final class ServerCommands {
             }
             throw new SimpleCommandExceptionType(Component.literal("Not emote with name: " + id)).create();
         }
+    }
+
+    static {
+        EmoteInstance.instance.getLogger().writeLog(Level.INFO, "Used perms service: " + IPermissionService.LOADED_SERVICE.getName());
     }
 }
