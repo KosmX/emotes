@@ -15,8 +15,8 @@ dependencies {
     implementation(project(":emotesServer"))
     api(project(path = ":emotesMc", configuration = "namedElements"))
 
-    modApi("dev.kosmx.player-anim:player-animation-lib:${player_animator_version}")
-    modImplementation("dev.kosmx.player-anim:anim-core:${player_animator_version}")
+    modApi("dev.kosmx.player-anim:player-animation-lib:${properties["player_animator_version"] as String}")
+    modImplementation("dev.kosmx.player-anim:anim-core:${properties["player_animator_version"] as String}")
 }
 
 java {

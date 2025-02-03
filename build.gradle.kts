@@ -65,7 +65,7 @@ publishMods {
     github {
         tagName = mod_version
         commitish = gitRevision
-        repository = getGitRepository()
+        repository = "KosmX/emotes"
         accessToken = providers.environmentVariable("GH_TOKEN")
         displayName = "Emotecraft-${mod_version}"
         allowEmptyFiles = true
