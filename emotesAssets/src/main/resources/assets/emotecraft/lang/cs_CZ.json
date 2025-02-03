@@ -30,6 +30,8 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "Aktivní pouze pokud je povolen pohled ve třetí osobě.",
   "emotecraft.otherconfig.enableNSFW": "Povolit NSFW emoce",
   "emotecraft.otherconfig.enableNSFW.tooltip": "(Not Safe For Work - Nevhodný pro práci)\n\nUmožňuje potenciálně nevhodný obsah.\n\nMůže obsahovat nahotu, intenzivní sexualitu, násilí nebo jiné potenciálně znepokojivé téma.",
+  "emotecraft.otherconfig.checkPose": "Zkontrolovat pózu",
+  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft pozastaví emoci, pokud se dostanete do špatné pózy (vypnutí této funkce může přerušit zastavení emoce při shiftování)",
   "emotecraft.otherconfig.alwaysValidateEmote": "Vždy ověřovat přijaté emoce",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Možnost na straně klienta; neovlivní interní server.\n\nVe výchozím nastavení se ověření na straně klienta provádí pouze při příjmu emocí z nedůvěryhodného proxy serveru.\nPoužitím tohoto dojde vždy k ověření na straně klienta.",
   "emotecraft.otherconfig.default3rdPersonFront": "Použít přední pohled ve třetí osobě",
