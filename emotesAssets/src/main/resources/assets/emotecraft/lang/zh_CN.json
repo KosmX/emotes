@@ -1,5 +1,4 @@
 {
-  "modmenu.descriptionTranslation.emotecraft": "在 Minecraft 中播放表情动作\n打开菜单以设置你的表情轮盘\n\n你可以添加自定义表情动作，即使其他人没有这些动作，你也可以使用它们。\n\n特别感谢：\n Kale Ko 创作了表情动作并协助了UI设计\n Orsond 给予了我灵感并提供了 CollarMC\n Architectury 提供了 Forge 构建工具。",
   "emotecraft.menu": "表情配置",
   "emotecraft.options.options": "模组选项",
   "emotecraft.options.keybind": "设置自定义按键以播放所选的表情。",
