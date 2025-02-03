@@ -25,21 +25,6 @@ fun getGitRevision(): String {
     return runCommand("git rev-parse --verify HEAD").second
 }
 
-fun getGitBranch(): String {
-    return runCommand("git rev-parse --abbrev-ref HEAD").second
-}
-
-fun getRemoteUrlForCurrentBranch(): String? {
-    val currentBranch = getGitBranch()
-
-    // Get the remote name for the current branch
-    val (ex, remoteName) = runCommand("git config --get branch.$currentBranch.remote")
-    if (ex != 0 || remoteName.isEmpty()) return null
-
-    val (ex2, remoteUrl) = runCommand("git config --get remote.$remoteName.url")
-    return if (ex2 == 0) remoteUrl else null
-}
-
 fun MavenPublication.removeDependencies(artifactIds: List<String>) {
     pom.withXml {
         val dependenciesNode = asElement().getElementsByTagName("dependency")
