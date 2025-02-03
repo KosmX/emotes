@@ -29,23 +29,11 @@ val Project.minecraft_version
 val Project.parchment_version
     get() = properties["parchment_version"] as String
 
-val Project.player_animator_version
-    get() = properties["player_animator_version"] as String
-
 val Project.mod_description
     get() = properties["mod_description"] as String
 
 val Project.fabric_loader_version
     get() = properties["fabric_loader_version"] as String
-
-val Project.fabric_api_version
-    get() = properties["fabric_api_version"] as String
-
-val Project.fabric_permissions_api
-    get() = properties["fabric_permissions_api"] as String
-
-val Project.modmenu_version
-    get() = properties["modmenu_version"] as String
 
 val Project.neoforge_version
     get() = properties["neoforge_version"] as String
