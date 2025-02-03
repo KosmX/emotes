@@ -36,7 +36,7 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}") {
+    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${properties["player_animator_version"] as String}") {
         include(this)
         pomCompile(this)
     }

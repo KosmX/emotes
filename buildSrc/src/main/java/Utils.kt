@@ -40,20 +40,6 @@ fun getRemoteUrlForCurrentBranch(): String? {
     return if (ex2 == 0) remoteUrl else null
 }
 
-fun Project.getGitRepository(): String {
-    val githubRepo = providers.environmentVariable("GITHUB_REPOSITORY").orNull
-    if (githubRepo != null) return githubRepo
-    val remoteUrl = getRemoteUrlForCurrentBranch()
-        ?.removeSuffix(".git")?.removeSuffix("/")?.let { "$it.git" }
-        ?: throw IllegalStateException("Failed to get current branch URL")
-    val regex = Regex("(?:git@|https://)github\\.com[:/](.+?)/(.+)\\.git")
-    val match = regex.find(remoteUrl)
-        ?: throw IllegalStateException("Failed to parse repository from branch URL")
-    val owner = match.groupValues[1]
-    val repo = match.groupValues[2]
-    return "$owner/$repo"
-}
-
 fun MavenPublication.removeDependencies(artifactIds: List<String>) {
     pom.withXml {
         val dependenciesNode = asElement().getElementsByTagName("dependency")

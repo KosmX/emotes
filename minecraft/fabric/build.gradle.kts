@@ -29,7 +29,7 @@ configurations.apply {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric_api_version"] as String}")
 
     commonModule(project(":executor")) { isTransitive = false }
     commonModule(project(":emotesAPI")) { isTransitive = false }
@@ -37,11 +37,11 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("com.terraformersmc:modmenu:${modmenu_version}") {
+    modImplementation("com.terraformersmc:modmenu:${properties["modmenu_version"] as String}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${player_animator_version}") {
+    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
         include(this)
         pomCompile(this)
     }
