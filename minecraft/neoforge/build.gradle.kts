@@ -137,10 +137,12 @@ publishMods {
     type = ReleaseType.of(releaseType)
     changelog = changes
     dryRun = gradle.startParameter.isDryRun
+
     github {
         accessToken = providers.environmentVariable("GH_TOKEN")
         parent(rootProject.tasks.named("publishGithub"))
     }
+
     modrinth {
         announcementTitle = "Modrinth (NeoForge)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
@@ -150,6 +152,7 @@ publishMods {
         version = "${mod_version}+${minecraft_version}-forge"
         embeds("playeranimator")
     }
+
     curseforge {
         announcementTitle = "CurseForge (NeoForge)"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
@@ -158,6 +161,7 @@ publishMods {
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
         minecraftVersions.add(minecraft_version)
+
         embeds("playeranimator")
     }
 }

@@ -91,7 +91,6 @@ publishMods {
             project(":minecraft:fabric").publishResult("curseforge"),
             project(":paper").publishResult("modrinth"))
     }
-
 }
 
 @Suppress("UnstableApiUsage")

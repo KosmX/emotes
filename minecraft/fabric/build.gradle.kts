@@ -146,10 +146,12 @@ publishMods {
     type = ReleaseType.of(releaseType)
     changelog = changes
     dryRun = gradle.startParameter.isDryRun
+
     github {
         accessToken = providers.environmentVariable("GH_TOKEN")
         parent(rootProject.tasks.named("publishGithub"))
     }
+
     modrinth {
         announcementTitle = "Modrinth (Fabric)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
@@ -157,9 +159,11 @@ publishMods {
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
         version = "${mod_version}+${minecraft_version}-fabric"
+
         requires("fabric-api")
         embeds("playeranimator")
     }
+
     curseforge {
         announcementTitle = "CurseForge (Fabric)"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
@@ -168,6 +172,7 @@ publishMods {
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
         minecraftVersions.add(minecraft_version)
+
         requires("fabric-api")
         embeds("playeranimator")
     }
