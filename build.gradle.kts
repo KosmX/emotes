@@ -1,6 +1,4 @@
-import me.modmuss50.mpp.PublishModTask
 import me.modmuss50.mpp.ReleaseType
-import kotlin.random.Random
 
 plugins {
     id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
@@ -67,7 +65,7 @@ publishMods {
     github {
         tagName = mod_version
         commitish = getGitRevision()
-        repository = getGitRepository()
+        repository = providers.environmentVariable("GITHUB_REPOSITORY").orElse("KosmX/emotes")
         accessToken = providers.environmentVariable("GH_TOKEN")
         displayName = "Emotecraft-${mod_version}"
         allowEmptyFiles = true
@@ -76,7 +74,7 @@ publishMods {
     discord {
         style {
             look = "MODERN"
-            color = "#%06X".format(Random.nextInt(0x000000, 0x1000000))
+            color = "#%06X".format(kotlin.random.Random.nextInt(0x000000, 0x1000000))
             link = "BUTTON"
         }
 
@@ -95,5 +93,5 @@ publishMods {
 
 @Suppress("UnstableApiUsage")
 fun Project.publishResult(platformName: String): RegularFileProperty {
-    return tasks.withType(PublishModTask::class.java).first { it.platform.name == platformName }.result
+    return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
 }
