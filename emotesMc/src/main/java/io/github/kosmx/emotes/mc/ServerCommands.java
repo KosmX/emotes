@@ -19,6 +19,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -122,7 +123,7 @@ public final class ServerCommands {
                     if (name.contains(" ")) {
                         name = "\"" + name + "\"";
                     }
-                    suggestions.add(name);
+                    suggestions.add(StringUtil.filterText(name));
                 } else {
                     suggestions.add(emote.getUuid().toString());
                 }
@@ -147,7 +148,7 @@ public final class ServerCommands {
 
             for (var emote : emotes.values()) {
                 if (emote.extraData.containsKey("name")) {
-                    String name = McUtils.fromJson(emote.extraData.get("name")).getString();
+                    String name = StringUtil.filterText(McUtils.fromJson(emote.extraData.get("name")).getString());
                     if (name.equals(id)) return emote;
                 }
             }

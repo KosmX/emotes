@@ -17,6 +17,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.StringUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +70,7 @@ public class ClientCommands {
                     if (name.contains(" ")) {
                         name = "\"" + name + "\"";
                     }
-                    suggestions.add(name);
+                    suggestions.add(StringUtil.filterText(name));
                 } else {
                     suggestions.add(emote.getUuid().toString());
                 }
@@ -89,7 +90,7 @@ public class ClientCommands {
             } catch(IllegalArgumentException ignore) {} //Not a UUID
 
             for (var emote : emotes.values()) {
-                if (emote.name.getString().equals(id)) {
+                if (StringUtil.filterText(emote.name.getString()).equals(id)) {
                     return emote.getEmote();
                 }
             }
