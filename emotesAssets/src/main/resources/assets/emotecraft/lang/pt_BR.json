@@ -30,6 +30,7 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "ativo apenas quando o modo de 3ª pessoa estiver ativado",
   "emotecraft.otherconfig.enableNSFW": "Permitir que emotes NSFW sejam reproduzidos",
   "emotecraft.otherconfig.enableNSFW.tooltip": "Conteúdo NSFW (não seguro para o trabalho) inapropriado\n\nPode conter nudez, sexualidade intensa, violência ou outro assunto potencialmente perturbador.",
+  "emotecraft.otherconfig.checkPose": "Verifique a posição",
   "emotecraft.otherconfig.alwaysValidateEmote": "Sempre validar emotes recebidos",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Opção do lado do cliente, não afetará o servidor interno\n\nPor padrão, a validação do lado do cliente só acontece ao receber emotes de um proxy desconhecido.\nUse isto para sempre fazer validação do lado do cliente",
   "emotecraft.otherconfig.default3rdPersonFront": "Usar visão frontal ao invés de traseira ao usar emotes",
