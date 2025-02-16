@@ -15,7 +15,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -60,6 +59,7 @@ public class ClientInit {
     }
 
     @SubscribeEvent
+    @SuppressWarnings("deprecation")
     public static void onConnect(ClientPlayerNetworkEvent.LoggingIn event) {
         ClientNetwork.INSTANCE.configureOnPlay(event.getConnection()::send);
     }
