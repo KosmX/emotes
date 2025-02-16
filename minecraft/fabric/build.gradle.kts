@@ -46,6 +46,11 @@ dependencies {
         pomCompile(this)
     }
 
+    // Third-party
+    modRuntimeOnly("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
+        isTransitive = false
+    }
+
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))
 
@@ -162,6 +167,7 @@ publishMods {
 
         requires("fabric-api")
         embeds("playeranimator")
+        optional("searchables")
     }
 
     curseforge {
@@ -175,5 +181,6 @@ publishMods {
 
         requires("fabric-api")
         embeds("playeranimator")
+        optional("searchables")
     }
 }

@@ -18,6 +18,9 @@ subprojects {
         maven("https://maven.terraformersmc.com/") {
             name = "TerraformersMC maven"
         }
+        maven("https://maven.blamejared.com") {
+            name = "BlameJared Maven"
+        }
         maven("https://repo.redlance.org/public")
         maven("https://libraries.minecraft.net")
         maven("https://maven.neoforged.net/releases")

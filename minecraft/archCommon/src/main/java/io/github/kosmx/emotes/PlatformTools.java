@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.executor.EmoteInstance;
@@ -22,5 +23,10 @@ public final class PlatformTools {
 
     public static void openExternalEmotesDir() {
         Util.getPlatform().openFile(EmoteInstance.instance.getExternalEmoteDir());
+    }
+
+    @ExpectPlatform
+    public static boolean hasSearchables() {
+        throw new AssertionError();
     }
 }

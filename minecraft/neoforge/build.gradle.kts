@@ -152,6 +152,7 @@ publishMods {
         version = "${mod_version}+${minecraft_version}-forge"
 
         embeds("playeranimator")
+        optional("searchables")
     }
 
     curseforge {
@@ -164,5 +165,6 @@ publishMods {
         minecraftVersions.add(minecraft_version)
 
         embeds("playeranimator")
+        optional("searchables")
     }
 }

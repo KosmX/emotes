@@ -1,6 +1,8 @@
 package io.github.kosmx.emotes.arch.screen.components;
 
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -19,6 +21,7 @@ import java.util.Objects;
 public abstract class EmoteSubScreen extends Screen {
     private static final Component SEARCH = Component.translatable("gui.recipebook.search_hint");
 
+    protected final ISearchEngine searchEngine;
     protected Screen lastScreen;
 
     @Nullable
@@ -26,7 +29,12 @@ public abstract class EmoteSubScreen extends Screen {
     protected HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
 
     protected EmoteSubScreen(Component title, Screen lastScreen) {
+        this(title, ISearchEngine.getInstance(), lastScreen);
+    }
+
+    protected EmoteSubScreen(Component title, ISearchEngine searchEngine, Screen lastScreen) {
         super(title);
+        this.searchEngine = searchEngine;
         this.lastScreen = lastScreen;
     }
 
@@ -40,9 +48,10 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addTitle() {
-        EditBox searchBox = this.layout.addToHeader(new EditBox(this.font, 0, 0, Button.BIG_WIDTH, Button.DEFAULT_HEIGHT, Component.empty()));
-        searchBox.setHint(SEARCH);
-        searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(string::toLowerCase));
+        EditBox searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
+                () -> this.list.getEmotes()
+        ));
+        searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
     }
 
     protected EmoteListWidget newEmoteListWidget() {
@@ -81,5 +90,19 @@ public abstract class EmoteSubScreen extends Screen {
     @Override
     public void onClose() {
         this.minecraft.setScreen(this.lastScreen);
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.searchEngine.render(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (this.searchEngine.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 }
