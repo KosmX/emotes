@@ -11,6 +11,9 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -43,6 +46,10 @@ public class BukkitWrapper extends JavaPlugin {
 
         Serializer.INSTANCE = new Serializer(); //it does register itself
         UniversalEmoteSerializer.loadEmotes();
+
+        for (String permission : ServerCommands.PERMISSIONS) {
+            Bukkit.getPluginManager().addPermission(new Permission(permission, PermissionDefault.FALSE));
+        }
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
                 ServerCommands.register(event.registrar().getDispatcher(), true)
