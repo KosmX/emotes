@@ -27,7 +27,7 @@ public class EmoteListener implements Closeable {
                     StandardWatchEventKinds.ENTRY_MODIFY
             );
         } catch (Throwable th) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to start file watcher!", th);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to start file watcher!", th);
         }
     }
 

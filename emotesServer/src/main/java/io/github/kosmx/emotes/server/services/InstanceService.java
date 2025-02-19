@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public interface InstanceService extends IEmotecraftService {
-    InstanceService LOADED_SERVICE = ServiceLoaderUtil.loadService(InstanceService.class, InstanceServiceImpl::new);
+    InstanceService INSTANCE = ServiceLoaderUtil.loadService(InstanceService.class, InstanceServiceImpl::new);
 
     Path getGameDirectory();
 

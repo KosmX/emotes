@@ -58,7 +58,7 @@ public class EmoteMenu extends EmoteSubScreen {
 
     public EmoteMenu(Screen parent) {
         super(EmoteMenu.TITLE, parent);
-        this.watcher = new EmoteListener(InstanceService.LOADED_SERVICE.getExternalEmoteDir());
+        this.watcher = new EmoteListener(InstanceService.INSTANCE.getExternalEmoteDir());
         this.watcher.load(this::addOptions);
     }
 
@@ -252,7 +252,7 @@ public class EmoteMenu extends EmoteSubScreen {
         try {
             this.watcher.close();
         } catch (Throwable th) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to close watcher!", th);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to close watcher!", th);
         }
     }
 

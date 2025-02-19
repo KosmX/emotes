@@ -47,19 +47,19 @@ public class Serializer {
     }
 
     public boolean saveConfig(SerializableConfig config) {
-        try (BufferedWriter writer = Files.newBufferedWriter(InstanceService.LOADED_SERVICE.getConfigPath())) {
+        try (BufferedWriter writer = Files.newBufferedWriter(InstanceService.INSTANCE.getConfigPath())) {
             this.serializer.toJson(config, writer);
             return true;
         } catch(IOException e) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to save config!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to save config!", e);
             return false;
         }
     }
 
     public SerializableConfig readConfig() {
         if (this.config == null) {
-            LoggerService.LOADED_SERVICE.log(Level.INFO, "Loading config...");
-            this.config = readConfig(InstanceService.LOADED_SERVICE.getConfigPath());
+            LoggerService.INSTANCE.log(Level.INFO, "Loading config...");
+            this.config = readConfig(InstanceService.INSTANCE.getConfigPath());
         }
         return this.config;
     }
@@ -69,8 +69,8 @@ public class Serializer {
             try (BufferedReader reader = Files.newBufferedReader(path)) {
                 return readConfig(reader);
             } catch(IOException | JsonParseException e) {
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to read config!", e);
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, "If you want to regenerate the config, delete the old files!");
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to read config!", e);
+                LoggerService.INSTANCE.log(Level.WARNING, "If you want to regenerate the config, delete the old files!");
             }
         } else {
             SerializableConfig config = readConfig((BufferedReader) null);

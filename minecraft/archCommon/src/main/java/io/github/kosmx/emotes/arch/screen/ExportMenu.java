@@ -75,9 +75,9 @@ public class ExportMenu extends Screen {
             if(emote.extraData.containsKey("isBuiltin") && !PlatformTools.getConfig().exportBuiltin.get()){
                 continue;
             }
-            LoggerService.LOADED_SERVICE.log(Level.FINE, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
+            LoggerService.INSTANCE.log(Level.FINE, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
             try{
-                Path exportDir = InstanceService.LOADED_SERVICE.getExternalEmoteDir().resolve(format.getExtension() + "_export");
+                Path exportDir = InstanceService.INSTANCE.getExternalEmoteDir().resolve(format.getExtension() + "_export");
                 if(!exportDir.toFile().isDirectory()){
                     Files.createDirectories(exportDir);
                 }
@@ -96,7 +96,7 @@ public class ExportMenu extends Screen {
                     iconStream.close();
                 }
             }catch (IOException | EmoteSerializerException | InvalidPathException e) {
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to export!", e);
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to export!", e);
                 PlatformTools.toastExportMessage(Component.translatable(
                         "emotecraft.export.error." + format.getExtension()
                 ), emoteHolder.name.getString());
@@ -105,7 +105,7 @@ public class ExportMenu extends Screen {
         PlatformTools.toastExportMessage(Component.translatable(
                 "emotecraft.export.done." + format.getExtension()
         ), "emotes/" + format.getExtension() + "_export/");
-        LoggerService.LOADED_SERVICE.log(Level.INFO, "All emotes are saved in " + format.getExtension() + " format!");
+        LoggerService.INSTANCE.log(Level.INFO, "All emotes are saved in " + format.getExtension() + " format!");
     }
 
     @SuppressWarnings({"deprecation","removal"})

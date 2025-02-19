@@ -98,7 +98,7 @@ public class UniversalEmoteSerializer {
         serializeInternalJson("roblox_potion_dance");
         serializeInternalJson("kazotsky_kick");
 
-        Path path = InstanceService.LOADED_SERVICE.getExternalEmoteDir();
+        Path path = InstanceService.INSTANCE.getExternalEmoteDir();
         if (!Files.isDirectory(path)) {
             try {
                 Files.createDirectories(path);
@@ -129,7 +129,7 @@ public class UniversalEmoteSerializer {
             }
             hiddenServerEmotes.addAll(emotes);
         }catch (EmoteSerializerException | IOException e){
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to load built-in emote!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to load built-in emote!", e);
         }
     }
 

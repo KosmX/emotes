@@ -33,7 +33,7 @@ public class ForgeNetwork {
                             try {
                                 ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), null);
                             } catch (IOException e) {
-                                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                             }
                         },
                         (arg, playPayloadContext) -> CommonServerNetworkHandler.instance.receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player())
@@ -45,7 +45,7 @@ public class ForgeNetwork {
                             try {
                                 ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
                             } catch (IOException e) {
-                                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                             }
                         },
                         (arg, configurationPayloadContext) -> {
@@ -75,7 +75,7 @@ public class ForgeNetwork {
                                 });
                                 configurationPayloadContext.finishCurrentTask(ConfigTask.TYPE);
                             } catch (IOException e) {
-                                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                                 configurationPayloadContext.channelHandlerContext().disconnect();
                             }
                         }
@@ -86,7 +86,7 @@ public class ForgeNetwork {
                     try {
                         ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
                     } catch (IOException e) {
-                        LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                        LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                     }
                 });
 
@@ -104,7 +104,7 @@ public class ForgeNetwork {
 
             event.register(new ConfigTask());
         } else {
-            LoggerService.LOADED_SERVICE.log(Level.FINE, "Client doesn't support emotes, ignoring");
+            LoggerService.INSTANCE.log(Level.FINE, "Client doesn't support emotes, ignoring");
         }
     }
 }

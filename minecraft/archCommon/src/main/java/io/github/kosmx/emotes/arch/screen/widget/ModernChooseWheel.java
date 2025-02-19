@@ -241,7 +241,7 @@ public class ModernChooseWheel implements IChooseWheel {
                 if(PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] != null){
                     drawCenteredText(matrices, EmoteHolder.getNonNull(PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id]).name, this.angle);
                 }else{
-                    LoggerService.LOADED_SERVICE.log(Level.WARNING, "Tried to render non-existing name");
+                    LoggerService.INSTANCE.log(Level.WARNING, "Tried to render non-existing name");
                 }
             }
         }

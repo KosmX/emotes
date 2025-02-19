@@ -20,7 +20,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveConfigMessage(buf.bytes(), context.responseSender()::sendPacket);
             } catch (IOException e) {
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
             }
         });
 
@@ -28,7 +28,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), context.responseSender()::sendPacket);
             } catch (IOException e) {
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
             }
         });
 
@@ -49,7 +49,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), null);
             } catch (IOException e) {
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
             }
         });
     }

@@ -63,7 +63,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
                 handler.disconnect("Emote stream is disabled on this server");
             }
         } catch (IOException e) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to receive packet!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to receive packet!", e);
         }
     }
 
@@ -109,7 +109,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
                         playerNetwork.sendGeyserPacket(ByteBuffer.wrap(geyserPacket.write()));
                     }
                 } catch (IOException e) {
-                    LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to send packet!", e);
+                    LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);
                 }
             }
         });
@@ -128,7 +128,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
             }
 
         } catch (IOException e) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to send packet!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);
         }
     }
 
@@ -141,7 +141,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
             playerNetwork.sendMessage(packetBuilder, null);
         } catch (IOException e) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to send packet!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);
         }
     }
 

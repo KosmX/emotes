@@ -24,7 +24,7 @@ public class ConfigTask implements ConfigurationTask {
             var bytes = new EmotePacket.Builder(configData).build().write();
             consumer.accept(NetworkPlatformTools.playPacket(bytes)); // Config init
         } catch (IOException e) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to configure client!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to configure client!", e);
         }
     }
 

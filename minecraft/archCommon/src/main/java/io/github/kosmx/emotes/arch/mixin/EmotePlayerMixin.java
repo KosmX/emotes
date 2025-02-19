@@ -34,17 +34,17 @@ import org.jetbrains.annotations.Nullable;
 public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
 
     @Unique
-    private int emotes_age = 0;
+    private int emotecraft$age = 0;
 
     @Shadow
     @Final
     public ClientLevel clientLevel;
 
     @Unique
-    private AnimationContainer<EmotePlayer> emotecraftEmoteContainer = new AnimationContainer<>(null);
+    private final AnimationContainer<EmotePlayer> emotecraft$container = new AnimationContainer<>(null);
 
     @Unique
-    private boolean isForced = false;
+    private boolean emotecraft$isForced = false;
 
     public EmotePlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
@@ -52,23 +52,23 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(ClientLevel clientLevel, GameProfile gameProfile, CallbackInfo ci) {
-        ((IPlayer)this).playerAnimator$getAnimationStack().addAnimLayer(1000, emotecraftEmoteContainer);
+        ((IPlayer)this).playerAnimator$getAnimationStack().addAnimLayer(1000, emotecraft$container);
     }
 
     @Override
     public void emotecraft$playEmote(KeyframeAnimation emote, int t, boolean isForced) {
-        this.emotecraftEmoteContainer.setAnim(new EmotePlayer(emote, this::emotecraft$noteConsumer, t));
-        this.initEmotePerspective(emotecraftEmoteContainer.getAnim());
-        if (this.isMainPlayer()) this.isForced = isForced;
+        this.emotecraft$container.setAnim(new EmotePlayer(emote, this::emotecraft$noteConsumer, t));
+        this.initEmotePerspective(emotecraft$container.getAnim());
+        if (this.isMainPlayer()) this.emotecraft$isForced = isForced;
     }
 
     @Unique
     private void emotecraft$noteConsumer(Layer.Note note){
-        this.clientLevel.playLocalSound(this.getX(), this.getY(), this.getZ(), getInstrumentFromCode(note.instrument).getSoundEvent().value(), SoundSource.PLAYERS, note.getVolume(), note.getPitch(), true);
+        this.clientLevel.playLocalSound(this.getX(), this.getY(), this.getZ(), emotecraft$getInstrumentFromCode(note.instrument).getSoundEvent().value(), SoundSource.PLAYERS, note.getVolume(), note.getPitch(), true);
     }
 
     @Unique
-    private static NoteBlockInstrument getInstrumentFromCode(byte b){
+    private static NoteBlockInstrument emotecraft$getInstrumentFromCode(byte b){
 
         //That is more efficient than a switch case...
         NoteBlockInstrument[] instruments = {NoteBlockInstrument.HARP, NoteBlockInstrument.BASS, NoteBlockInstrument.BASEDRUM, NoteBlockInstrument.SNARE, NoteBlockInstrument.HAT,
@@ -83,19 +83,19 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
 
     @Override
     public void emotecraft$voidEmote() {
-        this.emotecraftEmoteContainer.setAnim(null);
+        this.emotecraft$container.setAnim(null);
     }
 
     @Nullable
     @Override
     public EmotePlayer emotecraft$getEmote() {
-        return this.emotecraftEmoteContainer.getAnim();
+        return this.emotecraft$container.getAnim();
     }
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     public void tick(CallbackInfo ci) {
-        if (this.emotes_age <= 1) { //Emote init with a little delay (40-60 ms)
-            if(this.emotes_age++ == 1) {
+        if (this.emotecraft$age <= 1) { //Emote init with a little delay (40-60 ms)
+            if(this.emotecraft$age++ == 1) {
                 Pair<KeyframeAnimation, Integer> p = ClientEmotePlay.getEmoteForUUID(getUUID());
                 if(p != null){
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(p.getLeft(), p.getRight(), getUUID());
@@ -111,18 +111,23 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
         if (isPlayingEmote()) {
             this.yBodyRot = this.yHeadRot;
 
-            if(this.isMainPlayer() && emotecraft$getEmote().perspective == 1 && PlatformTools.getPerspective() != TPBPerspective.get()) {
-                this.emotecraft$getEmote().perspective = 0;
-            }
-            if(this.isMainPlayer() && !this.emotecraft$isForcedEmote() && !EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)){
-                this.emotecraft$getEmote().stop();
-                ClientEmotePlay.clientStopLocalEmote(this.emotecraft$getEmote().getData());
+            EmotePlayer emotePlayer = emotecraft$getEmote();
+
+            if (isMainPlayer() && emotePlayer != null) {
+                if (emotePlayer.perspective == 1 && PlatformTools.getPerspective() != TPBPerspective.get()) {
+                    emotePlayer.perspective = 0;
+                }
+
+                if(!this.emotecraft$isForcedEmote() && !EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)) {
+                    emotePlayer.stop();
+                    ClientEmotePlay.clientStopLocalEmote(emotePlayer.getData());
+                }
             }
         }
     }
 
     @Override
     public boolean emotecraft$isForcedEmote() {
-        return this.isPlayingEmote() && this.isForced;
+        return this.isPlayingEmote() && this.emotecraft$isForced;
     }
 }

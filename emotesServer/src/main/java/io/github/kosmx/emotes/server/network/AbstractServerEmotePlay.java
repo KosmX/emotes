@@ -50,9 +50,9 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         ServerEmoteAPI.INSTANCE = this;
 
         try {
-            initMappings(InstanceService.LOADED_SERVICE.getConfigPath());
+            initMappings(InstanceService.INSTANCE.getConfigPath());
         }catch (IOException e){
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to load bedrock mappings!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to load bedrock mappings!", e);
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             try {
                 this.bedrockEmoteMap = new EmoteMappings(Serializer.getSerializer().fromJson(reader, new TypeToken<BiMap<UUID, UUID>>() {}.getType()));
             }catch (JsonParseException e){
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to parse bedrock mappings!", e);
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to parse bedrock mappings!", e);
             }
             reader.close();
         }
@@ -97,7 +97,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     public void receiveMessage(NetData data, P player, INetworkInstance instance) throws IOException {
-        LoggerService.LOADED_SERVICE.log(Level.FINEST, "[emotes server] Received data from: " + getUUIDFromPlayer(player) + " data: " + data);
+        LoggerService.INSTANCE.log(Level.FINEST, "[emotes server] Received data from: " + getUUIDFromPlayer(player) + " data: " + data);
         switch (data.purpose){
             case STOP:
                 stopEmote(player, data);
@@ -149,11 +149,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         }
         IServerNetworkInstance playerInstance = getPlayerNetworkInstance(player);
         if (data.player != null && playerInstance.trackPlayState()) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Player: " + player + " does not respect server-side emote tracking. Ignoring repeat");
+            LoggerService.INSTANCE.log(Level.WARNING, "Player: " + player + " does not respect server-side emote tracking. Ignoring repeat");
             return;
         }
         if (playerInstance.getEmoteTracker().isForced()) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Player: " + player + " is disobeying force play flag and tried to override it");
+            LoggerService.INSTANCE.log(Level.WARNING, "Player: " + player + " is disobeying force play flag and tried to override it");
         }
         streamEmote(data, player, false, true);
     }
@@ -204,7 +204,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             packet.setRuntimeEntityID(getRuntimePlayerID(player));
             receiveBEEmote(player, packet);
         }catch (Throwable t){
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to receive geyser packet!", t);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to receive geyser packet!", t);
         }
     }
 
@@ -253,7 +253,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
 
         } catch (RuntimeException e) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to prepare server emotes!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to prepare server emotes!", e);
             return Collections.emptyList();
         }
     }
@@ -263,14 +263,14 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         try {
             instance.sendMessage(getS2CConfigPacket(trackPlayState), null);
         } catch(IOException e) {
-            LoggerService.LOADED_SERVICE.log(Level.SEVERE, "Failed to send config to client!", e);
+            LoggerService.INSTANCE.log(Level.SEVERE, "Failed to send config to client!", e);
         }
         if(instance.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
             for (ByteBuffer emote : getServerEmotes(instance.getRemoteVersions())) {
                 try{
                     instance.sendMessage(emote, null);
                 }catch (Throwable e){
-                    LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to send save emote message", e);
+                    LoggerService.INSTANCE.log(Level.WARNING, "Failed to send save emote message", e);
                 }
             }
         }

@@ -40,7 +40,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
 
     public static void send(EmotePacket.Builder packetBuilder, UUID target){
         if (ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder) == EventResult.FAIL) {
-            LoggerService.LOADED_SERVICE.log(Level.INFO, "Sending the packet has been canceled by the event!");
+            LoggerService.INSTANCE.log(Level.INFO, "Sending the packet has been canceled by the event!");
             return; // Deny
         }
         if(!defaultNetwork.isActive() || useAlwaysAlt()){
@@ -54,7 +54,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
                             builder.setVersion(network.getRemoteVersions());
                             network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
                         } catch(IOException exception) {
-                            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while sending packet!", exception);
+                            LoggerService.INSTANCE.log(Level.WARNING, "Error while sending packet!", exception);
                         }
                     }
                 }
@@ -68,7 +68,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
                 defaultNetwork.sendMessage(packetBuilder, target);
             }
             catch (IOException exception){
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while sending packet!", exception);
+                LoggerService.INSTANCE.log(Level.WARNING, "Error while sending packet!", exception);
             }
         }
     }
@@ -94,11 +94,11 @@ public final class ClientPacketManager extends EmotesProxyManager {
                 ClientEmotePlay.executeMessage(data, networkInstance);
             }
             catch (Exception e){//I don't want to break the whole game with a bad message but I'll warn with the highest level
-                LoggerService.LOADED_SERVICE.log(Level.SEVERE, "Critical error has occurred while receiving emote!", e);
+                LoggerService.INSTANCE.log(Level.SEVERE, "Critical error has occurred while receiving emote!", e);
             }
         }
         catch (IOException e){
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while receiving packet!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Error while receiving packet!", e);
         }
     }
 

@@ -11,21 +11,20 @@ import java.util.HashMap;
 
 @Mixin(Connection.class)
 public class ConnectionHandlerMixin implements EmotesMixinConnection {
-
     @Unique
     @NotNull
-    private final HashMap<Byte, Byte> versions = new HashMap<>();
+    private final HashMap<Byte, Byte> emotecraft$versions = new HashMap<>();
 
     @Override
     public @NotNull HashMap<Byte, Byte> emotecraft$getRemoteVersions() {
-        return versions;
+        return emotecraft$versions;
     }
 
     @Override
     public void emotecraft$setVersions(@Nullable HashMap<Byte, Byte> map) {
-        versions.clear();
+        emotecraft$versions.clear();
         if (map != null) {
-            versions.putAll(map);
+            emotecraft$versions.putAll(map);
         }
     }
 }

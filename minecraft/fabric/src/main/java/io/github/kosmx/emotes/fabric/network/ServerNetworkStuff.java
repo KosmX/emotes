@@ -30,7 +30,7 @@ public final class ServerNetworkStuff {
 
                 handler.addTask(new ConfigTask());
             } else {
-                LoggerService.LOADED_SERVICE.log(Level.FINE, "Client doesn't support emotes, ignoring");
+                LoggerService.INSTANCE.log(Level.FINE, "Client doesn't support emotes, ignoring");
             }
             // No disconnect, vanilla clients can connect
         });
@@ -61,7 +61,7 @@ public final class ServerNetworkStuff {
                 });
                 context.networkHandler().completeTask(ConfigTask.TYPE); // And, we're done here
             } catch (IOException e) {
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                 context.networkHandler().disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
             }
         });

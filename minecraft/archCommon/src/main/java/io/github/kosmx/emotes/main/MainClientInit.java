@@ -41,10 +41,10 @@ public class MainClientInit {
      */
     @SuppressWarnings({"deprecation","removal"})
     public static void playDebugEmote(){
-        LoggerService.LOADED_SERVICE.log(Level.INFO, "Playing debug emote");
+        LoggerService.INSTANCE.log(Level.INFO, "Playing debug emote");
         Path location = null;
         for(AnimationFormat source:AnimationFormat.values()){
-            location = InstanceService.LOADED_SERVICE.getGameDirectory().resolve("emote." + source.getExtension());
+            location = InstanceService.INSTANCE.getGameDirectory().resolve("emote." + source.getExtension());
             if(location.toFile().isFile()){
                 break;
             }
@@ -58,7 +58,7 @@ public class MainClientInit {
                 emoteHolder.playEmote(PlatformTools.getMainPlayer());
             }
         }catch(Exception e){
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while importing debug emote.", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Error while importing debug emote.", e);
         }
     }
 }

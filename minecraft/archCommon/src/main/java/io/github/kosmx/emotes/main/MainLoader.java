@@ -18,7 +18,7 @@ public class MainLoader {
     public static void main(boolean isClient){
 
         if(CommonData.isLoaded){
-            LoggerService.LOADED_SERVICE.log(Level.SEVERE, "Emotecraft is loaded multiple times, please load it only once!");
+            LoggerService.INSTANCE.log(Level.SEVERE, "Emotecraft is loaded multiple times, please load it only once!");
         }
         CommonData.isLoaded = true;
 

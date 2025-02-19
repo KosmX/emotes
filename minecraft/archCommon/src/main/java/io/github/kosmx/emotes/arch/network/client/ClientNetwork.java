@@ -85,7 +85,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Override
     public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
         sendPlayPacket(playPacket(byteBuffer));
-        LoggerService.LOADED_SERVICE.log(Level.FINE, "Sent packet size is " + byteBuffer.remaining() + " byte(s).");
+        LoggerService.INSTANCE.log(Level.FINE, "Sent packet size is " + byteBuffer.remaining() + " byte(s).");
     }
 
     @ExpectPlatform
@@ -131,7 +131,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
             } else if (packet.purpose == PacketTask.FILE) {
                 EmoteHolder.addEmoteToList(packet.emoteData).fromInstance = this;
             } else {
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
+                LoggerService.INSTANCE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
             }
         } else {
             throw new IOException("Invalid emotes packet received in config phase");
@@ -145,7 +145,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Deprecated
     public void configureOnPlay(@NotNull Consumer<Packet<?>> consumer) {
         if (!this.isConfiguredNormally && isActive()) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "The server failed to configure the client, attempting to configure...");
+            LoggerService.INSTANCE.log(Level.WARNING, "The server failed to configure the client, attempting to configure...");
 
             sendC2SConfig(p -> {
                 try {

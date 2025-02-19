@@ -17,11 +17,11 @@ public abstract class ServerPlayNetworkMixin extends ServerCommonPacketListenerI
 
     @Unique
     @NotNull
-    private final IServerNetworkInstance emotesNetworkInstance = new ModdedServerPlayNetwork((ServerGamePacketListenerImpl)(Object) this);
+    private final IServerNetworkInstance emotecraft$instance = new ModdedServerPlayNetwork((ServerGamePacketListenerImpl)(Object) this);
 
     @Override
     public @NotNull IServerNetworkInstance emotecraft$getServerNetworkInstance() {
-        return emotesNetworkInstance;
+        return emotecraft$instance;
     }
 
     public ServerPlayNetworkMixin(MinecraftServer minecraftServer, Connection connection, CommonListenerCookie commonListenerCookie) {

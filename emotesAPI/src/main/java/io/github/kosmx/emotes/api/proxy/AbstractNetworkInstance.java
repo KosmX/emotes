@@ -186,7 +186,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
             consumer.accept(packetBuilder);
         }
         catch (Exception e){
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while writing packet!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Error while writing packet!", e);
         }
     }
 

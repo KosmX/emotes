@@ -88,10 +88,10 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     static void executeMessage(NetData data, INetworkInstance networkInstance) throws NullPointerException {
-        LoggerService.LOADED_SERVICE.log(Level.FINE, "[emotes client] Received message: " + data);
+        LoggerService.INSTANCE.log(Level.FINE, "[emotes client] Received message: " + data);
 
         if (data.purpose == null) {
-            LoggerService.LOADED_SERVICE.log(Level.INFO, "Packet execution is not possible without a purpose");
+            LoggerService.INSTANCE.log(Level.INFO, "Packet execution is not possible without a purpose");
             return;
         }
         switch (Objects.requireNonNull(data.purpose)) {
@@ -117,12 +117,12 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 break;
             case CONFIG:
                 networkInstance.setVersions(Objects.requireNonNull(data.versions));
-                LoggerService.LOADED_SERVICE.log(Level.INFO, "Legacy versions was received: " + data.versions);
+                LoggerService.INSTANCE.log(Level.INFO, "Legacy versions was received: " + data.versions);
                 break;
             case FILE:
                 EmoteHolder.addEmoteToList(data.emoteData).fromInstance = networkInstance;
             case UNKNOWN:
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Packet execution is not possible unknown purpose");
+                LoggerService.INSTANCE.log(Level.WARNING, "Packet execution is not possible unknown purpose");
                 break;
         }
     }

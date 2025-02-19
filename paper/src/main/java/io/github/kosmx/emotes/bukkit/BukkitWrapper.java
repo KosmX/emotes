@@ -37,7 +37,7 @@ public class BukkitWrapper extends JavaPlugin {
                     (id) -> DiscardedPayload.codec(id, CommonData.MAX_PACKET_SIZE)
             );
         } catch (ReflectiveOperationException e) {
-            LoggerService.LOADED_SERVICE.log(Level.SEVERE, "Failed to hack size! Try update your paper!", e);
+            LoggerService.INSTANCE.log(Level.SEVERE, "Failed to hack size! Try update your paper!", e);
             getServer().shutdown();
         }
 

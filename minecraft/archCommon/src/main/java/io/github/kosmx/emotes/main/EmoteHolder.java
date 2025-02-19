@@ -112,7 +112,7 @@ public class EmoteHolder implements Supplier<UUID> {
             try (InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))))) {
                 assignIcon(stream);
             }catch (IOException | NullPointerException e){
-                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                 if(!PlatformTools.getConfig().neverRemoveBadIcon.get()){
                     this.emote.extraData.remove("iconData");
                 }
@@ -130,7 +130,7 @@ public class EmoteHolder implements Supplier<UUID> {
             this.nativeIcon = nativeImageBackedTexture;
 
         } catch (Throwable var) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Can't open emote icon!", var);
+            LoggerService.INSTANCE.log(Level.WARNING, "Can't open emote icon!", var);
             this.iconIdentifier = null;
             this.nativeIcon = null;
         }

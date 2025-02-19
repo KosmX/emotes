@@ -17,10 +17,10 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
             config.configVersion = node.get("config_version").getAsInt();
 
         if (config.configVersion < SerializableConfig.staticConfigVersion) {
-            LoggerService.LOADED_SERVICE.log(Level.FINE, "Serializing config with older version...");
+            LoggerService.INSTANCE.log(Level.FINE, "Serializing config with older version...");
 
         } else if (config.configVersion > SerializableConfig.staticConfigVersion) {
-            LoggerService.LOADED_SERVICE.log(Level.WARNING, "You are trying to load version " + config.configVersion + " config. The mod can only load correctly up to v" + SerializableConfig.staticConfigVersion + ". If you won't modify any config, I won't overwrite your config file.");
+            LoggerService.INSTANCE.log(Level.WARNING, "You are trying to load version " + config.configVersion + " config. The mod can only load correctly up to v" + SerializableConfig.staticConfigVersion + ". If you won't modify any config, I won't overwrite your config file.");
         }
 
         config.iterate(entry -> deserializeEntry(entry, node, context));

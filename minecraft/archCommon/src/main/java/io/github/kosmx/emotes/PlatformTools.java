@@ -32,7 +32,7 @@ public final class PlatformTools {
     }
 
     public static void openExternalEmotesDir() {
-        Util.getPlatform().openPath(InstanceService.LOADED_SERVICE.getExternalEmoteDir());
+        Util.getPlatform().openPath(InstanceService.INSTANCE.getExternalEmoteDir());
     }
 
     @ExpectPlatform
