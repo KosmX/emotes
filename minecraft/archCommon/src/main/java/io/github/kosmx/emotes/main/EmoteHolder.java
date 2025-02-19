@@ -19,6 +19,7 @@ import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -64,9 +65,9 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
-        this.name = McUtils.fromJson(emote.extraData.get("name"));
-        this.description = McUtils.fromJson(emote.extraData.get("description"));
-        this.author = McUtils.fromJson(emote.extraData.get("author"));
+        this.name = McUtils.fromJson(emote.extraData.get("name"), RegistryAccess.EMPTY);
+        this.description = McUtils.fromJson(emote.extraData.get("description"), RegistryAccess.EMPTY);
+        this.author = McUtils.fromJson(emote.extraData.get("author"), RegistryAccess.EMPTY);
     }
 
 
