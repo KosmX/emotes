@@ -1,10 +1,10 @@
 package io.github.kosmx.emotes.bukkit.network;
 
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
@@ -42,10 +42,10 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                 try {
                     this.receiveMessage(message, player, playerNetwork);
                 } catch (Exception e) {
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                    LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                 }
             } else {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player.getName() + " is not registered");
+                LoggerService.INSTANCE.log(Level.WARNING, "Player: " + player.getName() + " is not registered");
             }
         }
         else {
@@ -72,7 +72,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
         UUID playerUuid = getUUIDFromPlayer(player);
         if (!player_database.containsKey(playerUuid)) {
-            EmoteInstance.instance.getLogger().log(Level.INFO, "Player " + player.getName() + " never joined. If it is a fake player, the fake-player plugin forgot to fire join event.");
+            LoggerService.INSTANCE.log(Level.INFO, "Player " + player.getName() + " never joined. If it is a fake player, the fake-player plugin forgot to fire join event.");
             player_database.put(playerUuid, new BukkitNetworkInstance(player));
         }
         return player_database.get(playerUuid);
@@ -91,7 +91,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                 try {
                     player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, packet.write());
                 }catch (Exception e){
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                    LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -111,7 +111,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                     }
                     else if(emotePacket != null) player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, emotePacket.write());
                 }catch (Exception e){
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                    LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                 }
             }
         }
@@ -134,7 +134,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
             packetBuilder.setVersion(getPlayerNetworkInstance(targetPlayer).getRemoteVersions());
             targetPlayer.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, packetBuilder.build().write().array());
         }catch (Exception e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+            LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
