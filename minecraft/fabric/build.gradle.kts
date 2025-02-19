@@ -47,7 +47,7 @@ dependencies {
     }
 
     // Third-party
-    modRuntimeOnly("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
+    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
         isTransitive = false
     }
 
