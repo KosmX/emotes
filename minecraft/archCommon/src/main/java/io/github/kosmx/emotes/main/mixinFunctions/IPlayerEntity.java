@@ -2,12 +2,11 @@ package io.github.kosmx.emotes.main.mixinFunctions;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Pair;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
@@ -19,7 +18,7 @@ import java.util.function.Supplier;
 public interface IPlayerEntity extends IEmotePlayerEntity {
 
     int FPPerspective = 0;
-    Supplier<Integer> TPBPerspective = () -> (((ClientConfig)EmoteInstance.config).frontAsTPPerspective.get() ? 2 : 1);
+    Supplier<Integer> TPBPerspective = () -> (PlatformTools.getConfig().frontAsTPPerspective.get() ? 2 : 1);
 
     default void initEmotePlay(){
 
@@ -36,7 +35,7 @@ public interface IPlayerEntity extends IEmotePlayerEntity {
     }
 
     default void initEmotePerspective(EmotePlayer emotePlayer){
-        if(((ClientConfig)EmoteInstance.config).enablePerspective.get() && isMainPlayer() && TmpGetters.getClientMethods().getPerspective() == FPPerspective) {
+        if(PlatformTools.getConfig().enablePerspective.get() && isMainPlayer() && TmpGetters.getClientMethods().getPerspective() == FPPerspective) {
             emotePlayer.perspective = 1;
             TmpGetters.getClientMethods().setPerspective(TPBPerspective.get());
         }
@@ -102,7 +101,7 @@ public interface IPlayerEntity extends IEmotePlayerEntity {
         }
 
         EmotePlayer emotePlayer = emotecraft$getEmote();
-        if (emotePlayer != null && ((ClientConfig)EmoteInstance.config).checkPose.get()) {
+        if (emotePlayer != null && PlatformTools.getConfig().checkPose.get()) {
             ClientEmotePlay.clientStopLocalEmote(emotePlayer.getData());
         }
     }

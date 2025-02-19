@@ -7,13 +7,12 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteAPI;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.Nullable;
@@ -88,17 +87,16 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     static void executeMessage(NetData data, INetworkInstance networkInstance) throws NullPointerException {
-        EmoteInstance.instance.getLogger().log(Level.FINEST, "[emotes client] Received message: " + data);
+        LoggerService.LOADED_SERVICE.log(Level.FINE, "[emotes client] Received message: " + data);
 
         if (data.purpose == null) {
-            if (EmoteInstance.config.showDebug.get()) {
-                EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible without a purpose");
-            }
+            LoggerService.LOADED_SERVICE.log(Level.INFO, "Packet execution is not possible without a purpose");
+            return;
         }
         switch (Objects.requireNonNull(data.purpose)) {
             case STREAM:
                 assert data.emoteData != null;
-                if(data.valid || !(((ClientConfig)EmoteInstance.config).alwaysValidate.get() || !networkInstance.safeProxy())) {
+                if(data.valid || !(PlatformTools.getConfig().alwaysValidate.get() || !networkInstance.safeProxy())) {
                     receivePlayPacket(data.emoteData, data.player, data.tick, data.isForced);
                 }
                 break;
@@ -118,14 +116,12 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 break;
             case CONFIG:
                 networkInstance.setVersions(Objects.requireNonNull(data.versions));
-                EmoteInstance.instance.getLogger().log(Level.INFO, "Legacy versions was received: " + data.versions, false);
+                LoggerService.LOADED_SERVICE.log(Level.INFO, "Legacy versions was received: " + data.versions);
                 break;
             case FILE:
                 EmoteHolder.addEmoteToList(data.emoteData).fromInstance = networkInstance;
             case UNKNOWN:
-                if (EmoteInstance.config.showDebug.get()) {
-                    EmoteInstance.instance.getLogger().log(Level.INFO, "Packet execution is not possible unknown purpose");
-                }
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Packet execution is not possible unknown purpose");
                 break;
         }
     }
@@ -146,8 +142,8 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     public static boolean isEmoteAllowed(KeyframeAnimation emoteData, UUID player) {
-        return (((ClientConfig)EmoteInstance.config).enablePlayerSafety.get() || !TmpGetters.getClientMethods().isPlayerBlocked(player))
-                && (!emoteData.nsfw || ((ClientConfig)EmoteInstance.config).enableNSFW.get());
+        return (PlatformTools.getConfig().enablePlayerSafety.get() || !TmpGetters.getClientMethods().isPlayerBlocked(player))
+                && (!emoteData.nsfw || PlatformTools.getConfig().enableNSFW.get());
     }
 
     static void addToQueue(QueueEntry entry, UUID player) {

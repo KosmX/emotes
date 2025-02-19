@@ -3,8 +3,10 @@ package io.github.kosmx.emotes;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
+import io.github.kosmx.emotes.main.config.ClientConfig;
+import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
@@ -22,11 +24,15 @@ public final class PlatformTools {
     }
 
     public static void openExternalEmotesDir() {
-        Util.getPlatform().openFile(EmoteInstance.instance.getExternalEmoteDir());
+        Util.getPlatform().openPath(InstanceService.LOADED_SERVICE.getExternalEmoteDir());
     }
 
     @ExpectPlatform
     public static boolean hasSearchables() {
         throw new AssertionError();
+    }
+
+    public static ClientConfig getConfig() {
+        return (ClientConfig) Serializer.getConfig();
     }
 }

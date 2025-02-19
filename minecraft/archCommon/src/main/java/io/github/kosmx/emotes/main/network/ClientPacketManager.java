@@ -5,9 +5,9 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
 import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
 
     public static void send(EmotePacket.Builder packetBuilder, UUID target){
         if (ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder) == EventResult.FAIL) {
-            EmoteInstance.instance.getLogger().log(Level.INFO, "Sending the packet has been canceled by the event!");
+            LoggerService.LOADED_SERVICE.log(Level.INFO, "Sending the packet has been canceled by the event!");
             return; // Deny
         }
         if(!defaultNetwork.isActive() || useAlwaysAlt()){
@@ -54,10 +54,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
                             builder.setVersion(network.getRemoteVersions());
                             network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
                         } catch(IOException exception) {
-                            EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
-                            if (EmoteInstance.config.showDebug.get()) {
-                                EmoteInstance.instance.getLogger().log(Level.WARNING, exception.getMessage(), exception);
-                            }
+                            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while sending packet!", exception);
                         }
                     }
                 }
@@ -71,17 +68,14 @@ public final class ClientPacketManager extends EmotesProxyManager {
                 defaultNetwork.sendMessage(packetBuilder, target);
             }
             catch (IOException exception){
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while sending packet: " + exception.getMessage(), true);
-                if(EmoteInstance.config.showDebug.get()) {
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, exception.getMessage(), exception);
-                }
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while sending packet!", exception);
             }
         }
     }
 
     static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
         try{
-            NetData data = new EmotePacket.Builder().setThreshold(EmoteInstance.config.validThreshold.get()).build().read(buffer);
+            NetData data = new EmotePacket.Builder().setThreshold(PlatformTools.getConfig().validThreshold.get()).build().read(buffer);
             if(data == null){
                 throw new IOException("no valid data");
             }
@@ -100,23 +94,12 @@ public final class ClientPacketManager extends EmotesProxyManager {
                 ClientEmotePlay.executeMessage(data, networkInstance);
             }
             catch (Exception e){//I don't want to break the whole game with a bad message but I'll warn with the highest level
-                EmoteInstance.instance.getLogger().log(Level.SEVERE, "Critical error has occurred while receiving emote: " + e.getMessage(), true);
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
-
+                LoggerService.LOADED_SERVICE.log(Level.SEVERE, "Critical error has occurred while receiving emote!", e);
             }
-
         }
         catch (IOException e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while receiving packet: " + e.getMessage(), true);
-            if(EmoteInstance.config.showDebug.get()) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
-            }
+            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while receiving packet!", e);
         }
-    }
-
-    @Override
-    protected void logMSG(Level level, String msg) {
-        EmoteInstance.instance.getLogger().log(level, "[emotes proxy module] " +  msg, level.intValue() >= Level.WARNING.intValue());
     }
 
     @Override

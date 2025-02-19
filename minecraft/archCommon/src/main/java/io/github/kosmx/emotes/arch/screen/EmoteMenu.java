@@ -2,16 +2,16 @@ package io.github.kosmx.emotes.arch.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
 import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -58,7 +58,7 @@ public class EmoteMenu extends EmoteSubScreen {
 
     public EmoteMenu(Screen parent) {
         super(EmoteMenu.TITLE, parent);
-        this.watcher = new EmoteListener(EmoteInstance.instance.getExternalEmoteDir().toPath());
+        this.watcher = new EmoteListener(InstanceService.LOADED_SERVICE.getExternalEmoteDir());
         this.watcher.load(this::addOptions);
     }
 
@@ -125,16 +125,16 @@ public class EmoteMenu extends EmoteSubScreen {
     private void resetKeyAction(Button button){
         if(resetOnlySelected) {
             if (this.list == null || this.list.getFocused() == null) return;
-            ((ClientConfig)EmoteInstance.config).emoteKeyMap.removeL(this.list.getFocused().getEmote().getUuid());
+            PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocused().getEmote().getUuid());
             onPressed(this.list.getSelected());
         } else {
             this.minecraft.setScreen(new ConfirmScreen(aBoolean -> {
                 if (aBoolean) {
-                    ((ClientConfig) EmoteInstance.config).emoteKeyMap.clear(); //reset :D
+                    PlatformTools.getConfig().emoteKeyMap.clear(); //reset :D
                     onPressed(this.list.getSelected());
                 }
                 this.minecraft.setScreen(EmoteMenu.this);
-                }, RESET_ALL_TITLE, RESET_ALL_MSG.copy().append(" (" + ((ClientConfig)EmoteInstance.config).emoteKeyMap.size() + ")")
+                }, RESET_ALL_TITLE, RESET_ALL_MSG.copy().append(" (" + PlatformTools.getConfig().emoteKeyMap.size() + ")")
             ));
         }
     }
@@ -159,7 +159,7 @@ public class EmoteMenu extends EmoteSubScreen {
 
         if (selected != null) {
             this.setKeyButton.setMessage(getKey(selected.getEmote().getUuid()).getDisplayName());
-            this.resetOnlySelected = ((ClientConfig) EmoteInstance.config).emoteKeyMap.containsL(selected.getEmote().getUuid());
+            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(selected.getEmote().getUuid());
         } else {
             this.resetOnlySelected = false;
         }
@@ -168,9 +168,9 @@ public class EmoteMenu extends EmoteSubScreen {
             this.resetButton.active = true;
             this.resetButton.setMessage(RESET_ONE);
         } else {
-            if (!((ClientConfig)EmoteInstance.config).emoteKeyMap.isEmpty()) {
+            if (!PlatformTools.getConfig().emoteKeyMap.isEmpty()) {
                 this.resetButton.active = true;
-                this.resetButton.setMessage(RESET_ALL.copy().append(" (" + ((ClientConfig)EmoteInstance.config).emoteKeyMap.size() + ")"));
+                this.resetButton.setMessage(RESET_ALL.copy().append(" (" + PlatformTools.getConfig().emoteKeyMap.size() + ")"));
             } else {
                 this.resetButton.active = false;
                 this.resetButton.setMessage(RESET_ONE);
@@ -223,12 +223,12 @@ public class EmoteMenu extends EmoteSubScreen {
                 bl = false;
                 if(force){
                     //emoteHolder.keyBinding = TmpGetters.getDefaults().getUnknownKey();
-                    ((ClientConfig)EmoteInstance.config).emoteKeyMap.removeL(emoteHolder.getUuid());
+                    PlatformTools.getConfig().emoteKeyMap.removeL(emoteHolder.getUuid());
                 }
             }
         }
         if(bl || force){
-            ((ClientConfig)EmoteInstance.config).emoteKeyMap.put(emote.getUuid(), key);
+            PlatformTools.getConfig().emoteKeyMap.put(emote.getUuid(), key);
             onPressed(this.list.getSelected());
         }
         this.activeKeyTime = 0;
@@ -238,7 +238,7 @@ public class EmoteMenu extends EmoteSubScreen {
     @NotNull
     public static InputConstants.Key getKey(UUID emoteID) {
         InputConstants.Key key;
-        if((key = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getR(emoteID)) == null){
+        if((key = PlatformTools.getConfig().emoteKeyMap.getR(emoteID)) == null){
             return InputConstants.UNKNOWN;
         }
         return key;
@@ -248,11 +248,11 @@ public class EmoteMenu extends EmoteSubScreen {
     public void removed() {
         this.watcher.blockWhileLoading();
         super.removed();
-        ClientSerializer.saveConfig();
+        ClientSerializer.INSTANCE.saveConfig();
         try {
             this.watcher.close();
         } catch (Throwable th) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to close watcher!", th);
+            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to close watcher!", th);
         }
     }
 

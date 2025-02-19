@@ -11,7 +11,6 @@ dependencies {
 
     implementation(project(":emotesAssets"))
     implementation(project(":emotesAPI"))
-    implementation(project(":executor"))
     implementation(project(":emotesServer"))
     api(project(path = ":emotesMc", configuration = "namedElements"))
 

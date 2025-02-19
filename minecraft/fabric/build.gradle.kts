@@ -31,7 +31,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric_api_version"] as String}")
 
-    commonModule(project(":executor")) { isTransitive = false }
     commonModule(project(":emotesAPI")) { isTransitive = false }
     commonModule(project(":emotesServer")) { isTransitive = false }
     commonModule(project(":emotesAssets")) { isTransitive = false }
@@ -88,6 +87,7 @@ java {
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
     archiveClassifier.set("")
+    mergeServiceFiles()
 }
 
 tasks.remapJar {

@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.arch.network;
 
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.network.ConfigurationTask;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +24,7 @@ public class ConfigTask implements ConfigurationTask {
             var bytes = new EmotePacket.Builder(configData).build().write();
             consumer.accept(NetworkPlatformTools.playPacket(bytes)); // Config init
         } catch (IOException e) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to configure client!", e);
         }
     }
 

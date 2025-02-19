@@ -1,11 +1,12 @@
 package io.github.kosmx.emotes.main;
 
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -40,10 +41,10 @@ public class MainClientInit {
      */
     @SuppressWarnings({"deprecation","removal"})
     public static void playDebugEmote(){
-        EmoteInstance.instance.getLogger().log(Level.INFO, "Playing debug emote");
+        LoggerService.LOADED_SERVICE.log(Level.INFO, "Playing debug emote");
         Path location = null;
         for(AnimationFormat source:AnimationFormat.values()){
-            location = EmoteInstance.instance.getGameDirectory().resolve("emote." + source.getExtension());
+            location = InstanceService.LOADED_SERVICE.getGameDirectory().resolve("emote." + source.getExtension());
             if(location.toFile().isFile()){
                 break;
             }
@@ -57,9 +58,7 @@ public class MainClientInit {
                 emoteHolder.playEmote(TmpGetters.getClientMethods().getMainPlayer());
             }
         }catch(Exception e){
-            EmoteInstance.instance.getLogger().log(Level.INFO, "Error while importing debug emote.", true);
-            EmoteInstance.instance.getLogger().log(Level.INFO, e.getMessage());
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while importing debug emote.", e);
         }
     }
 }

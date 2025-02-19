@@ -1,13 +1,12 @@
 package io.github.kosmx.emotes.neoforge;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.MainClientInit;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -88,7 +87,7 @@ public class ClientInit {
         keyBindingFunction = client -> {
 
             if(openMenuKey.consumeClick()){
-                if(((ClientConfig) EmoteInstance.config).alwaysOpenEmoteScreen.get() || Minecraft.getInstance().player == Minecraft.getInstance().getCameraEntity()){
+                if(PlatformTools.getConfig().alwaysOpenEmoteScreen.get() || Minecraft.getInstance().player == Minecraft.getInstance().getCameraEntity()){
                     Minecraft.getInstance().setScreen(new FastMenuScreen(null));
                 }
             }

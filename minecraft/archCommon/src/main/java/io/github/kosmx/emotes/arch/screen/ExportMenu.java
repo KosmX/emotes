@@ -4,12 +4,12 @@ import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
+import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -73,12 +73,12 @@ public class ExportMenu extends Screen {
     private void exportEmotesInFormat(AnimationFormat format){
         for(EmoteHolder emoteHolder:EmoteHolder.list){
             KeyframeAnimation emote = emoteHolder.getEmote();
-            if(emote.extraData.containsKey("isBuiltin") && !((ClientConfig)EmoteInstance.config).exportBuiltin.get()){
+            if(emote.extraData.containsKey("isBuiltin") && !PlatformTools.getConfig().exportBuiltin.get()){
                 continue;
             }
-            EmoteInstance.instance.getLogger().log(Level.FINER, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
+            LoggerService.LOADED_SERVICE.log(Level.FINE, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
             try{
-                Path exportDir = EmoteInstance.instance.getExternalEmoteDir().toPath().resolve(format.getExtension() + "_export");
+                Path exportDir = InstanceService.LOADED_SERVICE.getExternalEmoteDir().resolve(format.getExtension() + "_export");
                 if(!exportDir.toFile().isDirectory()){
                     Files.createDirectories(exportDir);
                 }
@@ -97,7 +97,7 @@ public class ExportMenu extends Screen {
                     iconStream.close();
                 }
             }catch (IOException | EmoteSerializerException | InvalidPathException e) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to export!", e);
                 TmpGetters.getClientMethods().toastExportMessage( 2,
                         Component.translatable("emotecraft.export.error." + format.getExtension()),
                         emoteHolder.name.getString());
@@ -106,7 +106,7 @@ public class ExportMenu extends Screen {
         TmpGetters.getClientMethods().toastExportMessage(1,
                 Component.translatable("emotecraft.export.done." + format.getExtension()),
                 "emotes/" + format.getExtension() + "_export/");
-        EmoteInstance.instance.getLogger().log(Level.FINER, "All emotes are saved in " + format.getExtension() + " format", true);
+        LoggerService.LOADED_SERVICE.log(Level.INFO, "All emotes are saved in " + format.getExtension() + " format!");
     }
 
     @SuppressWarnings({"deprecation","removal"})

@@ -12,7 +12,7 @@ rootProject.name = "emotecraft"
 include("emotesAPI")
 
 //include "oldJunk"
-include("executor")
+// include("executor")
 include("emotesServer")
 include("emotesAssets")
 include("emotesMc")

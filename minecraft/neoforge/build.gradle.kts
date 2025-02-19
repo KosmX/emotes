@@ -30,7 +30,6 @@ configurations.apply {
 dependencies {
     neoForge("net.neoforged:neoforge:${neoforge_version}")
 
-    commonModule(project(":executor")) { isTransitive = false }
     commonModule(project(":emotesAPI")) { isTransitive = false }
     commonModule(project(":emotesServer")) { isTransitive = false }
     commonModule(project(":emotesAssets")) { isTransitive = false }
@@ -77,6 +76,7 @@ java {
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
     archiveClassifier.set("")
+    mergeServiceFiles()
 }
 
 tasks.remapJar {

@@ -7,13 +7,13 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
 import dev.kosmx.playerAnim.core.util.Vec3d;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.inline.TmpGetters;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.mc.McUtils;
@@ -109,13 +109,11 @@ public class EmoteHolder implements Supplier<UUID> {
 
     public ResourceLocation getIconIdentifier(){
         if(iconIdentifier == null && this.emote.extraData.containsKey("iconData")){
-            try {
-                InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))));
+            try (InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))))) {
                 assignIcon(stream);
-                stream.close();
             }catch (IOException | NullPointerException e){
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
-                if(!((ClientConfig)EmoteInstance.config).neverRemoveBadIcon.get()){
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
+                if(!PlatformTools.getConfig().neverRemoveBadIcon.get()){
                     this.emote.extraData.remove("iconData");
                 }
             }
@@ -132,7 +130,7 @@ public class EmoteHolder implements Supplier<UUID> {
             this.nativeIcon = nativeImageBackedTexture;
 
         } catch (Throwable var) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't open emote icon: " + var);
+            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Can't open emote icon!", var);
             this.iconIdentifier = null;
             this.nativeIcon = null;
         }
@@ -221,7 +219,7 @@ public class EmoteHolder implements Supplier<UUID> {
         if(player.emotecraft$isNotStanding() && !ClientPacketManager.isRemoteTracking()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
         Vec3d prevPos = player.emotecraft$getPrevPos();
-        return ! (player.emotecraft$emotesGetPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio.get(), prevPos.getY(), player.emotecraft$emotesGetPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold.get());
+        return ! (player.emotecraft$emotesGetPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(PlatformTools.getConfig().yRatio.get(), prevPos.getY(), player.emotecraft$emotesGetPos().getY()), prevPos.getZ())) > PlatformTools.getConfig().stopThreshold.get());
     }
 
     public boolean playEmote(IEmotePlayerEntity playerEntity){
@@ -263,8 +261,8 @@ public class EmoteHolder implements Supplier<UUID> {
 
 
     public static void handleKeyPress(InputConstants.Key key){
-        if(EmoteInstance.instance != null && EmoteHolder.canRunEmote(TmpGetters.getClientMethods().getMainPlayer())){
-            UUID uuid = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getL(key);
+        if(EmoteHolder.canRunEmote(TmpGetters.getClientMethods().getMainPlayer())){
+            UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
             if(uuid != null){
                 EmoteHolder emoteHolder = list.get(uuid);
                 if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(emoteHolder);

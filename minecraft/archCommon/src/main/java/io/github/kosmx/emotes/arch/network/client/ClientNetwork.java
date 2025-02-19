@@ -2,13 +2,13 @@ package io.github.kosmx.emotes.arch.network.client;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.Minecraft;
@@ -85,7 +85,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Override
     public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
         sendPlayPacket(playPacket(byteBuffer));
-        EmoteInstance.instance.getLogger().log(Level.INFO, "Sent packet size is " + byteBuffer.remaining() + " byte(s).", false);
+        LoggerService.LOADED_SERVICE.log(Level.FINE, "Sent packet size is " + byteBuffer.remaining() + " byte(s).");
     }
 
     @ExpectPlatform
@@ -131,9 +131,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
             } else if (packet.purpose == PacketTask.FILE) {
                 EmoteHolder.addEmoteToList(packet.emoteData).fromInstance = this;
             } else {
-                if (EmoteInstance.config.showDebug.get()) {
-                    EmoteInstance.instance.getLogger().log(Level.INFO, "Invalid emotes packet type in configuration phase: " + packet.purpose);
-                }
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
             }
         } else {
             throw new IOException("Invalid emotes packet received in config phase");
@@ -147,7 +145,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Deprecated
     public void configureOnPlay(@NotNull Consumer<Packet<?>> consumer) {
         if (!this.isConfiguredNormally && isActive()) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "The server failed to configure the client, attempting to configure...");
+            LoggerService.LOADED_SERVICE.log(Level.WARNING, "The server failed to configure the client, attempting to configure...");
 
             sendC2SConfig(p -> {
                 try {

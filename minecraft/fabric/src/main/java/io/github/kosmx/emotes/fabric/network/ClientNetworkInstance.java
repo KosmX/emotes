@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.fabric.network;
 
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -20,7 +20,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveConfigMessage(buf.bytes(), context.responseSender()::sendPacket);
             } catch (IOException e) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
             }
         });
 
@@ -28,7 +28,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), context.responseSender()::sendPacket);
             } catch (IOException e) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
             }
         });
 
@@ -49,7 +49,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), null);
             } catch (IOException e) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.LOADED_SERVICE.log(Level.WARNING, e.getMessage(), e);
             }
         });
     }

@@ -7,7 +7,7 @@ plugins {
 version = mod_version
 
 dependencies {
-    api(project(":executor"))
+    api(project(":emotesAPI"))
     implementation("com.google.code.gson:gson:2.11.0")
 }
 

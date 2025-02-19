@@ -5,10 +5,12 @@ import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.type.*;
 
+import io.github.kosmx.emotes.server.services.InstanceService;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -96,19 +98,24 @@ public class UniversalEmoteSerializer {
         serializeInternalJson("roblox_potion_dance");
         serializeInternalJson("kazotsky_kick");
 
+        Path path = InstanceService.LOADED_SERVICE.getExternalEmoteDir();
+        if (!Files.isDirectory(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch(IOException ignored) {
+            }
+        }
 
-        if(! EmoteInstance.instance.getExternalEmoteDir().isDirectory()) EmoteInstance.instance.getExternalEmoteDir().mkdirs();
+        EmoteSerializer.serializeEmotes(Serializer.getConfig().loadEmotesServerSide.get() ? serverEmotes : hiddenServerEmotes, path);
 
-        EmoteSerializer.serializeEmotes( EmoteInstance.config.loadEmotesServerSide.get() ? serverEmotes : hiddenServerEmotes, EmoteInstance.instance.getExternalEmoteDir().toPath());
-
-        Path serverEmotesDir = EmoteInstance.instance.getExternalEmoteDir().toPath().resolve("server");
+        Path serverEmotesDir = path.resolve("server");
         if(Files.isDirectory(serverEmotesDir)) {
             EmoteSerializer.serializeEmotes(serverEmotes, serverEmotesDir);
         }
     }
 
     private static void serializeInternalJson(String name){
-        if(!(EmoteInstance.config).loadBuiltinEmotes.get()){
+        if(!Serializer.getConfig().loadBuiltinEmotes.get()){
             return;
         }
         try (InputStream stream = UniversalEmoteSerializer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json")) {
@@ -122,7 +129,7 @@ public class UniversalEmoteSerializer {
             }
             hiddenServerEmotes.addAll(emotes);
         }catch (EmoteSerializerException | IOException e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+            LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to load built-in emote!", e);
         }
     }
 

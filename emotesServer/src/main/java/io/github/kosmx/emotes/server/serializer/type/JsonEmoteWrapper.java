@@ -4,7 +4,7 @@ import com.google.gson.JsonParseException;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.data.gson.AnimationSerializing;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.config.Serializer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -48,7 +48,7 @@ public class JsonEmoteWrapper implements ISerializer {
 
 
     private List<KeyframeAnimation> fixStopTick(List<KeyframeAnimation> deserializeAnimation) {
-        if (!EmoteInstance.config.autoFixEmoteStop.get()) return deserializeAnimation;
+        if (!Serializer.getConfig().autoFixEmoteStop.get()) return deserializeAnimation;
         List<KeyframeAnimation> fixed = new LinkedList<>();
         for (KeyframeAnimation emote: deserializeAnimation) {
             if (emote.endTick + 1 == emote.stopTick && !emote.isInfinite()) {
