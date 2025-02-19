@@ -5,7 +5,6 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
@@ -98,14 +97,14 @@ public class ExportMenu extends Screen {
                 }
             }catch (IOException | EmoteSerializerException | InvalidPathException e) {
                 LoggerService.LOADED_SERVICE.log(Level.WARNING, "Failed to export!", e);
-                TmpGetters.getClientMethods().toastExportMessage( 2,
-                        Component.translatable("emotecraft.export.error." + format.getExtension()),
-                        emoteHolder.name.getString());
+                PlatformTools.toastExportMessage(Component.translatable(
+                        "emotecraft.export.error." + format.getExtension()
+                ), emoteHolder.name.getString());
             }
         }
-        TmpGetters.getClientMethods().toastExportMessage(1,
-                Component.translatable("emotecraft.export.done." + format.getExtension()),
-                "emotes/" + format.getExtension() + "_export/");
+        PlatformTools.toastExportMessage(Component.translatable(
+                "emotecraft.export.done." + format.getExtension()
+        ), "emotes/" + format.getExtension() + "_export/");
         LoggerService.LOADED_SERVICE.log(Level.INFO, "All emotes are saved in " + format.getExtension() + " format!");
     }
 

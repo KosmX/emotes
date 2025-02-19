@@ -3,12 +3,17 @@ package io.github.kosmx.emotes;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.Util;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -18,9 +23,12 @@ public final class PlatformTools {
         return ClientNetwork.INSTANCE;
     }
 
-    public static @Nullable IEmotePlayerEntity getPlayerFromUUID(UUID uuid) {
-        if (Minecraft.getInstance().level == null) return null;
-        return (IEmotePlayerEntity) Minecraft.getInstance().level.getPlayerByUUID(uuid);
+    public static @Nullable AbstractClientPlayer getPlayerFromUUID(UUID uuid) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) {
+            return null;
+        }
+        return (AbstractClientPlayer) level.getPlayerByUUID(uuid);
     }
 
     public static void openExternalEmotesDir() {
@@ -34,5 +42,29 @@ public final class PlatformTools {
 
     public static ClientConfig getConfig() {
         return (ClientConfig) Serializer.getConfig();
+    }
+
+    public static boolean isPlayerBlocked(UUID uuid) {
+        return Minecraft.getInstance().isBlocked(uuid);
+    }
+
+    public static LocalPlayer getMainPlayer() {
+        return Minecraft.getInstance().player;
+    }
+
+    public static CameraType getPerspective() {
+        return Minecraft.getInstance().options.getCameraType();
+    }
+
+    public static void setPerspective(CameraType p) {
+        Minecraft.getInstance().options.setCameraType(p);
+    }
+
+    public static void sendChatMessage(Component msg) {
+        Minecraft.getInstance().gui.getChat().addMessage(msg);
+    }
+
+    public static void toastExportMessage(Component text, String msg) {
+        SystemToast.add(Minecraft.getInstance().getToastManager(), SystemToast.SystemToastId.WORLD_BACKUP, text, Component.literal(msg));
     }
 }

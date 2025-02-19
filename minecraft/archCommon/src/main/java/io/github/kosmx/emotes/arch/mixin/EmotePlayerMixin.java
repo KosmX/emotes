@@ -5,15 +5,17 @@ import dev.kosmx.playerAnim.api.IPlayer;
 import dev.kosmx.playerAnim.api.layered.AnimationContainer;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.data.opennbs.format.Layer;
-import dev.kosmx.playerAnim.core.util.Vec3d;
-import io.github.kosmx.emotes.arch.emote.EmotePlayImpl;
+import dev.kosmx.playerAnim.core.util.Pair;
+import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
+import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
+import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -26,7 +28,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.UUID;
 
 //Mixin it into the player is way easier than storing it somewhere else...
 @Mixin(AbstractClientPlayer.class)
@@ -35,7 +36,9 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     @Unique
     private int emotes_age = 0;
 
-    @Shadow @Final public ClientLevel clientLevel;
+    @Shadow
+    @Final
+    public ClientLevel clientLevel;
 
     @Unique
     private AnimationContainer<EmotePlayer> emotecraftEmoteContainer = new AnimationContainer<>(null);
@@ -47,7 +50,6 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
         super(level, blockPos, f, gameProfile);
     }
 
-
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(ClientLevel clientLevel, GameProfile gameProfile, CallbackInfo ci) {
         ((IPlayer)this).playerAnimator$getAnimationStack().addAnimLayer(1000, emotecraftEmoteContainer);
@@ -55,7 +57,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
 
     @Override
     public void emotecraft$playEmote(KeyframeAnimation emote, int t, boolean isForced) {
-        this.emotecraftEmoteContainer.setAnim(new EmotePlayImpl(emote, this::emotecraft$noteConsumer, t));
+        this.emotecraftEmoteContainer.setAnim(new EmotePlayer(emote, this::emotecraft$noteConsumer, t));
         this.initEmotePerspective(emotecraftEmoteContainer.getAnim());
         if (this.isMainPlayer()) this.isForced = isForced;
     }
@@ -80,20 +82,9 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     }
 
     @Override
-    public int emotes_getAge() {
-        return this.emotes_age;
-    }
-
-    @Override
-    public int emotes_getAndIncreaseAge() {
-        return this.emotes_age++;
-    }
-
-    @Override
     public void emotecraft$voidEmote() {
         this.emotecraftEmoteContainer.setAnim(null);
     }
-
 
     @Nullable
     @Override
@@ -101,44 +92,33 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
         return this.emotecraftEmoteContainer.getAnim();
     }
 
-    @Override
-    public UUID emotes_getUUID() {
-        return this.getUUID();
-    }
-
-    @Override
-    public boolean emotecraft$isNotStanding() {
-        return this.getPose() != Pose.STANDING;
-    }
-
-    @Override
-    public Vec3d emotecraft$emotesGetPos() {
-        return new Vec3d(this.getX(), this.getY(), this.getZ());
-    }
-
-    @Override
-    public Vec3d emotecraft$getPrevPos() {
-        return new Vec3d(xo, yo, zo);
-    }
-
-    @Override
-    public float emotecraft$getBodyYaw() {
-        return this.yBodyRot;
-    }
-
-    @Override
-    public float emotecraft$getViewYaw() {
-        return this.yHeadRot;
-    }
-
-    @Override
-    public void emotecraft$setBodyYaw(float newYaw) {
-        this.yBodyRot = newYaw;
-    }
-
     @Inject(method = "tick", at = @At(value = "TAIL"))
     public void tick(CallbackInfo ci) {
-        this.emoteTick();
+        if (this.emotes_age <= 1) { //Emote init with a little delay (40-60 ms)
+            if(this.emotes_age++ == 1) {
+                Pair<KeyframeAnimation, Integer> p = ClientEmotePlay.getEmoteForUUID(getUUID());
+                if(p != null){
+                    ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(p.getLeft(), p.getRight(), getUUID());
+                    this.emotecraft$playEmote(p.getLeft(), p.getRight(), false);
+                }
+                if(!this.isMainPlayer() && PlatformTools.getMainPlayer() != null && PlatformTools.getMainPlayer().isPlayingEmote()){
+                    IPlayerEntity playerEntity = PlatformTools.getMainPlayer();
+                    ClientEmotePlay.clientRepeatLocalEmote(playerEntity.emotecraft$getEmote().getData(), playerEntity.emotecraft$getEmote().getTick(), this.getUUID());
+                }
+            }
+        }
+
+        if (isPlayingEmote()) {
+            this.yBodyRot = this.yHeadRot;
+
+            if(this.isMainPlayer() && emotecraft$getEmote().perspective == 1 && PlatformTools.getPerspective() != TPBPerspective.get()) {
+                this.emotecraft$getEmote().perspective = 0;
+            }
+            if(this.isMainPlayer() && !this.emotecraft$isForcedEmote() && !EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)){
+                this.emotecraft$getEmote().stop();
+                ClientEmotePlay.clientStopLocalEmote(this.emotecraft$getEmote().getData());
+            }
+        }
     }
 
     @Override

@@ -8,11 +8,12 @@ import io.github.kosmx.emotes.api.events.client.ClientEmoteAPI;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.Nullable;
@@ -41,44 +42,44 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     public static boolean clientStartLocalEmote(KeyframeAnimation emote, int tick) {
-        IEmotePlayerEntity player = TmpGetters.getClientMethods().getMainPlayer();
+        LocalPlayer player = PlatformTools.getMainPlayer();
         if (player.emotecraft$isForcedEmote()) {
             return false;
         }
 
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToStreamEmote(emote, player.emotes_getUUID());
+        packetBuilder.configureToStreamEmote(emote, player.getUUID());
         packetBuilder.configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, null);
-        ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(emote, tick, player.emotes_getUUID());
-        TmpGetters.getClientMethods().getMainPlayer().emotecraft$playEmote(emote, tick, false);
+        ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(emote, tick, player.getUUID());
+        player.emotecraft$playEmote(emote, tick, false);
         return true;
     }
 
     public static void clientRepeatLocalEmote(KeyframeAnimation emote, int tick, UUID target){
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToStreamEmote(emote, TmpGetters.getClientMethods().getMainPlayer().emotes_getUUID()).configureEmoteTick(tick);
+        packetBuilder.configureToStreamEmote(emote, PlatformTools.getMainPlayer().getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
     }
 
     public static boolean clientStopLocalEmote() {
-        if (TmpGetters.getClientMethods().getMainPlayer().isPlayingEmote()) {
-            return clientStopLocalEmote(TmpGetters.getClientMethods().getMainPlayer().emotecraft$getEmote().getData());
+        if (PlatformTools.getMainPlayer().isPlayingEmote()) {
+            return clientStopLocalEmote(PlatformTools.getMainPlayer().emotecraft$getEmote().getData());
         }
         return false;
     }
 
     public static boolean isForcedEmote() {
-        IEmotePlayerEntity player = TmpGetters.getClientMethods().getMainPlayer();
+        LocalPlayer player = PlatformTools.getMainPlayer();
         return player.emotecraft$isForcedEmote();
     }
 
     public static boolean clientStopLocalEmote(KeyframeAnimation emoteData) {
-        if (emoteData != null && !TmpGetters.getClientMethods().getMainPlayer().emotecraft$isForcedEmote()) {
+        if (emoteData != null && !PlatformTools.getMainPlayer().emotecraft$isForcedEmote()) {
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-            packetBuilder.configureToSendStop(emoteData.getUuid(), TmpGetters.getClientMethods().getMainPlayer().emotes_getUUID());
+            packetBuilder.configureToSendStop(emoteData.getUuid(), PlatformTools.getMainPlayer().getUUID());
             ClientPacketManager.send(packetBuilder, null);
-            TmpGetters.getClientMethods().getMainPlayer().stopEmote();
+            PlatformTools.getMainPlayer().stopEmote();
 
             ClientEmoteEvents.LOCAL_EMOTE_STOP.invoker().onEmoteStop();
             return true;
@@ -101,13 +102,13 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 }
                 break;
             case STOP:
-                IEmotePlayerEntity player = PlatformTools.getPlayerFromUUID(data.player);
+                AbstractClientPlayer player = PlatformTools.getPlayerFromUUID(data.player);
                 assert data.stopEmoteID != null;
                 if(player != null) {
-                    ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.emotes_getUUID());
+                    ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUUID());
                     player.stopEmote(data.stopEmoteID);
                     if(player.isMainPlayer() && !data.isForced){
-                        TmpGetters.getClientMethods().sendChatMessage(Component.translatable("emotecraft.blockedEmote"));
+                        PlatformTools.sendChatMessage(Component.translatable("emotecraft.blockedEmote"));
                     }
                 }
                 else {
@@ -127,7 +128,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     static void receivePlayPacket(KeyframeAnimation emoteData, UUID player, int tick, boolean isForced) {
-        IEmotePlayerEntity playerEntity = PlatformTools.getPlayerFromUUID(player);
+        AbstractClientPlayer playerEntity = PlatformTools.getPlayerFromUUID(player);
         if(isEmoteAllowed(emoteData, player)) {
             EventResult result = ClientEmoteEvents.EMOTE_VERIFICATION.invoker().verify(emoteData, player);
             if (result == EventResult.FAIL) return;
@@ -136,13 +137,13 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 playerEntity.emotecraft$playEmote(emoteData, tick, isForced);
             }
             else {
-                addToQueue(new QueueEntry(emoteData, tick, TmpGetters.getClientMethods().getCurrentTick()), player);
+                addToQueue(new QueueEntry(emoteData, tick, ClientMethods.getCurrentTick()), player);
             }
         }
     }
 
     public static boolean isEmoteAllowed(KeyframeAnimation emoteData, UUID player) {
-        return (PlatformTools.getConfig().enablePlayerSafety.get() || !TmpGetters.getClientMethods().isPlayerBlocked(player))
+        return (PlatformTools.getConfig().enablePlayerSafety.get() || !PlatformTools.isPlayerBlocked(player))
                 && (!emoteData.nsfw || PlatformTools.getConfig().enableNSFW.get());
     }
 
@@ -160,7 +161,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         if (queue.containsKey(uuid)) {
             QueueEntry entry = queue.get(uuid);
             KeyframeAnimation emoteData = entry.emoteData;
-            int tick = entry.beginTick - entry.receivedTick + TmpGetters.getClientMethods().getCurrentTick();
+            int tick = entry.beginTick - entry.receivedTick + ClientMethods.getCurrentTick();
             queue.remove(uuid);
             if (!emoteData.isPlayingAt(tick)) return null;
             return new Pair<>(emoteData, tick);
@@ -172,11 +173,11 @@ public class ClientEmotePlay extends ClientEmoteAPI {
      * Call this periodically to keep the queue clean
      */
     public static void checkQueue(){
-        int currentTick = TmpGetters.getClientMethods().getCurrentTick();
+        int currentTick = ClientMethods.getCurrentTick();
         queue.forEach((uuid, entry) -> {
             if(!entry.emoteData.isPlayingAt(entry.beginTick + currentTick)
                     && entry.beginTick + currentTick > 0
-                    || TmpGetters.getClientMethods().getCurrentTick() - entry.receivedTick > 24000){
+                    || ClientMethods.getCurrentTick() - entry.receivedTick > 24000){
                 queue.remove(uuid);
             }
         });

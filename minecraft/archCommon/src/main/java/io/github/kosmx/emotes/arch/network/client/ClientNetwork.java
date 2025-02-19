@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.network.client;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
@@ -9,7 +10,6 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -72,7 +72,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         sendMessage(bytes, null);
 
         if(writer.data.emoteData != null && writer.data.emoteData.extraData.containsKey("song") && !writer.data.writeSong){
-            TmpGetters.getClientMethods().sendChatMessage(Component.translatable("emotecraft.song_too_big_to_send"));
+            PlatformTools.sendChatMessage(Component.translatable("emotecraft.song_too_big_to_send"));
         }
 
     }

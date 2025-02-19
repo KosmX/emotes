@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.main;
 
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -54,8 +54,8 @@ public class MainClientInit {
             InputStream reader = Files.newInputStream(location);
             EmoteHolder emoteHolder = new EmoteHolder(UniversalEmoteSerializer.readData(reader, location.getFileName().toString()).getFirst());
             reader.close();
-            if(TmpGetters.getClientMethods().getMainPlayer() != null){
-                emoteHolder.playEmote(TmpGetters.getClientMethods().getMainPlayer());
+            if(PlatformTools.getMainPlayer() != null){
+                emoteHolder.playEmote(PlatformTools.getMainPlayer());
             }
         }catch(Exception e){
             LoggerService.LOADED_SERVICE.log(Level.WARNING, "Error while importing debug emote.", e);
