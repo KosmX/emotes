@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public interface IPermissionService extends IEmotecraftService {
-    IPermissionService LOADED_SERVICE = ServiceLoaderUtil.loadService(IPermissionService.class, VanillaPermissionService::new);
+    IPermissionService INSTANCE = ServiceLoaderUtil.loadService(IPermissionService.class, VanillaPermissionService::new);
 
     @Override
     default String getName() {

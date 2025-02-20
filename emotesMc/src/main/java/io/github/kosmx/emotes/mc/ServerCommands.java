@@ -51,14 +51,14 @@ public final class ServerCommands {
                                 .suggests(new EmoteArgumentProvider(ServerCommands::getEmotes))
                                 .executes(context -> {
                                     var player = context.getSource().getPlayerOrException().getUUID();
-                                    boolean admin = IPermissionService.LOADED_SERVICE.check(context.getSource(), "emotes.stop.forced", 2);
+                                    boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", 2);
                                     var emote = EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote");
                                     if (!admin && ServerEmoteAPI.isForcedEmote(player))
                                         throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
                                     ServerEmoteAPI.playEmote(player, emote, false);
                                     return 0;
                                 })
-                                .then(argument("player", EntityArgument.players()).requires(IPermissionService.LOADED_SERVICE.require("emotes.play.player", 2))
+                                .then(argument("player", EntityArgument.players()).requires(IPermissionService.INSTANCE.require("emotes.play.player", 2))
                                         .executes(context -> {
                                             ServerEmoteAPI.playEmote(
                                                     EntityArgument.getPlayer(context, "player").getUUID(),
@@ -80,7 +80,7 @@ public final class ServerCommands {
                 )
                 .then(literal("stop")
                         .executes(context -> {
-                            boolean admin = IPermissionService.LOADED_SERVICE.check(context.getSource(), "emotes.stop.forced", 2);
+                            boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", 2);
                             var player = context.getSource().getPlayerOrException().getUUID();
                             boolean canStop = admin || !ServerEmoteAPI.isForcedEmote(player);
                             if (canStop) {
@@ -89,7 +89,7 @@ public final class ServerCommands {
                             }
                             throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
                         })
-                        .then(argument("player", EntityArgument.players()).requires(IPermissionService.LOADED_SERVICE.require("emotes.stop.player", 2))
+                        .then(argument("player", EntityArgument.players()).requires(IPermissionService.INSTANCE.require("emotes.stop.player", 2))
                                 .executes(context -> {
                                     ServerEmoteAPI.playEmote(
                                             EntityArgument.getPlayer(context, "player").getUUID(),
@@ -100,7 +100,7 @@ public final class ServerCommands {
                                 })
                         )
                 )
-                .then(literal("reload").requires(ctx -> IPermissionService.LOADED_SERVICE.check(ctx, "emotes.reload", 4) && isDedicated).executes(
+                .then(literal("reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.reload", 4) && isDedicated).executes(
                         context -> {
                             UniversalEmoteSerializer.loadEmotes(); //Reload server-side emotes
                             return 0;
@@ -111,6 +111,6 @@ public final class ServerCommands {
     }
 
     private static HashMap<UUID, KeyframeAnimation> getEmotes(CommandContext<CommandSourceStack> context) {
-        return IPermissionService.LOADED_SERVICE.check(context.getSource(), "emotes.play.showhidden", 1) ? ServerEmoteAPI.getLoadedEmotes() : ServerEmoteAPI.getPublicEmotes();
+        return IPermissionService.INSTANCE.check(context.getSource(), "emotes.play.showhidden", 1) ? ServerEmoteAPI.getLoadedEmotes() : ServerEmoteAPI.getPublicEmotes();
     }
 }
