@@ -11,7 +11,6 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;

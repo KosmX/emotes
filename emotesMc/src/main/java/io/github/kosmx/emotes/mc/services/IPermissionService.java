@@ -13,11 +13,6 @@ import java.util.function.Predicate;
 public interface IPermissionService extends IEmotecraftService {
     IPermissionService INSTANCE = ServiceLoaderUtil.loadService(IPermissionService.class, VanillaPermissionService::new);
 
-    @Override
-    default String getName() {
-        return "Permission" + IEmotecraftService.super.getName();
-    }
-
     default Predicate<CommandSourceStack> require(@NotNull String permission, int defaultValue) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultValue);

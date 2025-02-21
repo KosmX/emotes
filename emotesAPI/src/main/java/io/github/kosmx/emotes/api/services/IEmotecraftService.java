@@ -10,6 +10,6 @@ public interface IEmotecraftService {
     }
 
     default String getName() {
-        return "Provider " + getClass().getName();
+        return getClass().getName();
     }
 }

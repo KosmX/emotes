@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.bukkit;
+package io.github.kosmx.emotes.bukkit.services;
 
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import net.minecraft.commands.CommandSourceStack;
