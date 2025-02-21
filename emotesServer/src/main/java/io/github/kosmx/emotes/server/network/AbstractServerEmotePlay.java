@@ -1,7 +1,5 @@
 package io.github.kosmx.emotes.server.network;
 
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.impl.event.EventResult;
 import dev.kosmx.playerAnim.core.util.Pair;
@@ -11,22 +9,13 @@ import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
-import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
-import io.github.kosmx.emotes.common.tools.BiMap;
 import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.geyser.EmoteMappings;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
-import io.github.kosmx.emotes.server.services.InstanceService;
 import org.jetbrains.annotations.Nullable;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -36,39 +25,8 @@ import java.util.logging.Level;
  */
 @SuppressWarnings({"ConstantConditions", "rawtypes", "unused"})
 public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
-    protected EmoteMappings bedrockEmoteMap = new EmoteMappings(new BiMap<>());
-
-    //private AbstractServerEmotePlay instance;
-
-
     public AbstractServerEmotePlay(){
         ServerEmoteAPI.INSTANCE = this;
-
-        try {
-            initMappings(InstanceService.INSTANCE.getConfigPath());
-        }catch (IOException e){
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to load bedrock mappings!", e);
-        }
-    }
-
-    public void initMappings(Path configPath) throws IOException{
-        Path filePath = configPath.resolveSibling("emotecraft_emote_map.json");
-        if(filePath.toFile().isFile()){
-            BufferedReader reader = Files.newBufferedReader(filePath);
-            try {
-                this.bedrockEmoteMap = new EmoteMappings(Serializer.getSerializer().fromJson(reader, new TypeToken<BiMap<UUID, UUID>>() {}.getType()));
-            }catch (JsonParseException e){
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to parse bedrock mappings!", e);
-            }
-            reader.close();
-        }
-        else {
-            BiMap<UUID, UUID> example = new BiMap<>();
-            example.put(new UUID(0x0011223344556677L, 0x8899aabbccddeeffL), new UUID(0xffeeddccbbaa9988L, 0x7766554433221100L));
-            BufferedWriter writer = Files.newBufferedWriter(filePath);
-            Serializer.getSerializer().toJson(example, new TypeToken<BiMap<UUID, UUID>>() {}.getType(), writer);
-            writer.close();
-        }
     }
 
     protected boolean doValidate(){
@@ -111,22 +69,6 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     /**
-     * Receive emote from GeyserMC
-     * @param player player
-     * @param emotePacket BE emote uuid
-     */
-    public void receiveBEEmote(P player, GeyserEmotePacket emotePacket) throws IOException {
-        UUID javaEmote = bedrockEmoteMap.getJavaEmote(emotePacket.getEmoteID());
-        if(javaEmote != null && UniversalEmoteSerializer.getEmote(javaEmote) != null){
-            NetData data = new NetData();
-            data.emoteData = UniversalEmoteSerializer.getEmote(javaEmote);
-            data.purpose = PacketTask.STREAM;
-            handleStreamEmote(data, player, null);
-        }
-        else sendForEveryoneElse(emotePacket, player);
-    }
-
-    /**
      * Handle received stream message
      * @param data received data
      * @param player sender player
@@ -164,14 +106,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         data.isForced = isForced;
         data.player = getUUIDFromPlayer(player);
         data.strictSizeLimit = false;
-        UUID bedrockEmoteID = bedrockEmoteMap.getBeEmote(data.emoteData.getUuid());
-        GeyserEmotePacket geyserEmotePacket = null;
-        if(bedrockEmoteID != null){
-            geyserEmotePacket = new GeyserEmotePacket();
-            geyserEmotePacket.setEmoteID(bedrockEmoteID);
-            geyserEmotePacket.setRuntimeEntityID(getRuntimePlayerID(player));
-        }
-        sendForEveryoneElse(data, geyserEmotePacket, player);
+        sendForEveryoneElse(data, player);
         if (!isFromPlayer) {
             sendForPlayer(data, player, this.getUUIDFromPlayer(player));
         }
@@ -184,22 +119,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.getLeft().getUuid(), getUUIDFromPlayer(player));
             NetData data = new EmotePacket.Builder().configureToSendStop(emote.getLeft().getUuid(), getUUIDFromPlayer(player)).build().data;
 
-            sendForEveryoneElse(data, null, player);
+            sendForEveryoneElse(data, player);
             if (originalMessage == null) { //If the stop is not from the player, server needs to notify the player too
                 data.isForced = true;
                 sendForPlayer(data, player, getUUIDFromPlayer(player));
             }
-        }
-    }
-
-    public void receiveGeyserMessage(P player, byte[] data){
-        try {
-            GeyserEmotePacket packet = new GeyserEmotePacket();
-            packet.read(data);
-            packet.setRuntimeEntityID(getRuntimePlayerID(player));
-            receiveBEEmote(player, packet);
-        }catch (Throwable t){
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to receive geyser packet!", t);
         }
     }
 
@@ -262,19 +186,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     /**
-     * Send message to everyone, except for the player. Only geyser packet
-     * @param packet Geyser packet
-     * @param player send around this player
-     */
-    protected abstract void sendForEveryoneElse(GeyserEmotePacket packet, P player);
-
-    /**
      * Send the message to everyone, except for the player
      * @param data message
-     * @param emotePacket GeyserMC emote packet for Geyser users ;D
      * @param player send around this player
      */
-    protected abstract void sendForEveryoneElse(NetData data, @Nullable GeyserEmotePacket emotePacket, P player);
+    protected abstract void sendForEveryoneElse(NetData data, P player);
 
     /**
      * Send message to target. If target see player the message will be sent

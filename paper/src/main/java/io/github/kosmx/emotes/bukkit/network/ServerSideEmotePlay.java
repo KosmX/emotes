@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.bukkit.network;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
@@ -28,9 +27,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     public ServerSideEmotePlay(BukkitWrapper plugin){
         this.plugin = plugin;
         Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, BukkitWrapper.EmotePacket);
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, BukkitWrapper.GeyserPacket);
         Bukkit.getMessenger().registerIncomingPluginChannel(plugin, BukkitWrapper.EmotePacket, this::receivePluginMessage);
-        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, BukkitWrapper.GeyserPacket, this::receivePluginMessage);
     }
 
     private void receivePluginMessage(String channel, Player player, byte[] message) {
@@ -47,9 +44,6 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
             } else {
                 LoggerService.INSTANCE.log(Level.WARNING, "Player: " + player.getName() + " is not registered");
             }
-        }
-        else {
-            receiveGeyserMessage(player, message);
         }
     }
 
@@ -85,20 +79,7 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     }
 
     @Override
-    protected void sendForEveryoneElse(GeyserEmotePacket packet, Player player) {
-        for(Player player1 : plugin.getServer().getOnlinePlayers()){
-            if (player1 != player && player1.canSee(player)) {
-                try {
-                    player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, packet.write());
-                }catch (Exception e){
-                    LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void sendForEveryoneElse(NetData data, GeyserEmotePacket emotePacket, Player player) {
+    protected void sendForEveryoneElse(NetData data, Player player) {
         for(Player player1 : plugin.getServer().getOnlinePlayers()){
             if (player1 != player && player1.canSee(player)) {
                 try {
@@ -109,7 +90,6 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
                         packetBuilder.setVersion(getPlayerNetworkInstance(player1).getRemoteVersions());
                         player1.sendPluginMessage(plugin, BukkitWrapper.EmotePacket, packetBuilder.build().write().array());
                     }
-                    else if(emotePacket != null) player1.sendPluginMessage(plugin, BukkitWrapper.GeyserPacket, emotePacket.write());
                 }catch (Exception e){
                     LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                 }

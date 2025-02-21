@@ -5,11 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.server.serializer.BiMapSerializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 
 import java.io.BufferedReader;
@@ -17,7 +14,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -37,7 +33,6 @@ public class Serializer {
 
     public void initializeSerializer(GsonBuilder builder) {
         builder.registerTypeAdapter(SerializableConfig.class, new ConfigSerializer());
-        builder.registerTypeAdapter(new TypeToken<BiMap<UUID, UUID>>(){}.getType(), new BiMapSerializer());
     }
 
     public void saveConfig() {

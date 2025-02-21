@@ -18,7 +18,5 @@ public interface IServerNetworkInstance extends INetworkInstance {
 
     EmotePlayTracker getEmoteTracker();
 
-    void sendGeyserPacket(ByteBuffer buffer);
-
     void disconnect(String literal);
 }

@@ -26,10 +26,6 @@ public record EmotePacketPayload(@NotNull CustomPacketPayload.Type<?> id, @NotNu
         return new EmotePacketPayload(NetworkPlatformTools.STREAM_CHANNEL_ID, bytes);
     }
 
-    public static @NotNull CustomPacketPayload geyserPacket(@NotNull ByteBuffer bytes) {
-        return new EmotePacketPayload(NetworkPlatformTools.GEYSER_CHANNEL_ID, bytes);
-    }
-
     @NotNull
     public static StreamCodec<FriendlyByteBuf, EmotePacketPayload> reader(@NotNull CustomPacketPayload.Type<?> channel) {
         return CustomPacketPayload.codec((payload, buf) -> buf.writeBytes(payload.unwrapBytes()), buf -> {
@@ -42,5 +38,4 @@ public record EmotePacketPayload(@NotNull CustomPacketPayload.Type<?> id, @NotNu
 
     public static final StreamCodec<FriendlyByteBuf, EmotePacketPayload> EMOTE_CHANNEL_READER = reader(NetworkPlatformTools.EMOTE_CHANNEL_ID);
     public static final StreamCodec<FriendlyByteBuf, EmotePacketPayload> STREAM_CHANNEL_READER = reader(NetworkPlatformTools.STREAM_CHANNEL_ID);
-    public static final StreamCodec<FriendlyByteBuf, EmotePacketPayload> GEYSER_CHANNEL_READER = reader(NetworkPlatformTools.GEYSER_CHANNEL_ID);
 }
