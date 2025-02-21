@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.arch.services;
+package io.github.kosmx.emotes.mc.services.impl;
 
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
@@ -15,10 +15,10 @@ public class Logger4jService implements LoggerService {
     private static final ConcurrentMap<java.util.logging.Level, Level> LEVELS = new ConcurrentHashMap<>(9);
     static {
         LEVELS.put(java.util.logging.Level.ALL, Level.ALL);
-        LEVELS.put(java.util.logging.Level.FINEST, Level.forName("FINEST", Level.TRACE.intLevel() + 100));
+        LEVELS.put(java.util.logging.Level.FINEST, Level.TRACE);
         LEVELS.put(java.util.logging.Level.FINER, Level.TRACE);
         LEVELS.put(java.util.logging.Level.FINE, Level.DEBUG);
-        LEVELS.put(java.util.logging.Level.CONFIG, Level.forName("CONFIG", Level.INFO.intLevel() + 50));
+        LEVELS.put(java.util.logging.Level.CONFIG, Level.DEBUG);
         LEVELS.put(java.util.logging.Level.INFO, Level.INFO);
         LEVELS.put(java.util.logging.Level.WARNING, Level.WARN);
         LEVELS.put(java.util.logging.Level.SEVERE, Level.ERROR);

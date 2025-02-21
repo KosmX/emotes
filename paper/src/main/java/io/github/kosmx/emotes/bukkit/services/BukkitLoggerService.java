@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.bukkit.services;
 
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
+import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 
 import java.util.logging.Level;
 
@@ -21,5 +22,10 @@ public class BukkitLoggerService implements LoggerService {
     @Override
     public boolean isActive() {
         return BUKKIT_WRAPPER != null;
+    }
+
+    @Override
+    public int getPriority() {
+        return ServiceLoaderUtil.DEFAULT_PRIORITY + 1;
     }
 }
