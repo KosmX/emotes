@@ -1,0 +1,6 @@
+id: emotecraft
+name: EmotecraftExt
+api: 2.6.1
+main: org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt
+version: ${version}
+authors: [dima_dencep, KosmX]

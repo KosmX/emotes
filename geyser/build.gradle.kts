@@ -1,0 +1,81 @@
+plugins {
+    java
+    `maven-publish`
+    id("com.gradleup.shadow")
+    id("xyz.wagyourtail.jvmdowngrader")
+}
+
+base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
+version = mod_version
+
+val compileApi = configurations.register("compileApi").get()
+configurations.api.configure { extendsFrom(compileApi) }
+
+dependencies {
+    compileOnly("org.geysermc.geyser:core:${properties["geyser_version"] as String}")
+    runtimeOnly("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}") {
+        exclude(module = "netty-incubator-transport-native-io_uring")
+    }
+
+    compileApi(project(":emotesAssets"))
+    compileApi(project(":emotesAPI")) {
+        exclude(group = "org.jetbrains", module = "annotations")
+        exclude(module = "gson")
+    }
+}
+
+tasks {
+    processResources {
+        inputs.property("version", version)
+        inputs.property("description", mod_description)
+
+        filesMatching("extension.yml") {
+            expand("version" to version, "description" to mod_description)
+        }
+    }
+
+    shadowJar {
+        configurations = listOf(compileApi)
+        archiveClassifier.set("shaded")
+        mergeServiceFiles()
+    }
+
+    downgradeJar {
+        dependsOn(shadowJar)
+
+        downgradeTo = JavaVersion.VERSION_17
+        inputFile = shadowJar.get().archiveFile
+        archiveClassifier.set("")
+    }
+
+    jar {
+        archiveClassifier.set("dev")
+    }
+
+    assemble {
+        dependsOn(downgradeJar)
+    }
+}
+
+java {
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("mavenJava") {
+            artifactId = "emotesGeyser"
+            from(components["java"])
+            withCustomPom("emotesGeyser", "Minecraft Emotecraft Geyser extension")
+        }
+    }
+
+    repositories {
+        if (shouldPublishMaven) {
+            kosmxRepo(project)
+        } else {
+            mavenLocal()
+        }
+    }
+}
+

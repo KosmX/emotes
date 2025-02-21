@@ -1,6 +1,7 @@
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
+    id("xyz.wagyourtail.jvmdowngrader") version("1.2.2") apply false
     id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
     id("com.gradleup.shadow") version "8.3.6" apply false
@@ -24,17 +25,14 @@ subprojects {
         maven("https://repo.redlance.org/public")
         maven("https://libraries.minecraft.net")
         maven("https://maven.neoforged.net/releases")
+        maven("https://repo.opencollab.dev/main/") {
+            name = "Geyser"
+        }
     }
 
     tasks.withType(JavaCompile::class).configureEach {
-        val targetVersion = properties["java_version"] as String
-        sourceCompatibility = targetVersion
-        targetCompatibility = targetVersion
-
+        options.release = 21
         options.encoding = "UTF-8"
-
-        //options.compilerArgs << "-Xlint:unchecked"
-        //options.deprecation = true	//deprecated warning on compile
     }
 
     repositories {
