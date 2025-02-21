@@ -32,7 +32,7 @@ public class MainClientInit {
 
         EmoteHolder.clearEmotes();
 
-        EmoteHolder.addEmoteToList(UniversalEmoteSerializer.hiddenServerEmotes);
+        EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes());
 
     }
 

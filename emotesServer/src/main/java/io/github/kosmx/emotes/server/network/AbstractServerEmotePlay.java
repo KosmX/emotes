@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.impl.event.EventResult;
 import dev.kosmx.playerAnim.core.util.Pair;
-import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
@@ -25,13 +24,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -240,24 +235,6 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         return getPlayerNetworkInstance(player).getEmoteTracker().isForced();
     }
 
-    public List<ByteBuffer> getServerEmotes(HashMap<Byte, Byte> compatibilityMap) {
-        try {
-
-            return UniversalEmoteSerializer.serverEmotes.values().stream().map(emote -> {
-                try {
-                    return new EmotePacket.Builder().configureToSaveEmote(emote).setVersion(compatibilityMap).setSizeLimit(0x100000, true).build().write(); //1 MB
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }).toList();
-
-
-        } catch (RuntimeException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to prepare server emotes!", e);
-            return Collections.emptyList();
-        }
-    }
-
     @Deprecated
     public void presenceResponse(AbstractNetworkInstance instance, boolean trackPlayState) {
         try {
@@ -266,10 +243,10 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             LoggerService.INSTANCE.log(Level.SEVERE, "Failed to send config to client!", e);
         }
         if(instance.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
-            for (ByteBuffer emote : getServerEmotes(instance.getRemoteVersions())) {
+            for (ByteBuffer emote : UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).toList()) {
                 try{
                     instance.sendMessage(emote, null);
-                }catch (Throwable e){
+                } catch (Throwable e){
                     LoggerService.INSTANCE.log(Level.WARNING, "Failed to send save emote message", e);
                 }
             }
@@ -322,33 +299,5 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
      */
     public static AbstractServerEmotePlay getInstance() {
         return (AbstractServerEmotePlay) ServerEmoteAPI.INSTANCE;
-    }
-
-    @Override
-    protected HashMap<UUID, KeyframeAnimation> getLoadedEmotesImpl() {
-        HashMap<UUID, KeyframeAnimation> map = new UUIDMap<>();
-        map.putAll(UniversalEmoteSerializer.serverEmotes);
-        map.putAll(UniversalEmoteSerializer.hiddenServerEmotes);
-        return map;
-    }
-
-    @Override
-    protected UUIDMap<KeyframeAnimation> getPublicEmotesImpl() {
-        return UniversalEmoteSerializer.serverEmotes;
-    }
-
-    @Override
-    protected UUIDMap<KeyframeAnimation> getHiddenEmotesImpl() {
-        return UniversalEmoteSerializer.hiddenServerEmotes;
-    }
-
-    @Override
-    protected List<KeyframeAnimation> deserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format) {
-        return UniversalEmoteSerializer.readData(inputStream, quarkName, format);
-    }
-
-    @Override
-    protected KeyframeAnimation getEmoteImpl(UUID emoteID) {
-        return UniversalEmoteSerializer.getEmote(emoteID);
     }
 }

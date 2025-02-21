@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -43,7 +44,7 @@ public final class ServerNetworkStuff {
                 }
 
                 ((EmotesMixinConnection) ((ServerCommonPacketListenerAccessor) context.networkHandler()).getConnection()).emotecraft$setVersions(message.versions);
-                CommonServerNetworkHandler.instance.getServerEmotes(message.versions).forEach(buffer -> new EmoteStreamHelper() {
+                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer -> new EmoteStreamHelper() {
                     @Override
                     protected int getMaxPacketSize() {
                         return Short.MAX_VALUE - 16;

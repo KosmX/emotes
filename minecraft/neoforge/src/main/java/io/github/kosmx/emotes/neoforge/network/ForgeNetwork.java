@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
@@ -57,7 +58,7 @@ public class ForgeNetwork {
 
                                 ((EmotesMixinConnection) configurationPayloadContext.connection()).emotecraft$setVersions(message.versions);
 
-                                CommonServerNetworkHandler.instance.getServerEmotes(message.versions).forEach(buffer -> new EmoteStreamHelper() {
+                                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer -> new EmoteStreamHelper() {
                                     @Override
                                     protected int getMaxPacketSize() {
                                         return Short.MAX_VALUE - 16;

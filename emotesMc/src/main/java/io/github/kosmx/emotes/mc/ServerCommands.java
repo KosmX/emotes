@@ -111,6 +111,6 @@ public final class ServerCommands {
     }
 
     private static HashMap<UUID, KeyframeAnimation> getEmotes(CommandContext<CommandSourceStack> context) {
-        return IPermissionService.INSTANCE.check(context.getSource(), "emotes.play.showhidden", 1) ? ServerEmoteAPI.getLoadedEmotes() : ServerEmoteAPI.getPublicEmotes();
+        return IPermissionService.INSTANCE.check(context.getSource(), "emotes.play.showhidden", 1) ? UniversalEmoteSerializer.getLoadedEmotes() : UniversalEmoteSerializer.SERVER_EMOTES;
     }
 }
