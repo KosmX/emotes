@@ -5,5 +5,6 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import java.io.OutputStream;
 
 public interface ISerializer extends IReader {
-    void write(KeyframeAnimation emote, OutputStream writer) throws EmoteSerializerException;
+    void write(KeyframeAnimation emote, OutputStream writer, String filename) throws EmoteSerializerException;
+    boolean onlyEmoteFile();
 }

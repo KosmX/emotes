@@ -8,8 +8,8 @@ public class EmoteSerializerException extends RuntimeException {
         this.type = type;
     }
 
-    public EmoteSerializerException(String msg, String type, Exception exception) {
-        super(msg, exception);
+    public EmoteSerializerException(String msg, String type, Throwable cause) {
+        super(msg, cause);
         this.type = type;
     }
 

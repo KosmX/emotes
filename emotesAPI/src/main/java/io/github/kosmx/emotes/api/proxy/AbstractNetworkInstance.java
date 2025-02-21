@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.api.proxy;
 
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
@@ -185,8 +186,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
             consumer.accept(packetBuilder);
         }
         catch (Exception e){
-            EmotesProxyManager.log(Level.WARNING, "Error while writing packet: " + e.getMessage());
-            e.printStackTrace();
+            LoggerService.INSTANCE.log(Level.WARNING, "Error while writing packet!", e);
         }
     }
 

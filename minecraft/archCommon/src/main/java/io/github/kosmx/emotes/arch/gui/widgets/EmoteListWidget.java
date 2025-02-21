@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import net.minecraft.ChatFormatting;
@@ -83,7 +83,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
 
     public Iterable<EmoteHolder> getEmptyEmotes(){
         Collection<EmoteHolder> empties = new LinkedList<>();
-        for(Pair<UUID, InputConstants.Key> pair : ((ClientConfig) EmoteInstance.config).emoteKeyMap){
+        for(Pair<UUID, InputConstants.Key> pair : PlatformTools.getConfig().emoteKeyMap){
             if(!EmoteHolder.list.containsKey(pair.getLeft())){
                 empties.add(new EmoteHolder.Empty(pair.getLeft()));
             }

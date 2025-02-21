@@ -1,11 +1,10 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
 import com.mojang.serialization.Codec;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ExportMenu;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
@@ -49,10 +48,10 @@ public class ConfigScreen extends OptionsSubScreen {
     @Override
     protected void addOptions() {
         list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_GENERAL, this.font)));
-        EmoteInstance.config.iterateGeneral(entry -> addConfigEntry(entry, list));
+        PlatformTools.getConfig().iterateGeneral(entry -> addConfigEntry(entry, list));
 
         list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_EXPERT, this.font)));
-        EmoteInstance.config.iterateExpert(entry -> addConfigEntry(entry, list));
+        PlatformTools.getConfig().iterateExpert(entry -> addConfigEntry(entry, list));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @SuppressWarnings("unchecked")
     private <T> void addConfigEntry(SerializableConfig.ConfigEntry<T> entry, OptionsList options) {
-        if (entry.showEntry() || ((ClientConfig) EmoteInstance.config).showHiddenConfig.get()) {
+        if (entry.showEntry() || PlatformTools.getConfig().showHiddenConfig.get()) {
             OptionInstance.TooltipSupplier<?> tooltip;
             if (entry.hasTooltip) {
                 tooltip = b -> Tooltip.create(
@@ -108,13 +107,13 @@ public class ConfigScreen extends OptionsSubScreen {
 
     private void resetAll(boolean bl) {
         if (bl) {
-            EmoteInstance.config.iterate(SerializableConfig.ConfigEntry::resetToDefault);
+            PlatformTools.getConfig().iterate(SerializableConfig.ConfigEntry::resetToDefault);
         }
         this.minecraft.setScreen(this);
     }
 
     @Override
     public void removed() {
-        ClientSerializer.saveConfig();
+        ClientSerializer.INSTANCE.saveConfig();
     }
 }

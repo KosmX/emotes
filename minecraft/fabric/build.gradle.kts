@@ -31,7 +31,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric_api_version"] as String}")
 
-    commonModule(project(":executor")) { isTransitive = false }
     commonModule(project(":emotesAPI")) { isTransitive = false }
     commonModule(project(":emotesServer")) { isTransitive = false }
     commonModule(project(":emotesAssets")) { isTransitive = false }
@@ -39,6 +38,10 @@ dependencies {
 
     modImplementation("com.terraformersmc:modmenu:${properties["modmenu_version"] as String}") {
         exclude(group = "net.fabricmc.fabric-api")
+    }
+
+    modImplementation("me.lucko:fabric-permissions-api:${properties["fabric_permissions_api"] as String}") {
+        pomCompile(this)
     }
 
     modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
@@ -88,6 +91,7 @@ java {
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
     archiveClassifier.set("")
+    mergeServiceFiles()
 }
 
 tasks.remapJar {

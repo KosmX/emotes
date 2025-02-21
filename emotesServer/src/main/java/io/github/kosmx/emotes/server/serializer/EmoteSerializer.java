@@ -5,7 +5,7 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.data.opennbs.NBSFileUtils;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 
 import java.io.DataInputStream;
 import java.io.InputStream;
@@ -33,7 +33,7 @@ public class EmoteSerializer {
                     file -> AnimationFormat.byFileName(file.getFileName().toString()).getExtension() != null
             ).parallel().forEach(file -> emotes.addAll(serializeExternalEmote(file)));
         } catch (Throwable e) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to walk emotes!", e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to walk emotes!", e);
         }
     }
 
@@ -53,7 +53,7 @@ public class EmoteSerializer {
                         emote.extraData.put("iconData", byteBuffer);
                     }
                 } catch (Throwable th) {
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while reading icon: " + icon.getFileName(), th);
+                    LoggerService.INSTANCE.log(Level.WARNING, "Error while reading icon: " + icon.getFileName(), th);
                 }
             }
 
@@ -62,13 +62,13 @@ public class EmoteSerializer {
                 try (DataInputStream bis = new DataInputStream(Files.newInputStream(song))) {
                     emotes.getFirst().extraData.put("song", NBSFileUtils.read(bis));
                 } catch (Throwable th) {
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while reading song: " + song.getFileName(), th);
+                    LoggerService.INSTANCE.log(Level.WARNING, "Error while reading song: " + song.getFileName(), th);
                 }
             }
 
             return emotes;
         } catch (Throwable th) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Error while importing external emote: " + file.getFileName(), th);
+            LoggerService.INSTANCE.log(Level.WARNING, "Error while importing external emote: " + file.getFileName(), th);
             return Collections.emptyList();
         }
     }

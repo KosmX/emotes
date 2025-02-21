@@ -64,12 +64,9 @@
   "emotecraft.resetAllKeys.title": "Reset all emote keybindings",
   "emotecraft.resetAllKeys.message": "Do you really want to reset your emote keybindings?",
   "emotecraft.options.export": "Export Menu",
-  "emotecraft.exportjson": "Export Emotes in JSON",
-  "emotecraft.exportbin": "Export Emotes in .emotecraft binary",
-  "emotecraft.export.error.json": "Failed export to JSON...",
-  "emotecraft.export.error.emotecraft": "Failed export to .emotecraft...",
-  "emotecraft.export.done.json": "JSON export done!",
-  "emotecraft.export.done.emotecraft": ".emotecraft export done!",
+  "emotecraft.export": "Export Emotes in .%s",
+  "emotecraft.export.error": "Failed export to %s...",
+  "emotecraft.export.done": "%s export done!",
   "emotecraft.song_too_big_to_send": "Song is too big to be sent to server. Sending emote only...",
   "emotecraft.cant.override.forced": "You're forced to play the current emote, it can't be changed."
 }

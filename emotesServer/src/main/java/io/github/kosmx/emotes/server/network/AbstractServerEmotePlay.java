@@ -5,32 +5,28 @@ import com.google.gson.reflect.TypeToken;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.impl.event.EventResult;
 import dev.kosmx.playerAnim.core.util.Pair;
-import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.geyser.EmoteMappings;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
+import io.github.kosmx.emotes.server.services.InstanceService;
 import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -46,11 +42,12 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
 
     public AbstractServerEmotePlay(){
+        ServerEmoteAPI.INSTANCE = this;
+
         try {
-            initMappings(EmoteInstance.instance.getConfigPath());
-            ServerEmoteAPI.INSTANCE = this;
+            initMappings(InstanceService.INSTANCE.getConfigPath());
         }catch (IOException e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to load bedrock mappings!", e);
         }
     }
 
@@ -59,9 +56,9 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         if(filePath.toFile().isFile()){
             BufferedReader reader = Files.newBufferedReader(filePath);
             try {
-                this.bedrockEmoteMap = new EmoteMappings(Serializer.serializer.fromJson(reader, new TypeToken<BiMap<UUID, UUID>>() {}.getType()));
+                this.bedrockEmoteMap = new EmoteMappings(Serializer.getSerializer().fromJson(reader, new TypeToken<BiMap<UUID, UUID>>() {}.getType()));
             }catch (JsonParseException e){
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to parse bedrock mappings!", e);
             }
             reader.close();
         }
@@ -69,13 +66,13 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             BiMap<UUID, UUID> example = new BiMap<>();
             example.put(new UUID(0x0011223344556677L, 0x8899aabbccddeeffL), new UUID(0xffeeddccbbaa9988L, 0x7766554433221100L));
             BufferedWriter writer = Files.newBufferedWriter(filePath);
-            Serializer.serializer.toJson(example, new TypeToken<BiMap<UUID, UUID>>() {}.getType(), writer);
+            Serializer.getSerializer().toJson(example, new TypeToken<BiMap<UUID, UUID>>() {}.getType(), writer);
             writer.close();
         }
     }
 
     protected boolean doValidate(){
-        return EmoteInstance.config.validateEmote.get();
+        return Serializer.getConfig().validateEmote.get();
     }
 
     protected abstract UUID getUUIDFromPlayer(P player);
@@ -91,11 +88,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
     }
 
     public void receiveMessage(byte[] bytes, P player, INetworkInstance instance) throws IOException{
-        receiveMessage(new EmotePacket.Builder().setThreshold(EmoteInstance.config.validThreshold.get()).build().read(ByteBuffer.wrap(bytes)), player, instance);
+        receiveMessage(new EmotePacket.Builder().setThreshold(Serializer.getConfig().validThreshold.get()).build().read(ByteBuffer.wrap(bytes)), player, instance);
     }
 
     public void receiveMessage(NetData data, P player, INetworkInstance instance) throws IOException {
-        EmoteInstance.instance.getLogger().log(Level.FINEST, "[emotes server] Received data from: " + getUUIDFromPlayer(player) + " data: " + data);
+        LoggerService.INSTANCE.log(Level.FINEST, "[emotes server] Received data from: " + getUUIDFromPlayer(player) + " data: " + data);
         switch (data.purpose){
             case STOP:
                 stopEmote(player, data);
@@ -147,11 +144,11 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         }
         IServerNetworkInstance playerInstance = getPlayerNetworkInstance(player);
         if (data.player != null && playerInstance.trackPlayState()) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " does not respect server-side emote tracking. Ignoring repeat", true);
+            LoggerService.INSTANCE.log(Level.WARNING, "Player: " + player + " does not respect server-side emote tracking. Ignoring repeat");
             return;
         }
         if (playerInstance.getEmoteTracker().isForced()) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Player: " + player + " is disobeying force play flag and tried to override it");
+            LoggerService.INSTANCE.log(Level.WARNING, "Player: " + player + " is disobeying force play flag and tried to override it");
         }
         streamEmote(data, player, false, true);
     }
@@ -202,7 +199,7 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
             packet.setRuntimeEntityID(getRuntimePlayerID(player));
             receiveBEEmote(player, packet);
         }catch (Throwable t){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, t.getMessage(), t);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to receive geyser packet!", t);
         }
     }
 
@@ -238,37 +235,19 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
         return getPlayerNetworkInstance(player).getEmoteTracker().isForced();
     }
 
-    public List<ByteBuffer> getServerEmotes(HashMap<Byte, Byte> compatibilityMap) {
-        try {
-
-            return UniversalEmoteSerializer.serverEmotes.values().stream().map(emote -> {
-                try {
-                    return new EmotePacket.Builder().configureToSaveEmote(emote).setVersion(compatibilityMap).setSizeLimit(0x100000, true).build().write(); //1 MB
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }).toList();
-
-
-        } catch (RuntimeException e) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
-            return Collections.emptyList();
-        }
-    }
-
     @Deprecated
     public void presenceResponse(AbstractNetworkInstance instance, boolean trackPlayState) {
         try {
             instance.sendMessage(getS2CConfigPacket(trackPlayState), null);
         } catch(IOException e) {
-            EmoteInstance.instance.getLogger().log(Level.SEVERE, e.getMessage());
+            LoggerService.INSTANCE.log(Level.SEVERE, "Failed to send config to client!", e);
         }
         if(instance.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
-            for (ByteBuffer emote : getServerEmotes(instance.getRemoteVersions())) {
+            for (ByteBuffer emote : UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).toList()) {
                 try{
                     instance.sendMessage(emote, null);
-                }catch (Throwable e){
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to send save emote message", e);
+                } catch (Throwable e){
+                    LoggerService.INSTANCE.log(Level.WARNING, "Failed to send save emote message", e);
                 }
             }
         }
@@ -320,33 +299,5 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
      */
     public static AbstractServerEmotePlay getInstance() {
         return (AbstractServerEmotePlay) ServerEmoteAPI.INSTANCE;
-    }
-
-    @Override
-    protected HashMap<UUID, KeyframeAnimation> getLoadedEmotesImpl() {
-        HashMap<UUID, KeyframeAnimation> map = new UUIDMap<>();
-        map.putAll(UniversalEmoteSerializer.serverEmotes);
-        map.putAll(UniversalEmoteSerializer.hiddenServerEmotes);
-        return map;
-    }
-
-    @Override
-    protected UUIDMap<KeyframeAnimation> getPublicEmotesImpl() {
-        return UniversalEmoteSerializer.serverEmotes;
-    }
-
-    @Override
-    protected UUIDMap<KeyframeAnimation> getHiddenEmotesImpl() {
-        return UniversalEmoteSerializer.hiddenServerEmotes;
-    }
-
-    @Override
-    protected List<KeyframeAnimation> deserializeEmoteImpl(InputStream inputStream, @Nullable String quarkName, String format) {
-        return UniversalEmoteSerializer.readData(inputStream, quarkName, format);
-    }
-
-    @Override
-    protected KeyframeAnimation getEmoteImpl(UUID emoteID) {
-        return UniversalEmoteSerializer.getEmote(emoteID);
     }
 }

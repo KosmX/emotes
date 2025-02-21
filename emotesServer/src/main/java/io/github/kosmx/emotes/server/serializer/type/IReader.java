@@ -1,26 +1,22 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
-
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import io.github.kosmx.emotes.api.services.IEmotecraftService;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@SuppressWarnings({"deprecation","removal"})
-public interface IReader {
+public interface IReader extends IEmotecraftService {
     List<KeyframeAnimation> read(InputStream reader, String filename) throws EmoteSerializerException;
 
-    default String getFormatExtension(){
-        return getFormatType().getExtension();
+    default boolean canRead(String fileName) {
+        return fileName != null && fileName.endsWith("." + getExtension());
     }
 
-    AnimationFormat getFormatType();
+    String getExtension();
 
-    default BufferedReader streamReader(InputStream stream){
-        return new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+    @Override
+    default boolean isActive() {
+        return getExtension() != null;
     }
 }
