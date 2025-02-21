@@ -215,7 +215,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * @return True if possible to play
      */
     public static boolean canRunEmote(AbstractClientPlayer player){
-        if(player.getPose() != Pose.STANDING && !ClientPacketManager.isRemoteTracking()) return false;
+        if(!player.hasPose(Pose.STANDING) && !ClientPacketManager.isRemoteTracking()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
         return ! (new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(new Vec3d(player.xo, MathHelper.lerp(PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()), player.zo)) > PlatformTools.getConfig().stopThreshold.get());
     }

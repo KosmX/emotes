@@ -3,6 +3,7 @@
     "name": "Club penguin",
     "author": "3APA3EH",
     "description": "Joyful penguin dance of happiness!",
+    "uuid": "ffdcfa49-0000-0000-0000-000000000000",
     "emote": {
         "endTick": 152,
         "isLoop": true,

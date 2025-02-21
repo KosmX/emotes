@@ -3,6 +3,7 @@
     "name": "Twerk",
     "author": "3APA3EH",
     "description": "Twerk dance",
+    "uuid": "87e8adf4-0000-0000-0000-000000000000",
     "emote": {
         "endTick": 14,
         "isLoop": true,
