@@ -102,6 +102,8 @@ public class UniversalEmoteSerializer {
         serializeInternalJson("backflip");
         serializeInternalJson("roblox_potion_dance");
         serializeInternalJson("kazotsky_kick");
+        serializeInternalJson("twerk");
+        serializeInternalJson("club_penguin_dance");
 
         Path path = InstanceService.INSTANCE.getExternalEmoteDir();
         if (!Files.isDirectory(path)) {
