@@ -37,8 +37,6 @@ public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
 
     protected abstract P getPlayerFromUUID(UUID player);
 
-    protected abstract long getRuntimePlayerID(P player);
-
     protected abstract IServerNetworkInstance getPlayerNetworkInstance(P player);
 
     protected IServerNetworkInstance getPlayerNetworkInstance(UUID player) { //For potential optimization

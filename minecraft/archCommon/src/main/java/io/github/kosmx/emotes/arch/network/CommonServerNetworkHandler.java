@@ -77,11 +77,6 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
     }
 
     @Override
-    protected long getRuntimePlayerID(Player player) {
-        return player.getId();
-    }
-
-    @Override
     protected IServerNetworkInstance getPlayerNetworkInstance(Player sourcePlayer) {
         if (!(sourcePlayer instanceof ServerPlayer player)) {
             return null;

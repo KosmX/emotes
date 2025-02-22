@@ -271,6 +271,9 @@ public class EmotePacket {
             data.strictSizeLimit = strict;
             return this;
         }
-    }
 
+        public NetData getData() {
+            return this.data;
+        }
+    }
 }

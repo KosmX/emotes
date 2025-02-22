@@ -58,11 +58,6 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
     }
 
     @Override
-    protected long getRuntimePlayerID(Player player) {
-        return player.getEntityId();
-    }
-
-    @Override
     protected IServerNetworkInstance getPlayerNetworkInstance(Player player) {
         UUID playerUuid = getUUIDFromPlayer(player);
         if (!player_database.containsKey(playerUuid)) {
