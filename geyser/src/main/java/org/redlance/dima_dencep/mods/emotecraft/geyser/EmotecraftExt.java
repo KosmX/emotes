@@ -12,7 +12,7 @@ import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
-import org.geysermc.geyser.api.event.lifecycle.GeyserPreInitializeEvent;
+import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.util.MinecraftKey;
@@ -47,8 +47,10 @@ public class EmotecraftExt implements Extension {
     }
 
     @Subscribe
-    public void onPreInitialize(GeyserPreInitializeEvent event) {
+    public void onPostInitialize(GeyserPostInitializeEvent event) {
         LoggerService.INSTANCE.log(Level.INFO, "Loading emotecraft on geyser...");
+        LoggerService.INSTANCE.log(Level.WARNING, "Note that this extension does some horrible hacks on geyser.");
+        LoggerService.INSTANCE.log(Level.WARNING, "Until custom packet event is added, workarounds cannot be avoided.");
 
         GayserHacks.addCustomJavaTranslator(ClientboundCustomPayloadPacket.class, (session, packet) -> {
             Key type = packet.getChannel();

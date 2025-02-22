@@ -14,7 +14,7 @@ public class GeyserLoggerService implements LoggerService {
 
     @Override
     public void log(Level level, String msg) {
-        EmotecraftExt.getInstance().logger().info(msg);
+        EmotecraftExt.getInstance().logger().warning(msg);
     }
 
     @Override
