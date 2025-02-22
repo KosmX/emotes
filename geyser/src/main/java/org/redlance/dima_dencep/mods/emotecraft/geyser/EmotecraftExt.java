@@ -70,14 +70,26 @@ public class EmotecraftExt implements Extension {
     }
 
     private void onMinecraftRegisterPayload(GeyserSession session, Key type, byte[] bytes) {
+        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
         Set<Key> channels = DinnerboneProtocolUtils.readChannels(Unpooled.wrappedBuffer(bytes));
-        LoggerService.INSTANCE.log(Level.INFO, "Server listening channels: " + channels);
-        if (channels.contains(EmotecraftExt.EMOTECAFT_EMOTE_TYPE)) {
-            LoggerService.INSTANCE.log(Level.INFO, "Has emotecraft!");
 
-            ByteBuf byteBuf = Unpooled.buffer();
-            DinnerboneProtocolUtils.writeChannels(byteBuf, Collections.singleton(EmotecraftExt.EMOTECAFT_EMOTE_TYPE));
-            session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
+        LoggerService.INSTANCE.log(Level.FINE, "Server listening channels: " + channels);
+        if (channels.contains(EmotecraftExt.EMOTECAFT_EMOTE_TYPE)) {
+            LoggerService.INSTANCE.log(Level.FINE, "Has emotecraft!");
+
+            if (networkInstance.isHandShaked()) {
+                LoggerService.INSTANCE.log(Level.FINE, "Sending config....");
+                networkInstance.sendC2SConfig();
+
+            } else {
+                LoggerService.INSTANCE.log(Level.FINE, "Sending register....");
+
+                ByteBuf byteBuf = Unpooled.buffer();
+                DinnerboneProtocolUtils.writeChannels(byteBuf, Collections.singleton(EmotecraftExt.EMOTECAFT_EMOTE_TYPE));
+                session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
+
+                networkInstance.setHandShaked(true);
+            }
         } else {
             // Online-emotes integration?
         }

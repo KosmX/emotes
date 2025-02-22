@@ -28,6 +28,8 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final GeyserSession session;
 
+    private boolean isHandShaked;
+
     public GeyserNetworkInstance(GeyserSession session) {
         this.session = session;
     }
@@ -118,13 +120,6 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 break;
             case CONFIG:
                 setVersions(Objects.requireNonNull(data.versions));
-                sendC2SConfig(payload -> {
-                    try {
-                        sendMessage(payload, null);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
                 break;
 
             case FILE:
@@ -165,5 +160,23 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     @Override
     public boolean sendPlayerID() {
         return !isServerTrackingPlayState();
+    }
+
+    public void sendC2SConfig() {
+        sendC2SConfig(payload -> {
+            try {
+                sendMessage(payload, null);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void setHandShaked(boolean is) {
+        this.isHandShaked = is;
+    }
+
+    public boolean isHandShaked() {
+        return this.isHandShaked;
     }
 }
