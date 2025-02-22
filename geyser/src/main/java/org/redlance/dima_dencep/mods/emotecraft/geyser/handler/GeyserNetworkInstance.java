@@ -2,18 +2,20 @@ package org.redlance.dima_dencep.mods.emotecraft.geyser.handler;
 
 import dev.kosmx.playerAnim.core.impl.event.EventResult;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.text.MinecraftLocale;
+import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -21,7 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-public class GeyserNetworkInstance implements INetworkInstance {
+public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>();
     private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final GeyserSession session;
@@ -43,8 +45,43 @@ public class GeyserNetworkInstance implements INetworkInstance {
 
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        NetData data = builder.getData();
+        super.sendMessage(builder.setVersion(getRemoteVersions()), target);
+    }
 
+    @Override
+    protected void sendMessage(byte[] bytes, @Nullable UUID target) {
+        this.session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(
+                EmotecraftExt.EMOTECAFT_EMOTE_TYPE, bytes
+        ));
+    }
+
+    @Override
+    public void receiveMessage(ByteBuffer byteBuffer, UUID player) {
+        try {
+            NetData data = new EmotePacket.Builder().build().read(byteBuffer);
+            if (data == null) {
+                throw new IOException("no valid data");
+            }
+            if (!trustReceivedPlayer()) {
+                data.player = null;
+            }
+            if (data.player == null && data.purpose.playerBound) {
+                throw new IOException("Didn't received any player information");
+            }
+
+            LoggerService.INSTANCE.log(Level.FINE, "[emotes client] Received message: " + data);
+            if (data.purpose == null) {
+                LoggerService.INSTANCE.log(Level.INFO, "Packet execution is not possible without a purpose");
+                return;
+            }
+
+            handleNetData(data);
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        }
+    }
+
+    private void handleNetData(NetData data) {
         switch (Objects.requireNonNull(data.purpose)) {
             case STREAM:
                 assert data.emoteData != null;
@@ -81,6 +118,13 @@ public class GeyserNetworkInstance implements INetworkInstance {
                 break;
             case CONFIG:
                 setVersions(Objects.requireNonNull(data.versions));
+                sendC2SConfig(payload -> {
+                    try {
+                        sendMessage(payload, null);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 break;
 
             case FILE:
@@ -114,18 +158,8 @@ public class GeyserNetworkInstance implements INetworkInstance {
     }
 
     @Override
-    public int getRemoteVersion() {
-        return CommonData.networkingVersion;
-    }
-
-    @Override
     public boolean isServerTrackingPlayState() {
         return this.versions.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
-    }
-
-    @Override
-    public int maxDataSize() {
-        return CommonData.MAX_PACKET_SIZE;
     }
 
     @Override

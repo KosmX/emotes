@@ -7,8 +7,6 @@ import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.translator.protocol.PacketTranslator;
 import org.geysermc.mcprotocollib.network.packet.Packet;
 
-import java.io.IOException;
-
 @SuppressWarnings({"unchecked","rawtypes"})
 public class GayserHacks {
     public static <T extends BedrockPacket> void addCustomBedrockTranslator(Class<T> packet, ChainedPacketTranslator<T> chained) {
@@ -35,12 +33,8 @@ public class GayserHacks {
 
         @Override
         public void translate(GeyserSession session, T packet) {
-            try {
-                if (this.chained.translate(session, packet) && this.original != null) {
-                    this.original.translate(session, packet);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (this.chained.translate(session, packet) && this.original != null) {
+                this.original.translate(session, packet);
             }
         }
     }

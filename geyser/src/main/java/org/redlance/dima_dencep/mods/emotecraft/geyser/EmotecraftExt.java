@@ -3,11 +3,11 @@ package org.redlance.dima_dencep.mods.emotecraft.geyser;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.kyori.adventure.key.Key;
 import org.cloudburstmc.protocol.bedrock.packet.EmoteListPacket;
+import org.geysermc.event.PostOrder;
 import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
@@ -23,7 +23,6 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInst
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Collections;
 
 import java.util.Map;
@@ -31,6 +30,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+/**
+ * Some cool stuff:
+ * - <a href="https://letsgoaway.dev/MarketplaceEmoteList/">MarketplaceEmoteList</a>
+ */
 public class EmotecraftExt implements Extension {
     private static final Map<GeyserSession, GeyserNetworkInstance> INSTANCES = new ConcurrentHashMap<>();
 
@@ -78,30 +81,8 @@ public class EmotecraftExt implements Extension {
         }
     }
 
-    private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) throws IOException {
-        NetData data = new EmotePacket.Builder().build().read(ByteBuffer.wrap(bytes));
-        if (data == null) {
-            throw new IOException("no valid data");
-        }
-
-        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
-        if (!networkInstance.trustReceivedPlayer()) {
-            data.player = null;
-        }
-        if (data.player == null && data.purpose.playerBound) {
-            throw new IOException("Didn't received any player information");
-        }
-
-        LoggerService.INSTANCE.log(Level.FINE, "[emotes client] Received message: " + data);
-
-        if (data.purpose == null) {
-            LoggerService.INSTANCE.log(Level.INFO, "Packet execution is not possible without a purpose");
-            return;
-        }
-
-        networkInstance.sendMessage(new EmotePacket.Builder(data.copy())
-                .setVersion(networkInstance.getRemoteVersions()), null
-        );
+    private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) {
+        EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new).receiveMessage(bytes);
     }
 
     @Subscribe
@@ -115,11 +96,18 @@ public class EmotecraftExt implements Extension {
         EmotecraftExt.INSTANCES.remove((GeyserSession) event.connection());
     }
 
-    @Subscribe
+    @Subscribe(postOrder = PostOrder.FIRST)
     public void onEmote(ClientEmoteEvent event) {
-        LoggerService.INSTANCE.log(Level.INFO, "On emote " + event.emoteId());
-        GeyserSession session = (GeyserSession) event.connection();
-        // TODO translate
+        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get((GeyserSession) event.connection());
+        if (networkInstance != null) {
+            try {
+                EmotePacket.Builder packet = new EmotePacket.Builder().configureToStreamEmote(null); // TODO translate
+                networkInstance.sendMessage(packet, null);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            event.setCancelled(true);
+        }
     }
 
     public static EmotecraftExt getInstance() {
