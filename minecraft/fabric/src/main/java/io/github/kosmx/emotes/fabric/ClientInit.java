@@ -3,10 +3,10 @@ package io.github.kosmx.emotes.fabric;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.ClientCommands;
-import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
 import io.github.kosmx.emotes.main.MainClientInit;
+import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -38,7 +38,7 @@ public class ClientInit implements ClientModInitializer {
         ClientNetworkInstance.init(); //init network
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            ClientMethods.tick++;
+            MainLoader.tick();
 
             keyBindingFunction.accept(client);
         });

@@ -16,7 +16,8 @@ import java.util.logging.Level;
  * Emotecraft's loader
  */
 public class MainLoader {
-    static int tick = 0;
+    private static int tick = 0;
+
     //The main mod-loader class
     public static void main(boolean isClient){
 
@@ -35,11 +36,15 @@ public class MainLoader {
         }
     }
 
-    public static void tick(){
-        if(tick++ >= 20){
-            tick=0;
+    public static void tick() {
+        tick++;
 
+        if (tick % 21 == 20) {
             ClientEmotePlay.checkQueue();
         }
+    }
+
+    public static int getTick() {
+        return tick;
     }
 }

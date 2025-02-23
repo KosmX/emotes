@@ -2,11 +2,11 @@ package io.github.kosmx.emotes.neoforge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.main.MainClientInit;
+import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -44,7 +44,7 @@ public class ClientInit {
 
     @SubscribeEvent
     public static void endClientTick(ClientTickEvent.Post event){
-        ClientMethods.tick++;
+        MainLoader.tick();
     }
 
     @SubscribeEvent

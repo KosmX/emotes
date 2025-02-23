@@ -8,10 +8,10 @@ import io.github.kosmx.emotes.api.events.client.ClientEmoteAPI;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.arch.executor.ClientMethods;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.MainLoader;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -137,7 +137,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 playerEntity.emotecraft$playEmote(emoteData, tick, isForced);
             }
             else {
-                addToQueue(new QueueEntry(emoteData, tick, ClientMethods.getCurrentTick()), player);
+                addToQueue(new QueueEntry(emoteData, tick, MainLoader.getTick()), player);
             }
         }
     }
@@ -161,7 +161,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         if (queue.containsKey(uuid)) {
             QueueEntry entry = queue.get(uuid);
             KeyframeAnimation emoteData = entry.emoteData;
-            int tick = entry.beginTick - entry.receivedTick + ClientMethods.getCurrentTick();
+            int tick = entry.beginTick - entry.receivedTick + MainLoader.getTick();
             queue.remove(uuid);
             if (!emoteData.isPlayingAt(tick)) return null;
             return new Pair<>(emoteData, tick);
@@ -173,11 +173,11 @@ public class ClientEmotePlay extends ClientEmoteAPI {
      * Call this periodically to keep the queue clean
      */
     public static void checkQueue(){
-        int currentTick = ClientMethods.getCurrentTick();
+        int currentTick = MainLoader.getTick();
         queue.forEach((uuid, entry) -> {
             if(!entry.emoteData.isPlayingAt(entry.beginTick + currentTick)
                     && entry.beginTick + currentTick > 0
-                    || ClientMethods.getCurrentTick() - entry.receivedTick > 24000){
+                    || MainLoader.getTick() - entry.receivedTick > 24000){
                 queue.remove(uuid);
             }
         });
