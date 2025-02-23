@@ -2,8 +2,11 @@ package io.github.kosmx.emotes.main;
 
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.main.config.ClientSerializer;
+import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.main.config.ClientConfig;
+import io.github.kosmx.emotes.main.config.ClientConfigSerializer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
@@ -22,15 +25,14 @@ public class MainLoader {
         }
         CommonData.isLoaded = true;
 
-        //This data is available at server-side.
-        Serializer.INSTANCE = isClient ? new ClientSerializer() : new Serializer();
-
-        //TODO init server networking on actual implementation
-
-        if(isClient) {
+        if (isClient) {
+            Serializer.INSTANCE = new Serializer<>(new ClientConfigSerializer(), ClientConfig.class);
             MainClientInit.init();
-        }else UniversalEmoteSerializer.loadEmotes();
 
+        } else {
+            Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
+            UniversalEmoteSerializer.loadEmotes();
+        }
     }
 
     public static void tick(){

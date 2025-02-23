@@ -10,7 +10,7 @@ import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientSerializer;
+import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
@@ -248,7 +248,7 @@ public class EmoteMenu extends EmoteSubScreen {
     public void removed() {
         this.watcher.blockWhileLoading();
         super.removed();
-        ClientSerializer.INSTANCE.saveConfig();
+        Serializer.INSTANCE.saveConfig();
         try {
             this.watcher.close();
         } catch (Throwable th) {

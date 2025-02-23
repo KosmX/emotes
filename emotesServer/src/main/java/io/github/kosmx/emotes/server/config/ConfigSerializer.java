@@ -5,13 +5,20 @@ import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.SerializableConfig;
 
 import java.lang.reflect.Type;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
-public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, JsonSerializer<SerializableConfig> {
+public class ConfigSerializer<T extends SerializableConfig> implements JsonDeserializer<T>, JsonSerializer<T> {
+    protected final Supplier<T> configSuppler;
+
+    public ConfigSerializer(Supplier<T> configSuppler) {
+        this.configSuppler = configSuppler;
+    }
+
     @Override
-    public SerializableConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
+    public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
         JsonObject node = json.getAsJsonObject();
-        SerializableConfig config = this.newConfig();
+        T config = this.configSuppler.get();
         config.configVersion = SerializableConfig.staticConfigVersion;
         if (node.has("config_version"))
             config.configVersion = node.get("config_version").getAsInt();
@@ -28,11 +35,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         return config;
     }
 
-    protected SerializableConfig newConfig() {
-        return new SerializableConfig();
-    }
-
-    protected <T> void deserializeEntry(SerializableConfig.ConfigEntry<T> entry, JsonObject node, JsonDeserializationContext context) {
+    protected <E> void deserializeEntry(SerializableConfig.ConfigEntry<E> entry, JsonObject node, JsonDeserializationContext context) {
         String id = null;
         if (node.has(entry.getName())) {
             id = entry.getName();
@@ -55,7 +58,7 @@ public class ConfigSerializer implements JsonDeserializer<SerializableConfig>, J
         return node;
     }
 
-    protected <T> void serializeEntry(SerializableConfig.ConfigEntry<T> entry, JsonObject node, JsonSerializationContext context) {
+    protected <E> void serializeEntry(SerializableConfig.ConfigEntry<E> entry, JsonObject node, JsonSerializationContext context) {
         node.add(entry.getName(), context.serialize(entry.get()));
     }
 }

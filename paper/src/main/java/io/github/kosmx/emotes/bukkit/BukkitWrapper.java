@@ -4,7 +4,9 @@ import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.bukkit.fuckery.StreamCodecUtils;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.mc.ServerCommands;
+import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -43,7 +45,7 @@ public class BukkitWrapper extends JavaPlugin {
             getServer().shutdown();
         }
 
-        Serializer.INSTANCE = new Serializer(); //it does register itself
+        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class); //it does register itself
         UniversalEmoteSerializer.loadEmotes();
 
         for (String permission : ServerCommands.PERMISSIONS) {
