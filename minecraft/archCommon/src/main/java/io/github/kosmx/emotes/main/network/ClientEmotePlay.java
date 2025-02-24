@@ -18,20 +18,19 @@ import net.minecraft.network.chat.Component;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ClientEmotePlay extends ClientEmoteAPI {
-
     /**
      * When the emotePacket arrives earlier than the player entity data
      * I put the emote into a queue.
      */
-    //private static final int maxQueueLength = 256;
-    private static final HashMap<UUID, QueueEntry> queue = new HashMap<>();
+    private static final Map<UUID, QueueEntry> QUEUE = new ConcurrentHashMap<>();
 
     public static void clientStartLocalEmote(EmoteHolder emoteHolder) {
         clientStartLocalEmote(emoteHolder.getEmote());
@@ -112,7 +111,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                     }
                 }
                 else {
-                    queue.remove(data.player);
+                    QUEUE.remove(data.player);
                 }
                 break;
             case CONFIG:
@@ -137,7 +136,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 playerEntity.emotecraft$playEmote(emoteData, tick, isForced);
             }
             else {
-                addToQueue(new QueueEntry(emoteData, tick, MainLoader.getTick()), player);
+                QUEUE.put(player, new QueueEntry(emoteData, tick, MainLoader.getTick()));
             }
         }
     }
@@ -147,22 +146,17 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 && (!emoteData.nsfw || PlatformTools.getConfig().enableNSFW.get());
     }
 
-    static void addToQueue(QueueEntry entry, UUID player) {
-        queue.put(player, entry);
-    }
-
 
     /**
      * @param uuid get emote for this player
      * @return KeyframeAnimation, current tick of the emote
      */
-    public static @Nullable
-    Pair<KeyframeAnimation, Integer> getEmoteForUUID(UUID uuid) {
-        if (queue.containsKey(uuid)) {
-            QueueEntry entry = queue.get(uuid);
+    public static @Nullable Pair<KeyframeAnimation, Integer> getEmoteForUUID(UUID uuid) {
+        if (QUEUE.containsKey(uuid)) {
+            QueueEntry entry = QUEUE.get(uuid);
             KeyframeAnimation emoteData = entry.emoteData;
             int tick = entry.beginTick - entry.receivedTick + MainLoader.getTick();
-            queue.remove(uuid);
+            QUEUE.remove(uuid);
             if (!emoteData.isPlayingAt(tick)) return null;
             return new Pair<>(emoteData, tick);
         }
@@ -174,11 +168,11 @@ public class ClientEmotePlay extends ClientEmoteAPI {
      */
     public static void checkQueue(){
         int currentTick = MainLoader.getTick();
-        queue.forEach((uuid, entry) -> {
+        QUEUE.forEach((uuid, entry) -> {
             if(!entry.emoteData.isPlayingAt(entry.beginTick + currentTick)
                     && entry.beginTick + currentTick > 0
                     || MainLoader.getTick() - entry.receivedTick > 24000){
-                queue.remove(uuid);
+                QUEUE.remove(uuid);
             }
         });
     }
