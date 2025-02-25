@@ -118,7 +118,7 @@ public class EmotecraftExt implements Extension {
     @Subscribe(postOrder = PostOrder.FIRST, ignoreCancelled = true)
     public void onEmote(ClientEmoteEvent event) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get((GeyserSession) event.connection());
-        if (networkInstance != null) {
+        if (networkInstance != null && networkInstance.isHandShaked()) {
             CompletableFuture<KeyframeAnimation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
 
             if (animation.isDone() && !animation.isCompletedExceptionally()) {
