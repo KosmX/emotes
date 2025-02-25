@@ -1,12 +1,13 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser;
 
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.kyori.adventure.key.Key;
 import org.cloudburstmc.protocol.bedrock.packet.EmoteListPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.geysermc.event.PostOrder;
 import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
@@ -20,13 +21,14 @@ import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.Clientbound
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserHacks;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
@@ -46,7 +48,7 @@ public class EmotecraftExt implements Extension {
         EmotecraftExt.instance = this;
     }
 
-    @Subscribe
+    @Subscribe(postOrder = PostOrder.LAST)
     public void onPostInitialize(GeyserPostInitializeEvent event) {
         LoggerService.INSTANCE.log(Level.INFO, "Loading emotecraft on geyser...");
         LoggerService.INSTANCE.log(Level.WARNING, "Note that this extension does some horrible hacks on geyser.");
@@ -63,40 +65,43 @@ public class EmotecraftExt implements Extension {
             }
             return true; // Pass
         });
+        GayserHacks.addCustomBedrockTranslator(PlayerAuthInputPacket.class, (session, packet) -> {
+            GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
+            if (networkInstance != null && networkInstance.isPlaying() && session.isSneaking()) {
+                LoggerService.INSTANCE.log(Level.FINE, "Stopping animation " + session.name());
+                networkInstance.stopEmote(session.getPlayerEntity());
+            }
+            return true;
+        });
         GayserHacks.addCustomBedrockTranslator(EmoteListPacket.class, (session, packet) -> {
-            LoggerService.INSTANCE.log(Level.INFO, "Player emotes " + packet.getPieceIds());
+            BedrockEmoteLoader.preloadEmotes(packet.getPieceIds()); // Preload emotes
             return true;
         });
     }
 
     private void onMinecraftRegisterPayload(GeyserSession session, Key type, byte[] bytes) {
-        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
         Set<Key> channels = DinnerboneProtocolUtils.readChannels(Unpooled.wrappedBuffer(bytes));
 
         LoggerService.INSTANCE.log(Level.FINE, "Server listening channels: " + channels);
         if (channels.contains(EmotecraftExt.EMOTECAFT_EMOTE_TYPE)) {
             LoggerService.INSTANCE.log(Level.FINE, "Has emotecraft!");
 
-            if (networkInstance.isHandShaked()) {
-                LoggerService.INSTANCE.log(Level.FINE, "Sending config....");
-                networkInstance.sendC2SConfig();
-
-            } else {
-                LoggerService.INSTANCE.log(Level.FINE, "Sending register....");
-
-                ByteBuf byteBuf = Unpooled.buffer();
-                DinnerboneProtocolUtils.writeChannels(byteBuf, Collections.singleton(EmotecraftExt.EMOTECAFT_EMOTE_TYPE));
-                session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
-
-                networkInstance.setHandShaked(true);
-            }
+            ByteBuf byteBuf = Unpooled.buffer();
+            DinnerboneProtocolUtils.writeChannels(byteBuf, Collections.singleton(EmotecraftExt.EMOTECAFT_EMOTE_TYPE));
+            session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
         } else {
             // Online-emotes integration?
         }
     }
 
     private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) {
-        EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new).receiveMessage(bytes);
+        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
+        if (!networkInstance.isHandShaked()) {
+            LoggerService.INSTANCE.log(Level.FINE, "Configuring emotecraft...");
+            networkInstance.sendC2SConfig(); // If we are in the config state, the server is the first to send a packet and we reply to it
+            networkInstance.setHandShaked(true);
+        }
+        networkInstance.receiveMessage(bytes);
     }
 
     @Subscribe
@@ -110,15 +115,26 @@ public class EmotecraftExt implements Extension {
         EmotecraftExt.INSTANCES.remove((GeyserSession) event.connection());
     }
 
-    @Subscribe(postOrder = PostOrder.FIRST)
+    @Subscribe(postOrder = PostOrder.FIRST, ignoreCancelled = true)
     public void onEmote(ClientEmoteEvent event) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get((GeyserSession) event.connection());
         if (networkInstance != null) {
-            try {
-                EmotePacket.Builder packet = new EmotePacket.Builder().configureToStreamEmote(null); // TODO translate
-                networkInstance.sendMessage(packet, null);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            CompletableFuture<KeyframeAnimation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
+
+            if (animation.isDone() && !animation.isCompletedExceptionally()) {
+                networkInstance.playEmote(animation.join(), false);
+
+            } else {
+                networkInstance.stopEmote();
+
+                if (animation.isCompletedExceptionally()) {
+                    networkInstance.sendChatMessage("emotecraft.cantconvert");
+
+                } else {
+                    animation.thenAccept(emote -> networkInstance.playEmote(
+                            emote, true
+                    ));
+                }
             }
             event.setCancelled(true);
         }

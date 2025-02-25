@@ -1,5 +1,6 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.handler;
 
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.impl.event.EventResult;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
@@ -28,6 +29,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final GeyserSession session;
 
+    private UUID currentEmote;
     private boolean isHandShaked;
 
     public GeyserNetworkInstance(GeyserSession session) {
@@ -97,6 +99,10 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
                     //playerEntity.emotecraft$playEmote(data.emoteData, data.tick, data.isForced);
                     this.session.showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
+
+                    if (isMainPlayer(playerEntity)) {
+                        this.currentEmote = data.emoteData.getUuid();
+                    }
                 } else {
                     // this.queue.put(data.player, new QueueEntry(data.emoteData, data.tick, ClientMethods.getCurrentTick()));
                 }
@@ -108,8 +114,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
                 if (player != null) {
                     ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUuid());
-
-                    this.session.showEmote(player, "idk");
+                    stopEmote(player);
 
                     if (isMainPlayer(player) && !data.isForced) {
                         sendChatMessage("emotecraft.blockedEmote");
@@ -132,8 +137,39 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         }
     }
 
+    public void stopEmote() {
+        stopEmote(this.session.getPlayerEntity());
+    }
+
+    public void stopEmote(PlayerEntity player) {
+        this.session.showEmote(player, "idk");
+
+        if (isMainPlayer(player) && this.currentEmote != null) {
+            try {
+                sendMessage(new EmotePacket.Builder().configureToSendStop(this.currentEmote), null);
+            } catch (IOException e) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to stop animation!", e);
+            }
+        }
+
+        this.currentEmote = null;
+    }
+
     public void sendChatMessage(String key) {
         this.session.sendChat(MinecraftLocale.getLocaleString(key, this.session.locale()));
+    }
+
+    public void playEmote(KeyframeAnimation animation, boolean local) {
+        ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, 0, this.session.javaUuid());
+        try {
+            sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
+            if (local) {
+                this.session.showEmote(this.session.getPlayerEntity(), animation.getUuid().toString());
+            }
+            this.currentEmote = animation.getUuid();
+        } catch (Throwable th) {
+            throw new RuntimeException(th);
+        }
     }
 
     public PlayerEntity getPlayerFromUUID(UUID uuid) {
@@ -178,5 +214,9 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
     public boolean isHandShaked() {
         return this.isHandShaked;
+    }
+
+    public boolean isPlaying() {
+        return this.currentEmote != null;
     }
 }
