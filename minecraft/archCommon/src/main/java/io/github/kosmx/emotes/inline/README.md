@@ -1,1 +1,0 @@
-This whole package and everything in it should be inlined or removed

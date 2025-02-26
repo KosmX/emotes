@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.fabric.network;
 
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
@@ -7,7 +8,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -30,7 +31,7 @@ public final class ServerNetworkStuff {
 
                 handler.addTask(new ConfigTask());
             } else {
-                EmoteInstance.instance.getLogger().log(Level.FINE, "Client doesn't support emotes, ignoring");
+                LoggerService.INSTANCE.log(Level.FINE, "Client doesn't support emotes, ignoring");
             }
             // No disconnect, vanilla clients can connect
         });
@@ -43,7 +44,7 @@ public final class ServerNetworkStuff {
                 }
 
                 ((EmotesMixinConnection) ((ServerCommonPacketListenerAccessor) context.networkHandler()).getConnection()).emotecraft$setVersions(message.versions);
-                CommonServerNetworkHandler.instance.getServerEmotes(message.versions).forEach(buffer -> new EmoteStreamHelper() {
+                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer -> new EmoteStreamHelper() {
                     @Override
                     protected int getMaxPacketSize() {
                         return Short.MAX_VALUE - 16;
@@ -61,7 +62,7 @@ public final class ServerNetworkStuff {
                 });
                 context.networkHandler().completeTask(ConfigTask.TYPE); // And, we're done here
             } catch (IOException e) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                 context.networkHandler().disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
             }
         });

@@ -10,20 +10,21 @@ import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayerEntity;
-import io.github.kosmx.emotes.inline.TmpGetters;
-import io.github.kosmx.emotes.main.config.ClientConfig;
+import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraft.world.entity.Pose;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,9 +65,9 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
-        this.name = PlatformTools.fromJson(emote.extraData.get("name"));
-        this.description = PlatformTools.fromJson(emote.extraData.get("description"));
-        this.author = PlatformTools.fromJson(emote.extraData.get("author"));
+        this.name = McUtils.fromJson(emote.extraData.get("name"), RegistryAccess.EMPTY);
+        this.description = McUtils.fromJson(emote.extraData.get("description"), RegistryAccess.EMPTY);
+        this.author = McUtils.fromJson(emote.extraData.get("author"), RegistryAccess.EMPTY);
     }
 
 
@@ -108,13 +109,11 @@ public class EmoteHolder implements Supplier<UUID> {
 
     public ResourceLocation getIconIdentifier(){
         if(iconIdentifier == null && this.emote.extraData.containsKey("iconData")){
-            try {
-                InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))));
+            try (InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))))) {
                 assignIcon(stream);
-                stream.close();
             }catch (IOException | NullPointerException e){
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
-                if(!((ClientConfig)EmoteInstance.config).neverRemoveBadIcon.get()){
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                if(!PlatformTools.getConfig().neverRemoveBadIcon.get()){
                     this.emote.extraData.remove("iconData");
                 }
             }
@@ -126,12 +125,12 @@ public class EmoteHolder implements Supplier<UUID> {
         try {
 
             DynamicTexture nativeImageBackedTexture = new DynamicTexture(NativeImage.read(inputStream));
-            this.iconIdentifier = PlatformTools.newIdentifier("icon" + this.hashCode());
+            this.iconIdentifier = McUtils.newIdentifier("icon" + this.hashCode());
             Minecraft.getInstance().getTextureManager().register(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;
 
         } catch (Throwable var) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Can't open emote icon: " + var);
+            LoggerService.INSTANCE.log(Level.WARNING, "Can't open emote icon!", var);
             this.iconIdentifier = null;
             this.nativeIcon = null;
         }
@@ -185,7 +184,7 @@ public class EmoteHolder implements Supplier<UUID> {
         list.add(hold);
     }
 
-    public static boolean playEmote(KeyframeAnimation emote, IEmotePlayerEntity player){
+    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player){
         return playEmote(emote, player, null);
     }
 
@@ -196,7 +195,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * @param emoteHolder emote holder object
      * @return could be played
      */
-    public static boolean playEmote(KeyframeAnimation emote, IEmotePlayerEntity player, @Nullable EmoteHolder emoteHolder){
+    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player, @Nullable EmoteHolder emoteHolder){
         if(canPlayEmote(player)){
             return ClientEmotePlay.clientStartLocalEmote(emote);
         }else{
@@ -204,10 +203,10 @@ public class EmoteHolder implements Supplier<UUID> {
         }
     }
 
-    private static boolean canPlayEmote(IEmotePlayerEntity entity){
+    private static boolean canPlayEmote(AbstractClientPlayer entity){
         if(! canRunEmote(entity)) return false;
         if(!entity.isMainPlayer()) return false;
-        return ! (IEmotePlayer.isRunningEmote(entity.emotecraft$getEmote()) && ! entity.emotecraft$getEmote().isLoopStarted());
+        return ! (EmotePlayer.isRunningEmote(entity.emotecraft$getEmote()) && ! entity.emotecraft$getEmote().isLoopStarted());
     }
 
     /**
@@ -215,15 +214,13 @@ public class EmoteHolder implements Supplier<UUID> {
      * @param player Witch entity (player)
      * @return True if possible to play
      */
-    public static boolean canRunEmote(IEmotePlayerEntity player){
-        if(! TmpGetters.getClientMethods().isAbstractClientEntity(player)) return false;
-        if(player.emotecraft$isNotStanding() && !ClientPacketManager.isRemoteTracking()) return false;
+    public static boolean canRunEmote(AbstractClientPlayer player){
+        if(!player.hasPose(Pose.STANDING) && !ClientPacketManager.isRemoteTracking()) return false;
         //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
-        Vec3d prevPos = player.emotecraft$getPrevPos();
-        return ! (player.emotecraft$emotesGetPos().distanceTo(new Vec3d(prevPos.getX(), MathHelper.lerp(((ClientConfig)EmoteInstance.config).yRatio.get(), prevPos.getY(), player.emotecraft$emotesGetPos().getY()), prevPos.getZ())) > ((ClientConfig)EmoteInstance.config).stopThreshold.get());
+        return ! (new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(new Vec3d(player.xo, MathHelper.lerp(PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()), player.zo)) > PlatformTools.getConfig().stopThreshold.get());
     }
 
-    public boolean playEmote(IEmotePlayerEntity playerEntity){
+    public boolean playEmote(AbstractClientPlayer playerEntity){
         return playEmote(this.emote, playerEntity, this);
     }
 
@@ -262,8 +259,8 @@ public class EmoteHolder implements Supplier<UUID> {
 
 
     public static void handleKeyPress(InputConstants.Key key){
-        if(EmoteInstance.instance != null && EmoteHolder.canRunEmote(TmpGetters.getClientMethods().getMainPlayer())){
-            UUID uuid = ((ClientConfig)EmoteInstance.config).emoteKeyMap.getL(key);
+        if(EmoteHolder.canRunEmote(PlatformTools.getMainPlayer())){
+            UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
             if(uuid != null){
                 EmoteHolder emoteHolder = list.get(uuid);
                 if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(emoteHolder);
@@ -272,7 +269,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
 
-    public static EmoteHolder getNonNull(@Nonnull UUID emote){
+    public static EmoteHolder getNonNull(@NotNull UUID emote){
         EmoteHolder emoteHolder = list.get(emote);
         if(emoteHolder == null)return new Empty(emote);
         return emoteHolder;

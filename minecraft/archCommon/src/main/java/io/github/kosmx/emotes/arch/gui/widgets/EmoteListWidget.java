@@ -4,19 +4,21 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
+import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEntry> {
     protected List<EmoteEntry> emotes = new ArrayList<>();
@@ -37,9 +39,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    protected int scrollBarX() {
         if (!this.compactMode) {
-            return super.getScrollbarPosition();
+            return super.scrollBarX();
         }
 
         return getX() + getRowWidth() - SCROLLBAR_WIDTH;
@@ -59,7 +61,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
         }
     }
 
-    public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid){
+    public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid) {
         this.emotes.clear();
         for (EmoteHolder emoteHolder : list) {
             this.emotes.add(new EmoteEntry(emoteHolder));
@@ -70,27 +72,27 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
             }
         }
         this.emotes.sort(Comparator.comparing(o -> o.emote.name.getString().toLowerCase()));
-        filter(() -> "");
+        filter(VanillaSearch.INSTANCE, "");
     }
 
-    public void filter(Supplier<String> string){
+    public void filter(ISearchEngine engine, String search) {
         clearEntries();
-        for(EmoteEntry emote : this.emotes) {
-            if (emote.emote.name.getString().toLowerCase().contains(string.get()) || emote.emote.description.getString().toLowerCase().contains(string.get()) || emote.emote.author.getString().toLowerCase().equals(string.get())){
-                this.addEntry(emote);
-            }
-        }
+        engine.filter(this.emotes.stream(), search).forEach(this::addEntry);
         this.setScrollAmount(0);
     }
 
     public Iterable<EmoteHolder> getEmptyEmotes(){
         Collection<EmoteHolder> empties = new LinkedList<>();
-        for(Pair<UUID, InputConstants.Key> pair : ((ClientConfig) EmoteInstance.config).emoteKeyMap){
+        for(Pair<UUID, InputConstants.Key> pair : PlatformTools.getConfig().emoteKeyMap){
             if(!EmoteHolder.list.containsKey(pair.getLeft())){
                 empties.add(new EmoteHolder.Empty(pair.getLeft()));
             }
         }
         return empties;
+    }
+
+    public List<EmoteEntry> getEmotes() {
+        return Collections.unmodifiableList(this.emotes);
     }
 
     public class EmoteEntry extends ObjectSelectionList.Entry<EmoteEntry> {
@@ -120,7 +122,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
             ResourceLocation texture = this.emote.getIconIdentifier();
             if (texture != null){
                 RenderSystem.enableBlend();
-                matrices.blit(texture, x, y, 32, 32, 0, 0, 256, 256, 256, 256);
+                matrices.blit(RenderType::guiTextured, texture, x, y, 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
                 RenderSystem.disableBlend();
             }
             matrices.disableScissor();

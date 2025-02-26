@@ -1,3 +1,0 @@
-name: emotecraft
-main: io.github.kosmx.emotes.bungee.BungeeWrapper
-version: ${version}

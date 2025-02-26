@@ -50,8 +50,7 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
 
     @Override
     public int maxDataSize() {
-        return Short.MAX_VALUE - 16; // channel ID is 12, one extra int makes it 16 (string)
-        // this way we have 3 byte error
+        return CommonData.MAX_PACKET_SIZE - 16; // channel ID is 12, one extra int makes it 16 (string)
     }
 
     public @Nullable ByteBuffer receiveStreamChunk(ByteBuffer buffer) {

@@ -5,13 +5,14 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.data.opennbs.NBS;
 import dev.kosmx.playerAnim.core.data.opennbs.SoundPlayer;
 import dev.kosmx.playerAnim.core.data.opennbs.format.Layer;
-import io.github.kosmx.emotes.executor.emotePlayer.IEmotePlayer;
 
-import javax.annotation.Nullable;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 // modified keyframe animation player to play songs with animations
-public abstract class EmotePlayer extends KeyframeAnimationPlayer implements IEmotePlayer {
+public class EmotePlayer extends KeyframeAnimationPlayer {
     @Nullable
     final SoundPlayer song;
 
@@ -39,6 +40,15 @@ public abstract class EmotePlayer extends KeyframeAnimationPlayer implements IEm
             if (SoundPlayer.isPlayingSong(this.song)) song.tick();
         }
     }
+
+    @Override
+    public void stop() {
+        super.stop();
+        if(this.perspective == 1){
+            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+        }
+    }
+
     /**
      * Is emotePlayer running
      *
@@ -47,10 +57,5 @@ public abstract class EmotePlayer extends KeyframeAnimationPlayer implements IEm
      */
     public static boolean isRunningEmote(@Nullable EmotePlayer emote) {
         return emote != null && emote.isActive();
-    }
-
-    @Override
-    public boolean isRunning() {
-        return isActive();
     }
 }

@@ -3,41 +3,32 @@ package io.github.kosmx.emotes.main.config;
 import com.google.gson.*;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.core.util.Pair;
-import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.UUID;
 
-
-public class ClientConfigSerializer extends ConfigSerializer {
+public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
+    public ClientConfigSerializer() {
+        super(ClientConfig::new);
+    }
 
     @Override
-    public SerializableConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        ClientConfig config = (ClientConfig) super.deserialize(json, typeOfT, context);
-
+    public ClientConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        ClientConfig config = super.deserialize(json, typeOfT, context);
         clientDeserialize(json.getAsJsonObject(), config);
-
         return config;
     }
 
     @Override
-    public JsonElement serialize(SerializableConfig config, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(ClientConfig config, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject node = super.serialize(config, typeOfSrc, context).getAsJsonObject();
-
-        if(config instanceof ClientConfig) clientSerialize((ClientConfig) config, node);
-
+        clientSerialize(config, node);
         return node;
     }
 
-    @Override
-    protected SerializableConfig newConfig() {
-        return new ClientConfig();
-    }
-
-    private void clientDeserialize(JsonObject node, SerializableConfig sconfig) {
-        ClientConfig config = (ClientConfig) sconfig;
+    private void clientDeserialize(JsonObject node, ClientConfig config) {
         EmoteFixer emoteFixer = new EmoteFixer(config.configVersion);
         if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config, emoteFixer);
         if(node.has("keys")) keyBindsDeserializer(node.get("keys"), config, emoteFixer);

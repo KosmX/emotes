@@ -51,9 +51,9 @@ public final class ServerEmoteEvents {
      * Invoked when someone is starting an emote
      * For checking and cancelling, use {@link ServerEmoteEvents#EMOTE_VERIFICATION}
      */
-    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (emote, userID) -> {
+    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (emote, tick, userID) -> {
         for (EmotePlayEvent listener : listeners) {
-            listener.onEmotePlay(emote, userID);
+            listener.onEmotePlay(emote, tick, userID);
         }
     });
 
@@ -63,9 +63,10 @@ public final class ServerEmoteEvents {
         /**
          * Used to create emote play side effects
          * @param emoteData The played emote data
+         * @param tick Current tick
          * @param userID User ID
          */
-        void onEmotePlay(KeyframeAnimation emoteData, UUID userID);
+        void onEmotePlay(KeyframeAnimation emoteData, int tick, UUID userID);
     }
 
     public static final Event<EmoteStopEvent> EMOTE_STOP_BY_USER = new Event<>(EmoteStopEvent.class, listeners -> (emoteID, userID) -> {

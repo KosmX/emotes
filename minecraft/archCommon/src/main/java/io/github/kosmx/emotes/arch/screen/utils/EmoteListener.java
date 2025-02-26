@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.main.MainClientInit;
 import net.minecraft.Util;
 
@@ -27,7 +27,7 @@ public class EmoteListener implements Closeable {
                     StandardWatchEventKinds.ENTRY_MODIFY
             );
         } catch (Throwable th) {
-            EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to start file watcher!", th);
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to start file watcher!", th);
         }
     }
 

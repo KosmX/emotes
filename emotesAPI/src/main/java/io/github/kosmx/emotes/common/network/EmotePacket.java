@@ -4,8 +4,8 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -43,7 +43,7 @@ public class EmotePacket {
 
     int version;
 
-    protected EmotePacket(@Nonnull NetData data) {
+    protected EmotePacket(@NotNull NetData data) {
         //Make sure every packet has a version...
         if(data.versions == null)data.versions = new HashMap<>();
         defaultVersions.forEach((aByte, bByte) -> {
@@ -75,7 +75,7 @@ public class EmotePacket {
                 }
             }
         });
-        if(sizeSum.get() > data.sizeLimit)throw new IOException(String.format(
+        if(data.strictSizeLimit && sizeSum.get() > data.sizeLimit)throw new IOException(String.format(
                 "Can't send emote, packet's size (%s) is bigger than max allowed (%s)!", sizeSum.get(), data.sizeLimit
         ));
         SongPacket songPacket = (SongPacket) subPackets.get((byte)3);
@@ -199,13 +199,14 @@ public class EmotePacket {
             return new EmotePacket(data);
         }
 
-        public EmotePacket build(int sizeLimit){
-            return this.setSizeLimit(sizeLimit).build();
+        public EmotePacket build(int sizeLimit, boolean strict){
+            return this.setSizeLimit(sizeLimit, strict).build();
         }
 
-        public Builder setSizeLimit(int sizeLimit){
+        public Builder setSizeLimit(int sizeLimit, boolean strict){
             if(sizeLimit <= 0)throw new IllegalArgumentException("Size limit must be positive");
             data.sizeLimit = sizeLimit;
+            data.strictSizeLimit = strict;
             return this;
         }
 
@@ -266,6 +267,10 @@ public class EmotePacket {
             this.data.player = null;
         }
 
+        public Builder strictSizeLimit(boolean strict) {
+            data.strictSizeLimit = strict;
+            return this;
+        }
     }
 
 }

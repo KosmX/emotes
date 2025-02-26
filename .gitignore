@@ -33,3 +33,4 @@ crowdin_old.yml
 *.blend1
 /.architectury-transformer/*
 /artifacts
+/buildSrc/.kotlin/

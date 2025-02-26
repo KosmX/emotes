@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
-import io.github.kosmx.emotes.inline.TmpGetters;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -57,7 +57,7 @@ public class FastMenuScreen extends Screen {
     }
 
     @Override
-    protected void renderBlurredBackground(float f) {
+    protected void renderBlurredBackground() {
         // no-op
     }
 
@@ -89,7 +89,7 @@ public class FastMenuScreen extends Screen {
         @Override
         protected boolean onClick(IChooseWheel.IChooseElement element, int button){
             if(element.getEmote() != null){
-                boolean bl = element.getEmote().playEmote(TmpGetters.getClientMethods().getMainPlayer());
+                boolean bl = element.getEmote().playEmote(PlatformTools.getMainPlayer());
                 Minecraft.getInstance().setScreen(null);
                 return bl;
             }

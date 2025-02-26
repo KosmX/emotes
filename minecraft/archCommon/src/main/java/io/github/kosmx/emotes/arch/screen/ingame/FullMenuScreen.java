@@ -50,14 +50,14 @@ public class FullMenuScreen extends EmoteSubScreen {
     }
 
     @Override
-    protected void renderBlurredBackground(float f) {
+    protected void renderBlurredBackground() {
         if (this.minecraft.player instanceof IPlayerEntity entity &&
                 EmotePlayer.isRunningEmote(entity.emotecraft$getEmote())
         ) {
             return;
         }
 
-        super.renderBlurredBackground(f);
+        super.renderBlurredBackground();
     }
 
     @Override

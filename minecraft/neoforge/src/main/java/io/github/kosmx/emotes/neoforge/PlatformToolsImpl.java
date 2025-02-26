@@ -1,20 +1,9 @@
 package io.github.kosmx.emotes.neoforge;
 
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
+import net.neoforged.fml.loading.LoadingModList;
 
 public class PlatformToolsImpl {
-    public static boolean isPlayerAnimLoaded() {
-        try {
-            Class.forName("dev.kosmx.playerAnim.api.layered.IAnimation").getName();
-            return true;
-        } catch(ClassNotFoundException e) {
-            return false;
-        }
+    public static boolean hasSearchables() {
+        return LoadingModList.get().getModFileById("searchables") != null;
     }
-
-    public static INetworkInstance getClientNetworkController() {
-        return ClientNetwork.INSTANCE;
-    }
-
 }

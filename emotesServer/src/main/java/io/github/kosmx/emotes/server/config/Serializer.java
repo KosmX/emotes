@@ -1,11 +1,16 @@
 package io.github.kosmx.emotes.server.config;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.server.serializer.BiMapSerializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,83 +18,106 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 /**
  * Serialize Emotecraft related jsons but not animations
- * To (de)serialize keyframe animations, use {@link dev.kosmx.playerAnim.core.data.gson.AnimationSerializing}
  */
-public class Serializer {
-    public static Gson serializer;
+public class Serializer<T extends SerializableConfig> {
+    public static Serializer<?> INSTANCE;
 
-    public static Serializer INSTANCE;
+    protected final ConfigSerializer<T> configSerializer;
+    protected final Class<T> configClass;
+    private final Consumer<GsonBuilder> consumer;
 
-    public Serializer(){
-        initializeSerializer();
+    public final Gson serializer;
+    private T config;
+
+    public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass) {
+        this(configSuppler, configClass, null);
     }
 
-    public void initializeSerializer(){
-        GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
-        this.registerTypeAdapters(builder);
-        serializer = builder.create();
+    public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass, Consumer<GsonBuilder> consumer) {
+        this.configSerializer = configSuppler;
+        this.configClass = configClass;
+        this.consumer = consumer;
+
+        this.serializer = initializeSerializer(new GsonBuilder());
     }
 
-    protected void registerTypeAdapters(GsonBuilder builder){
-        builder.registerTypeAdapter(SerializableConfig.class, new ConfigSerializer());
+    protected Gson initializeSerializer(GsonBuilder builder) {
+        builder.registerTypeAdapter(this.configClass, this.configSerializer);
         builder.registerTypeAdapter(new TypeToken<BiMap<UUID, UUID>>(){}.getType(), new BiMapSerializer());
+
+        if (this.consumer != null) {
+            this.consumer.accept(builder);
+        }
+
+        return builder.setPrettyPrinting().create();
     }
 
-    public static void saveConfig(){
-        saveConfig(EmoteInstance.config);
-    }
-
-    public static void saveConfig(SerializableConfig config){
-        try{
-            BufferedWriter writer = Files.newBufferedWriter(EmoteInstance.instance.getConfigPath());
-            serializer.toJson(config, writer);
-            writer.close();
-            //FileUtils.write(Main.CONFIGPATH, Serializer.serializer.toJson(Main.config), "UTF-8", false);
-        }catch(IOException e){
-            EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+    public void saveConfig() {
+        if (saveConfig(this.config)) {
+            this.config = null;
         }
     }
 
-    /**
-     * Reads the config from ~/config/emotecraft.json or yaml
-     * @return config
-     */
-    public static SerializableConfig getConfig(){
-        return INSTANCE.readConfig(EmoteInstance.instance.getConfigPath());
+    public boolean saveConfig(T config) {
+        try (BufferedWriter writer = Files.newBufferedWriter(InstanceService.INSTANCE.getConfigPath())) {
+            this.serializer.toJson(config, this.configClass, writer);
+            return true;
+        } catch(IOException e) {
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to save config!", e);
+            return false;
+        }
     }
 
-    /**
-     * Reads the config and creates a new file, if needed
-     * @param path config path
-     * @return config
-     */
-    protected SerializableConfig readConfig(Path path) {
-        if (path.toFile().isFile()) {
+    public T readConfig() {
+        if (this.config == null) {
+            LoggerService.INSTANCE.log(Level.INFO, "Loading config...");
+            this.config = readConfig(InstanceService.INSTANCE.getConfigPath());
+        }
+        return this.config;
+    }
+
+    protected T readConfig(Path path) {
+        if (Files.isRegularFile(path)) {
             try (BufferedReader reader = Files.newBufferedReader(path)) {
                 return readConfig(reader);
             } catch(IOException | JsonParseException e) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to read config: " + e.getMessage(), true);
-                EmoteInstance.instance.getLogger().log(Level.WARNING, "If you want to regenerate the config, delete the old files!", true);
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to read config!", e);
+                LoggerService.INSTANCE.log(Level.WARNING, "If you want to regenerate the config, delete the old files!");
             }
         } else {
-            SerializableConfig config = readConfig((BufferedReader) null);
+            T config = readConfig((BufferedReader) null);
             saveConfig(config);
             return config;
         }
         return readConfig((BufferedReader) null);
     }
 
-    protected SerializableConfig readConfig(BufferedReader reader) throws JsonSyntaxException, JsonIOException{
-        if(reader != null){
-            SerializableConfig config = serializer.fromJson(reader, SerializableConfig.class);
-            if (config == null) throw new JsonParseException("Json is empty");
-            return config;
+    protected T readConfig(BufferedReader reader) throws JsonSyntaxException, JsonIOException {
+        if (reader != null) {
+            T config = this.serializer.fromJson(reader, this.configClass);
+
+            if (config == null) {
+                throw new JsonParseException("Json is empty");
+            } else {
+                return config;
+            }
+        } else {
+            return this.configSerializer.configSuppler.get();
         }
-        return new SerializableConfig();
+    }
+
+    // Static helpers
+
+    public static Gson getSerializer() {
+        return Serializer.INSTANCE.serializer;
+    }
+
+    public static SerializableConfig getConfig() {
+        return Serializer.INSTANCE.readConfig();
     }
 }

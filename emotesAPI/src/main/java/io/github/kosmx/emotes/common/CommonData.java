@@ -46,6 +46,14 @@ public class CommonData {
      */
     public static final String emoteStreamID = "stream";
 
+    /**
+     * Maximum packet size that can be sent by the client/received by the server
+     * Could have been even bigger, but the paper servers sucks
+     * <p>
+     * Identical to ClientboundCustomPayloadPacket#MAX_PAYLOAD_SIZE
+     */
+    public static final int MAX_PACKET_SIZE = 1048576;
+
     ////bidirectional, Emote stop request
     //public static final String stopEmoteID = "stopemote";
     ////bidirectional, client-server version exchange

@@ -1,46 +1,37 @@
 # This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: Build
 
 on: [pull_request, workflow_dispatch]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        java: [21]
-        os: [ubuntu-latest, windows-latest]
-        
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     steps:
     - name: checkout repository
       uses: actions/checkout@v4
-    - name: configure gradle
-      uses: gradle/wrapper-validation-action@v1
-      with:
-        java-version: ${{matrix.java}}
-
-    - name: Setup Java JDK
+    - name: Setup JDK 21
       uses: actions/setup-java@v4
       with:
         distribution: 'microsoft'
-        java-version: ${{matrix.java}}
+        java-version: 21
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: wrapper
     - name: Grant execute permission for gradlew
-      if: ${{ runner.os != 'Windows' }}
       run: chmod +x gradlew
-    - name: Test Gradle buildscript  #Test the full gradle buildscript before use it. Useful to catch publish errors.
-      uses: gradle/gradle-build-action@v3
+    - name: Build All
+      run: ./gradlew build
+
+    - name: Copy artifacts
+      run: |
+        mkdir -p artifacts
+        cp paper/build/libs/*.jar artifacts/
+        cp minecraft/fabric/build/libs/*.jar artifacts/
+        cp minecraft/neoforge/build/libs/*.jar artifacts/
+    - uses: actions/upload-artifact@v4
       with:
-        arguments: autoPublish --dry-run
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@v3
-      with:
-        arguments: collectArtifacts
-    - name: capture build artifacts
-      if: ${{ runner.os == 'Linux' && matrix.java == '17' }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: artifacts
-        path: |
-          artifacts
+        name: Build Results
+        path: artifacts/*.jar

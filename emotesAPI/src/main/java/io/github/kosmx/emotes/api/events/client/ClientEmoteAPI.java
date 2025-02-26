@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.api.events.client;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 public abstract class ClientEmoteAPI {

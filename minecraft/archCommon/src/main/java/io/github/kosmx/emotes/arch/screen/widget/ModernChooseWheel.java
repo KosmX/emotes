@@ -3,16 +3,17 @@ package io.github.kosmx.emotes.arch.screen.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
+import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -30,7 +31,7 @@ public class ModernChooseWheel implements IChooseWheel {
     //protected final FastChooseElement[] elements = new FastChooseElement[8];
     protected final ArrayList<FastChooseElement> elements = new ArrayList<>();
     private boolean hovered;
-    private final ResourceLocation TEXTURE = ((ClientConfig) EmoteInstance.config).dark.get() ? PlatformTools.newIdentifier("textures/gui/fastchoose_dark_new.png") : PlatformTools.newIdentifier("textures/gui/fastchoose_light_new.png");
+    private final ResourceLocation TEXTURE = PlatformTools.getConfig().dark.get() ? McUtils.newIdentifier("textures/gui/fastchoose_dark_new.png") : McUtils.newIdentifier("textures/gui/fastchoose_light_new.png");
 
     private final AbstractFastChooseWidget widget;
 
@@ -125,10 +126,10 @@ public class ModernChooseWheel implements IChooseWheel {
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
     private void drawTexture(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int s){
-        matrices.blit(t, widget.getX() + x * widget.getWidth() / 256, widget.getY() + y * widget.getHeight() / 256, s * widget.getWidth() / 2, s * widget.getHeight() / 2, (float) u, (float) v, s * 128, s * 128, 512, 512);
+        matrices.blit(RenderType::guiTextured, t, widget.getX() + x * widget.getWidth() / 256, widget.getY() + y * widget.getHeight() / 256, u, v, s * widget.getWidth() / 2, s * widget.getHeight() / 2, s * 128, s * 128, 512, 512);
     }
     private void drawTexture_select(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int w, int h){
-        matrices.blit(t, widget.getX() + x * widget.getWidth() / 512, widget.getY() + y * widget.getHeight() / 512, w * widget.getWidth() / 2, h * widget.getHeight() / 2, (float) u, (float) v, w * 128, h * 128, 512, 512);
+        matrices.blit(RenderType::guiTextured, t, widget.getX() + x * widget.getWidth() / 512, widget.getY() + y * widget.getHeight() / 512, u, v, w * widget.getWidth() / 2, h * widget.getHeight() / 2, w * 128, h * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
@@ -198,18 +199,18 @@ public class ModernChooseWheel implements IChooseWheel {
 
         @Override
         public boolean hasEmote(){
-            return ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null;
+            return PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] != null;
         }
 
         @Override
         public void setEmote(@Nullable EmoteHolder emote){
-            ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] = emote == null ? null : emote.getUuid();
+            PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] = emote == null ? null : emote.getUuid();
         }
 
         @Override
         @Nullable
         public EmoteHolder getEmote(){
-            UUID uuid = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id];
+            UUID uuid = PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id];
             if(uuid != null){
                 EmoteHolder emote = EmoteHolder.list.get(uuid);
                 if(emote == null && widget.doesShowInvalid()){
@@ -228,19 +229,19 @@ public class ModernChooseWheel implements IChooseWheel {
         }
 
         public void render(GuiGraphics matrices){
-            UUID emoteID = ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null ? ((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] : null;
+            UUID emoteID = PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] != null ? PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] : null;
             ResourceLocation identifier = emoteID != null && EmoteHolder.list.get(emoteID) != null ? EmoteHolder.list.get(emoteID).getIconIdentifier() : null;
-            if(identifier != null && ((ClientConfig)EmoteInstance.config).showIcons.get()){
+            if(identifier != null && PlatformTools.getConfig().showIcons.get()){
                 int s = widget.getWidth() / 10;
                 int iconX = (int) (((float) (widget.getX() + widget.getWidth() / 2)) + widget.getWidth() * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (widget.getY() + widget.getHeight() / 2)) + widget.getHeight() * 0.36 * Math.cos(this.angle * 0.0174533)) - s;
                 //widget.renderBindTexture(identifier);
-                matrices.blit(identifier, iconX, iconY, s * 2, s * 2, (float) 0, (float) 0, 256, 256, 256, 256);
+                matrices.blit(RenderType::guiTextured, identifier, iconX, iconY, 0.0F, 0.0F, s * 2, s * 2, 256, 256, 256, 256);
             }else{
-                if(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id] != null){
-                    drawCenteredText(matrices, EmoteHolder.getNonNull(((ClientConfig)EmoteInstance.config).fastMenuEmotes[fastMenuPage][id]).name, this.angle);
+                if(PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] != null){
+                    drawCenteredText(matrices, EmoteHolder.getNonNull(PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id]).name, this.angle);
                 }else{
-                    EmoteInstance.instance.getLogger().log(Level.WARNING, "Tried to render non-existing name", true);
+                    LoggerService.INSTANCE.log(Level.WARNING, "Tried to render non-existing name");
                 }
             }
         }
@@ -250,7 +251,7 @@ public class ModernChooseWheel implements IChooseWheel {
         }
 
         public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y){
-            int c = ((ClientConfig) EmoteInstance.config).dark.get() ? 255 : 0; //:D
+            int c = PlatformTools.getConfig().dark.get() ? 255 : 0; //:D
             float x1 = x - (float) Minecraft.getInstance().font.width(stringRenderable) / 2;
             matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), MathHelper.colorHelper(c, c, c, 1));
         }

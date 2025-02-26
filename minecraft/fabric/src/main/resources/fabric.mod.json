@@ -9,7 +9,8 @@
     "dima_dencep"
   ],
   "contributors": [
-    "Kale Ko"
+    "Kale Ko",
+    "BoBkiNN"
   ],
   "contact": {
     "issues": "https://github.com/KosmX/emotes/issues",
@@ -34,10 +35,10 @@
     "emotecraft-arch.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.11",
+    "fabricloader": ">=0.16.10",
     "fabric-api": "*",
-    "minecraft": ">=1.19.3",
-    "playeranimator": ">=2.0.0+1.21.1"
+    "minecraft": ">=1.21.4",
+    "playeranimator": ">=2.0.1.1+1.21.4"
   },
   "custom": {
     "modmenu": {

@@ -1,16 +1,16 @@
 package io.github.kosmx.emotes.arch.screen;
 
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.executor.EmoteInstance;
-import io.github.kosmx.emotes.inline.TmpGetters;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
+import io.github.kosmx.emotes.server.serializer.type.ISerializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,9 +28,6 @@ import java.util.logging.Level;
 public class ExportMenu extends Screen {
     private static final Component TITLE = Component.translatable("emotecraft.options.export");
 
-    private static final Component EXPORT_JSON = Component.translatable("emotecraft.exportjson");
-    private static final Component EXPORT_BIN = Component.translatable("emotecraft.exportbin");
-
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     protected final Screen parent;
 
@@ -44,16 +41,17 @@ public class ExportMenu extends Screen {
     public void init() {
         this.layout.addTitleHeader(getTitle(), this.font);
 
-        LinearLayout contents = this.layout.addToContents(LinearLayout.vertical().spacing(Button.DEFAULT_SPACING));
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.defaultCellSetting().paddingHorizontal(Button.DEFAULT_SPACING).paddingBottom(4).alignHorizontallyCenter();
+        GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(2);
 
-        contents.addChild(Button.builder(EXPORT_JSON, button -> exportEmotesInFormat(AnimationFormat.JSON_EMOTECRAFT))
-                .width(Button.BIG_WIDTH)
-                .build()
-        );
-        contents.addChild(Button.builder(EXPORT_BIN, button -> exportEmotesInFormat(AnimationFormat.BINARY))
-                .width(Button.BIG_WIDTH)
-                .build()
-        );
+        for (ISerializer serializer : UniversalEmoteSerializer.getSerializers().toList()) {
+            rowHelper.addChild(Button.builder(Component.translatable("emotecraft.export", serializer.getExtension()),
+                            button -> exportEmotesInFormat(serializer)
+            ).width(Button.BIG_WIDTH).build());
+        }
+
+        this.layout.addToContents(gridLayout);
 
         LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
@@ -68,24 +66,26 @@ public class ExportMenu extends Screen {
         repositionElements();
     }
 
-    private void exportEmotesInFormat(AnimationFormat format){
+    private void exportEmotesInFormat(ISerializer format) {
         for(EmoteHolder emoteHolder:EmoteHolder.list){
             KeyframeAnimation emote = emoteHolder.getEmote();
-            if(emote.extraData.containsKey("isBuiltin") && !((ClientConfig)EmoteInstance.config).exportBuiltin.get()){
+            if(emote.extraData.containsKey("isBuiltin") && !PlatformTools.getConfig().exportBuiltin.get()){
                 continue;
             }
-            EmoteInstance.instance.getLogger().log(Level.FINER, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
-            try{
-                Path exportDir = EmoteInstance.instance.getExternalEmoteDir().toPath().resolve(format.getExtension() + "_export");
-                if(!exportDir.toFile().isDirectory()){
+
+            LoggerService.INSTANCE.log(Level.FINE, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
+            try {
+                Path exportDir = InstanceService.INSTANCE.getExternalEmoteDir().resolve(format.getExtension() + "_export");
+                if (!exportDir.toFile().isDirectory()) {
                     Files.createDirectories(exportDir);
                 }
-                Path file = createFileName(emoteHolder, exportDir, format);
+
+                Path file = createFileName(emoteHolder, exportDir, format.getExtension());
                 OutputStream stream = Files.newOutputStream(file);
-                UniversalEmoteSerializer.writeKeyframeAnimation(stream, emote, format);
+                UniversalEmoteSerializer.writeKeyframeAnimation(stream, emote, "emote." + format.getExtension());
                 stream.close();
 
-                if(format == AnimationFormat.JSON_EMOTECRAFT && emote.extraData.containsKey("iconData")){
+                if(format.onlyEmoteFile() && emote.extraData.containsKey("iconData")){
                     Path iconPath = exportDir.resolve(file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")) + ".png");
                     if(iconPath.toFile().isFile()){
                         throw new IOException("File already exists: " + iconPath);
@@ -94,20 +94,20 @@ public class ExportMenu extends Screen {
                     iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) emote.extraData.get("iconData")));
                     iconStream.close();
                 }
-            }catch (IOException | EmoteSerializerException | InvalidPathException e) {
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
-                TmpGetters.getClientMethods().toastExportMessage( 2,
-                        Component.translatable("emotecraft.export.error." + format.getExtension()),
-                        emoteHolder.name.getString());
+            } catch (IOException | EmoteSerializerException | InvalidPathException e) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to export!", e);
+                PlatformTools.toastExportMessage(Component.translatable(
+                        "emotecraft.export.error", format.getExtension()
+                ), emoteHolder.name.getString());
             }
         }
-        TmpGetters.getClientMethods().toastExportMessage(1,
-                Component.translatable("emotecraft.export.done." + format.getExtension()),
-                "emotes/" + format.getExtension() + "_export/");
-        EmoteInstance.instance.getLogger().log(Level.FINER, "All emotes are saved in " + format.getExtension() + " format", true);
+        PlatformTools.toastExportMessage(Component.translatable(
+                "emotecraft.export.done", format.getExtension()
+        ), "emotes/" + format.getExtension() + "_export/");
+        LoggerService.INSTANCE.log(Level.INFO, "All emotes are saved in " + format.getExtension() + " format!");
     }
 
-    private static Path createFileName(EmoteHolder emote, Path originPath, AnimationFormat format){
+    private static Path createFileName(EmoteHolder emote, Path originPath, String format) {
         String name = emote.name.getString().replaceAll("[\\\\/]", "#");
         String finalName = null;
         while (finalName == null){
@@ -121,13 +121,13 @@ public class ExportMenu extends Screen {
             }
         }
         int i = 2;
-        Path file = originPath.resolve(finalName + "." + format.getExtension());
+        Path file = originPath.resolve(finalName + "." + format);
         if (!file.getParent().equals(originPath)) {
             finalName = Integer.toString(emote.hashCode());
-            file = originPath.resolve(finalName + "." + format.getExtension());
+            file = originPath.resolve(finalName + "." + format);
         }
         while (file.toFile().isFile()){
-            file = originPath.resolve(finalName + "_" + i++ + "." + format.getExtension());
+            file = originPath.resolve(finalName + "_" + i++ + "." + format);
         }
         return file;
     }

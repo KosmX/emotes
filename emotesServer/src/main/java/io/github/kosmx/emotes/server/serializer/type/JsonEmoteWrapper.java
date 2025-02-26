@@ -1,53 +1,50 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
 import com.google.gson.JsonParseException;
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.data.gson.AnimationSerializing;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.config.Serializer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("removal")
 public class JsonEmoteWrapper implements ISerializer {
 
     @Override
     public List<KeyframeAnimation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
-        try{
+        try {
             List<KeyframeAnimation> deserialized = AnimationSerializing.deserializeAnimation(inputStream);
             if (deserialized == null) throw new IOException("Can't load emote, " + filename + " is empty.");
             return fixStopTick(deserialized);
-        }catch (JsonParseException | IOException e){
-            throw new EmoteSerializerException("Exception has occurred", this.getFormatExtension(), e);
+        } catch (JsonParseException | IOException e){
+            throw new EmoteSerializerException("Exception has occurred", getExtension(), e);
         }
     }
 
-
     @Override
-    public void write(KeyframeAnimation emote, OutputStream outputStream) throws EmoteSerializerException {
+    public void write(KeyframeAnimation emote, OutputStream outputStream, String filename) throws EmoteSerializerException {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))) {
             AnimationSerializing.writeAnimation(emote, bufferedWriter);
-
-        }catch (Exception e){
-            throw new EmoteSerializerException("Exception has occurred", this.getFormatExtension(), e);
+        } catch (Exception e) {
+            throw new EmoteSerializerException("Exception has occurred", getExtension(), e);
         }
     }
 
     @Override
-    public String getFormatExtension() {
+    public boolean onlyEmoteFile() {
+        return true;
+    }
+
+    @Override
+    public String getExtension() {
         return "json";
     }
 
-    @Override
-    public AnimationFormat getFormatType() {
-        return AnimationFormat.JSON_EMOTECRAFT;
-    }
-
-
     private List<KeyframeAnimation> fixStopTick(List<KeyframeAnimation> deserializeAnimation) {
-        if (!EmoteInstance.config.autoFixEmoteStop.get()) return deserializeAnimation;
+        if (!Serializer.getConfig().autoFixEmoteStop.get()) return deserializeAnimation;
         List<KeyframeAnimation> fixed = new LinkedList<>();
         for (KeyframeAnimation emote: deserializeAnimation) {
             if (emote.endTick + 1 == emote.stopTick && !emote.isInfinite()) {
@@ -82,6 +79,6 @@ public class JsonEmoteWrapper implements ISerializer {
     }
     private static int lastKeyPos(KeyframeAnimation.StateCollection.State part) {
         if (part.getKeyFrames().isEmpty()) return 0;
-        return part.getKeyFrames().get(part.getKeyFrames().size() - 1).tick;
+        return part.getKeyFrames().getLast().tick;
     }
 }

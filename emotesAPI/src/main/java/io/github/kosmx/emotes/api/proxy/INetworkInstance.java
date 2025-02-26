@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.api.proxy;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
@@ -142,7 +142,7 @@ public interface INetworkInstance {
     /**
      * Maximum size of the data what the instance can send
      * <p>
-     * {@link AbstractNetworkInstance#maxDataSize()} defaults to {@link Short#MAX_VALUE}
+     * {@link AbstractNetworkInstance#maxDataSize()} defaults to {@link io.github.kosmx.emotes.common.CommonData#MAX_PACKET_SIZE}
      * @return max size of bytes[]
      */
     int maxDataSize();

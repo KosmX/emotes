@@ -4,7 +4,7 @@ package io.github.kosmx.emotes.server.network;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Pair;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 

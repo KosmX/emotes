@@ -4,11 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.executor.EmoteInstance;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -72,7 +72,7 @@ public class EmoteFixer{
                 //data = ClientSerializer.serializer.fromJson(reader, new TypeToken<HashMap<Integer, HashMap<Integer, Integer>>>(){}.getType());
                 data = new JsonParser().parse(reader);
             }catch (JsonParseException | NullPointerException e){
-                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
             }
         }
         return data.getAsJsonObject();

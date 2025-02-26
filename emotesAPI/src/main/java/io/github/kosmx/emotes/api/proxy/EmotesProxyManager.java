@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.api.proxy;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * some static methods to register received message and register proxy module
@@ -15,17 +14,6 @@ public abstract class EmotesProxyManager {
      * To register yours use {@link #registerProxyInstance(INetworkInstance)}
      */
     protected final static ArrayList<INetworkInstance> networkInstances = new ArrayList<>();
-
-    /**
-     * Log a message through EmoteX logger.
-     * If possible use your own logger instead of this
-     *
-     * @param level Log level
-     * @param msg Log message
-     */
-    public static void log(Level level, String msg){
-        getManager().logMSG(level, msg);
-    }
 
     /**
      * Register your proxy instance
@@ -95,8 +83,6 @@ public abstract class EmotesProxyManager {
         }
         manager = newManager;
     }
-
-    protected abstract void logMSG(Level level, String msg);
 
     protected abstract void dispatchReceive(ByteBuffer buffer, UUID player, INetworkInstance networkInstance);
 

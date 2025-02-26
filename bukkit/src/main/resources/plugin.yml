@@ -1,9 +1,0 @@
-name: emotecraft
-description: ${description}
-main: io.github.kosmx.emotes.bukkit.BukkitWrapper
-version: ${version}
-api-version: 1.21
-website: https://kosmx.gitbook.io/emotecraft/
-authors: [KomsX, dima_dencep]
-depend: [ProtocolLib]
-folia-supported: true

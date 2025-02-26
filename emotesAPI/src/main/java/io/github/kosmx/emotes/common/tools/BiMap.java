@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.common.tools;
 
 import dev.kosmx.playerAnim.core.util.Pair;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
@@ -110,7 +110,7 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
     }
 
     @Override
-    public boolean containsAll(@Nonnull Collection<?> c) {
+    public boolean containsAll(@NotNull Collection<?> c) {
         return collection.containsAll(c);
     }
 
@@ -140,7 +140,7 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
      * @return was the map modified
      */
     @Override
-    public boolean retainAll(@Nonnull Collection<?> c) {
+    public boolean retainAll(@NotNull Collection<?> c) {
         Objects.requireNonNull(c);
         boolean modified = false;
         Iterator<Pair<L, R>> it = iterator();

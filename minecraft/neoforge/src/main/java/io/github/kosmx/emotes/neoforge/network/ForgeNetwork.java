@@ -1,11 +1,12 @@
 package io.github.kosmx.emotes.neoforge.network;
 
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.executor.EmoteInstance;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
@@ -33,7 +34,7 @@ public class ForgeNetwork {
                             try {
                                 ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), null);
                             } catch (IOException e) {
-                                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                             }
                         },
                         (arg, playPayloadContext) -> CommonServerNetworkHandler.instance.receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player())
@@ -45,7 +46,7 @@ public class ForgeNetwork {
                             try {
                                 ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
                             } catch (IOException e) {
-                                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                             }
                         },
                         (arg, configurationPayloadContext) -> {
@@ -57,7 +58,7 @@ public class ForgeNetwork {
 
                                 ((EmotesMixinConnection) configurationPayloadContext.connection()).emotecraft$setVersions(message.versions);
 
-                                CommonServerNetworkHandler.instance.getServerEmotes(message.versions).forEach(buffer -> new EmoteStreamHelper() {
+                                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer -> new EmoteStreamHelper() {
                                     @Override
                                     protected int getMaxPacketSize() {
                                         return Short.MAX_VALUE - 16;
@@ -75,7 +76,7 @@ public class ForgeNetwork {
                                 });
                                 configurationPayloadContext.finishCurrentTask(ConfigTask.TYPE);
                             } catch (IOException e) {
-                                EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                                 configurationPayloadContext.channelHandlerContext().disconnect();
                             }
                         }
@@ -86,7 +87,7 @@ public class ForgeNetwork {
                     try {
                         ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
                     } catch (IOException e) {
-                        EmoteInstance.instance.getLogger().log(Level.WARNING, e.getMessage(), e);
+                        LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                     }
                 });
 
@@ -104,7 +105,7 @@ public class ForgeNetwork {
 
             event.register(new ConfigTask());
         } else {
-            EmoteInstance.instance.getLogger().log(Level.FINE, "Client doesn't support emotes, ignoring");
+            LoggerService.INSTANCE.log(Level.FINE, "Client doesn't support emotes, ignoring");
         }
     }
 }

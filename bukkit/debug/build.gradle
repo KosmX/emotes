@@ -1,7 +1,0 @@
-plugins {
-    id 'java'
-}
-
-dependencies {
-    runtimeOnly files("run/spigot-1.18.2.jar")
-}

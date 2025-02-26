@@ -1,9 +1,10 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -46,7 +47,11 @@ public final class NetData {
     //On stop, the server stops it not because invalid but because event stopped it
     public boolean isForced = false;
 
-    public int sizeLimit = Short.MAX_VALUE;
+    /**
+     * net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket#MAX_PAYLOAD_SIZE
+     */
+    public int sizeLimit = CommonData.MAX_PACKET_SIZE;
+    public boolean strictSizeLimit = true;
 
     HashMap<String, Object> extraData = new HashMap<>();
     KeyframeAnimation.AnimationBuilder emoteBuilder = null;

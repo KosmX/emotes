@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.server.geyser;
 
 import io.github.kosmx.emotes.common.tools.BiMap;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class EmoteMappings {
