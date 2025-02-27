@@ -62,12 +62,6 @@
   "emotecraft.resetAllKeys.title": "Скидання всх призначень клавіш для емоцій",
   "emotecraft.resetAllKeys.message": "Ви дійсно хочете скинути всі призначення клавіш для емоцій?",
   "emotecraft.options.export": "Меню експорту",
-  "emotecraft.exportjson": "Експортувати емоції у JSON",
-  "emotecraft.exportbin": "Експортувати емоції у форматі .emotecraft",
-  "emotecraft.export.error.json": "Не вдалося експортувати у JSON…",
-  "emotecraft.export.error.emotecraft": "Не вдалося експортувати у .emotecraft…",
-  "emotecraft.export.done.json": "Експорт у JSON завершено!",
-  "emotecraft.export.done.emotecraft": "Експорт у .emotecraft завершено!",
   "emotecraft.song_too_big_to_send": "Пісня завелика, тому не може бути надіслана на сервер. Надсилається лише емоція…",
   "emotecraft.cant.override.forced": "Ви змушені відтворити поточну емоцію, її не можна змінити."
 }

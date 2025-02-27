@@ -64,12 +64,6 @@
   "emotecraft.resetAllKeys.title": "Resetovat všechny klávesové zkratky pro emoce",
   "emotecraft.resetAllKeys.message": "Opravdu chcete resetovat klávesové zkratky pro všechny emoce?",
   "emotecraft.options.export": "Exportovat emoce",
-  "emotecraft.exportjson": "Exportovat emoce v JSON",
-  "emotecraft.exportbin": "Exportovat emoce v binárním souboru .emotecraft",
-  "emotecraft.export.error.json": "Nepodařilo se exportovat do JSON...",
-  "emotecraft.export.error.emotecraft": "Nepodařilo se exportovat do .emotecraft...",
-  "emotecraft.export.done.json": "Export JSON dokončen!",
-  "emotecraft.export.done.emotecraft": "Export .emotecraft dokončen!",
   "emotecraft.song_too_big_to_send": "Skladba je příliš velká, aby mohla být odeslána na server. Odesílám pouze emoce...",
   "emotecraft.cant.override.forced": "Jste nuceni přehrávat aktuální emoci, nelze to změnit."
 }

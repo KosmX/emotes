@@ -61,12 +61,6 @@
   "emotecraft.resetAllKeys.title": "감정 표현 단축키 초기화",
   "emotecraft.resetAllKeys.message": "설정된 감정 표현 단축키를 모두 초기화할까요?",
   "emotecraft.options.export": "메뉴 내보내기",
-  "emotecraft.exportjson": "JSON으로 감정 표현 내보내기",
-  "emotecraft.exportbin": ".emotecraft binary로 감정 표현 내보내기 ",
-  "emotecraft.export.error.json": "JSON으로 내보내지 못했어요...",
-  "emotecraft.export.error.emotecraft": ".emotecraft로 내보내지 못했어요...",
-  "emotecraft.export.done.json": "JSON으로 내보냈어요!",
-  "emotecraft.export.done.emotecraft": ".emotecraft로 내보냈어요!",
   "emotecraft.song_too_big_to_send": "서버에 보내기엔 노래가 너무 커요. 감정 표현만 작동할 거예요.",
   "emotecraft.cant.override.forced": "현재 감정 표현을 재생하기로 되어 있어, 변경할 수 없어요."
 }

@@ -2,11 +2,5 @@
   "emotecraft.options.options": "Modinställningar",
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Skapare: ",
-  "emotecraft.blockedEmote": "Du får inte använda den här emoten.",
-  "emotecraft.exportjson": "Exportera emoter som JSON-fil",
-  "emotecraft.exportbin": "Exportera emoter till .emotecraft binary",
-  "emotecraft.export.error.json": "JSON-exporten misslyckades...",
-  "emotecraft.export.error.emotecraft": "Exporten till .emotecraft misslyckades...",
-  "emotecraft.export.done.json": "JSON-expot klar!",
-  "emotecraft.export.done.emotecraft": ".emotecraft-export klar!"
+  "emotecraft.blockedEmote": "Du får inte använda den här emoten."
 }

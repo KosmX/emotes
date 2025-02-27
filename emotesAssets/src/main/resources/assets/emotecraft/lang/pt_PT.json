@@ -60,11 +60,5 @@
   "emotecraft.resetAllKeys.title": "Repor todos os atalhos dos gestos",
   "emotecraft.resetAllKeys.message": "Tens a certeza de que queres repor todos os atalhos dos gestos?",
   "emotecraft.options.export": "Exportar menu",
-  "emotecraft.exportjson": "Exportar gestos em Json",
-  "emotecraft.exportbin": "Exportar em formato .emotecraft",
-  "emotecraft.export.error.json": "Falha ao exportar JSON",
-  "emotecraft.export.error.emotecraft": "Falha ao exportar .emotecraft",
-  "emotecraft.export.done.json": "Exportação em .json concluída",
-  "emotecraft.export.done.emotecraft": "Exportação em .emotecraft concluída",
   "emotecraft.song_too_big_to_send": "A canção é demasiado grande, não é possível enviar para o servidor. A enviar apenas os gestos"
 }

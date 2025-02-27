@@ -62,12 +62,6 @@
   "emotecraft.resetAllKeys.title": "Zresetuj wszystkie przypisane klawisze emotek",
   "emotecraft.resetAllKeys.message": "Czy na pewno chcesz zresetować wszystkie przypisane klawisze emotek?",
   "emotecraft.options.export": "Menu eksportu",
-  "emotecraft.exportjson": "Eksportuj emotki do pliku JSON",
-  "emotecraft.exportbin": "Eksportuj emotki do pliku .emotecraft",
-  "emotecraft.export.error.json": "Błąd eksportu do pliku JSON",
-  "emotecraft.export.error.emotecraft": "Błąd eksportu do pliku .emotecraft",
-  "emotecraft.export.done.json": "Eksport do pliku .json zakończony!",
-  "emotecraft.export.done.emotecraft": "Eksport do pliku .emotecraft zakończony!",
   "emotecraft.song_too_big_to_send": "Utwór jest za duży, aby można go było wysłać na serwer. Wysyłam tylko emotkę...",
   "emotecraft.cant.override.forced": "Jesteś zmuszony do grania aktualnej emotki, nie można tego zmienić."
 }

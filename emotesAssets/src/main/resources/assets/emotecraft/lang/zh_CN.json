@@ -64,12 +64,6 @@
   "emotecraft.resetAllKeys.title": "重置所有表情按键绑定",
   "emotecraft.resetAllKeys.message": "你确定要重置表情按键绑定吗？",
   "emotecraft.options.export": "导出菜单",
-  "emotecraft.exportjson": "以 JSON 格式导出表情",
-  "emotecraft.exportbin": "以 .emotecraft 二进制文件导出表情",
-  "emotecraft.export.error.json": "导出 JSON 失败...",
-  "emotecraft.export.error.emotecraft": "导出 .emotecraft 失败...",
-  "emotecraft.export.done.json": "JSON 导出完毕！",
-  "emotecraft.export.done.emotecraft": ".emotecraft 导出完毕！",
   "emotecraft.song_too_big_to_send": "歌曲太大，无法发送到服务器。仅发送表情...",
   "emotecraft.cant.override.forced": "强制你播放当前表情，无法更改。"
 }

@@ -62,12 +62,6 @@
   "emotecraft.resetAllKeys.title": "Alle Emotecraft-Tastenbelegungen zurücksetzen",
   "emotecraft.resetAllKeys.message": "Möchtest du wirklich jede Tastenbelegung zurücksetzen?",
   "emotecraft.options.export": "Exportmenü",
-  "emotecraft.exportjson": "Exportiere Emotes als Json",
-  "emotecraft.exportbin": "Exportiere als .emotecraft Binärdatei",
-  "emotecraft.export.error.json": "Export nach Json fehlgeschlagen",
-  "emotecraft.export.error.emotecraft": "Export als .emotecraft fehlgeschlagen",
-  "emotecraft.export.done.json": ".json-Export erfolgreich abgeschlossen",
-  "emotecraft.export.done.emotecraft": ".Emotecraft-Export erfolgreich abgeschlossen",
   "emotecraft.song_too_big_to_send": "Das Lied ist zu lang, um es zum Server zu senden. Sende nur Emote",
   "emotecraft.cant.override.forced": "Du musst das aktuelle Emote zu spielen, du kannst es jetzt nicht ändern."
 }
