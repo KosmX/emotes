@@ -6,10 +6,9 @@ plugins {
     id("xyz.jpenilla.run-paper") version "2.3.1"
     `maven-publish`
     id("com.gradleup.shadow")
-    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
+    id("me.modmuss50.mod-publish-plugin")
     id("io.papermc.hangar-publish-plugin") version "0.1.2"
 }
-
 
 base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
 version = mod_version
@@ -26,6 +25,12 @@ dependencies {
     }
     compileApi(project(":emotesAssets"))
     compileApi(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
+
+    implementation("com.velocitypowered:velocity-native") {
+        version {
+            strictly("3.4.0-SNAPSHOT")
+        }
+    }
 }
 
 tasks.runServer {

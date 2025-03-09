@@ -7,7 +7,6 @@ plugins {
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
 
-
 subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")

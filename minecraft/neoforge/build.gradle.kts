@@ -75,7 +75,7 @@ java {
 
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
-    archiveClassifier.set("")
+    archiveClassifier.set("dev-shadow")
     mergeServiceFiles()
 }
 
@@ -87,7 +87,7 @@ tasks.remapJar {
 }
 
 tasks.jar {
-    archiveClassifier.set("")
+    archiveClassifier.set("dev")
 }
 
 components.getByName<AdhocComponentWithVariants>("java") {
@@ -96,22 +96,12 @@ components.getByName<AdhocComponentWithVariants>("java") {
     }
 }
 
-tasks.register<Jar>("devJar") {
-    from(sourceSets["main"].output)
-    archiveClassifier.set("dev")
-}
-
-tasks.build {
-    dependsOn("devJar")
-}
-
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             artifactId = "emotesNeo"
 
             // add all the jars that should be included when publishing to maven
-            artifact(tasks.named("devJar"))
             artifact(tasks.remapJar) {
                 builtBy(tasks.remapJar)
                 classifier = ""
