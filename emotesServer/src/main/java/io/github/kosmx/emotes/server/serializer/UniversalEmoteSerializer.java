@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Stream;
@@ -56,9 +57,7 @@ public class UniversalEmoteSerializer {
         }
 
         try {
-            return UniversalEmoteSerializer.READERS.stream()
-                    .filter(reader -> reader.canRead(fileName))
-                    .findFirst()
+            return UniversalEmoteSerializer.findReader(fileName)
                     .orElseThrow(() -> new EmoteSerializerException("No known reader for format", fileName))
                     .read(inputStream, fileName);
         } catch (EmoteSerializerException e) {
@@ -66,6 +65,12 @@ public class UniversalEmoteSerializer {
         } catch (Throwable cause) {
             throw new EmoteSerializerException("Error has occurred while serializing an emote", fileName, cause);
         }
+    }
+
+    public static Optional<IReader> findReader(String fileName) {
+        return UniversalEmoteSerializer.READERS.stream()
+                .filter(reader -> reader.canRead(fileName))
+                .findFirst();
     }
 
     /**
