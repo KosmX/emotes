@@ -12,7 +12,7 @@ dependencies {
     api("org.jetbrains:annotations:24.0.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
 }
 tasks.test {
     useJUnitPlatform()
