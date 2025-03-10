@@ -5,8 +5,9 @@ import dev.kosmx.playerAnim.api.IPlayer;
 import dev.kosmx.playerAnim.api.layered.AnimationStack;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Ease;
+import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.layouts.LayoutElement;
@@ -17,6 +18,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
+import java.util.logging.Level;
+
 public class PlayerPreview extends AbstractWidget implements LayoutElement {
     protected final boolean renderBackround;
     protected RemotePlayer player;
@@ -26,10 +29,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     public PlayerPreview(GameProfile profile, int x, int y, int width, int height, boolean renderBackround) {
         super(x, y, width, height, Component.empty());
 
-        this.player = new RemotePlayer(Minecraft.getInstance().level, profile);
-        this.player.getEntityData().assignValues(
-                Minecraft.getInstance().player.getEntityData().getNonDefaultValues()
-        );
+        this.player = new UnsafeRemotePlayer(null, profile);
         this.renderBackround = renderBackround;
         setAlpha(0.0F);
     }
@@ -56,7 +56,11 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         }
 
         guiGraphics.pose().translate(0, 0, 500);
-        InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
+        try {
+            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
+        } catch (Throwable th) {
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to render entity preview!", th);
+        }
 
         guiGraphics.disableScissor();
         guiGraphics.pose().popPose();
@@ -76,7 +80,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         if (stack.isActive()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
-            stack.tick();
+            this.player.tick();
         } else {
             this.animTime = Math.min(1.0F, this.animTime + 0.1F);
         }

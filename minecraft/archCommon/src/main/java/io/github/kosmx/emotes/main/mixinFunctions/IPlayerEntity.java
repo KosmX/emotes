@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
 import net.minecraft.client.CameraType;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -22,10 +23,14 @@ public interface IPlayerEntity {
         }
     }
 
-    void emotecraft$playEmote(KeyframeAnimation emote, int tick, boolean isForced);
+    default void emotecraft$playEmote(KeyframeAnimation emote, int tick, boolean isForced) {
+        throw new NotImplementedException();
+    }
 
     @Nullable
-    EmotePlayer emotecraft$getEmote();
+    default EmotePlayer emotecraft$getEmote() {
+        throw new NotImplementedException();
+    }
 
     default boolean isPlayingEmote(){
         return EmotePlayer.isRunningEmote(this.emotecraft$getEmote());
@@ -54,9 +59,13 @@ public interface IPlayerEntity {
         }
     }
 
-    void emotecraft$voidEmote();
+    default void emotecraft$voidEmote() {
+        throw new NotImplementedException();
+    }
 
-    boolean emotecraft$isForcedEmote();
+    default boolean emotecraft$isForcedEmote() {
+        throw new NotImplementedException();
+    }
 
     default void emotecraft$playerEntersInvalidPose() {
         if (!isPlayingEmote() || emotecraft$isForcedEmote()) {
