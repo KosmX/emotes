@@ -27,6 +27,10 @@ configurations.apply {
     named("developmentFabric").configure { extendsFrom(common) }
 }
 
+repositories {
+    flatDir { dir("libs") }
+}
+
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric_api_version"] as String}")
@@ -44,7 +48,15 @@ dependencies {
         pomCompile(this)
     }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
+    //modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
+    //    include(this)
+    //    pomCompile(this)
+    //}
+    modImplementation("dev.kosmx.playerAnim:player-animation-lib-fabric-2.0.2+1.21.3") {
+        include(this)
+        pomCompile(this)
+    }
+    modImplementation("io.github.kosmx.bendylib:bendy-lib-5.1-port-dev-shadow") {
         include(this)
         pomCompile(this)
     }

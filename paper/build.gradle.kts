@@ -31,6 +31,8 @@ dependencies {
             strictly("3.4.0-SNAPSHOT")
         }
     }
+
+    implementation("io.netty:netty-transport-native-epoll:4.1.98.Final")
 }
 
 tasks.runServer {

@@ -39,13 +39,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
     }
 
     @Override
-    protected int scrollBarX() {
+    protected int getScrollbarPosition() {
         if (!this.compactMode) {
-            return super.scrollBarX();
+            return super.getScrollbarPosition();
         }
-
         return getX() + getRowWidth() - SCROLLBAR_WIDTH;
     }
+
 
     @Override
     protected void renderSelection(@NotNull GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
@@ -113,8 +113,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
             matrices.drawString(minecraft.font, this.emote.description, x + 34, y + 12, 8421504);
             if(!this.emote.author.getString().isEmpty()) {
                 Component text = Component.translatable("emotecraft.emote.author")
-                        .withStyle(ChatFormatting.GOLD)
-                        .append(this.emote.author);
+                    .withStyle(ChatFormatting.GOLD)
+                    .append(this.emote.author);
 
                 matrices.drawString(minecraft.font, text, x + 34, y + 23, 8421504);
             }
