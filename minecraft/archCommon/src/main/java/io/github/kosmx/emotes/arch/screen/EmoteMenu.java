@@ -13,7 +13,7 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -34,9 +34,10 @@ public class EmoteMenu extends EmoteSubScreen {
     public static final Component RESET = Component.translatable("controls.reset");
 
     private static final Component KEYBIND = Component.translatable("emotecraft.options.keybind");
-    private static final Component FASTMENU = Component.translatable("emotecraft.options.fastmenu");
-    private static final Component FASTMENU2 = Component.translatable("emotecraft.options.fastmenu2");
-    private static final Component FASTMENU3 = Component.translatable("emotecraft.options.fastmenu3");
+    private static final Component FASTMENU = Component.translatable("emotecraft.options.fastmenu")
+            .append(Component.translatable("emotecraft.options.fastmenu2"))
+            .append(CommonComponents.SPACE)
+            .append(Component.translatable("emotecraft.options.fastmenu3"));
 
     private static final Component SURE = Component.translatable("emotecraft.sure");
     private static final Component SURE2 = Component.translatable("emotecraft.sure2");
@@ -73,7 +74,9 @@ public class EmoteMenu extends EmoteSubScreen {
         gridLayout.defaultCellSetting().padding(4, 4, 4, 0);
         GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(2);
 
-        rowHelper.addChild(new StringWidget(KEYBIND, this.font), 2);
+        rowHelper.addChild(new MultiLineTextWidget(KEYBIND, this.font).setMaxWidth(
+                Button.SMALL_WIDTH * 2
+        ), 2);
 
         this.setKeyButton = rowHelper.addChild(Button.builder(InputConstants.UNKNOWN.getDisplayName(), button -> {
             if (this.list != null && this.list.getSelected() != null){
@@ -88,11 +91,9 @@ public class EmoteMenu extends EmoteSubScreen {
         );
         this.resetButton.active = false;
 
-        rowHelper.addChild(new StringWidget(FASTMENU, this.font), 2,
-                gridLayout.newCellSettings().paddingTop(Button.DEFAULT_HEIGHT)
-        );
-        rowHelper.addChild(new StringWidget(FASTMENU2, this.font), 2);
-        rowHelper.addChild(new StringWidget(FASTMENU3, this.font), 2);
+        rowHelper.addChild(new MultiLineTextWidget(FASTMENU, this.font).setMaxWidth(
+                Button.SMALL_WIDTH * 2
+        ), 2, gridLayout.newCellSettings().paddingTop(Button.DEFAULT_SPACING));
 
         this.fastChoose = rowHelper.addChild(new FastChooseWidget(0, 0, 0), 2);
     }

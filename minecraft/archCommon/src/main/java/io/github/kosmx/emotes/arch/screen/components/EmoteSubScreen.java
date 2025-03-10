@@ -49,7 +49,7 @@ public abstract class EmoteSubScreen extends Screen {
 
     protected void addTitle() {
         EditBox searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
-                () -> this.list.getEmotes()
+                () -> Objects.requireNonNull(this.list).getEmotes()
         ));
         searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
     }

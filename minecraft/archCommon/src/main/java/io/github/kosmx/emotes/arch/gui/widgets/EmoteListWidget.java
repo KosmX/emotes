@@ -8,7 +8,6 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,8 +23,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
     protected List<EmoteEntry> emotes = new ArrayList<>();
     private boolean compactMode;
 
-    public EmoteListWidget(Minecraft minecraftClient, int i, int j, int k, int l) {
-        super(minecraftClient, i, j, k, l);
+    public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
+        super(minecraft, width, height, y, itemHeight);
         this.centerListVertically = false;
     }
 
