@@ -80,7 +80,12 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         if (stack.isActive()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
-            this.player.tick();
+
+            try {
+                this.player.tick();
+            } catch (Throwable th) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to tick entity preview!", th);
+            }
         } else {
             this.animTime = Math.min(1.0F, this.animTime + 0.1F);
         }
