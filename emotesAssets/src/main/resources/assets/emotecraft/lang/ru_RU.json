@@ -31,7 +31,7 @@
   "emotecraft.otherconfig.enableNSFW": "Разрешить воспроизведение NSFW-эмоций",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) - неприемлимый контент.\n\nМожет содержать обнажённые изображения, сцены сексуального характера, сцены насилия или другие потенциально неприятные/отталкивающие вещи.",
   "emotecraft.otherconfig.checkPose": "Проверять позу",
-  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft остановит эмоцию, если вы попадёте в неправильную позу (отключение этого конфига может сломать остановку эмоций при переключении)",
+  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft остановит эмоцию, если вы попадёте в неправильную позу (отключение этого может сломать остановку эмоций на шифт)",
   "emotecraft.otherconfig.alwaysValidateEmote": "Всегда проверять полученные эмоции",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Опция на стороне клиента, не повлияет на локальный сервер\n\nПо умолчанию проверка на стороне клиента происходит только при получении эмоции от ненадежного прокси.\nИспользуйте это, чтобы всегда выполнять проверку на стороне клиента",
   "emotecraft.otherconfig.default3rdPersonFront": "Использовать вид спереди вместо вида сзади при воспроизведении эмоций",
@@ -64,6 +64,9 @@
   "emotecraft.resetAllKeys.title": "Сбросить все привязки клавиш для эмоций",
   "emotecraft.resetAllKeys.message": "Вы действительно хотите сбросить все привязки клавиш для эмоций?",
   "emotecraft.options.export": "Меню экспорта",
+  "emotecraft.export": "Экспортировать эмоции в .%s",
+  "emotecraft.export.error": "Не удалось экспортировать в %s...",
+  "emotecraft.export.done": "Успешный экспорт в %s!",
   "emotecraft.song_too_big_to_send": "Размер песни слишком большой, отправка на сервер невозможна. Будет отправлена только эмоция",
   "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено."
 }
