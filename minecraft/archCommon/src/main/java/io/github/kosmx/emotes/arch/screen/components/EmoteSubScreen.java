@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.components;
 
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -25,6 +26,8 @@ public abstract class EmoteSubScreen extends Screen {
     protected Screen lastScreen;
 
     @Nullable
+    protected PlayerPreview preview;
+    @Nullable
     protected EmoteListWidget list;
     protected HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
 
@@ -41,6 +44,7 @@ public abstract class EmoteSubScreen extends Screen {
     @Override
     protected void init() {
         this.addTitle();
+        this.addPlayerPreview();
         this.addContents();
         this.addFooter();
         this.layout.visitWidgets(this::addRenderableWidget);
@@ -52,6 +56,12 @@ public abstract class EmoteSubScreen extends Screen {
                 () -> Objects.requireNonNull(this.list).getEmotes()
         ));
         searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
+    }
+
+    protected void addPlayerPreview() {
+        this.preview = this.layout.addToContents(new PlayerPreview(
+                this.minecraft.getGameProfile(), 0, 0, 0, 0, true
+        ), layoutSettings -> layoutSettings.alignHorizontallyLeft().paddingLeft(Button.DEFAULT_SPACING));
     }
 
     protected EmoteListWidget newEmoteListWidget() {
@@ -84,6 +94,28 @@ public abstract class EmoteSubScreen extends Screen {
         this.layout.arrangeElements();
         if (this.list != null) {
             this.list.updateSize(this.width, this.layout);
+        }
+        if (this.preview != null) {
+            this.preview.setSize(width / 6, height / 2);
+            this.layout.arrangeElements();
+
+            // For small screens
+            this.preview.visible = this.preview.getRight() <= this.list.getRowLeft();
+        }
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.preview != null) {
+            EmoteListWidget.EmoteEntry hovered = this.list.getHovered();
+            if (this.list.getSelected() == hovered) {
+                hovered = null;
+            }
+            if (hovered != null) {
+                this.preview.playAnimation(hovered.getEmote().emote, true);
+            }
+            this.preview.tick();
         }
     }
 

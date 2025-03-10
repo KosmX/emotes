@@ -68,6 +68,7 @@ public class EmoteMenu extends EmoteSubScreen {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
         this.list = linearLayout.addChild(newEmoteListWidget());
+        this.list.setCompactMode(true);
         addOptions();
 
         GridLayout gridLayout = linearLayout.addChild(new GridLayout());
@@ -100,9 +101,7 @@ public class EmoteMenu extends EmoteSubScreen {
 
     @Override
     protected void addOptions() {
-        if (this.list != null) {
-            this.list.setEmotes(EmoteHolder.list, true);
-        }
+        this.list.setEmotes(EmoteHolder.list, true);
     }
 
     @Override
@@ -147,11 +146,6 @@ public class EmoteMenu extends EmoteSubScreen {
             this.fastChoose.setSize(x, x);
         }
         super.repositionElements();
-        if (this.list != null) {
-            this.list.setCompactMode(true);
-            this.list.setWidth(this.width / 3);
-            this.layout.arrangeElements();
-        }
     }
 
     @Override

@@ -58,9 +58,7 @@ public class Serializer<T extends SerializableConfig> {
     }
 
     public void saveConfig() {
-        if (saveConfig(this.config)) {
-            this.config = null;
-        }
+        saveConfig(this.config);
     }
 
     public boolean saveConfig(T config) {

@@ -67,6 +67,14 @@ public class FullMenuScreen extends EmoteSubScreen {
     }
 
     @Override
+    public void tick() {
+        if (this.preview != null && this.list.getSelected() == this.list.getHovered()) {
+            this.preview.getPlayer().stopEmote();
+        }
+        super.tick();
+    }
+
+    @Override
     public boolean isPauseScreen() {
         return false;
     }

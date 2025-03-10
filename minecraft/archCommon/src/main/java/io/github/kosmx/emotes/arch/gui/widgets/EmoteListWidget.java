@@ -12,10 +12,12 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -92,6 +94,22 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.EmoteEn
 
     public List<EmoteEntry> getEmotes() {
         return Collections.unmodifiableList(this.emotes);
+    }
+
+    @Override
+    public void updateSize(int width, HeaderAndFooterLayout layout) {
+        super.updateSize(width, layout);
+        if (compactMode) layout.arrangeElements();
+    }
+
+    @Override
+    public void updateSizeAndPosition(int width, int height, int y) {
+        super.updateSizeAndPosition(compactMode ? width  / 3 : width, height, y);
+    }
+
+    @Override
+    public @Nullable EmoteEntry getHovered() {
+        return super.getHovered();
     }
 
     public class EmoteEntry extends ObjectSelectionList.Entry<EmoteEntry> {
