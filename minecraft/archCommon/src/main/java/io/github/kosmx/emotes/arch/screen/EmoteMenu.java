@@ -35,6 +35,7 @@ public class EmoteMenu extends EmoteSubScreen {
 
     private static final Component KEYBIND = Component.translatable("emotecraft.options.keybind");
     private static final Component FASTMENU = Component.translatable("emotecraft.options.fastmenu")
+            .append(CommonComponents.SPACE)
             .append(Component.translatable("emotecraft.options.fastmenu2"))
             .append(CommonComponents.SPACE)
             .append(Component.translatable("emotecraft.options.fastmenu3"));
