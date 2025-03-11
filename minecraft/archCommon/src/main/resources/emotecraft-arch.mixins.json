@@ -15,6 +15,7 @@
     "EmotePlayerMixin",
     "EntityRenderDispatcherMixin",
     "KeyEventMixin",
+    "LivingEntityRendererMixin",
     "PlayerMixin"
   ],
   "server": [],

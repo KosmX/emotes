@@ -65,4 +65,9 @@ public class UnsafeRemotePlayer extends RemotePlayer {
     public void aiStep() {
         // no-op
     }
+
+    @Override
+    public boolean isCustomNameVisible() {
+        return false;
+    }
 }
