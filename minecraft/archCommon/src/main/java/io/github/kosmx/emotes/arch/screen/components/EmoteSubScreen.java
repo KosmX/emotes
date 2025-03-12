@@ -128,6 +128,8 @@ public abstract class EmoteSubScreen extends Screen {
             }
             if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
                 this.preview.playAnimation(emote.emote.emote, true);
+            } else if (hovered instanceof EmoteListWidget.FolderEntry) {
+                this.preview.getPlayer().stopEmote();
             }
             this.preview.tick();
         }
