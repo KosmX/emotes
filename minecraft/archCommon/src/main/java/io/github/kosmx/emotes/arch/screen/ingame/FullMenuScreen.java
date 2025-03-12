@@ -39,9 +39,9 @@ public class FullMenuScreen extends EmoteSubScreen {
     }
 
     @Override
-    protected void onPressed(EmoteListWidget.EmoteEntry selected) {
-        if (selected != null) {
-            ClientEmotePlay.clientStartLocalEmote(selected.getEmote());
+    protected void onPressed(EmoteListWidget.ListEntry selected) {
+        if (selected instanceof EmoteListWidget.EmoteEntry entry) {
+            ClientEmotePlay.clientStartLocalEmote(entry.getEmote());
 
             if (this.lastScreen instanceof FastMenuScreen fast) {
                 this.lastScreen = fast.parent;

@@ -6,7 +6,10 @@ import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.CommonComponents;
@@ -30,6 +33,8 @@ public abstract class EmoteSubScreen extends Screen {
     @Nullable
     protected EmoteListWidget list;
     protected HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+    @Nullable
+    protected EditBox searchBox;
 
     protected EmoteSubScreen(Component title, Screen lastScreen) {
         this(title, ISearchEngine.getInstance(), lastScreen);
@@ -52,11 +57,27 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addTitle() {
-        EditBox searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
+        LinearLayout linearLayout = this.layout.addToHeader(LinearLayout.vertical().spacing(Button.DEFAULT_SPACING));
+
+        this.searchBox = linearLayout.addChild(this.searchEngine.createEditBox(this.font, SEARCH,
                 () -> Objects.requireNonNull(this.list).getEmotes()
         ));
-        searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
+        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
+
+        linearLayout.addChild(new StringWidget(Component.literal("/ 2342342 / 2342342 / 234234"), font),
+                LayoutSettings::alignHorizontallyLeft
+        );
     }
+
+    /*private static MutableComponent appendScreenPath(FullMenuScreen screen, MutableComponent component) {
+        component = component.append(SLASH).append(CommonComponents.SPACE).append(screen.path);
+
+        if (screen.lastScreen instanceof FullMenuScreen parent) {
+            return appendScreenPath(parent, component.append(CommonComponents.SPACE));
+        } else {
+            return component;
+        }
+    }*/
 
     protected void addPlayerPreview() {
         this.preview = this.layout.addToContents(new PlayerPreview(
@@ -69,9 +90,12 @@ public abstract class EmoteSubScreen extends Screen {
                 this.minecraft, width, this.layout.getContentHeight(), this.layout.getHeaderHeight(), 36
         ) {
             @Override
-            public void setSelected(@Nullable EmoteListWidget.EmoteEntry entry) {
+            public void setSelected(@Nullable EmoteListWidget.ListEntry entry) {
                 super.setSelected(entry);
                 onPressed(entry);
+                if (entry instanceof FolderEntry && searchBox != null) {
+                    searchBox.setValue("");
+                }
             }
         };
     }
@@ -87,7 +111,7 @@ public abstract class EmoteSubScreen extends Screen {
         this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).width(200).build());
     }
 
-    protected abstract void onPressed(@Nullable EmoteListWidget.EmoteEntry selected);
+    protected abstract void onPressed(@Nullable EmoteListWidget.ListEntry selected);
 
     @Override
     protected void repositionElements() {
@@ -108,12 +132,12 @@ public abstract class EmoteSubScreen extends Screen {
     public void tick() {
         super.tick();
         if (this.preview != null) {
-            EmoteListWidget.EmoteEntry hovered = this.list.getHovered();
+            EmoteListWidget.ListEntry hovered = this.list.getHovered();
             if (this.list.getSelected() == hovered) {
                 hovered = null;
             }
-            if (hovered != null) {
-                this.preview.playAnimation(hovered.getEmote().emote, true);
+            if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
+                this.preview.playAnimation(emote.emote.emote, true);
             }
             this.preview.tick();
         }

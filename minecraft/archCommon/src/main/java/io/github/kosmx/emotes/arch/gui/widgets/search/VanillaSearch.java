@@ -18,7 +18,7 @@ public class VanillaSearch implements ISearchEngine {
     }
 
     @Override
-    public EditBox createEditBox(Font font, Component message, Supplier<List<EmoteListWidget.EmoteEntry>> entries) {
+    public EditBox createEditBox(Font font, Component message, Supplier<List<EmoteListWidget.ListEntry>> entries) {
         return new EditBox(font, 0, 0, Button.BIG_WIDTH, Button.DEFAULT_HEIGHT, message);
     }
 
@@ -33,7 +33,7 @@ public class VanillaSearch implements ISearchEngine {
     }
 
     @Override
-    public Stream<EmoteListWidget.EmoteEntry> filter(Stream<EmoteListWidget.EmoteEntry> entries, String search) {
-        return entries.filter(entry -> ISearchEngine.matches(entry, search));
+    public Stream<EmoteListWidget.ListEntry> filter(Stream<EmoteListWidget.ListEntry> entries, String search) {
+        return entries.filter(entry -> entry.matches(search.toLowerCase()));
     }
 }

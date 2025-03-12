@@ -12,17 +12,10 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public interface ISearchEngine extends Renderable {
-    EditBox createEditBox(Font font, Component message, Supplier<List<EmoteListWidget.EmoteEntry>> entries);
+    EditBox createEditBox(Font font, Component message, Supplier<List<EmoteListWidget.ListEntry>> entries);
     boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY);
 
-    static boolean matches(EmoteListWidget.EmoteEntry emote, String str) {
-        String string = str.toLowerCase();
-        return emote.emote.name.getString().toLowerCase().contains(string) ||
-                emote.emote.description.getString().toLowerCase().contains(string) ||
-                emote.emote.author.getString().toLowerCase().equals(string);
-    }
-
-    Stream<EmoteListWidget.EmoteEntry> filter(Stream<EmoteListWidget.EmoteEntry> entries, String search);
+    Stream<EmoteListWidget.ListEntry> filter(Stream<EmoteListWidget.ListEntry> entries, String search);
 
     static ISearchEngine getInstance() {
         return PlatformTools.hasSearchables() ? new SearchablesSearch() : VanillaSearch.INSTANCE;
