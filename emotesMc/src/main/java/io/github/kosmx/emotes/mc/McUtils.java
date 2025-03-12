@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class McUtils {
     public static final Component SLASH = Component.literal("/");
+    public static final Component BACK = Component.literal("<").withStyle(style -> style.withBold(true));
 
     public static Component fromJson(String json, HolderLookup.Provider registries) {
         if (json == null) {

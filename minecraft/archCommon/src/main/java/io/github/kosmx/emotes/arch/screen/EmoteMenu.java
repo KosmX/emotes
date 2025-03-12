@@ -109,6 +109,8 @@ public class EmoteMenu extends EmoteSubScreen {
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
+        if (this.list != null) linearLayout.addChild(this.list.createBackButton());
+
         linearLayout.addChild(Button.builder(EmoteMenu.OPEN_FOLDER, button -> PlatformTools.openExternalEmotesDir())
                 .width(Button.SMALL_WIDTH)
                 .build()

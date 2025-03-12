@@ -30,6 +30,8 @@ public class FullMenuScreen extends EmoteSubScreen {
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
+        if (this.list != null) linearLayout.addChild(this.list.createBackButton());
+
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
                 .build()
         );

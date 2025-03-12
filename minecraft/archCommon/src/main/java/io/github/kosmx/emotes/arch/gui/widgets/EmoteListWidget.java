@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -12,6 +13,7 @@ import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.renderer.RenderType;
@@ -24,10 +26,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
     private boolean compactMode;
+    private Button backButton;
 
     public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
         super(minecraft, width, height, y, itemHeight, minecraft.font.lineHeight);
@@ -152,9 +156,18 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     @Override
     public void setSelected(@Nullable EmoteListWidget.ListEntry selected) {
         super.setSelected(selected);
-        if (selected instanceof FolderEntry folder && this.mainFolder.setLastFolder(folder)) {
-            System.out.println(appendScreenPath(this.mainFolder, Component.empty()).getString());
+        if (selected instanceof FolderEntry folder) setLastFolder(folder);
+    }
+
+    public boolean setLastFolder(FolderEntry folder) {
+        if (this.mainFolder.setLastFolder(folder)) {
+            LoggerService.INSTANCE.log(Level.INFO, appendScreenPath(this.mainFolder, Component.empty()).getString());
+            if (this.backButton != null) {
+                this.backButton.active = this.mainFolder.next != null;
+            }
+            return true;
         }
+        return false;
     }
 
     public abstract class ListEntry extends ObjectSelectionList.Entry<ListEntry> {
@@ -290,6 +303,10 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         public boolean setLastFolder(FolderEntry folder) {
             if (this.next != null) {
+                if (folder == null && this.next.next == null) {
+                    setSelectedFolder(null);
+                    return true;
+                }
                 return this.next.setLastFolder(folder);
             } else {
                 return setSelectedFolder(folder);
@@ -297,7 +314,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         public boolean setSelectedFolder(FolderEntry folder) {
-            if (this.entries.contains(folder)) {
+            if (this.entries.contains(folder) || folder == null) {
                 this.next = folder;
                 return true;
             }
@@ -330,5 +347,14 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         } else {
             return component;
         }
+    }
+
+    public Button createBackButton() {
+        this.backButton = Button.builder(McUtils.BACK, button -> setLastFolder(null))
+                .width(Button.DEFAULT_HEIGHT)
+                .build();
+
+        this.backButton.active = false;
+        return this.backButton;
     }
 }
