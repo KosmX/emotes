@@ -75,6 +75,18 @@ public class FastMenuScreen extends Screen {
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (EmotecraftClientMod.OPEN_MENU_KEY.matchesMouse(button)) {
+            onClose();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean isPauseScreen() {
         return false;
     }
