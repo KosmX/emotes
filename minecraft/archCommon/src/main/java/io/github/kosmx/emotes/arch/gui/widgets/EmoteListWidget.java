@@ -361,12 +361,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public static MutableComponent appendScreenPath(FolderEntry folder, MutableComponent component) {
-        component = component.append(McUtils.SLASH).append(CommonComponents.SPACE).append(folder.name);
+        component = component.append(McUtils.SLASH).append(CommonComponents.SPACE);
 
         if (folder.next != null) {
-            return appendScreenPath(folder.next, component.append(CommonComponents.SPACE));
+            return appendScreenPath(folder.next, component.append(folder.name).append(CommonComponents.SPACE));
         } else {
-            return component;
+            return component.append(folder.name.copy().withStyle(style -> style.withBold(true)));
         }
     }
 
