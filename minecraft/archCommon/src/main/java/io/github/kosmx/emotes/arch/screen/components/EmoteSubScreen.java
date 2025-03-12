@@ -6,9 +6,9 @@ import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
-import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
@@ -64,20 +64,10 @@ public abstract class EmoteSubScreen extends Screen {
         ));
         this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
 
-        linearLayout.addChild(new StringWidget(Component.literal("/ 2342342 / 2342342 / 234234"), font),
-                LayoutSettings::alignHorizontallyLeft
+        linearLayout.addChild(new MultiLineTextWidget(Component.empty(), font),
+                layoutSettings -> layoutSettings.alignHorizontallyLeft().alignHorizontallyCenter()
         );
     }
-
-    /*private static MutableComponent appendScreenPath(FullMenuScreen screen, MutableComponent component) {
-        component = component.append(SLASH).append(CommonComponents.SPACE).append(screen.path);
-
-        if (screen.lastScreen instanceof FullMenuScreen parent) {
-            return appendScreenPath(parent, component.append(CommonComponents.SPACE));
-        } else {
-            return component;
-        }
-    }*/
 
     protected void addPlayerPreview() {
         this.preview = this.layout.addToContents(new PlayerPreview(

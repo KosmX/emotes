@@ -44,7 +44,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public final Component name;
     public final Component description;
     public final Component author;
-    public final Component folder;
+    public final String folder;
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
@@ -69,7 +69,7 @@ public class EmoteHolder implements Supplier<UUID> {
         this.name = McUtils.fromJson(emote.extraData.get("name"), RegistryAccess.EMPTY);
         this.description = McUtils.fromJson(emote.extraData.get("description"), RegistryAccess.EMPTY);
         this.author = McUtils.fromJson(emote.extraData.get("author"), RegistryAccess.EMPTY);
-        this.folder = McUtils.fromJson(emote.extraData.get("folderpath"), RegistryAccess.EMPTY);
+        this.folder = (String) emote.extraData.get("folderpath");
     }
 
     /**

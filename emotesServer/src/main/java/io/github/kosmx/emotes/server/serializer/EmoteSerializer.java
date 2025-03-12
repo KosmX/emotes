@@ -28,23 +28,24 @@ public class EmoteSerializer {
             return; // Just skip
         }
 
-        try (Stream<Path> paths = Files.walk(externalEmotes, 2, FileVisitOption.FOLLOW_LINKS)) {
+        try (Stream<Path> paths = Files.walk(externalEmotes, FileVisitOption.FOLLOW_LINKS)) {
             paths.filter(
                     file -> AnimationFormat.byFileName(file.getFileName().toString()).getExtension() != null
-            ).parallel().forEach(file -> emotes.addAll(serializeExternalEmote(file)));
+            ).parallel().forEach(file -> emotes.addAll(serializeExternalEmote(file, externalEmotes)));
         } catch (Throwable e) {
             LoggerService.INSTANCE.log(Level.WARNING, "Failed to walk emotes!", e);
         }
     }
 
-    public static List<KeyframeAnimation> serializeExternalEmote(Path file) {
+    public static List<KeyframeAnimation> serializeExternalEmote(Path file, Path externalEmotes) {
         String fileName = file.getFileName().toString();
         String baseFileName = getBaseName(fileName);
 
         try (InputStream reader = Files.newInputStream(file)) {
             List<KeyframeAnimation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
             for (KeyframeAnimation emote : emotes) { // Avoid lambda
-                emote.extraData.put("folderpath", file.getParent().getFileName().toString());
+                emote.extraData.put("folderpath", externalEmotes.relativize(file.getParent())
+                        .normalize().toString().replace("\\", "/"));
             }
 
             Path icon = file.getParent().resolve(baseFileName + ".png");

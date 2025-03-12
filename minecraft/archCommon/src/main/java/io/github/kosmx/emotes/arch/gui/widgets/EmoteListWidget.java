@@ -8,13 +8,16 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
-    protected Map<FolderEntry, List<EmoteEntry>> emotes = new HashMap<>();
+    private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
     private boolean compactMode;
-    private FolderEntry currentFolder;
 
     public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
         super(minecraft, width, height, y, itemHeight);
@@ -65,13 +67,17 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid) {
-        this.emotes.clear();
+        this.mainFolder.entries.clear();
         for (EmoteHolder emoteHolder : list) {
-            getOrCreateFolder(emoteHolder.folder).add(new EmoteEntry(emoteHolder));
+            if (StringUtils.isBlank(emoteHolder.folder)) {
+                this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
+            } else {
+                createFoldersTree(emoteHolder.folder.split("/")).entries.add(new EmoteEntry(emoteHolder));
+            }
         }
         if (showInvalid) {
             for (EmoteHolder emoteHolder : getEmptyEmotes()) {
-                getOrCreateFolder(emoteHolder.folder).add(new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
             }
         }
         filter(VanillaSearch.INSTANCE, "");
@@ -83,7 +89,15 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         this.setScrollAmount(0);
     }
 
-    public Iterable<EmoteHolder> getEmptyEmotes(){
+    public FolderEntry createFoldersTree(String[] folders) {
+        FolderEntry last = this.mainFolder;
+        for (String folder : folders) {
+            last = last.getOrCreateFolder(Component.literal(folder));
+        }
+        return last;
+    }
+
+    public Iterable<EmoteHolder> getEmptyEmotes() {
         Collection<EmoteHolder> empties = new LinkedList<>();
         for(Pair<UUID, InputConstants.Key> pair : PlatformTools.getConfig().emoteKeyMap){
             if(!EmoteHolder.list.containsKey(pair.getLeft())){
@@ -94,24 +108,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public List<ListEntry> getEmotes() {
-        List<ListEntry> emotes = new ArrayList<>();
-        if (this.currentFolder == null) {
-            for (var entry : this.emotes.entrySet()) {
-                if (entry.getKey().isInvalid()) {
-                    emotes.addAll(entry.getValue());
-                } else {
-                    emotes.add(entry.getKey());
-                }
-            }
-        } else {
-            emotes.addAll(this.emotes.getOrDefault(this.currentFolder, Collections.emptyList()));
-        }
-        emotes.sort(Comparator.comparing(o -> o.name.getString().toLowerCase()));
-        return Collections.unmodifiableList(emotes);
-    }
-
-    public List<EmoteEntry> getOrCreateFolder(Component name) {
-        return this.emotes.computeIfAbsent(new FolderEntry(name), k -> new ArrayList<>());
+        return this.mainFolder.getEmotes();
     }
 
     @Override
@@ -141,8 +138,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     @Override
     public void setSelected(@Nullable EmoteListWidget.ListEntry selected) {
         super.setSelected(selected);
-        if (selected instanceof FolderEntry folder) {
-            this.currentFolder = folder;
+        if (selected instanceof FolderEntry folder && this.mainFolder.setLastFolder(folder)) {
+            System.out.println(appendScreenPath(this.mainFolder, Component.empty()).getString());
         }
     }
 
@@ -150,7 +147,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public final Component name;
         public final Component description;
 
-        public ListEntry(Component name, Component description) {
+        public ListEntry(@NotNull Component name, Component description) {
             this.name = name;
             this.description = description;
         }
@@ -177,6 +174,18 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         public boolean matches(String string) {
             return name.getString().toLowerCase().contains(string.toLowerCase());
+        }
+
+        public abstract List<ListEntry> getEmotes();
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ListEntry entry && this.name.equals(entry.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.name.hashCode();
         }
     }
 
@@ -221,12 +230,20 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                     description.getString().toLowerCase().contains(string.toLowerCase()) ||
                     emote.author.getString().equalsIgnoreCase(string);
         }
+
+        @Override
+        public List<ListEntry> getEmotes() {
+            return Collections.singletonList(this);
+        }
     }
 
     public class FolderEntry extends ListEntry {
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
-        public FolderEntry(Component name) {
+        private final List<ListEntry> entries = new ArrayList<>();
+        private FolderEntry next;
+
+        public FolderEntry(@NotNull Component name) {
             super(name, FOLDER_DESC);
         }
 
@@ -236,21 +253,68 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         public boolean isInvalid() {
-            return this.name == null || StringUtils.isBlank(this.name.getString());
+            return StringUtils.isBlank(this.name.getString());
         }
 
         @Override
-        public boolean equals(Object obj) {
-            return obj instanceof FolderEntry entry && this.name.equals(entry.name);
+        public List<ListEntry> getEmotes() {
+            List<ListEntry> emotes = new ArrayList<>();
+            if (this.next == null || !this.entries.contains(this.next)) {
+                for (var entry : this.entries) {
+                    if (entry instanceof FolderEntry folder && folder.isInvalid()) {
+                        emotes.addAll(entry.getEmotes());
+                    } else {
+                        emotes.add(entry);
+                    }
+                }
+            } else {
+                emotes.addAll(this.next.getEmotes());
+            }
+            emotes.sort(Comparator.comparing(o -> o.name.getString().toLowerCase()));
+            return Collections.unmodifiableList(emotes);
         }
 
-        @Override
-        public int hashCode() {
-            return this.name.hashCode();
+        public boolean setLastFolder(FolderEntry folder) {
+            if (this.next != null) {
+                return this.next.setLastFolder(folder);
+            } else {
+                return setSelectedFolder(folder);
+            }
+        }
+
+        public boolean setSelectedFolder(FolderEntry folder) {
+            if (this.entries.contains(folder)) {
+                this.next = folder;
+                return true;
+            }
+            return false;
+        }
+
+        public FolderEntry getOrCreateFolder(Component name) {
+            for (ListEntry entry : this.entries) {
+                if (entry instanceof FolderEntry folder) {
+                    if (folder.name.equals(name)) {
+                        return folder;
+                    }
+                }
+            }
+            FolderEntry folder = new FolderEntry(name);
+            this.entries.add(folder);
+            return folder;
         }
     }
 
     public void setCompactMode(boolean compactMode) {
         this.compactMode = compactMode;
+    }
+
+    public static MutableComponent appendScreenPath(FolderEntry folder, MutableComponent component) {
+        component = component.append(McUtils.SLASH).append(CommonComponents.SPACE).append(folder.name);
+
+        if (folder.next != null) {
+            return appendScreenPath(folder.next, component.append(CommonComponents.SPACE));
+        } else {
+            return component;
+        }
     }
 }
