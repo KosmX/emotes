@@ -11,7 +11,6 @@ public class PayloadTypeRegistator {
     public static void init() {
         register(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER);
         register(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER);
-        register(NetworkPlatformTools.GEYSER_CHANNEL_ID, EmotePacketPayload.GEYSER_CHANNEL_READER);
     }
 
     private static void register(CustomPacketPayload.Type<EmotePacketPayload> type, StreamCodec<FriendlyByteBuf, EmotePacketPayload> codec) {

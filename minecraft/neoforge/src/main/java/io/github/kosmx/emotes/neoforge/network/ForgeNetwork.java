@@ -90,12 +90,6 @@ public class ForgeNetwork {
                         LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                     }
                 });
-
-        event.registrar("geyser")
-                .optional()
-                .playToServer(NetworkPlatformTools.GEYSER_CHANNEL_ID, EmotePacketPayload.GEYSER_CHANNEL_READER,
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.instance.receiveGeyserMessage(playPayloadContext.player(), arg.unwrapBytes())
-                );
     }
 
     @SubscribeEvent

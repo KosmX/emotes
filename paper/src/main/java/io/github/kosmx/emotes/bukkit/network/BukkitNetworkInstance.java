@@ -8,7 +8,6 @@ import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -22,16 +21,6 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
     @Override
     public EmotePlayTracker getEmoteTracker() {
         return this.emotePlayTracker;
-    }
-
-    @Override
-    public void sendGeyserPacket(ByteBuffer buffer) {
-        player.sendPluginMessage(bukkitPlugin, "geyser:emote", buffer.array());
-    }
-
-    @Override
-    public void disconnect(String literal) {
-        player.kickPlayer(literal);
     }
 
     public BukkitNetworkInstance(Player player){

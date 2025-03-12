@@ -22,6 +22,3 @@ include("minecraft:neoforge")
 
 // Paper plugin
 include("paper")
-
-//Velocity plugin stuff
-// include "velocity"

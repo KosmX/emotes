@@ -5,11 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.common.tools.BiMap;
-import io.github.kosmx.emotes.server.serializer.BiMapSerializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 
 import java.io.BufferedReader;
@@ -17,7 +14,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -48,7 +44,6 @@ public class Serializer<T extends SerializableConfig> {
 
     protected Gson initializeSerializer(GsonBuilder builder) {
         builder.registerTypeAdapter(this.configClass, this.configSerializer);
-        builder.registerTypeAdapter(new TypeToken<BiMap<UUID, UUID>>(){}.getType(), new BiMapSerializer());
 
         if (this.consumer != null) {
             this.consumer.accept(builder);
@@ -57,8 +52,8 @@ public class Serializer<T extends SerializableConfig> {
         return builder.setPrettyPrinting().create();
     }
 
-    public void saveConfig() {
-        saveConfig(this.config);
+    public boolean saveConfig() {
+        return saveConfig(this.config);
     }
 
     public boolean saveConfig(T config) {
