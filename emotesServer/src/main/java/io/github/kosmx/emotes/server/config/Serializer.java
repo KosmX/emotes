@@ -52,8 +52,8 @@ public class Serializer<T extends SerializableConfig> {
         return builder.setPrettyPrinting().create();
     }
 
-    public void saveConfig() {
-        saveConfig(this.config);
+    public boolean saveConfig() {
+        return saveConfig(this.config);
     }
 
     public boolean saveConfig(T config) {

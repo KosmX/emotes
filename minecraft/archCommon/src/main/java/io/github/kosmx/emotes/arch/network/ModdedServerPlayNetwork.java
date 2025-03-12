@@ -41,11 +41,6 @@ public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IS
     }
 
     @Override
-    public void disconnect(String literal) {
-        serverGamePacketListener.disconnect(Component.literal(literal));
-    }
-
-    @Override
     void sendStreamPacket(ByteBuffer buffer) {
         serverGamePacketListener.send(NetworkPlatformTools.streamPacket(buffer));
     }

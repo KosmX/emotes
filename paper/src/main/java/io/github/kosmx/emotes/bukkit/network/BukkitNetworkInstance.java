@@ -23,11 +23,6 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
         return this.emotePlayTracker;
     }
 
-    @Override
-    public void disconnect(String literal) {
-        player.kickPlayer(literal);
-    }
-
     public BukkitNetworkInstance(Player player){
         this.player = player;
     }

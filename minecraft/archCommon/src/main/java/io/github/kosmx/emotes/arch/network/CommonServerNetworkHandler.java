@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -59,7 +60,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
                     receiveMessage(packet.array(), player, handler);
                 }
             } else {
-                handler.disconnect("Emote stream is disabled on this server");
+                player.connection.disconnect(Component.literal("Emote stream is disabled on this server"));
             }
         } catch (IOException e) {
             LoggerService.INSTANCE.log(Level.WARNING, "Failed to receive packet!", e);

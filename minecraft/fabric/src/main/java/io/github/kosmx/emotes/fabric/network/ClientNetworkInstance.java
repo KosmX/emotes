@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 public class ClientNetworkInstance {
-
-    public static void init(){
+    @SuppressWarnings("deprecation")
+    public static void init() {
         // Configuration
 
         ClientConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (buf, context) -> {

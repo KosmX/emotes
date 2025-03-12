@@ -6,7 +6,6 @@ public interface IServerNetworkInstance extends INetworkInstance {
     /**
      * Server closes connection with instance
      */
-    default void closeConnection(){}
     default void closeConnection() {}
 
     default boolean trackPlayState() {
@@ -14,5 +13,4 @@ public interface IServerNetworkInstance extends INetworkInstance {
     }
 
     EmotePlayTracker getEmoteTracker();
-    void disconnect(String literal);
 }
