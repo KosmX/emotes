@@ -30,7 +30,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     private boolean compactMode;
 
     public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-        super(minecraft, width, height, y, itemHeight);
+        super(minecraft, width, height, y, itemHeight, minecraft.font.lineHeight);
         this.centerListVertically = false;
     }
 
@@ -50,6 +50,20 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         return getX() + getRowWidth() - SCROLLBAR_WIDTH;
+    }
+
+    @Override
+    protected void renderHeader(GuiGraphics guiGraphics, int x, int y) {
+        Component path = appendScreenPath(this.mainFolder, Component.empty());
+        if (compactMode) {
+            renderScrollingString(guiGraphics, minecraft.font, path,
+                    x, x, y - 4, getRowRight() - 3, (y + headerHeight) - 4, -1
+            );
+        } else {
+            renderScrollingString(guiGraphics, minecraft.font, path,
+                    getX() + 3, y - 4, getRight() - 3, (y + headerHeight) - 4, -1
+            );
+        }
     }
 
     @Override
