@@ -24,7 +24,7 @@
       "io.github.kosmx.emotes.fabric.FabricWrapper"
     ],
     "client": [
-      "io.github.kosmx.emotes.fabric.ClientInit"
+      "io.github.kosmx.emotes.fabric.EmotecraftClientFabricMod"
     ],
     "server": [],
     "modmenu": [

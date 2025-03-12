@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
@@ -59,6 +60,18 @@ public class FastMenuScreen extends Screen {
     @Override
     protected void renderBlurredBackground() {
         // no-op
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (EmotecraftClientMod.OPEN_MENU_KEY.matches(keyCode, scanCode)) {
+            onClose();
+            return true;
+        }
+        return false;
     }
 
     @Override
