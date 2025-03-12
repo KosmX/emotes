@@ -22,7 +22,6 @@ import java.util.logging.Level;
 public class BukkitWrapper extends JavaPlugin {
 
     public final static String EmotePacket = CommonData.getIDAsString(CommonData.playEmoteID);
-    public final static String GeyserPacket = "geyser:emote";
     ServerSideEmotePlay networkPlay = null;
 
     @Override

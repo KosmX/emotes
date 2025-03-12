@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.network;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.mixin.ServerChunkCacheAccessor;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.GeyserEmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
@@ -78,11 +77,6 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
     }
 
     @Override
-    protected long getRuntimePlayerID(Player player) {
-        return player.getId();
-    }
-
-    @Override
     protected IServerNetworkInstance getPlayerNetworkInstance(Player sourcePlayer) {
         if (!(sourcePlayer instanceof ServerPlayer player)) {
             return null;
@@ -92,21 +86,13 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
     }
 
     @Override
-    protected void sendForEveryoneElse(GeyserEmotePacket packet, Player player) {
-        sendForEveryoneElse(null, packet, player); // don't make things complicated
-    }
-
-    @Override
-    protected void sendForEveryoneElse(@Nullable NetData data, @Nullable GeyserEmotePacket geyserPacket, Player player) {
+    protected void sendForEveryoneElse(@Nullable NetData data, Player player) {
         getTrackedPlayers(player).forEach(target -> {
             if (target != player) {
                 try {
                     if (data != null && NetworkPlatformTools.canSendPlay(target, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
                         IServerNetworkInstance playerNetwork = getPlayerNetworkInstance(target);
                         playerNetwork.sendMessage(new EmotePacket.Builder(data), null);
-                    } else if (geyserPacket != null && NetworkPlatformTools.canSendPlay(target, NetworkPlatformTools.GEYSER_CHANNEL_ID.id())) {
-                        IServerNetworkInstance playerNetwork = getPlayerNetworkInstance(target);
-                        playerNetwork.sendGeyserPacket(ByteBuffer.wrap(geyserPacket.write()));
                     }
                 } catch (IOException e) {
                     LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);

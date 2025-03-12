@@ -74,8 +74,5 @@ public final class ServerNetworkStuff {
         ServerPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (buf, context) ->
                 CommonServerNetworkHandler.instance.receiveStreamMessage(buf.unwrapBytes(), context.player())
         );
-        ServerPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.GEYSER_CHANNEL_ID, (buf, context) ->
-                CommonServerNetworkHandler.instance.receiveGeyserMessage(context.player(), buf.unwrapBytes())
-        );
     }
 }

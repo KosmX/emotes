@@ -17,8 +17,6 @@ import java.nio.ByteBuffer;
 public final class NetworkPlatformTools {
     public static final CustomPacketPayload.Type<EmotePacketPayload> EMOTE_CHANNEL_ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CommonData.MOD_ID, CommonData.playEmoteID));
     public static final CustomPacketPayload.Type<EmotePacketPayload> STREAM_CHANNEL_ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CommonData.MOD_ID, CommonData.emoteStreamID));
-    public static final CustomPacketPayload.Type<EmotePacketPayload> GEYSER_CHANNEL_ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath("geyser", "emote"));
-
 
     @ExpectPlatform
     @Contract // contract to fix flow analysis.
@@ -49,9 +47,5 @@ public final class NetworkPlatformTools {
 
     public static @NotNull Packet<?> streamPacket(@NotNull ByteBuffer buf) {
         return createClientboundPacket(STREAM_CHANNEL_ID, buf);
-    }
-
-    public static @NotNull Packet<?> geyserPacket(@NotNull ByteBuffer buf) {
-        return createClientboundPacket(GEYSER_CHANNEL_ID, buf);
     }
 }
