@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -56,9 +57,9 @@ public abstract class EmoteSubScreen extends Screen {
 
     protected void addTitle() {
         this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
-                () -> Objects.requireNonNull(this.list).getEmotes()
+                () -> Objects.requireNonNull(this.list).getEmotes(this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue()))
         ));
-        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
+        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue()), string));
     }
 
     protected void addPlayerPreview() {

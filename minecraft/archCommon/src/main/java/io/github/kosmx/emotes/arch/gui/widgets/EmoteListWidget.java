@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
@@ -98,12 +96,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                 this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
             }
         }
-        filter(VanillaSearch.INSTANCE, "");
+        filter(VanillaSearch.INSTANCE, false, "");
     }
 
-    public void filter(ISearchEngine engine, String search) {
+    public void filter(ISearchEngine engine, boolean excludeFolders, String search) {
         clearEntries();
-        engine.filter(getEmotes().stream(), search).forEach(this::addEntry);
+        engine.filter(getEmotes(excludeFolders).stream(), search).forEach(this::addEntry);
         this.setScrollAmount(0);
     }
 
@@ -125,8 +123,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return empties;
     }
 
-    public List<ListEntry> getEmotes() {
-        return this.mainFolder.getEmotes();
+    public List<ListEntry> getEmotes(boolean excludeFolders) {
+        return this.mainFolder.getEmotes(excludeFolders);
     }
 
     @Override
@@ -161,7 +159,6 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
     public boolean setLastFolder(FolderEntry folder) {
         if (this.mainFolder.setLastFolder(folder)) {
-            LoggerService.INSTANCE.log(Level.INFO, appendScreenPath(this.mainFolder, Component.empty()).getString());
             if (this.backButton != null) {
                 this.backButton.active = this.mainFolder.next != null;
             }
@@ -203,17 +200,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             return name.getString().toLowerCase().contains(string.toLowerCase());
         }
 
-        public abstract List<ListEntry> getEmotes();
+        public abstract List<ListEntry> getEmotes(boolean excludeFolders);
 
         @Override
-        public boolean equals(Object obj) {
-            return obj instanceof ListEntry entry && this.name.equals(entry.name);
-        }
+        public abstract boolean equals(Object obj);
 
         @Override
-        public int hashCode() {
-            return this.name.hashCode();
-        }
+        public abstract int hashCode();
     }
 
     public class EmoteEntry extends ListEntry {
@@ -259,8 +252,18 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public List<ListEntry> getEmotes() {
+        public List<ListEntry> getEmotes(boolean excludeFolders) {
             return Collections.singletonList(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof EmoteEntry entry && this.emote.equals(entry.emote);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.emote.hashCode();
         }
     }
 
@@ -284,18 +287,26 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public List<ListEntry> getEmotes() {
+        public List<ListEntry> getEmotes(boolean excludeFolders) {
             List<ListEntry> emotes = new ArrayList<>();
-            if (this.next == null || !this.entries.contains(this.next)) {
+            if (excludeFolders) {
+                for (var entry : this.entries) {
+                    if (entry instanceof FolderEntry) {
+                        emotes.addAll(entry.getEmotes(true));
+                    } else {
+                        emotes.add(entry);
+                    }
+                }
+            } else if (this.next == null || !this.entries.contains(this.next)) {
                 for (var entry : this.entries) {
                     if (entry instanceof FolderEntry folder && folder.isInvalid()) {
-                        emotes.addAll(entry.getEmotes());
+                        emotes.addAll(entry.getEmotes(false));
                     } else {
                         emotes.add(entry);
                     }
                 }
             } else {
-                emotes.addAll(this.next.getEmotes());
+                emotes.addAll(this.next.getEmotes(false));
             }
             emotes.sort(Comparator.comparing(o -> o.name.getString().toLowerCase()));
             return Collections.unmodifiableList(emotes);
@@ -332,6 +343,16 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             FolderEntry folder = new FolderEntry(name);
             this.entries.add(folder);
             return folder;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof FolderEntry entry && this.name.equals(entry.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.name.hashCode();
         }
     }
 
