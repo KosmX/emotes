@@ -83,6 +83,12 @@ public class SearchablesSearch implements ISearchEngine {
         }
 
         @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (!isHoveredOrFocused()) return false;
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
         public void setX(int x) {
             autoComplete().setX(x);
             super.setX(x);
