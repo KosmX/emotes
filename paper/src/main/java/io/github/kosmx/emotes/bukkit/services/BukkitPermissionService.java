@@ -9,6 +9,7 @@ import java.util.Optional;
 public class BukkitPermissionService implements IPermissionService {
     @Override
     public Optional<Boolean> getPermissionValue(@NotNull CommandSourceStack source, @NotNull String permission) {
+        if (!source.isPlayer()) return Optional.empty();
         return Optional.of(source.getBukkitSender().hasPermission(permission));
     }
 
