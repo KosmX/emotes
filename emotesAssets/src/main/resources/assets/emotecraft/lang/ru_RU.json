@@ -68,5 +68,7 @@
   "emotecraft.export.error": "Не удалось экспортировать в %s...",
   "emotecraft.export.done": "Успешный экспорт в %s!",
   "emotecraft.song_too_big_to_send": "Размер песни слишком большой, отправка на сервер невозможна. Будет отправлена только эмоция",
-  "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено."
+  "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено.",
+  "emotecraft.folder": "Каталог",
+  "emotecraft.folder.main": "основ."
 }
