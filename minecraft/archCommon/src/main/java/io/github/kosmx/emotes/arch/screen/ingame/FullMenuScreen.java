@@ -30,6 +30,8 @@ public class FullMenuScreen extends EmoteSubScreen {
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
+        if (this.list != null) linearLayout.addChild(this.list.createBackButton());
+
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
                 .build()
         );
@@ -39,9 +41,9 @@ public class FullMenuScreen extends EmoteSubScreen {
     }
 
     @Override
-    protected void onPressed(EmoteListWidget.EmoteEntry selected) {
-        if (selected != null) {
-            ClientEmotePlay.clientStartLocalEmote(selected.getEmote());
+    protected void onPressed(EmoteListWidget.ListEntry selected) {
+        if (selected instanceof EmoteListWidget.EmoteEntry entry) {
+            ClientEmotePlay.clientStartLocalEmote(entry.getEmote());
 
             if (this.lastScreen instanceof FastMenuScreen fast) {
                 this.lastScreen = fast.parent;

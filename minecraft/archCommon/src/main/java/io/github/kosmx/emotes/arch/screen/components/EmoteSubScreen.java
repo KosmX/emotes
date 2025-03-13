@@ -7,10 +7,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -30,6 +32,8 @@ public abstract class EmoteSubScreen extends Screen {
     @Nullable
     protected EmoteListWidget list;
     protected HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+    @Nullable
+    protected EditBox searchBox;
 
     protected EmoteSubScreen(Component title, Screen lastScreen) {
         this(title, ISearchEngine.getInstance(), lastScreen);
@@ -52,10 +56,10 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addTitle() {
-        EditBox searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
-                () -> Objects.requireNonNull(this.list).getEmotes()
+        this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
+                () -> Objects.requireNonNull(this.list).getEmotes(isSearchActive())
         ));
-        searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, string));
+        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, isSearchActive(), string));
     }
 
     protected void addPlayerPreview() {
@@ -69,9 +73,19 @@ public abstract class EmoteSubScreen extends Screen {
                 this.minecraft, width, this.layout.getContentHeight(), this.layout.getHeaderHeight(), 36
         ) {
             @Override
-            public void setSelected(@Nullable EmoteListWidget.EmoteEntry entry) {
+            public void setSelected(@Nullable EmoteListWidget.ListEntry entry) {
                 super.setSelected(entry);
                 onPressed(entry);
+            }
+
+            @Override
+            public boolean setLastFolder(FolderEntry folder) {
+                if (super.setLastFolder(folder)) {
+                    if (searchBox != null) searchBox.setValue("");
+                    if (preview != null) preview.getPlayer().stopEmote();
+                    return true;
+                }
+                return false;
             }
         };
     }
@@ -84,10 +98,15 @@ public abstract class EmoteSubScreen extends Screen {
     protected abstract void addOptions();
 
     protected void addFooter() {
-        this.layout.addToFooter(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).width(200).build());
+        LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
+
+        if (this.list != null) linearLayout.addChild(this.list.createBackButton());
+        linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE,
+                button -> onClose()
+        ).width(200).build());
     }
 
-    protected abstract void onPressed(@Nullable EmoteListWidget.EmoteEntry selected);
+    protected abstract void onPressed(@Nullable EmoteListWidget.ListEntry selected);
 
     @Override
     protected void repositionElements() {
@@ -108,12 +127,14 @@ public abstract class EmoteSubScreen extends Screen {
     public void tick() {
         super.tick();
         if (this.preview != null) {
-            EmoteListWidget.EmoteEntry hovered = this.list.getHovered();
+            EmoteListWidget.ListEntry hovered = this.list.getHovered();
             if (this.list.getSelected() == hovered) {
                 hovered = null;
             }
-            if (hovered != null) {
-                this.preview.playAnimation(hovered.getEmote().emote, true);
+            if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
+                this.preview.playAnimation(emote.emote.emote, true);
+            } else if (hovered instanceof EmoteListWidget.FolderEntry) {
+                this.preview.getPlayer().stopEmote();
             }
             this.preview.tick();
         }
@@ -136,5 +157,9 @@ public abstract class EmoteSubScreen extends Screen {
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    public boolean isSearchActive() {
+        return this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue());
     }
 }

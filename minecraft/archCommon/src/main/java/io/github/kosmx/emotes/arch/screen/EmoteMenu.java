@@ -109,6 +109,8 @@ public class EmoteMenu extends EmoteSubScreen {
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
+        if (this.list != null) linearLayout.addChild(this.list.createBackButton());
+
         linearLayout.addChild(Button.builder(EmoteMenu.OPEN_FOLDER, button -> PlatformTools.openExternalEmotesDir())
                 .width(Button.SMALL_WIDTH)
                 .build()
@@ -126,7 +128,7 @@ public class EmoteMenu extends EmoteSubScreen {
     private void resetKeyAction(Button button){
         if(resetOnlySelected) {
             if (this.list == null || this.list.getFocused() == null) return;
-            PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocused().getEmote().getUuid());
+            PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocusedEmote().getUuid());
             onPressed(this.list.getSelected());
         } else {
             this.minecraft.setScreen(new ConfirmScreen(aBoolean -> {
@@ -150,12 +152,12 @@ public class EmoteMenu extends EmoteSubScreen {
     }
 
     @Override
-    protected void onPressed(EmoteListWidget.EmoteEntry selected) {
-        this.setKeyButton.active = this.resetButton.active = selected != null;
+    protected void onPressed(EmoteListWidget.ListEntry selected) {
+        this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteEntry;
 
-        if (selected != null) {
-            this.setKeyButton.setMessage(getKey(selected.getEmote().getUuid()).getDisplayName());
-            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(selected.getEmote().getUuid());
+        if (selected instanceof EmoteListWidget.EmoteEntry entry) {
+            this.setKeyButton.setMessage(getKey(entry.getEmote().getUuid()).getDisplayName());
+            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(entry.getEmote().getUuid());
         } else {
             this.resetOnlySelected = false;
         }
@@ -200,10 +202,10 @@ public class EmoteMenu extends EmoteSubScreen {
         boolean bl = false;
         if (this.list != null && this.list.getFocused() != null) {
             bl = true;
-            if (!applyKey(false, this.list.getFocused().getEmote(), key)) {
+            if (!applyKey(false, this.list.getFocusedEmote(), key)) {
                 this.minecraft.setScreen(new ConfirmScreen(choice -> {
                     if (choice) {
-                        applyKey(true, this.list.getFocused().getEmote(), key);
+                        applyKey(true, this.list.getFocusedEmote(), key);
                     }
                     this.minecraft.setScreen(this);
                 }, SURE, SURE2));
@@ -282,7 +284,7 @@ public class EmoteMenu extends EmoteSubScreen {
                 element.clearEmote();
                 return true;
             } else if (list != null && list.getFocused() != null) {
-                element.setEmote(list.getFocused().getEmote());
+                element.setEmote(list.getFocusedEmote());
                 return true;
             }else{
                 return false;
