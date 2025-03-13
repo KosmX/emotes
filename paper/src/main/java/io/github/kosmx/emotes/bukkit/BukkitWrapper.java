@@ -14,7 +14,6 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -48,7 +47,7 @@ public class BukkitWrapper extends JavaPlugin {
         UniversalEmoteSerializer.loadEmotes();
 
         for (String permission : ServerCommands.PERMISSIONS) {
-            Bukkit.getPluginManager().addPermission(new Permission(permission, PermissionDefault.FALSE));
+            Bukkit.getPluginManager().addPermission(new Permission(permission));
         }
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
