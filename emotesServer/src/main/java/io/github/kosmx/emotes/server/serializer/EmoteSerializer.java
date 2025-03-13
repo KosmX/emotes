@@ -8,6 +8,7 @@ import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.services.LoggerService;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.FileVisitOption;
@@ -31,21 +32,31 @@ public class EmoteSerializer {
         try (Stream<Path> paths = Files.walk(externalEmotes, FileVisitOption.FOLLOW_LINKS)) {
             paths.filter(
                     file -> AnimationFormat.byFileName(file.getFileName().toString()).getExtension() != null
-            ).parallel().forEach(file -> emotes.addAll(serializeExternalEmote(file, externalEmotes)));
+            ).parallel().forEach(file -> {
+                String folderPath = externalEmotes.relativize(file.getParent()).normalize()
+                        .toString().replace(File.separator, "/");
+                if (folderPath.startsWith("server") || folderPath.contains("_export")) {
+                    return;
+                }
+                emotes.addAll(serializeExternalEmote(file, folderPath));
+            });
         } catch (Throwable e) {
             LoggerService.INSTANCE.log(Level.WARNING, "Failed to walk emotes!", e);
         }
     }
 
-    public static List<KeyframeAnimation> serializeExternalEmote(Path file, Path externalEmotes) {
+    public static List<KeyframeAnimation> serializeExternalEmote(Path file) {
+        return EmoteSerializer.serializeExternalEmote(file, null);
+    }
+
+    public static List<KeyframeAnimation> serializeExternalEmote(Path file, String folderPath) {
         String fileName = file.getFileName().toString();
         String baseFileName = getBaseName(fileName);
 
         try (InputStream reader = Files.newInputStream(file)) {
             List<KeyframeAnimation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
             for (KeyframeAnimation emote : emotes) { // Avoid lambda
-                emote.extraData.put("folderpath", externalEmotes.relativize(file.getParent())
-                        .normalize().toString().replace("\\", "/"));
+                emote.extraData.put("folderpath", folderPath);
             }
 
             Path icon = file.getParent().resolve(baseFileName + ".png");
