@@ -268,6 +268,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public class FolderEntry extends ListEntry {
+        public static final ResourceLocation FOLDER = McUtils.newIdentifier("textures/folder.png");
+        public static final ResourceLocation FOLDER_OPEN = McUtils.newIdentifier("textures/folder_open.png");
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
         private final List<ListEntry> entries = new ArrayList<>();
@@ -279,7 +281,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         @Override
         public void renderAdditional(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            // no-op (Icon maybe)
+            guiGraphics.blit(RenderType::guiTextured, isFocused() || hovering ? FOLDER_OPEN : FOLDER, left, top, 0.0F, 0.0F, 32, 32, 32, 32);
         }
 
         public boolean isInvalid() {
