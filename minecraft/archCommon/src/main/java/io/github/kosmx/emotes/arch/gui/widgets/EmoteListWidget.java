@@ -281,7 +281,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         @Override
         public void renderAdditional(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            guiGraphics.blit(RenderType::guiTextured, isFocused() || hovering ? FOLDER_OPEN : FOLDER, left, top, 0.0F, 0.0F, 32, 32, 32, 32);
+            guiGraphics.blit(RenderType::guiTextured, hovering ? FOLDER_OPEN : FOLDER, left, top, 0.0F, 0.0F, 32, 32, 32, 32);
         }
 
         public boolean isInvalid() {
