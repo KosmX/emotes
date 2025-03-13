@@ -57,9 +57,9 @@ public abstract class EmoteSubScreen extends Screen {
 
     protected void addTitle() {
         this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
-                () -> Objects.requireNonNull(this.list).getEmotes(this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue()))
+                () -> Objects.requireNonNull(this.list).getEmotes(isSearchActive())
         ));
-        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue()), string));
+        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, isSearchActive(), string));
     }
 
     protected void addPlayerPreview() {
@@ -157,5 +157,9 @@ public abstract class EmoteSubScreen extends Screen {
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    public boolean isSearchActive() {
+        return this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue());
     }
 }
