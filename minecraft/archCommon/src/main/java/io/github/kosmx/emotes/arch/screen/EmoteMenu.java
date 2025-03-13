@@ -153,7 +153,7 @@ public class EmoteMenu extends EmoteSubScreen {
 
     @Override
     protected void onPressed(EmoteListWidget.ListEntry selected) {
-        this.setKeyButton.active = this.resetButton.active = selected != null;
+        this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteEntry;
 
         if (selected instanceof EmoteListWidget.EmoteEntry entry) {
             this.setKeyButton.setMessage(getKey(entry.getEmote().getUuid()).getDisplayName());
