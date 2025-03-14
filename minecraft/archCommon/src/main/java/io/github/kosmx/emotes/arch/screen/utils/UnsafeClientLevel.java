@@ -10,6 +10,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.AbortableIterationConsumer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.entity.LevelEntityGetter;
@@ -105,5 +109,15 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
 
     @Override
     public <U extends Entity> void get(EntityTypeTest<Entity, U> test, AABB bounds, AbortableIterationConsumer<U> consumer) {
+    }
+
+    @Override
+    public ChunkAccess getChunk(int x, int z, ChunkStatus chunkStatus, boolean requireChunk) {
+        return null;
+    }
+
+    @Override
+    public @NotNull BlockState getBlockState(BlockPos pos) {
+        return Blocks.VOID_AIR.defaultBlockState();
     }
 }
