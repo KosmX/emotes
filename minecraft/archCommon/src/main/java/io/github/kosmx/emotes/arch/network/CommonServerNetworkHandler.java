@@ -24,13 +24,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Player> {
-    public static CommonServerNetworkHandler instance = new CommonServerNetworkHandler();
-
-    private CommonServerNetworkHandler() {} // make ctor private for singleton class
-
-    public void init() {
-    }
-
     public void receiveMessage(byte[] bytes, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             try {
@@ -145,5 +138,14 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
             return Collections.emptyList();
         }
         throw new IllegalArgumentException("server function called on logical client");
+    }
+
+    /**
+     * This is **NOT** for API usage,
+     * internal purpose only
+     * @return this
+     */
+    public static CommonServerNetworkHandler getInstance() {
+        return (CommonServerNetworkHandler) AbstractServerEmotePlay.getInstance();
     }
 }

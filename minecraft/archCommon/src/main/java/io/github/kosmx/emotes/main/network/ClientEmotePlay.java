@@ -177,10 +177,6 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         });
     }
 
-    public static void init() {
-        ClientEmoteAPI.INSTANCE = new ClientEmotePlay();
-    }
-
     @Override
     protected boolean playEmoteImpl(KeyframeAnimation animation, int tick) {
         if (animation != null) {

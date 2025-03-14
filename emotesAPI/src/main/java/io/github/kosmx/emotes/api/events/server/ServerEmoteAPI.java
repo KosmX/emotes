@@ -3,10 +3,12 @@ package io.github.kosmx.emotes.api.events.server;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Pair;
 
+import io.github.kosmx.emotes.api.services.IEmotecraftService;
+import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
-public abstract class ServerEmoteAPI {
+public abstract class ServerEmoteAPI implements IEmotecraftService {
 
     /**
      * Set the player to play emote.
@@ -90,11 +92,15 @@ public abstract class ServerEmoteAPI {
 
     // ---- IMPLEMENTATION ---- //
 
-    protected static ServerEmoteAPI INSTANCE;
+    protected static final ServerEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ServerEmoteAPI.class);
 
     protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation KeyframeAnimation, int tick, boolean isForced);
     protected abstract Pair<KeyframeAnimation, Integer> getPlayedEmoteImpl(UUID player);
 
     protected abstract boolean isForcedEmoteImpl(UUID player);
 
+    @Override
+    public boolean isActive() {
+        return true;
+    }
 }

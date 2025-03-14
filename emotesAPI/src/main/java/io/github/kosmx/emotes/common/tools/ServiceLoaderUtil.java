@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.api.services.IEmotecraftService;
 import io.github.kosmx.emotes.api.services.LoggerService;
 
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -33,12 +34,21 @@ public class ServiceLoaderUtil {
     }
 
     public static <T extends IEmotecraftService> T loadService(Class<T> serviceClass, Supplier<? extends T> defaultService) {
-        T service = ServiceLoaderUtil.loadServices(serviceClass).max(COMPARATOR).orElseGet(defaultService);
+        return ServiceLoaderUtil.loadOptionalService(serviceClass).orElseGet(defaultService);
+    }
 
-        (service instanceof LoggerService loggerService ? loggerService : LoggerService.INSTANCE)
-                .log(Level.FINE, "Selected service: " + toString(service));
+    public static <T extends IEmotecraftService> T loadService(Class<T> serviceClass) {
+        return ServiceLoaderUtil.loadOptionalService(serviceClass).orElseThrow();
+    }
 
-        return service;
+    public static <T extends IEmotecraftService> Optional<T> loadOptionalService(Class<T> serviceClass) {
+        Optional<T> optional = ServiceLoaderUtil.loadServices(serviceClass).max(COMPARATOR);
+
+        optional.ifPresent(service -> (service instanceof LoggerService loggerService ?
+                loggerService : LoggerService.INSTANCE).log(Level.FINE, "Selected service: " + toString(service))
+        );
+
+        return optional;
     }
 
     private static String toString(IEmotecraftService service) {

@@ -69,10 +69,10 @@ public final class ServerNetworkStuff {
 
         // Play networking
         ServerPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (buf, context) ->
-                CommonServerNetworkHandler.instance.receiveMessage(buf.unwrapBytes(), context.player())
+                CommonServerNetworkHandler.getInstance().receiveMessage(buf.unwrapBytes(), context.player())
         );
         ServerPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (buf, context) ->
-                CommonServerNetworkHandler.instance.receiveStreamMessage(buf.unwrapBytes(), context.player())
+                CommonServerNetworkHandler.getInstance().receiveStreamMessage(buf.unwrapBytes(), context.player())
         );
     }
 }

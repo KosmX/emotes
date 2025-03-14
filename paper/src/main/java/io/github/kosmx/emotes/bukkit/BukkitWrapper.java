@@ -19,9 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
 
 public class BukkitWrapper extends JavaPlugin {
-
     public final static String EmotePacket = CommonData.getIDAsString(CommonData.playEmoteID);
-    ServerSideEmotePlay networkPlay = null;
 
     @Override
     @SuppressWarnings("UnstableApiUsage")
@@ -57,8 +55,9 @@ public class BukkitWrapper extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.networkPlay = new ServerSideEmotePlay(this);
-        getServer().getPluginManager().registerEvents(networkPlay,this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EmotePacket);
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EmotePacket, ServerSideEmotePlay.getInstance()::receivePluginMessage);
+        getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
         super.onEnable();
         getLogger().info("Loading Emotecraft as a bukkit plugin...");
     }

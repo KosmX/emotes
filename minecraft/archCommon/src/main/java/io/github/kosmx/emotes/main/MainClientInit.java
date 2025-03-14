@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.main;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
@@ -23,9 +22,7 @@ public class MainClientInit {
         loadEmotes();//:D
 
         ClientPacketManager.init(); //initialize proxy service
-        ClientEmotePlay.init();
     }
-
 
     public static void loadEmotes() {
         UniversalEmoteSerializer.loadEmotes();

@@ -25,10 +25,6 @@ import java.util.logging.Level;
  */
 @SuppressWarnings({"ConstantConditions", "rawtypes", "unused"})
 public abstract class AbstractServerEmotePlay<P> extends ServerEmoteAPI {
-    public AbstractServerEmotePlay() {
-        ServerEmoteAPI.INSTANCE = this;
-    }
-
     protected boolean doValidate(){
         return Serializer.getConfig().validateEmote.get();
     }

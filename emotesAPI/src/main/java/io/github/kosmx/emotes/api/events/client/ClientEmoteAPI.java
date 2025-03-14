@@ -2,10 +2,12 @@ package io.github.kosmx.emotes.api.events.client;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 
+import io.github.kosmx.emotes.api.services.IEmotecraftService;
+import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
-public abstract class ClientEmoteAPI {
+public abstract class ClientEmoteAPI implements IEmotecraftService {
     /**
      * Stop play an emote.
      */
@@ -43,9 +45,14 @@ public abstract class ClientEmoteAPI {
 
     // ---- IMPLEMENTATION ---- //
 
-    protected static ClientEmoteAPI INSTANCE;
+    protected static final ClientEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ClientEmoteAPI.class);
 
     protected abstract boolean playEmoteImpl(KeyframeAnimation animation, int tick);
 
     protected abstract Collection<KeyframeAnimation> clientEmoteListImpl();
+
+    @Override
+    public boolean isActive() {
+        return true;
+    }
 }

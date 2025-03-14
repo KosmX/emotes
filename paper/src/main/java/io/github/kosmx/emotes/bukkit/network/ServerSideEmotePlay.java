@@ -7,7 +7,6 @@ import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,18 +17,11 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> implements Listener {
-    final BukkitWrapper plugin;
-
+public final class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> implements Listener {
+    private final BukkitWrapper plugin = BukkitWrapper.getPlugin(BukkitWrapper.class);;
     final HashMap<UUID, BukkitNetworkInstance> player_database = new HashMap<>();
 
-    public ServerSideEmotePlay(BukkitWrapper plugin){
-        this.plugin = plugin;
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, BukkitWrapper.EmotePacket);
-        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, BukkitWrapper.EmotePacket, this::receivePluginMessage);
-    }
-
-    private void receivePluginMessage(String channel, Player player, byte[] message) {
+    public void receivePluginMessage(String channel, Player player, byte[] message) {
         //EmoteInstance.instance.getLogger().log(Level.FINE, "[EMOTECRAFT] streaming emote");
         if (channel.equals(BukkitWrapper.EmotePacket)) {
             BukkitNetworkInstance playerNetwork = player_database.getOrDefault(player.getUniqueId(), null);
@@ -130,5 +122,14 @@ public class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> impleme
         if (event.getEntity() instanceof Player player) {
             playerStartTracking(player, event.getPlayer());
         }
+    }
+
+    /**
+     * This is **NOT** for API usage,
+     * internal purpose only
+     * @return this
+     */
+    public static ServerSideEmotePlay getInstance() {
+        return (ServerSideEmotePlay) AbstractServerEmotePlay.getInstance();
     }
 }

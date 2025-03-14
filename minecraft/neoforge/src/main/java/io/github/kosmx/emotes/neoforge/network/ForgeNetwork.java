@@ -25,7 +25,7 @@ public class ForgeNetwork {
                 .optional()
                 .playBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER, new DirectionalPayloadHandler<>(
                         (arg, playPayloadContext) -> ClientNetwork.INSTANCE.receiveMessage(arg.unwrapBytes()),
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.instance.receiveMessage(arg.unwrapBytes(), playPayloadContext.player())
+                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.unwrapBytes(), playPayloadContext.player())
                 ))
 
                 .optional()
@@ -37,7 +37,7 @@ public class ForgeNetwork {
                                 LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
                             }
                         },
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.instance.receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player())
+                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player())
                 ))
 
                 .optional()
