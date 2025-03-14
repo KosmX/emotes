@@ -82,6 +82,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     }
 
+    @Override
+    protected void renderItem(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int index, int left, int top, int width, int height) {
+        try { // Concurrency issues
+            super.renderItem(guiGraphics, mouseX, mouseY, partialTick, index, left, top, width, height);
+        } catch (Throwable ignored) {}
+    }
+
     public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid) {
         this.mainFolder.entries.clear();
         for (EmoteHolder emoteHolder : list) {

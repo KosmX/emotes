@@ -14,6 +14,12 @@ subprojects {
     group = "io.github.kosmx.emotes"
 
     repositories {
+        maven("https://api.modrinth.com/maven") {
+            name = "Modrinth"
+            content {
+                includeGroup("maven.modrinth")
+            }
+        }
         maven("https://maven.terraformersmc.com/") {
             name = "TerraformersMC maven"
         }
