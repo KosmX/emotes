@@ -3,14 +3,14 @@
   "minVersion": "0.8",
   "package": "io.github.kosmx.emotes.arch.mixin",
   "compatibilityLevel": "JAVA_16",
-  "plugin": "io.github.kosmx.emotes.mixin.EmotesMixinPlugin",
   "mixins": [
     "ConnectionHandlerMixin",
     "EntityTrackerAccessor",
     "ServerChunkCacheAccessor",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin",
-    "ServerPlayTrackerMixin"
+    "ServerPlayTrackerMixin",
+    "emf.EMFAnimationEntityContextMixin"
   ],
   "client": [
     "EmotePlayerMixin",

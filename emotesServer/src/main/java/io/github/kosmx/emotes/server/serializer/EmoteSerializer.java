@@ -8,6 +8,7 @@ import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.FileVisitOption;
@@ -27,10 +28,17 @@ public class EmoteSerializer {
             return; // Just skip
         }
 
-        try (Stream<Path> paths = Files.walk(externalEmotes, 1, FileVisitOption.FOLLOW_LINKS)) {
+        try (Stream<Path> paths = Files.walk(externalEmotes, FileVisitOption.FOLLOW_LINKS)) {
             paths.filter(
                     file -> AnimationFormat.byFileName(file.getFileName().toString()).getExtension() != null
-            ).parallel().forEach(file -> emotes.addAll(serializeExternalEmote(file)));
+            ).parallel().forEach(file -> {
+                String folderPath = externalEmotes.relativize(file.getParent()).normalize()
+                        .toString().replace(File.separator, "/");
+                if (folderPath.startsWith("server") || folderPath.contains("_export")) {
+                    return;
+                }
+                emotes.addAll(serializeExternalEmote(file));
+            });
         } catch (Throwable e) {
             EmoteInstance.instance.getLogger().log(Level.WARNING, "Failed to walk emotes!", e);
         }

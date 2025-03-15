@@ -15,6 +15,13 @@ allprojects {
     group = rootProject.maven_group
 
     repositories {
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup("maven.modrinth")
+            }
+        }
         maven{
             name = "TerraformersMC maven"
             url = 'https://maven.terraformersmc.com/'

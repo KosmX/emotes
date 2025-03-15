@@ -17,4 +17,7 @@ dependencies {
     modImplementation "io.github.kosmx.bendy-lib:bendy-lib:${rootProject.bendylib_version}"
     modImplementation "dev.kosmx.player-anim:player-animation-lib:${rootProject.player_animator_version}"
     modImplementation "dev.kosmx.player-anim:anim-core:${rootProject.player_animator_version}"
+
+    modCompileOnly("maven.modrinth:entity-model-features:n0dDeW4R")
+    modCompileOnly("maven.modrinth:entitytexturefeatures:441qELLe")
 }

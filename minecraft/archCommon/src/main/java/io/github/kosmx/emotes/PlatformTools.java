@@ -3,7 +3,6 @@ package io.github.kosmx.emotes;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
@@ -19,16 +18,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public final class PlatformTools {
-
-    @ExpectPlatform
-    public static boolean isPlayerAnimLoaded() {
-        throw new AssertionError();
-    }
-
     public static INetworkInstance getClientNetworkController() {
         return ClientNetwork.INSTANCE;
     }
-
 
     public static @Nullable IEmotePlayerEntity getPlayerFromUUID(UUID uuid) {
         if (Minecraft.getInstance().level == null) return null;
