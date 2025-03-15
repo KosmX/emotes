@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class McUtils {
+    public static final Component MOD_NAME = Component.literal(CommonData.MOD_NAME);
     public static final Component SLASH = Component.literal("/");
     public static final Component BACK = Component.literal("<").withStyle(style -> style.withBold(true));
 

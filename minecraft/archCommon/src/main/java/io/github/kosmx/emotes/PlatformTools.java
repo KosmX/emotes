@@ -4,6 +4,7 @@ import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.main.config.ClientConfig;
+import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.Util;
@@ -64,7 +65,11 @@ public final class PlatformTools {
         Minecraft.getInstance().gui.getChat().addMessage(msg);
     }
 
-    public static void toastExportMessage(Component text, String msg) {
-        SystemToast.add(Minecraft.getInstance().getToastManager(), SystemToast.SystemToastId.WORLD_BACKUP, text, Component.literal(msg));
+    public static void addToast(Component title, Component message) {
+        SystemToast.add(Minecraft.getInstance().getToastManager(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
+    }
+
+    public static void addToast(Component message) {
+        PlatformTools.addToast(McUtils.MOD_NAME, message);
     }
 }

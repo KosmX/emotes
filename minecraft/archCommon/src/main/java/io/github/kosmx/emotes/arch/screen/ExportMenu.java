@@ -96,14 +96,14 @@ public class ExportMenu extends Screen {
                 }
             } catch (IOException | EmoteSerializerException | InvalidPathException e) {
                 LoggerService.INSTANCE.log(Level.WARNING, "Failed to export!", e);
-                PlatformTools.toastExportMessage(Component.translatable(
+                PlatformTools.addToast(Component.translatable(
                         "emotecraft.export.error", format.getExtension()
-                ), emoteHolder.name.getString());
+                ), emoteHolder.name);
             }
         }
-        PlatformTools.toastExportMessage(Component.translatable(
+        PlatformTools.addToast(Component.translatable(
                 "emotecraft.export.done", format.getExtension()
-        ), "emotes/" + format.getExtension() + "_export/");
+        ), Component.literal("emotes/" + format.getExtension() + "_export/"));
         LoggerService.INSTANCE.log(Level.INFO, "All emotes are saved in " + format.getExtension() + " format!");
     }
 

@@ -70,5 +70,7 @@
   "emotecraft.song_too_big_to_send": "Song is too big to be sent to server. Sending emote only...",
   "emotecraft.cant.override.forced": "You're forced to play the current emote, it can't be changed.",
   "emotecraft.folder": "Folder",
-  "emotecraft.folder.main": "main"
+  "emotecraft.folder.main": "main",
+  "emotecraft.reloading": "Reloading emotes...",
+  "emotecraft.reloading.done": "Reloading took %s seconds!"
 }
