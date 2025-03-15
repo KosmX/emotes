@@ -1,18 +1,12 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
-
 public class DiscoveryPacket extends AbstractNetworkPacket{
-
-    public DiscoveryPacket(){}
-
-
     @Override
     public boolean read(ByteBuffer buf, NetData data, int version){
 
@@ -34,7 +28,8 @@ public class DiscoveryPacket extends AbstractNetworkPacket{
         return true;
     }
 
-    public void write(ByteBuffer buf, NetData data){
+    @Override
+    public void write(ByteBuffer buf, NetData data) {
         //buf.putInt(this.version);
         buf.putInt(data.versions.size());
         data.versions.forEach((aByte, integer) -> {

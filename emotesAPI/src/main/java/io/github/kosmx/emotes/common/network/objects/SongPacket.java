@@ -14,7 +14,7 @@ public class SongPacket extends AbstractNetworkPacket{
 
     @Override
     public byte getVer() {
-        return 1; //Ver0 means NO sound
+        return 1; // Ver0 means NO sound
     }
 
     @Override
@@ -27,7 +27,7 @@ public class SongPacket extends AbstractNetworkPacket{
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
-        if(!doWrite(config)){
+        if (!doWrite(config)) {
             throw new IOException("You can't write disabled or not existing NBS data");
         }
         assert config.emoteData != null;
@@ -42,7 +42,7 @@ public class SongPacket extends AbstractNetworkPacket{
 
     @Override
     public int calculateSize(NetData config) {
-        if(config.emoteData == null || config.emoteData.extraData.get("song") == null)return 0;
+        if(config.emoteData == null || config.emoteData.extraData.get("song") == null) return 0;
         return NBSPacket.calculateMessageSize((NBS) config.emoteData.extraData.get("song"));
     }
 }

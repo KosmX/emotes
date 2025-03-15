@@ -32,7 +32,6 @@ public final class NetData {
     public boolean valid;
     //Never use it permanently
 
-    public boolean wasEmoteData = false;
     public boolean writeSong = true;
 
     public boolean versionsUpdated = false;
@@ -54,15 +53,10 @@ public final class NetData {
     public boolean strictSizeLimit = true;
 
     HashMap<String, Object> extraData = new HashMap<>();
-    KeyframeAnimation.AnimationBuilder emoteBuilder = null;
-
 
     public boolean prepareAndValidate(){
-        if(emoteBuilder != null) {
-            if(emoteData != null) return false;
-            if(!wasEmoteData)return false;
-            emoteBuilder.extraData.putAll(extraData);
-            emoteData = emoteBuilder.build();
+        if (emoteData != null && !this.extraData.isEmpty()) {
+            emoteData.extraData.putAll(extraData);
         }
 
         if(purpose == PacketTask.UNKNOWN)return false;
