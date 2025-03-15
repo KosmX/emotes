@@ -92,10 +92,10 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid) {
         this.mainFolder.entries.clear();
         for (EmoteHolder emoteHolder : list) {
-            if (StringUtils.isBlank(emoteHolder.folder)) {
+            if (emoteHolder.folder.isEmpty()) {
                 this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
             } else {
-                createFoldersTree(emoteHolder.folder.split("/")).entries.add(new EmoteEntry(emoteHolder));
+                createFoldersTree(emoteHolder.folder).entries.add(new EmoteEntry(emoteHolder));
             }
         }
         if (showInvalid) {
@@ -112,10 +112,10 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         this.setScrollAmount(0);
     }
 
-    public FolderEntry createFoldersTree(String[] folders) {
+    public FolderEntry createFoldersTree(List<Component> folders) {
         FolderEntry last = this.mainFolder;
-        for (String folder : folders) {
-            last = last.getOrCreateFolder(Component.literal(folder));
+        for (Component folder : folders) {
+            last = last.getOrCreateFolder(folder);
         }
         return last;
     }

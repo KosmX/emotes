@@ -1,11 +1,11 @@
 package io.github.kosmx.emotes.server.serializer;
 
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.data.opennbs.NBSFileUtils;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.services.LoggerService;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -23,7 +23,8 @@ import java.util.stream.Stream;
  * Serializing emotes.
  */
 public class EmoteSerializer {
-    @SuppressWarnings({"deprecation", "removal"})
+    public static final String FOLDER_PATH_KEY = "folderpath";
+
     public static void serializeEmotes(UUIDMap<KeyframeAnimation> emotes, Path externalEmotes) {
         if (!Files.isDirectory(externalEmotes)) {
             return; // Just skip
@@ -31,7 +32,7 @@ public class EmoteSerializer {
 
         try (Stream<Path> paths = Files.walk(externalEmotes, FileVisitOption.FOLLOW_LINKS)) {
             paths.filter(
-                    file -> AnimationFormat.byFileName(file.getFileName().toString()).getExtension() != null
+                    file -> UniversalEmoteSerializer.findReader(file.getFileName().toString()).isPresent()
             ).parallel().forEach(file -> {
                 String folderPath = externalEmotes.relativize(file.getParent()).normalize()
                         .toString().replace(File.separator, "/");
@@ -55,8 +56,10 @@ public class EmoteSerializer {
 
         try (InputStream reader = Files.newInputStream(file)) {
             List<KeyframeAnimation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
-            for (KeyframeAnimation emote : emotes) { // Avoid lambda
-                emote.extraData.put("folderpath", folderPath);
+            if (!StringUtils.isBlank(folderPath)) {
+                for (KeyframeAnimation emote : emotes) { // Avoid lambda
+                    emote.extraData.put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
+                }
             }
 
             Path icon = file.getParent().resolve(baseFileName + ".png");

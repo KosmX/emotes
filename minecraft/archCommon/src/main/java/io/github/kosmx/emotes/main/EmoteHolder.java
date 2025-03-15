@@ -15,6 +15,7 @@ import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.mc.McUtils;
+import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -23,17 +24,22 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import net.minecraft.world.entity.Pose;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * Wrapper class to store an emote and create renderable texts + some utils
@@ -44,7 +50,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public final Component name;
     public final Component description;
     public final Component author;
-    public final String folder;
+    public final List<Component> folder;
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
@@ -69,7 +75,14 @@ public class EmoteHolder implements Supplier<UUID> {
         this.name = McUtils.fromJson(emote.extraData.get("name"), RegistryAccess.EMPTY);
         this.description = McUtils.fromJson(emote.extraData.get("description"), RegistryAccess.EMPTY);
         this.author = McUtils.fromJson(emote.extraData.get("author"), RegistryAccess.EMPTY);
-        this.folder = (String) emote.extraData.get("folderpath");
+        this.folder = computeFolderPath((String) emote.extraData.get(EmoteSerializer.FOLDER_PATH_KEY));
+    }
+
+    private static List<Component> computeFolderPath(String folderPath) {
+        if (StringUtils.isBlank(folderPath)) return Collections.emptyList();
+        return Arrays.stream(folderPath.split("/"))
+                .map(Component::literal)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     /**
