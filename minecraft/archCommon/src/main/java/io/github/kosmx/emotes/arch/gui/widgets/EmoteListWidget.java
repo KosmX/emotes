@@ -131,7 +131,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public List<ListEntry> getEmotes(boolean excludeFolders) {
-        return this.mainFolder.getEmotes(excludeFolders);
+        List<ListEntry> emotes = this.mainFolder.getEmotes(excludeFolders);
+        emotes.sort(ListEntry::compareTo);
+        return Collections.unmodifiableList(emotes);
     }
 
     @Override
@@ -174,7 +176,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return false;
     }
 
-    public abstract class ListEntry extends ObjectSelectionList.Entry<ListEntry> {
+    public abstract class ListEntry extends ObjectSelectionList.Entry<ListEntry> implements Comparable<ListEntry> {
         public final Component name;
         public final Component description;
 
@@ -207,13 +209,18 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             return name.getString().toLowerCase().contains(string.toLowerCase());
         }
 
-        public abstract List<ListEntry> getEmotes(boolean excludeFolders);
+        protected abstract List<ListEntry> getEmotes(boolean excludeFolders);
 
         @Override
         public abstract boolean equals(Object obj);
 
         @Override
         public abstract int hashCode();
+
+        @Override
+        public int compareTo(@NotNull EmoteListWidget.ListEntry o) {
+            return this.name.getString().compareTo(o.name.getString());
+        }
     }
 
     public class EmoteEntry extends ListEntry {
@@ -259,7 +266,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public List<ListEntry> getEmotes(boolean excludeFolders) {
+        protected List<ListEntry> getEmotes(boolean excludeFolders) {
             return Collections.singletonList(this);
         }
 
@@ -271,6 +278,15 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         @Override
         public int hashCode() {
             return this.emote.hashCode();
+        }
+
+        @Override
+        public int compareTo(@NotNull ListEntry o) {
+            if (o instanceof EmoteEntry) {
+                return super.compareTo(o);
+            } else {
+                return 1;
+            }
         }
     }
 
@@ -296,7 +312,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public List<ListEntry> getEmotes(boolean excludeFolders) {
+        protected List<ListEntry> getEmotes(boolean excludeFolders) {
             List<ListEntry> emotes = new ArrayList<>();
             if (excludeFolders) {
                 for (var entry : this.entries) {
@@ -317,8 +333,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             } else {
                 emotes.addAll(this.next.getEmotes(false));
             }
-            emotes.sort(Comparator.comparing(o -> o.name.getString().toLowerCase()));
-            return Collections.unmodifiableList(emotes);
+            return emotes;
         }
 
         public boolean setLastFolder(FolderEntry folder) {
@@ -362,6 +377,15 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         @Override
         public int hashCode() {
             return this.name.hashCode();
+        }
+
+        @Override
+        public int compareTo(@NotNull ListEntry o) {
+            if (o instanceof FolderEntry) {
+                return super.compareTo(o);
+            } else {
+                return -1;
+            }
         }
     }
 
