@@ -4,6 +4,7 @@
   "package": "io.github.kosmx.emotes.arch.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "AnimationJsonMixin",
     "ConnectionHandlerMixin",
     "EntityTrackerAccessor",
     "ServerChunkCacheAccessor",

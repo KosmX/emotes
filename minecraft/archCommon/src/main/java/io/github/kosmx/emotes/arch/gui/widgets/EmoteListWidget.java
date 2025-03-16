@@ -7,6 +7,7 @@ import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
+import io.github.kosmx.emotes.arch.screen.utils.BageUtils;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.ChatFormatting;
@@ -179,10 +180,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     public abstract class ListEntry extends ObjectSelectionList.Entry<ListEntry> implements Comparable<ListEntry> {
         public final Component name;
         public final Component description;
+        public final List<Component> bages;
 
-        public ListEntry(@NotNull Component name, Component description) {
+        public ListEntry(@NotNull Component name, Component description, List<Component> bages) {
             this.name = name;
             this.description = description;
+            this.bages = bages;
         }
 
         @Override
@@ -192,7 +195,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             if (hovered) {
                 matrices.fill(x - 1, y - 1, maxX, y + entryHeight + 1, MathHelper.colorHelper(66, 66, 66, 128));
             }
-            renderScrollingString(matrices, minecraft.font, this.name, x + 34, x + 34, y + 1, maxX, y + 1 + minecraft.font.lineHeight, 16777215);
+            int maxBagesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (x + 34);
+            int bageWidth = BageUtils.drawBadges(matrices, minecraft.font, this.bages, maxX, y + 1, maxBagesWidth, true);
+            renderScrollingString(matrices, minecraft.font, this.name, x + 34, x + 34, y + 1, maxX - bageWidth, y + 1 + minecraft.font.lineHeight, 16777215);
             matrices.drawString(minecraft.font, this.description, x + 34, y + 12, 8421504);
             renderAdditional(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickDelta);
             matrices.disableScissor();
@@ -227,7 +232,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public final EmoteHolder emote;
 
         public EmoteEntry(EmoteHolder emote) {
-            super(emote.name, emote.description);
+            super(emote.name, emote.description, emote.bages);
             this.emote = emote;
         }
 
@@ -299,7 +304,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         private FolderEntry next;
 
         public FolderEntry(@NotNull Component name) {
-            super(name, FOLDER_DESC);
+            super(name, FOLDER_DESC, Collections.emptyList());
         }
 
         @Override

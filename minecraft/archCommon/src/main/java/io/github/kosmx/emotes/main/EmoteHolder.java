@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.main;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
@@ -31,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +54,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public final Component description;
     public final Component author;
     public final List<Component> folder;
+    public final List<Component> bages;
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
@@ -76,6 +80,7 @@ public class EmoteHolder implements Supplier<UUID> {
         this.description = McUtils.fromJson(emote.extraData.get("description"), RegistryAccess.EMPTY);
         this.author = McUtils.fromJson(emote.extraData.get("author"), RegistryAccess.EMPTY);
         this.folder = computeFolderPath((String) emote.extraData.get(EmoteSerializer.FOLDER_PATH_KEY));
+        this.bages = computeBages((JsonArray) emote.extraData.get("bages"));
     }
 
     private static List<Component> computeFolderPath(String folderPath) {
@@ -83,6 +88,19 @@ public class EmoteHolder implements Supplier<UUID> {
         return Arrays.stream(folderPath.split("/"))
                 .map(Component::literal)
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    private static List<Component> computeBages(JsonArray bages) {
+        if (bages == null) return Collections.emptyList();
+        List<Component> components = new ArrayList<>(bages.size());
+        for (JsonElement element : bages) {
+            try {
+                components.add(McUtils.fromJson(element, RegistryAccess.EMPTY));
+            } catch (Throwable th) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to serialize bage!", th);
+            }
+        }
+        return Collections.unmodifiableList(components);
     }
 
     /**
