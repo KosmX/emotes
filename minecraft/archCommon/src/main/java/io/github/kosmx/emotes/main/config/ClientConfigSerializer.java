@@ -35,7 +35,7 @@ public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
     }
 
     private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
-        for(int j = 0; j != 10; j++){
+        for(int j = 0; j < config.fastMenuEmotes.length; j++){
             if (node.has(Integer.toString(j))) {
                 JsonElement subNode = node.get(Integer.toString(j));
                 // fastmenu config version check
@@ -81,7 +81,7 @@ public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
 
     private JsonObject fastMenuSerializer(ClientConfig config){
         JsonObject node = new JsonObject();
-        for(int j = 0; j != 10; j++) {
+        for(int j = 0; j < config.fastMenuEmotes.length; j++){
             if (config.fastMenuEmotes[j] != null) {
                 JsonObject subNode = new JsonObject();
                 for (int i = 0; i != 8; i++) {

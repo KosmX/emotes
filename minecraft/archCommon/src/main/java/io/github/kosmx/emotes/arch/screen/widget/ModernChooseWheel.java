@@ -149,10 +149,10 @@ public class ModernChooseWheel implements IChooseWheel {
                     if (fastMenuPage > 0) {
                         fastMenuPage -= 1;
                     } else {
-                        fastMenuPage = 9;
+                        fastMenuPage = PlatformTools.getConfig().fastMenuEmotes.length-1;
                     }
                 } else if (selectedPageButton == 1) {
-                    if (fastMenuPage < 9) {
+                    if (fastMenuPage < PlatformTools.getConfig().fastMenuEmotes.length-1) {
                         fastMenuPage += 1;
                     } else {
                         fastMenuPage = 0;
@@ -167,7 +167,7 @@ public class ModernChooseWheel implements IChooseWheel {
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         checkHovered((int) mouseX, (int) mouseY);
         if (verticalAmount < 0) {
-            if (fastMenuPage < 9) {
+            if (fastMenuPage < PlatformTools.getConfig().fastMenuEmotes.length-1) {
                 fastMenuPage++;
                 return true;
             }

@@ -67,7 +67,7 @@ public class ClientConfig extends SerializableConfig {
     //public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
 
     public BiMap<UUID, InputConstants.Key> emoteKeyMap = new BiMap<>();
-    public UUID[][] fastMenuEmotes = new UUID[10][8];
+    public UUID[][] fastMenuEmotes = new UUID[15][8];
 
     //------------------------ Random tweak stuff ------------------------//
 
