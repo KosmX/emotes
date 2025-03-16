@@ -1,7 +1,5 @@
 package io.github.kosmx.emotes.main;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
@@ -80,7 +78,7 @@ public class EmoteHolder implements Supplier<UUID> {
         this.description = McUtils.fromJson(emote.extraData.get("description"), RegistryAccess.EMPTY);
         this.author = McUtils.fromJson(emote.extraData.get("author"), RegistryAccess.EMPTY);
         this.folder = computeFolderPath((String) emote.extraData.get(EmoteSerializer.FOLDER_PATH_KEY));
-        this.bages = computeBages((JsonArray) emote.extraData.get("bages"));
+        this.bages = computeBages((List<String>) emote.extraData.get("bages"));
     }
 
     private static List<Component> computeFolderPath(String folderPath) {
@@ -90,10 +88,10 @@ public class EmoteHolder implements Supplier<UUID> {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private static List<Component> computeBages(JsonArray bages) {
+    private static List<Component> computeBages(List<String> bages) {
         if (bages == null) return Collections.emptyList();
         List<Component> components = new ArrayList<>(bages.size());
-        for (JsonElement element : bages) {
+        for (String element : bages) {
             try {
                 components.add(McUtils.fromJson(element, RegistryAccess.EMPTY));
             } catch (Throwable th) {

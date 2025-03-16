@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.common.network.CommonNetwork;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class EmoteHeaderPacket extends AbstractNetworkPacket{
     @Override
@@ -24,6 +25,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
         config.extraData.put("author", CommonNetwork.readString(byteBuffer));
         if (version >= 2) {
             config.extraData.put("folderpath", CommonNetwork.readString(byteBuffer));
+            config.extraData.put("bages", CommonNetwork.readList(byteBuffer, CommonNetwork::readString));
         }
         return true;
     }
@@ -36,6 +38,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
         CommonNetwork.writeString(byteBuffer, (String) config.emoteData.extraData.get("author"));
         if (getVer(config.versions) >= 2) {
             CommonNetwork.writeString(byteBuffer, (String) config.emoteData.extraData.get("folderpath"));
+            CommonNetwork.writeList(byteBuffer, (List<String>) config.emoteData.extraData.get("bages"), CommonNetwork::writeString);
         }
     }
 
@@ -57,6 +60,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
 
         if (getVer(config.versions) >= 2) {
             baseSize += CommonNetwork.stringSize((String) emote.extraData.get("folderpath"));
+            baseSize += CommonNetwork.listSize((List<String>) config.emoteData.extraData.get("bages"), CommonNetwork::stringSize);
         }
         return baseSize;
     }

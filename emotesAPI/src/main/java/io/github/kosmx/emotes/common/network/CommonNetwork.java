@@ -4,7 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * I can't use Minecraft's string and uuid byte reader in a bukkit plugin, I need to implement these.
@@ -46,5 +51,34 @@ public class CommonNetwork {
     public static void writeUUID(ByteBuffer buf, UUID uuid){
         buf.putLong(uuid.getMostSignificantBits());
         buf.putLong(uuid.getLeastSignificantBits());
+    }
+
+    public static <T> List<T> readList(ByteBuffer buf, Function<ByteBuffer, T> reader) {
+        int count = buf.getInt();
+        List<T> list = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            list.add(reader.apply(buf));
+        }
+        return list;
+    }
+
+    public static <T> void writeList(ByteBuffer buf, List<T> elements, BiConsumer<ByteBuffer, T> writter) {
+        if (elements == null) {
+            buf.putInt(0);
+            return;
+        }
+
+        buf.putInt(elements.size());
+        for (T entry : elements) {
+            writter.accept(buf, entry);
+        }
+    }
+
+    public static <T> int listSize(List<T> elements, Function<T, Integer> sizer) {
+        int size = 4;
+        for (T entry : elements) {
+            size += sizer.apply(entry);
+        }
+        return size;
     }
 }
