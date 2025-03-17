@@ -6,8 +6,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.ARGB;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.List;
  * - minecraft: calculate text color and shadows
  */
 public class BageUtils {
-    private static final Pair<Integer, Integer> MIEM_GRADIENT = Pair.of(-5504525, -25600);
     private static final int SPACE = 3;
 
     public static int drawBadges(GuiGraphics guiGraphics, Font font, List<Component> text, int x, int y, int width, boolean right) {
@@ -51,12 +48,7 @@ public class BageUtils {
                 outlineColor
         );
         guiGraphics.fill(x + tagWidth, y, x + tagWidth + 1, y + font.lineHeight, outlineColor);
-        Pair<Integer, Integer> gradient = findGradient(text.getString());
-        if (gradient != null) {
-            guiGraphics.fillGradient(x + 1, y, x + tagWidth, y + font.lineHeight, gradient.getKey(), gradient.getValue());
-        } else {
-            guiGraphics.fill(x + 1, y, x + tagWidth, y + font.lineHeight, fillColor);
-        }
+        guiGraphics.fill(x + 1, y, x + tagWidth, y + font.lineHeight, fillColor);
         guiGraphics.drawString(font,
                 text,
                 (int) (x + 1 + (tagWidth - font.width(text)) / (float) 2),
@@ -85,16 +77,5 @@ public class BageUtils {
         } else {
             return ARGB.scaleRGB(textColor, 0.25F);
         }
-    }
-
-    private static Pair<Integer, Integer> findGradient(String text) {
-        if (StringUtils.isBlank(text)) return null;
-
-        if (StringUtils.containsAnyIgnoreCase(text, "mineemotes", "miem", "3apa3eh")) {
-            return BageUtils.MIEM_GRADIENT;
-        }
-
-        // TODO add more...
-        return null;
     }
 }
