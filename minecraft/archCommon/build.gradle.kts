@@ -22,7 +22,7 @@ dependencies {
         isTransitive = false
     }
 
-    modCompileOnly("maven.modrinth:entity-model-features:n0dDeW4R")
+    modCompileOnly("maven.modrinth:entity-model-features:652AHAwn")
     modCompileOnly("maven.modrinth:entitytexturefeatures:441qELLe")
 }
 
