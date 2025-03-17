@@ -68,5 +68,9 @@
   "emotecraft.export.error": "Не вдалося експортувати в %s...",
   "emotecraft.export.done": "Експорт %s завершено!",
   "emotecraft.song_too_big_to_send": "Пісня завелика, тому не може бути надіслана на сервер. Надсилається лише емоція…",
-  "emotecraft.cant.override.forced": "Ви змушені відтворити поточну емоцію, її не можна змінити."
+  "emotecraft.cant.override.forced": "Ви змушені відтворити поточну емоцію, її не можна змінити.",
+  "emotecraft.folder": "Папка",
+  "emotecraft.folder.main": "основна",
+  "emotecraft.reloading": "Перезавантаження емоцій...",
+  "emotecraft.reloading.done": "Перезавантаження зайняло %s секунд!"
 }
