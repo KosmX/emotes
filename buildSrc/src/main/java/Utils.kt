@@ -12,6 +12,16 @@ import org.gradle.kotlin.dsl.maven
 import org.w3c.dom.Element
 
 
+fun asCurseForgeVersion(full: String, release: String?): String {
+    if ("w" in full) { // snapshots
+        if (release == null) throw IllegalArgumentException("Version is snapshot but no release provided")
+        return release+"-Snapshot" // release is unknown for snapshot number, so use argument
+    } else if ("-" in full) { // rc and pre
+        val majorMinorPatch = full.split("-", limit = 1).first() // extract release
+        return majorMinorPatch+"-Snapshot"
+    } else return full // release version
+}
+
 private fun runCommand(cmd: String): Pair<Int, String> {
     val p = Runtime.getRuntime().exec(cmd.split(" ").toTypedArray())
     return p.waitFor() to p.inputReader().readText().trim()
