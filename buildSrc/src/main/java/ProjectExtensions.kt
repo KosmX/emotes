@@ -27,7 +27,7 @@ val Project.minecraft_version
     get() = properties["minecraft_version"] as String
 
 val Project.curseforge_minecraft_version: String
-    get() = properties["curseforge_minecraft_version"] as? String ?: minecraft_version
+    get() = asCurseForgeVersion(minecraft_version, properties["minecraft_release_version"] as? String)
 
 val Project.parchment_version
     get() = properties["parchment_version"] as String
