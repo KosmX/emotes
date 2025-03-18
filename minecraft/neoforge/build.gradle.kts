@@ -152,7 +152,7 @@ publishMods {
         projectSlug = providers.gradleProperty("curseforge_slug_forge")
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
-        minecraftVersions.add(minecraft_version)
+        minecraftVersions.add(curseforge_minecraft_version)
 
         embeds("playeranimator")
         optional("searchables")
