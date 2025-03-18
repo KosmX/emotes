@@ -17,7 +17,7 @@ fun asCurseForgeVersion(full: String, release: String?): String {
         if (release == null) throw IllegalArgumentException("Version is snapshot but no release provided")
         return release+"-Snapshot" // release is unknown for snapshot number, so use argument
     } else if ("-" in full) { // rc and pre
-        val majorMinorPatch = full.split("-", limit = 1).first() // extract release
+        val majorMinorPatch = full.split("-").first() // extract release
         return majorMinorPatch+"-Snapshot"
     } else return full // release version
 }
