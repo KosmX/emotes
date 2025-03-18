@@ -18,7 +18,7 @@ dependencies {
     modImplementation("dev.kosmx.player-anim:anim-core:${properties["player_animator_version"] as String}")
 
     // Third-party
-    compileOnly("com.blamejared.searchables:Searchables-common-${minecraft_version}:${properties["searchables_version"] as String}") {
+    compileOnly("com.blamejared.searchables:Searchables-common-1.21.4:${properties["searchables_version"] as String}") {
         isTransitive = false
     }
 

@@ -50,7 +50,7 @@ dependencies {
     }
 
     // Third-party
-    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
+    modCompileOnly("com.blamejared.searchables:Searchables-fabric-1.21.4:${properties["searchables_version"] as String}") {
         isTransitive = false
     }
 
@@ -160,7 +160,7 @@ publishMods {
 
         requires("fabric-api")
         embeds("playeranimator")
-        optional("searchables")
+        // optional("searchables")
     }
 
     curseforge {
@@ -174,6 +174,6 @@ publishMods {
 
         requires("fabric-api")
         embeds("playeranimator")
-        optional("searchables")
+        // optional("searchables")
     }
 }

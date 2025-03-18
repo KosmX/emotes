@@ -91,11 +91,11 @@ publishMods {
         val changelog = changes.replace("<br>", "  \n")
         content = "# Emotecraft $mod_version for Minecraft $minecraft_version is out!\n### Changes:  \n$changelog"
         publishResults.setFrom(
-            project(":minecraft:neoforge").publishResult("modrinth"),
+            //project(":minecraft:neoforge").publishResult("modrinth"),
             project(":minecraft:fabric").publishResult("modrinth"),
-            project(":minecraft:neoforge").publishResult("curseforge"),
-            project(":minecraft:fabric").publishResult("curseforge"),
-            project(":paper").publishResult("modrinth"))
+            //project(":minecraft:neoforge").publishResult("curseforge"),
+            project(":minecraft:fabric").publishResult("curseforge")/*,
+            project(":paper").publishResult("modrinth")*/)
     }
 }
 

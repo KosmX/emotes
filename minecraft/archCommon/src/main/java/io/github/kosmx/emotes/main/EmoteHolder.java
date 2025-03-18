@@ -136,7 +136,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public void assignIcon(InputStream inputStream) {
         try {
 
-            DynamicTexture nativeImageBackedTexture = new DynamicTexture(NativeImage.read(inputStream));
+            DynamicTexture nativeImageBackedTexture = new DynamicTexture(null, NativeImage.read(inputStream));
             this.iconIdentifier = McUtils.newIdentifier("icon" + this.hashCode());
             Minecraft.getInstance().getTextureManager().register(this.iconIdentifier, nativeImageBackedTexture);
             this.nativeIcon = nativeImageBackedTexture;
