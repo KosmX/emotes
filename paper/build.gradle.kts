@@ -101,7 +101,7 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${mod_version}+${minecraft_version}-paper"
+        version = "${mod_version}+${removePreRc(minecraft_version)}-paper"
     }
 }
 
