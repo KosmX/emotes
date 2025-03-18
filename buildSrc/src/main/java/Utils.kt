@@ -22,6 +22,13 @@ fun asCurseForgeVersion(full: String, release: String?): String {
     } else return full // release version
 }
 
+/**
+ * Removes -pre and -rc suffixes to kepp only release version
+ */
+fun removePreRc(mcVer: String): String {
+    return mcVer.split("-").first()
+}
+
 private fun runCommand(cmd: String): Pair<Int, String> {
     val p = Runtime.getRuntime().exec(cmd.split(" ").toTypedArray())
     return p.waitFor() to p.inputReader().readText().trim()
