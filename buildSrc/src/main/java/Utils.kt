@@ -23,7 +23,7 @@ fun asCurseForgeVersion(full: String, release: String?): String {
 }
 
 /**
- * Removes -pre and -rc suffixes to kepp only release version
+ * Removes -pre and -rc suffixes to keep only release version
  */
 fun removePreRc(mcVer: String): String {
     return mcVer.split("-").first()
