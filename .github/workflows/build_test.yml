@@ -28,9 +28,15 @@ jobs:
     - name: Copy artifacts
       run: |
         mkdir -p artifacts
-        cp paper/build/libs/*.jar artifacts/ 2>/dev/null
-        cp minecraft/fabric/build/libs/*.jar artifacts/ 2>/dev/null
-        cp minecraft/neoforge/build/libs/*.jar artifacts/ 2>/dev/null
+        if [ -d "paper/build/libs" ]; then
+          cp paper/build/libs/*.jar artifacts/
+        fi
+        if [ -d "minecraft/fabric/build/libs" ]; then
+          cp minecraft/fabric/build/libs/*.jar artifacts/
+        fi
+        if [ -d "minecraft/neoforge/build/libs" ]; then
+          cp minecraft/neoforge/build/libs/*.jar artifacts/
+        fi
     - uses: actions/upload-artifact@v4
       with:
         name: Build Results
