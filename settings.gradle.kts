@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        maven("https://repo.redlance.org/public/")
         maven("https://maven.fabricmc.net/")
         maven("https://maven.architectury.dev/")
         maven("https://maven.neoforged.net/releases")
@@ -18,7 +19,7 @@ include("emotesMc")
 include("minecraft")
 include("minecraft:archCommon")
 include("minecraft:fabric")
-// include("minecraft:neoforge")
+include("minecraft:neoforge")
 
 // Paper plugin
 // include("paper")
