@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -76,6 +75,7 @@ public class CommonNetwork {
 
     public static <T> int listSize(List<T> elements, Function<T, Integer> sizer) {
         int size = 4;
+        if (elements == null) return size;
         for (T entry : elements) {
             size += sizer.apply(entry);
         }
