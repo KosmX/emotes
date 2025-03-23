@@ -68,5 +68,9 @@
   "emotecraft.export.error": "Nepodařilo se exportovat do %s...",
   "emotecraft.export.done": "Export %s dokončen!",
   "emotecraft.song_too_big_to_send": "Skladba je příliš velká, aby mohla být odeslána na server. Odesílám pouze emoce...",
-  "emotecraft.cant.override.forced": "Jste nuceni přehrávat aktuální emoci, nelze to změnit."
+  "emotecraft.cant.override.forced": "Jste nuceni přehrávat aktuální emoci, nelze to změnit.",
+  "emotecraft.folder": "Složka",
+  "emotecraft.folder.main": "hlavní",
+  "emotecraft.reloading": "Opětovné načítání emotů...",
+  "emotecraft.reloading.done": "Opětovné načítání trvalo %s sekund!"
 }
