@@ -29,13 +29,6 @@ subprojects {
         maven("https://repo.redlance.org/public")
         maven("https://libraries.minecraft.net")
         maven("https://maven.neoforged.net/releases")
-        maven("https://prmaven.neoforged.net/NeoForge/pr2039") {
-            name = "Maven for PR #2039" // https://github.com/neoforged/NeoForge/pull/2039
-            content {
-                includeModule("net.neoforged", "neoforge")
-                includeModule("net.neoforged", "testframework")
-            }
-        }
     }
 
     tasks.withType(JavaCompile::class).configureEach {
@@ -101,8 +94,8 @@ publishMods {
             project(":minecraft:neoforge").publishResult("modrinth"),
             project(":minecraft:fabric").publishResult("modrinth"),
             project(":minecraft:neoforge").publishResult("curseforge"),
-            project(":minecraft:fabric").publishResult("curseforge")/*,
-            project(":paper").publishResult("modrinth")*/)
+            project(":minecraft:fabric").publishResult("curseforge"),
+            project(":paper").publishResult("modrinth"))
     }
 }
 

@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        maven("https://repo.redlance.org/public/")
         maven("https://maven.fabricmc.net/")
         maven("https://maven.architectury.dev/")
         maven("https://maven.neoforged.net/releases")
@@ -22,4 +21,4 @@ include("minecraft:fabric")
 include("minecraft:neoforge")
 
 // Paper plugin
-// include("paper")
+include("paper")
