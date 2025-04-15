@@ -40,9 +40,10 @@ tasks.runServer {
 tasks.processResources {
     inputs.property("version", version)
     inputs.property("description", mod_description)
+    inputs.property("mcversion", minecraft_version)
 
     filesMatching("paper-plugin.yml") {
-        expand("version" to version, "description" to mod_description)
+        expand("version" to version, "description" to mod_description, "mcversion" to minecraft_version)
     }
 }
 
