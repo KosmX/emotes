@@ -102,7 +102,7 @@ public class EmoteMenu extends EmoteSubScreen {
 
     @Override
     protected void addOptions() {
-        this.list.setEmotes(EmoteHolder.list, true);
+        if (this.list != null) this.list.setEmotes(EmoteHolder.list, true);
     }
 
     @Override

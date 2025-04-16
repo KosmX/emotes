@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.main;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.MathHelper;
@@ -27,16 +28,16 @@ import net.minecraft.world.entity.Pose;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -56,9 +57,6 @@ public class EmoteHolder implements Supplier<UUID> {
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
-    //public InputKey keyBinding = TmpGetters.getDefaults().getUnknownKey(); // assigned keybinding
-    @Nullable
-    public DynamicTexture nativeIcon = null;
     @Nullable
     private ResourceLocation iconIdentifier = null;
 
@@ -105,51 +103,56 @@ public class EmoteHolder implements Supplier<UUID> {
      * just clear the {@link EmoteHolder#list} before reimporting emotes
      * Does not remove server-emotes
      */
-    public static void clearEmotes(){
-        list.removeIf(emoteHolder -> {
-            if(emoteHolder.fromInstance != null){
-                return false;
-            }
-            if(emoteHolder.iconIdentifier != null){
-                Minecraft.getInstance().getTextureManager().release(emoteHolder.iconIdentifier);
-                assert emoteHolder.nativeIcon != null;
-                emoteHolder.nativeIcon.close();
-            }
+    public static void clearEmotes() {
+        EmoteHolder.list.removeIf(emoteHolder -> {
+            if (emoteHolder.fromInstance != null) return false;
+            emoteHolder.closeIcon();
             return true;
         });
     }
 
-    public ResourceLocation getIconIdentifier(){
-        if(iconIdentifier == null && this.emote.extraData.containsKey("iconData")){
-            try (InputStream stream = new ByteArrayInputStream(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) this.emote.extraData.get("iconData"))))) {
-                assignIcon(stream);
-            }catch (IOException | NullPointerException e){
-                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
-                if(!PlatformTools.getConfig().neverRemoveBadIcon.get()){
-                    this.emote.extraData.remove("iconData");
-                }
+    public @Nullable ResourceLocation getIconIdentifier() {
+        if (this.emote.extraData.get("iconData") instanceof ByteBuffer buff && this.iconIdentifier == null) {
+            registerIcon(buff);
+        }
+        return this.iconIdentifier;
+    }
+
+    private void registerIcon(ByteBuffer buffer) {
+        RenderSystem.assertOnRenderThread();
+
+        try (InputStream stream = new ByteArrayInputStream(AbstractNetworkInstance.safeGetBytesFromBuffer((buffer)))) {
+            this.iconIdentifier = McUtils.newIdentifier("icon" + hashCode());
+
+            Minecraft.getInstance().getTextureManager().register(this.iconIdentifier,
+                    new DynamicTexture(NativeImage.read(stream))
+            );
+        } catch (Throwable th) {
+            LoggerService.INSTANCE.log(Level.WARNING, "Can't open emote icon!", th);
+            this.iconIdentifier = null;
+
+            if (!PlatformTools.getConfig().neverRemoveBadIcon.get()) {
+                this.emote.extraData.remove("iconData");
             }
         }
-        return iconIdentifier;
     }
 
-    public void assignIcon(InputStream inputStream) {
-        try {
+    private void closeIcon() {
+        if (this.iconIdentifier == null) return;
 
-            DynamicTexture nativeImageBackedTexture = new DynamicTexture(NativeImage.read(inputStream));
-            this.iconIdentifier = McUtils.newIdentifier("icon" + this.hashCode());
-            Minecraft.getInstance().getTextureManager().register(this.iconIdentifier, nativeImageBackedTexture);
-            this.nativeIcon = nativeImageBackedTexture;
-
-        } catch (Throwable var) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Can't open emote icon!", var);
-            this.iconIdentifier = null;
-            this.nativeIcon = null;
+        if (RenderSystem.isOnRenderThread()) {
+            Minecraft.getInstance().getTextureManager().release(this.iconIdentifier);
+        } else { // Shitcode that blocks until the texture closes
+            CompletableFuture<Void> wait = new CompletableFuture<>();
+            ResourceLocation iconIdentifier = this.iconIdentifier;
+            RenderSystem.recordRenderCall(() -> {
+                Minecraft.getInstance().getTextureManager().release(iconIdentifier);
+                wait.complete(null);
+            });
+            wait.join();
         }
+        this.iconIdentifier = null;
     }
-
-
-    //public void setKeyBinding(InputUtil.Key key, )
 
     /**
      * @return Playable EmotePlayer
@@ -294,4 +297,3 @@ public class EmoteHolder implements Supplier<UUID> {
         }
     }
 }
-
