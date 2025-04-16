@@ -44,12 +44,16 @@ public class EmoteListener implements Closeable {
 
         this.loader = CompletableFuture.runAsync(() -> {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            MainClientInit.loadEmotes();
+            try {
+                MainClientInit.loadEmotes();
 
-            PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
-                    stopwatch.stop().elapsed(TimeUnit.SECONDS)
-            ));
-            }, Util.ioPool()).thenRun(onComplete);
+                PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
+                        stopwatch.stop().elapsed(TimeUnit.SECONDS)
+                ));
+            } catch (Throwable th) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to reload emotes!", th);
+            }
+        }, Util.ioPool()).thenRun(onComplete);
     }
 
     public boolean isLoading() {
