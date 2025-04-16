@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -142,14 +141,11 @@ public class EmoteHolder implements Supplier<UUID> {
 
         if (RenderSystem.isOnRenderThread()) {
             Minecraft.getInstance().getTextureManager().release(this.iconIdentifier);
-        } else { // Shitcode that blocks until the texture closes
-            CompletableFuture<Void> wait = new CompletableFuture<>();
+        } else {
             ResourceLocation iconIdentifier = this.iconIdentifier;
-            RenderSystem.recordRenderCall(() -> {
-                Minecraft.getInstance().getTextureManager().release(iconIdentifier);
-                wait.complete(null);
-            });
-            wait.join();
+            Minecraft.getInstance().executeBlocking(() -> Minecraft.getInstance()
+                    .getTextureManager().release(iconIdentifier)
+            );
         }
         this.iconIdentifier = null;
     }
