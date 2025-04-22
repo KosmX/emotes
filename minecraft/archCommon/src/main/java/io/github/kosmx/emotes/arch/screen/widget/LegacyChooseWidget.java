@@ -78,9 +78,6 @@ public class LegacyChooseWidget implements IChooseWheel {
         checkHovered(mouseX, mouseY);
         //widget.renderBindTexture(TEXTURE);
         RenderSystem.setShaderColor((float) 1, (float) 1, (float) 1, (float) 1);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
         this.drawTexture(matrices, TEXTURE, 0, 0, 0, 0, 2);
         if (this.hovered) {
             FastChooseElement part = getActivePart(mouseX, mouseY);

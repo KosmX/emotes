@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.PlatformTools;
@@ -248,9 +248,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
             ResourceLocation texture = this.emote.getIconIdentifier();
             if (texture != null){
-                RenderSystem.enableBlend();
+                GlStateManager._enableBlend();
                 matrices.blit(RenderType::guiTextured, texture, x, y, 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
-                RenderSystem.disableBlend();
+                GlStateManager._disableBlend();
             }
         }
 

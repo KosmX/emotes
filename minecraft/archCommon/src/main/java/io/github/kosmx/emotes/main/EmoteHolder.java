@@ -124,7 +124,7 @@ public class EmoteHolder implements Supplier<UUID> {
             this.iconIdentifier = McUtils.newIdentifier("icon" + hashCode());
 
             Minecraft.getInstance().getTextureManager().register(this.iconIdentifier,
-                    new DynamicTexture(NativeImage.read(stream))
+                    new DynamicTexture(this.iconIdentifier::toString, NativeImage.read(stream))
             );
         } catch (Throwable th) {
             LoggerService.INSTANCE.log(Level.WARNING, "Can't open emote icon!", th);

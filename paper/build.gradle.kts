@@ -40,9 +40,10 @@ tasks.runServer {
 tasks.processResources {
     inputs.property("version", version)
     inputs.property("description", mod_description)
+    inputs.property("mcversion", minecraft_version)
 
     filesMatching("paper-plugin.yml") {
-        expand("version" to version, "description" to mod_description)
+        expand("version" to version, "description" to mod_description, "mcversion" to minecraft_version)
     }
 }
 
@@ -101,7 +102,7 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${mod_version}+${minecraft_version}-paper"
+        version = "${mod_version}+${removePreRc(minecraft_version)}-paper"
     }
 }
 

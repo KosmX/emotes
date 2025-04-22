@@ -156,7 +156,7 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${mod_version}+${minecraft_version}-fabric"
+        version = "${mod_version}+${removePreRc(minecraft_version)}-fabric"
 
         requires("fabric-api")
         embeds("playeranimator")
@@ -170,7 +170,7 @@ publishMods {
         projectSlug = providers.gradleProperty("curseforge_slug_fabric")
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
-        minecraftVersions.add(minecraft_version)
+        minecraftVersions.add(curseforge_minecraft_version)
 
         requires("fabric-api")
         embeds("playeranimator")

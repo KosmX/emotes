@@ -66,8 +66,8 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> i
 
     @Override
     protected void sendForEveryoneElse(NetData data, Player player) {
-        for(Player player1 : plugin.getServer().getOnlinePlayers()){
-            if (player1 != player && player1.canSee(player)) {
+        for(Player player1 : player.getTrackedBy()){
+            if (player1 != player) {
                 try {
                     //Bukkit server will filter if I really can send, or not.
                     //If else to not spam dumb forge clients.
@@ -87,7 +87,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<Player> i
     protected void sendForPlayerInRange(NetData data, Player player, UUID target) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
         if (targetPlayer == null) return;
-        if(targetPlayer.canSee(player)){
+        if (player.isTrackedBy(targetPlayer)) {
             sendForPlayer(data, player, target);
         }
     }
