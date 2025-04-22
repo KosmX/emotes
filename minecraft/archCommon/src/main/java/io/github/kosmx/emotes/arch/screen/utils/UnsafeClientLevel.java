@@ -120,4 +120,14 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
     public @NotNull BlockState getBlockState(BlockPos pos) {
         return Blocks.VOID_AIR.defaultBlockState();
     }
+
+    @Override
+    public long getGameTime() {
+        return 0L;
+    }
+
+    @Override
+    public long getDayTime() {
+        return 0L;
+    }
 }
