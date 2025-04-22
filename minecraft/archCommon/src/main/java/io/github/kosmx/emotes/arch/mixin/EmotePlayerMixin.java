@@ -4,24 +4,23 @@ import com.mojang.authlib.GameProfile;
 import dev.kosmx.playerAnim.api.IPlayer;
 import dev.kosmx.playerAnim.api.layered.AnimationContainer;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.data.opennbs.format.Layer;
 import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
+import io.github.kosmx.emotes.main.emotePlay.InstrumentConventer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import org.spongepowered.asm.mixin.Final;
+import net.raphimc.noteblocklib.model.Note;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,10 +34,6 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
 
     @Unique
     private int emotecraft$age = 0;
-
-    @Shadow
-    @Final
-    public ClientLevel clientLevel;
 
     @Unique
     private final AnimationContainer<EmotePlayer> emotecraft$container = new AnimationContainer<>(null);
@@ -57,28 +52,26 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
 
     @Override
     public void emotecraft$playEmote(KeyframeAnimation emote, int t, boolean isForced) {
+        this.stopEmote();
         this.emotecraft$container.setAnim(new EmotePlayer(emote, this::emotecraft$noteConsumer, t));
         this.initEmotePerspective(emotecraft$container.getAnim());
         if (this.isMainPlayer()) this.emotecraft$isForced = isForced;
     }
 
     @Unique
-    private void emotecraft$noteConsumer(Layer.Note note){
-        this.clientLevel.playLocalSound(this.getX(), this.getY(), this.getZ(), emotecraft$getInstrumentFromCode(note.instrument).getSoundEvent().value(), SoundSource.PLAYERS, note.getVolume(), note.getPitch(), true);
+    private void emotecraft$noteConsumer(Note note) {
+        emotecraft$playRawSound(InstrumentConventer.getInstrument(note, position()), true);
     }
 
-    @Unique
-    private static NoteBlockInstrument emotecraft$getInstrumentFromCode(byte b){
-
-        //That is more efficient than a switch case...
-        NoteBlockInstrument[] instruments = {NoteBlockInstrument.HARP, NoteBlockInstrument.BASS, NoteBlockInstrument.BASEDRUM, NoteBlockInstrument.SNARE, NoteBlockInstrument.HAT,
-                NoteBlockInstrument.GUITAR, NoteBlockInstrument.FLUTE, NoteBlockInstrument.BELL, NoteBlockInstrument.CHIME, NoteBlockInstrument.XYLOPHONE,NoteBlockInstrument.IRON_XYLOPHONE,
-                NoteBlockInstrument.COW_BELL, NoteBlockInstrument.DIDGERIDOO, NoteBlockInstrument.BIT, NoteBlockInstrument.BANJO, NoteBlockInstrument.PLING};
-
-        if(b >= 0 && b < instruments.length){
-            return instruments[b];
+    @Override
+    public void emotecraft$playRawSound(SoundInstance instance, boolean distanceDelay) {
+        double d = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(position());
+        if (distanceDelay && d > 100.0) {
+            double e = Math.sqrt(d) / 40.0;
+            Minecraft.getInstance().execute(() -> Minecraft.getInstance().getSoundManager().playDelayed(instance, (int)(e * 20.0)));
+        } else {
+            Minecraft.getInstance().execute(() -> Minecraft.getInstance().getSoundManager().play(instance));
         }
-        return NoteBlockInstrument.HARP; //I don't want to crash here
     }
 
     @Override

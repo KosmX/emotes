@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.common.network;
 
-import org.apache.commons.lang3.StringUtils;
+import io.github.kosmx.emotes.common.tools.StringUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -80,5 +80,13 @@ public class CommonNetwork {
             size += sizer.apply(entry);
         }
         return size;
+    }
+
+    public static boolean readBoolean(ByteBuffer buf) {
+        return buf.get() != 0;
+    }
+
+    public static void writeBoolean(ByteBuffer buf, boolean bool) {
+        buf.put((byte) (bool ? 1 : 0));
     }
 }

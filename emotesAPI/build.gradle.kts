@@ -8,7 +8,7 @@ version = mod_version
 
 dependencies {
     api("dev.kosmx.player-anim:anim-core:${properties["player_animator_version"] as String}")
-    api("org.apache.commons:commons-lang3:3.17.0")
+    api("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}")
     implementation("com.google.code.gson:gson:2.11.0") // gson for MC 1.21.4
     api("org.jetbrains:annotations:24.0.1")
 

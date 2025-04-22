@@ -18,7 +18,8 @@
     "EntityRenderDispatcherMixin",
     "KeyEventMixin",
     "LivingEntityRendererMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "SoundEngineMixin"
   ],
   "server": [],
   "injectors": {

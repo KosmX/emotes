@@ -6,11 +6,11 @@ import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
 import net.minecraft.client.CameraType;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 import java.util.function.Supplier;
-
 
 public interface IPlayerEntity {
     CameraType FPPerspective = CameraType.FIRST_PERSON;
@@ -76,5 +76,9 @@ public interface IPlayerEntity {
         if (emotePlayer != null && PlatformTools.getConfig().checkPose.get()) {
             ClientEmotePlay.clientStopLocalEmote(emotePlayer.getData());
         }
+    }
+
+    default void emotecraft$playRawSound(SoundInstance instance, boolean distanceDelay) {
+        throw new NotImplementedException();
     }
 }
