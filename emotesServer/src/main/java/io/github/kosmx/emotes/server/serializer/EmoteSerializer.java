@@ -1,13 +1,13 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.data.opennbs.NBSFileUtils;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import org.apache.commons.lang3.StringUtils;
+import net.raphimc.noteblocklib.NoteBlockLib;
+import net.raphimc.noteblocklib.format.SongFormat;
+import net.raphimc.noteblocklib.model.Song;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -56,7 +56,7 @@ public class EmoteSerializer {
 
         try (InputStream reader = Files.newInputStream(file)) {
             List<KeyframeAnimation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
-            if (!StringUtils.isBlank(folderPath)) {
+            if (folderPath != null && !folderPath.isBlank()) {
                 for (KeyframeAnimation emote : emotes) { // Avoid lambda
                     emote.extraData.put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
                 }
@@ -76,9 +76,13 @@ public class EmoteSerializer {
             }
 
             Path song = file.getParent().resolve(baseFileName + ".nbs");
-            if (Files.isRegularFile(song) && emotes.size() == 1) {
-                try (DataInputStream bis = new DataInputStream(Files.newInputStream(song))) {
-                    emotes.getFirst().extraData.put("song", NBSFileUtils.read(bis));
+            if (Files.isRegularFile(song)) {
+                try {
+                    Song nbs = NoteBlockLib.readSong(song, SongFormat.NBS);
+
+                    for (KeyframeAnimation emote : emotes) { // Avoid lambda
+                        emote.extraData.put("song", nbs);
+                    }
                 } catch (Throwable th) {
                     LoggerService.INSTANCE.log(Level.WARNING, "Error while reading song: " + song.getFileName(), th);
                 }

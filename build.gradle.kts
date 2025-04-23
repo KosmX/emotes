@@ -29,6 +29,9 @@ subprojects {
         maven("https://repo.redlance.org/public")
         maven("https://libraries.minecraft.net")
         maven("https://maven.neoforged.net/releases")
+        maven("https://maven.lenni0451.net/snapshots") {
+            name = "Lenni0451"
+        }
     }
 
     tasks.withType(JavaCompile::class).configureEach {

@@ -6,7 +6,6 @@ import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
-import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
 import io.github.kosmx.emotes.server.serializer.type.ISerializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
@@ -16,6 +15,9 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.raphimc.noteblocklib.NoteBlockLib;
+import net.raphimc.noteblocklib.model.Song;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -81,20 +83,28 @@ public class ExportMenu extends Screen {
                 }
 
                 Path file = createFileName(emoteHolder, exportDir, format.getExtension());
-                OutputStream stream = Files.newOutputStream(file);
-                UniversalEmoteSerializer.writeKeyframeAnimation(stream, emote, "emote." + format.getExtension());
-                stream.close();
-
-                if(format.onlyEmoteFile() && emote.extraData.containsKey("iconData")){
-                    Path iconPath = exportDir.resolve(file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf(".")) + ".png");
-                    if(iconPath.toFile().isFile()){
-                        throw new IOException("File already exists: " + iconPath);
-                    }
-                    OutputStream iconStream = Files.newOutputStream(iconPath);
-                    iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) emote.extraData.get("iconData")));
-                    iconStream.close();
+                try (OutputStream stream = Files.newOutputStream(file)) {
+                    UniversalEmoteSerializer.writeKeyframeAnimation(stream, emote, "emote." + format.getExtension());
                 }
-            } catch (IOException | EmoteSerializerException | InvalidPathException e) {
+
+                if (format.onlyEmoteFile()) {
+                    String fileName = FilenameUtils.removeExtension(file.getFileName().toString());
+
+                    if (emote.extraData.containsKey("iconData")) {
+                        Path iconPath = exportDir.resolve(fileName + ".png");
+                        if (Files.exists(iconPath)) throw new IOException("File already exists: " + iconPath);
+                        try (OutputStream iconStream = Files.newOutputStream(iconPath)) {
+                            iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) emote.extraData.get("iconData")));
+                            iconStream.flush();
+                        }
+                    }
+                    if (emote.extraData.containsKey("song")) {
+                        Path songPath = exportDir.resolve(fileName + ".nbs");
+                        if (Files.exists(songPath)) throw new IOException("File already exists: " + songPath);
+                        NoteBlockLib.writeSong((Song) emote.extraData.get("song"), songPath);
+                    }
+                }
+            } catch (Exception e) {
                 LoggerService.INSTANCE.log(Level.WARNING, "Failed to export!", e);
                 PlatformTools.addToast(Component.translatable(
                         "emotecraft.export.error", format.getExtension()

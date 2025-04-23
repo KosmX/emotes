@@ -1,7 +1,5 @@
 package io.github.kosmx.emotes.common.network;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ public class CommonNetwork {
     }
 
     public static void writeString(ByteBuffer buf, String str) {
-        if (StringUtils.isBlank(str)) { // Minor optimization to avoid writing empty lines
+        if (str == null || str.isBlank()) { // Minor optimization to avoid writing empty lines
             buf.putInt(0);
             return;
         }
@@ -35,7 +33,7 @@ public class CommonNetwork {
 
     public static int stringSize(String str) {
         int size = 4;
-        if (!StringUtils.isBlank(str)) {
+        if (str != null && !str.isBlank()) {
             size += str.getBytes(StandardCharsets.UTF_8).length;
         }
         return size;
@@ -80,5 +78,13 @@ public class CommonNetwork {
             size += sizer.apply(entry);
         }
         return size;
+    }
+
+    public static boolean readBoolean(ByteBuffer buf) {
+        return buf.get() != 0;
+    }
+
+    public static void writeBoolean(ByteBuffer buf, boolean bool) {
+        buf.put((byte) (bool ? 1 : 0));
     }
 }

@@ -49,6 +49,11 @@ dependencies {
         pomCompile(this)
     }
 
+    implementation("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}") {
+        include(this)
+        pomCompile(this)
+    }
+
     // Third-party
     modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
         isTransitive = false
