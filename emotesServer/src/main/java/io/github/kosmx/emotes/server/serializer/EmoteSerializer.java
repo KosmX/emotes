@@ -4,7 +4,6 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.common.tools.StringUtils;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.model.Song;
@@ -57,7 +56,7 @@ public class EmoteSerializer {
 
         try (InputStream reader = Files.newInputStream(file)) {
             List<KeyframeAnimation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
-            if (!StringUtils.isBlank(folderPath)) {
+            if (folderPath != null && !folderPath.isBlank()) {
                 for (KeyframeAnimation emote : emotes) { // Avoid lambda
                     emote.extraData.put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
                 }
