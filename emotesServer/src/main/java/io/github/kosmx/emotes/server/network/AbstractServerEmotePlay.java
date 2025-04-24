@@ -22,9 +22,8 @@ import java.util.logging.Level;
  * This will be used for modded servers
  *
  */
-@SuppressWarnings({"ConstantConditions", "rawtypes", "unused"})
 public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> extends ServerEmoteAPI {
-    protected boolean doValidate(){
+    protected boolean doValidate() {
         return Serializer.getConfig().validateEmote.get();
     }
 
@@ -32,6 +31,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
 
     protected abstract P getPlayerFromUUID(UUID player);
 
+    @SuppressWarnings("ConstantConditions")
     public void receiveMessage(byte[] bytes, P instance) throws IOException{
         receiveMessage(new EmotePacket.Builder().setThreshold(Serializer.getConfig().validThreshold.get()).build().read(ByteBuffer.wrap(bytes)), instance);
     }
@@ -61,6 +61,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      * @param instance sender player
      * @throws IOException probably not
      */
+    @SuppressWarnings("ConstantConditions")
     protected void handleStreamEmote(NetData data, P instance) throws IOException {
         if (!data.valid && doValidate()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
@@ -198,6 +199,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      * internal purpose only
      * @return this
      */
+    @SuppressWarnings("rawtypes")
     public static AbstractServerEmotePlay getInstance() {
         return (AbstractServerEmotePlay) ServerEmoteAPI.INSTANCE;
     }
