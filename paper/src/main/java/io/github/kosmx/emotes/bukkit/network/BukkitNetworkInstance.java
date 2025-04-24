@@ -52,8 +52,5 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
     public void presenceResponse() {
         super.presenceResponse();
         ServerSideEmotePlay.getInstance().presenceResponse(this, trackPlayState());
-        for (Player player : this.player.getTrackedBy()) {
-            ServerSideEmotePlay.getInstance().playerStartTracking(player, this.player);
-        }
     }
 }

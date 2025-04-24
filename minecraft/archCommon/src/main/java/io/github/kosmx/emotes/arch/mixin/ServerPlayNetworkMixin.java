@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.arch.mixin;
 
 import io.github.kosmx.emotes.arch.network.EmotesMixinNetwork;
 import io.github.kosmx.emotes.arch.network.ModdedServerPlayNetwork;
-import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.network.Connection;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.CommonListenerCookie;
@@ -14,17 +13,15 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkMixin extends ServerCommonPacketListenerImpl implements EmotesMixinNetwork {
-
     @Unique
-    @NotNull
-    private final IServerNetworkInstance emotecraft$instance = new ModdedServerPlayNetwork((ServerGamePacketListenerImpl)(Object) this);
-
-    @Override
-    public @NotNull IServerNetworkInstance emotecraft$getServerNetworkInstance() {
-        return emotecraft$instance;
-    }
+    private final ModdedServerPlayNetwork emotecraft$instance = new ModdedServerPlayNetwork((ServerGamePacketListenerImpl)(Object) this);
 
     public ServerPlayNetworkMixin(MinecraftServer minecraftServer, Connection connection, CommonListenerCookie commonListenerCookie) {
         super(minecraftServer, connection, commonListenerCookie);
+    }
+
+    @Override
+    public @NotNull ModdedServerPlayNetwork emotecraft$getServerNetworkInstance() {
+        return this.emotecraft$instance;
     }
 }

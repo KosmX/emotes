@@ -17,12 +17,10 @@ import java.util.UUID;
  * Wrapper class for Emotes play network implementation
  */
 public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IServerNetworkInstance {
-    @NotNull private final ServerGamePacketListenerImpl serverGamePacketListener;
-
+    @NotNull
+    protected final ServerGamePacketListenerImpl serverGamePacketListener;
     @NotNull
     private final EmotePlayTracker emotePlayTracker = new EmotePlayTracker();
-
-
 
     public ModdedServerPlayNetwork(@NotNull ServerGamePacketListenerImpl serverGamePacketListener) {
         super();
@@ -33,7 +31,6 @@ public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IS
     protected @NotNull EmotesMixinConnection getServerConnection() {
         return (EmotesMixinConnection) ((ServerCommonPacketListenerAccessor)serverGamePacketListener).getConnection();
     }
-
 
     @Override
     void sendEmotePacket(ByteBuffer buffer) {
