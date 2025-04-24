@@ -4,14 +4,12 @@
   "package": "io.github.kosmx.emotes.arch.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "AnimationJsonMixin",
     "ConnectionHandlerMixin",
     "EntityTrackerAccessor",
     "ServerChunkCacheAccessor",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin",
-    "ServerPlayTrackerMixin",
-    "emf.EMFAnimationEntityContextMixin"
+    "ServerPlayTrackerMixin"
   ],
   "client": [
     "EmotePlayerMixin",
@@ -19,7 +17,8 @@
     "KeyEventMixin",
     "LivingEntityRendererMixin",
     "PlayerMixin",
-    "SoundEngineMixin"
+    "SoundEngineMixin",
+    "emf.EMFAnimationEntityContextMixin"
   ],
   "server": [],
   "injectors": {
