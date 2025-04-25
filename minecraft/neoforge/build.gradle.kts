@@ -40,6 +40,12 @@ dependencies {
         pomCompile(this)
     }
 
+    implementation("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}") {
+        forgeRuntimeLibrary(this)
+        include(this)
+        pomCompile(this)
+    }
+
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))
 
