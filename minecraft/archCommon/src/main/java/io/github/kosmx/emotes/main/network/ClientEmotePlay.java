@@ -55,7 +55,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         return true;
     }
 
-    public static void clientRepeatLocalEmote(KeyframeAnimation emote, int tick, UUID target){
+    public static void clientRepeatLocalEmote(KeyframeAnimation emote, int tick, UUID target) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         packetBuilder.configureToStreamEmote(emote, PlatformTools.getMainPlayer().getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
@@ -88,29 +88,28 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     static void executeMessage(NetData data, INetworkInstance networkInstance) throws NullPointerException {
         LoggerService.INSTANCE.log(Level.FINE, "[emotes client] Received message: " + data);
-
         if (data.purpose == null) {
             LoggerService.INSTANCE.log(Level.INFO, "Packet execution is not possible without a purpose");
             return;
         }
+
         switch (Objects.requireNonNull(data.purpose)) {
             case STREAM:
                 assert data.emoteData != null;
-                if(data.valid || !(PlatformTools.getConfig().alwaysValidate.get() || !networkInstance.safeProxy())) {
+                if (data.valid || !PlatformTools.getConfig().alwaysValidate.get()) {
                     receivePlayPacket(data.emoteData, data.player, data.tick, data.isForced);
                 }
                 break;
             case STOP:
                 AbstractClientPlayer player = PlatformTools.getPlayerFromUUID(data.player);
                 assert data.stopEmoteID != null;
-                if(player != null) {
+                if (player != null) {
                     ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUUID());
                     player.stopEmote(data.stopEmoteID);
-                    if(player.isMainPlayer() && !data.isForced){
+                    if (player.isMainPlayer() && !data.isForced) {
                         PlatformTools.sendChatMessage(Component.translatable("emotecraft.blockedEmote"));
                     }
-                }
-                else {
+                } else {
                     QUEUE.remove(data.player);
                 }
                 break;
@@ -191,7 +190,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         return EmoteHolder.list.values().stream().map(EmoteHolder::getEmote).collect(Collectors.toList());
     }
 
-    static class QueueEntry{
+    static class QueueEntry {
         final KeyframeAnimation emoteData;
         final int beginTick;
         final int receivedTick;

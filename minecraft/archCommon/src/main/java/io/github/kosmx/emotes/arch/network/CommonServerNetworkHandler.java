@@ -36,7 +36,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Mo
 
     public void receiveStreamMessage(ServerPlayer player, ModdedServerPlayNetwork handler, ByteBuffer buf) {
         try {
-            if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreamC2S()) {
+            if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreaming()) {
                 var packet = handler.receiveStreamChunk(buf);
                 if (packet != null) {
                     receiveMessage(packet.array(), handler);

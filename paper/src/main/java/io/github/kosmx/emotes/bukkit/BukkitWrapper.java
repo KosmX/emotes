@@ -19,16 +19,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
 
 public class BukkitWrapper extends JavaPlugin {
-    public final static String EmotePacket = CommonData.getIDAsString(CommonData.playEmoteID);
+    public final static String EMOTE_PACKET = CommonData.getIDAsString(CommonData.playEmoteID);
 
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void onLoad() {
-        if(CommonData.isLoaded){
+        if (CommonData.isLoaded) {
             getLogger().warning("Emotecraft is loaded multiple times, please load it only once!");
-            Bukkit.getPluginManager().disablePlugin(this); //disable itself.
-        }
-        else {
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        } else {
             CommonData.isLoaded = true;
         }
 
@@ -55,16 +55,14 @@ public class BukkitWrapper extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EmotePacket);
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EmotePacket, ServerSideEmotePlay.getInstance()::receivePluginMessage);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EMOTE_PACKET);
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance()::receivePluginMessage);
         getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
-        super.onEnable();
         getLogger().info("Loading Emotecraft as a bukkit plugin...");
     }
 
     @Override
     public void onDisable() {
-        super.onDisable();
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EmotePacket);
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EMOTE_PACKET);
     }
 }

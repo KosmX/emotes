@@ -31,6 +31,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
         assert config.emoteData != null;
         CommonNetwork.writeString(byteBuffer, (String) config.emoteData.extraData.get("name"));
@@ -48,6 +49,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public int calculateSize(NetData config) {
         KeyframeAnimation emote = config.emoteData;
         if (emote == null) return 0;

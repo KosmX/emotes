@@ -29,12 +29,11 @@ public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
     }
 
     private void clientDeserialize(JsonObject node, ClientConfig config) {
-        EmoteFixer emoteFixer = new EmoteFixer(config.configVersion);
-        if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config, emoteFixer);
-        if(node.has("keys")) keyBindsDeserializer(node.get("keys"), config, emoteFixer);
+        if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config);
+        if(node.has("keys")) keyBindsDeserializer(node.get("keys"), config);
     }
 
-    private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
+    private void fastMenuDeserializer(JsonObject node, ClientConfig config) {
         for(int j = 0; j < config.fastMenuEmotes.length; j++){
             if (node.has(Integer.toString(j))) {
                 JsonElement subNode = node.get(Integer.toString(j));
@@ -43,34 +42,33 @@ public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
                     // new version (with pages)
                     for (int i = 0; i != 8; i++) {
                         if (node.get(Integer.toString(j)).getAsJsonObject().has(Integer.toString(i))) {
-                            config.fastMenuEmotes[j][i] = fixer.getEmoteID(node.get(Integer.toString(j)).getAsJsonObject().get(Integer.toString(i)));
+                            config.fastMenuEmotes[j][i] = getEmoteID(node.get(Integer.toString(j)).getAsJsonObject().get(Integer.toString(i)));
                         }
                     }
                 } else {
                     // old version (without pages) to new version
-                    config.fastMenuEmotes[0][j] = fixer.getEmoteID(node.get(Integer.toString(j)));
+                    config.fastMenuEmotes[0][j] = getEmoteID(node.get(Integer.toString(j)));
                 }
             }
         }
     }
 
-    private void keyBindsDeserializer(JsonElement node, ClientConfig config, EmoteFixer fixer){
-        if(config.configVersion < 4){
-            oldKeyBindsSerializer(node.getAsJsonArray(), config, fixer);
+    private void keyBindsDeserializer(JsonElement node, ClientConfig config) {
+        if (config.configVersion < 4) {
+            oldKeyBindsSerializer(node.getAsJsonArray(), config);
         } else {
             for (Map.Entry<String, JsonElement> element : node.getAsJsonObject().entrySet()) {
                 String str = element.getValue().getAsString();
                 config.emoteKeyMap.put(UUID.fromString(element.getKey()), InputConstants.getKey(str));
-                //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
             }
         }
     }
 
-    private void oldKeyBindsSerializer(JsonArray node, ClientConfig config, EmoteFixer fixer){
+    private void oldKeyBindsSerializer(JsonArray node, ClientConfig config) {
         for(JsonElement jsonElement : node){
             JsonObject n = jsonElement.getAsJsonObject();
             String str = n.get("key").getAsString();
-            config.emoteKeyMap.add(new Pair<>(fixer.getEmoteID(n.get("id")), InputConstants.getKey(str)));
+            config.emoteKeyMap.add(new Pair<>(getEmoteID(n.get("id")), InputConstants.getKey(str)));
         }
     }
 
@@ -101,5 +99,13 @@ public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
             array.addProperty(emote.getLeft().toString(), emote.getRight().getName());
         }
         return array;
+    }
+
+    public static UUID getEmoteID(JsonElement element) {
+        try {
+            return UUID.fromString(element.getAsString());
+        } catch(Exception e) {
+            return new UUID(0, 0);
+        }
     }
 }

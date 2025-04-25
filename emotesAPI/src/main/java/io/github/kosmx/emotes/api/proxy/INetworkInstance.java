@@ -1,11 +1,10 @@
 package io.github.kosmx.emotes.api.proxy;
 
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
-import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
@@ -19,8 +18,6 @@ import java.util.function.Consumer;
  * use this interface if you want to do something completely different
  */
 public interface INetworkInstance {
-
-
     /**
      * Get the version from the other side. null if default
      * the map doesn't have to contain information about every module. these will be added automatically.
@@ -29,7 +26,6 @@ public interface INetworkInstance {
      *
      * @return maybe null
      */
-    @SuppressWarnings("deprecated")
     HashMap<Byte, Byte> getRemoteVersions();
 
     /**
@@ -46,21 +42,21 @@ public interface INetworkInstance {
      * @deprecated communication changes
      */
     @Deprecated
-    default void presenceResponse(){}
+    default void presenceResponse() {
+    }
 
     /**
      * Do send the sender's id to the server
      * @return true means send
      */
-    default boolean sendPlayerID(){
+    default boolean sendPlayerID() {
         return false;
     }
 
     /**
      * Does this server allow emote streams from client. This can allow larger/longer emotes but can be abused
-     * @return
      */
-    default boolean allowEmoteStreamC2S() {
+    default boolean allowEmoteStreaming() {
         return false;
     }
 
@@ -86,15 +82,6 @@ public interface INetworkInstance {
     }
 
     /**
-     * You are asked to send your config.
-     * From 2.2 in the MC configuration phase, the server will initialize config, the client will reply.
-     * <p>
-     * @deprecated ambiguous name, use {@link #sendC2SConfig(Consumer)}
-     */
-    @Deprecated
-    default void sendConfigCallback() {}
-
-    /**
      * Client is sending config message to server. Vanilla clients will answer to the server configuration phase message.
      * This might get invoked multiple times on the same network instance.
      */
@@ -106,16 +93,7 @@ public interface INetworkInstance {
      *
      * @return false if received info is untrusted
      */
-    default boolean trustReceivedPlayer(){
-        return true;
-    }
-
-    /**
-     * If emote validation happens (or can happen at server side)
-     * if you return false, Emotecraft will ALWAYS validate the received emote according to the use config.
-     * @return is the received is validated at server-side
-     */
-    default boolean safeProxy(){
+    default boolean trustReceivedPlayer() {
         return true;
     }
 
@@ -126,12 +104,6 @@ public interface INetworkInstance {
      * @return is this channel working
      */
     boolean isActive();
-
-    /**
-     * Get the remote system's version number
-     * @return remote version number. 8-255
-     */
-    int getRemoteVersion();
 
     /**
      * Does the track the emote play state of every player -> true
@@ -145,7 +117,9 @@ public interface INetworkInstance {
      * {@link AbstractNetworkInstance#maxDataSize()} defaults to {@link io.github.kosmx.emotes.common.CommonData#MAX_PACKET_SIZE}
      * @return max size of bytes[]
      */
-    int maxDataSize();
+    default int maxDataSize() {
+        return CommonData.MAX_PACKET_SIZE;
+    }
 
     /**
      * If {@link ByteBuffer} is wrapped, it is safe to get the array
@@ -153,21 +127,12 @@ public interface INetworkInstance {
      * @param byteBuffer get the bytes from
      * @return the byte array
      */
-    static byte[] safeGetBytesFromBuffer(ByteBuffer byteBuffer){
-        try {
-            if (byteBuffer.isDirect() || byteBuffer.isReadOnly()) {
-                //not so fast, but there is no other way if the buffer is direct
-                byte[] bytes = new byte[byteBuffer.remaining()];
-                byteBuffer.get(bytes);
-                return bytes;
-            }
-            //Most efficient way.
-            else return byteBuffer.array();
+    static byte[] safeGetBytesFromBuffer(ByteBuffer byteBuffer) {
+        if (byteBuffer.isDirect() || byteBuffer.isReadOnly()) {
+            byte[] bytes = new byte[byteBuffer.remaining()];
+            byteBuffer.get(bytes);
+            return bytes;
         }
-        //This shouldn't be able to happen
-        catch (BufferOverflowException | BufferUnderflowException e){
-            e.printStackTrace();
-            return null;
-        }
+        else return byteBuffer.array();
     }
 }

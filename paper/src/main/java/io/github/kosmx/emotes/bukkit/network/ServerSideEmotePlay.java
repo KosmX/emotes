@@ -16,15 +16,14 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNetworkInstance> implements Listener {
-    private final BukkitWrapper plugin = BukkitWrapper.getPlugin(BukkitWrapper.class);;
-    final HashMap<UUID, BukkitNetworkInstance> player_database = new HashMap<>();
+    private static final BukkitWrapper PLUGIN = BukkitWrapper.getPlugin(BukkitWrapper.class);
+
+    private final HashMap<UUID, BukkitNetworkInstance> players = new HashMap<>();
 
     public void receivePluginMessage(String channel, Player player, byte[] message) {
-        //EmoteInstance.instance.getLogger().log(Level.FINE, "[EMOTECRAFT] streaming emote");
-        if (channel.equals(BukkitWrapper.EmotePacket)) {
-            BukkitNetworkInstance playerNetwork = player_database.getOrDefault(player.getUniqueId(), null);
-            if (playerNetwork != null) {
-                //Let the common server logic process the message
+        if (channel.equals(BukkitWrapper.EMOTE_PACKET)) {
+            BukkitNetworkInstance playerNetwork = this.players.get(player.getUniqueId());
+            if (playerNetwork != null) { // Let the common server logic process the message
                 try {
                     this.receiveMessage(message, playerNetwork);
                 } catch (Exception e) {
@@ -47,13 +46,13 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     @Override
     public BukkitNetworkInstance getPlayerFromUUID(UUID playerUuid) {
-        if (!player_database.containsKey(playerUuid)) {
-            Player player = plugin.getServer().getPlayer(playerUuid);
+        if (!this.players.containsKey(playerUuid)) {
+            Player player = PLUGIN.getServer().getPlayer(playerUuid);
             assert player != null;
             LoggerService.INSTANCE.log(Level.INFO, "Player " + player.getName() + " never joined. If it is a fake player, the fake-player plugin forgot to fire join event.");
-            player_database.put(playerUuid, new BukkitNetworkInstance(player));
+            this.players.put(playerUuid, new BukkitNetworkInstance(player));
         }
-        return player_database.get(playerUuid);
+        return this.players.get(playerUuid);
     }
 
     @Override
@@ -64,7 +63,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
             // Bukkit server will filter if I really can send, or not.
             // If else to not spam dumb forge clients.
-            if (player1.getListeningPluginChannels().contains(BukkitWrapper.EmotePacket)) {
+            if (player1.getListeningPluginChannels().contains(BukkitWrapper.EMOTE_PACKET)) {
                 sendForPlayer(data, player, instance);
             }
         }
@@ -72,12 +71,12 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        this.player_database.put(event.getPlayer().getUniqueId(), new BukkitNetworkInstance(event.getPlayer()));
+        this.players.put(event.getPlayer().getUniqueId(), new BukkitNetworkInstance(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
-        BukkitNetworkInstance instance = this.player_database.remove(event.getPlayer().getUniqueId());
+        BukkitNetworkInstance instance = this.players.remove(event.getPlayer().getUniqueId());
         if (instance != null) instance.closeConnection();
     }
 

@@ -69,6 +69,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * Create cache from emote data
      * @param emote emote
      */
+    @SuppressWarnings("unchecked")
     public EmoteHolder(KeyframeAnimation emote) {
         this.emote = emote;
         this.name = McUtils.fromJson(emote.extraData.get("name"), RegistryAccess.EMPTY);
@@ -280,14 +281,14 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
 
-    public static EmoteHolder getNonNull(@NotNull UUID emote){
+    public static EmoteHolder getNonNull(@NotNull UUID emote) {
         EmoteHolder emoteHolder = list.get(emote);
-        if(emoteHolder == null)return new Empty(emote);
+        if (emoteHolder == null) return new Empty(emote);
         return emoteHolder;
     }
 
-    public static class Empty extends EmoteHolder{
-
+    @SuppressWarnings("deprecation")
+    public static class Empty extends EmoteHolder {
         public Empty(UUID uuid) {
             super(new KeyframeAnimation.AnimationBuilder(AnimationFormat.UNKNOWN).setName("{\"color\":\"red\",\"text\":\"INVALID\"}").setUuid(uuid).build());
         }

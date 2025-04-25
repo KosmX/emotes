@@ -10,10 +10,8 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public abstract class AbstractServerNetwork implements INetworkInstance {
-
     @NotNull
     protected final EmoteStreamHelper streamHelper = new ServerStreamHelper();
-
 
     @NotNull
     protected abstract EmotesMixinConnection getServerConnection();
@@ -32,15 +30,9 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
 
     abstract void sendStreamPacket(ByteBuffer buffer);
 
-
     @Override
     public boolean isActive() {
         return false;
-    }
-
-    @Override
-    public int getRemoteVersion() {
-        return CommonData.networkingVersion;
     }
 
     @Override
@@ -57,9 +49,7 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
         return streamHelper.receiveStream(buffer);
     }
 
-
     protected class ServerStreamHelper extends EmoteStreamHelper {
-
         @Override
         protected int getMaxPacketSize() {
             return maxDataSize();
