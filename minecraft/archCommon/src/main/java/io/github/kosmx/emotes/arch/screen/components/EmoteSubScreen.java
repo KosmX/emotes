@@ -142,6 +142,12 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     @Override
+    public void removed() {
+        super.removed();
+        if (this.preview != null) this.preview.getPlayer().stopEmote();
+    }
+
+    @Override
     public void onClose() {
         this.minecraft.setScreen(this.lastScreen);
     }
