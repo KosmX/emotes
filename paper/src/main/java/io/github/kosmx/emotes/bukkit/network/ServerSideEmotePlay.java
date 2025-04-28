@@ -48,7 +48,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     public BukkitNetworkInstance getPlayerFromUUID(UUID playerUuid) {
         if (!this.players.containsKey(playerUuid)) {
             Player player = PLUGIN.getServer().getPlayer(playerUuid);
-            assert player != null;
+            if (player == null) return null;
             LoggerService.INSTANCE.log(Level.INFO, "Player " + player.getName() + " never joined. If it is a fake player, the fake-player plugin forgot to fire join event.");
             this.players.put(playerUuid, new BukkitNetworkInstance(player));
         }
