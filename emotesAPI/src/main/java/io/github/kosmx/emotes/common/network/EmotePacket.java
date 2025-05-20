@@ -209,9 +209,9 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder setStartTime(Instant instant, boolean offset) {
-            this.data.startTime = instant.toEpochMilli();
-            this.data.offsetTime = offset;
+        public Builder setStartTime(@Nullable Instant instant, boolean offset) {
+            this.data.offsetTime = offset && instant != null;
+            if (this.data.offsetTime) this.data.startTime = instant.toEpochMilli();
             return this;
         }
 

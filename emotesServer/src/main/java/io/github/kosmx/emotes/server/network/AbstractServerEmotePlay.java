@@ -86,7 +86,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
 
     /**
      * Stream emote
-     * @param data   data
+     * @param data data
      * @param player source player
      */
     protected void streamEmote(NetData data, P player, boolean isForced, boolean isFromPlayer) {
@@ -97,7 +97,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         player.getEmoteTracker().setPlayedEmote(playingData);
         ServerEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(playingData, getUUIDFromPlayer(player));
         sendForEveryoneElse(data, player);
-        if (!isFromPlayer) {
+        if (!isFromPlayer || playingData.offsetTime()) {
             sendForPlayer(data, player, player);
         }
     }

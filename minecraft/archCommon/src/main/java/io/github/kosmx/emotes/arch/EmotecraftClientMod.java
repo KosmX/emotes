@@ -7,14 +7,13 @@ import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Objects;
 
 public class EmotecraftClientMod {
     public static final KeyMapping OPEN_MENU_KEY = new KeyMapping(
@@ -46,7 +45,7 @@ public class EmotecraftClientMod {
     }
 
     private void handlePlaySameAnimation(Minecraft minecraft, RemotePlayer player) {
-        if (minecraft.player != null && player.isPlayingEmote()) {
+        if (ClientPacketManager.isRemoteSupportSync() && minecraft.player != null && player.isPlayingEmote()) {
             PlayingAnimationData emotePlayer = player.emotecraft$getPlayingData();
             assert emotePlayer != null; // verified in isPlayingEmote()
 
@@ -54,7 +53,8 @@ public class EmotecraftClientMod {
             if (sameHolder == null) return;
 
             if (PLAY_SAME_ANIM_KEY.consumeClick()) {
-                sameHolder.playEmote(minecraft.player, Objects.requireNonNull(player.emotecraft$getEmote()).getTick(), true);
+                sameHolder.playEmote(minecraft.player, 0, true);
+
             } else if (!minecraft.player.isPlayingEmote()) {
                 minecraft.gui.setOverlayMessage(Component.translatable("key.emotecraft.playsameanim.subtitle",
                         PLAY_SAME_ANIM_KEY.getTranslatedKeyMessage()

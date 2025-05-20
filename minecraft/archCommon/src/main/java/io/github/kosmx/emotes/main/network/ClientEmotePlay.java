@@ -41,7 +41,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
         ClientPacketManager.send(data.preparePacket(), null);
         ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data, player.getUUID());
-        player.emotecraft$playEmote(data);
+        if (!data.offsetTime() && ClientPacketManager.isRemoteSupportSync()) player.emotecraft$playEmote(data);
         return true;
     }
 
@@ -142,7 +142,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     public static @Nullable PlayingAnimationData getEmoteForUUID(UUID uuid) {
         if (QUEUE.containsKey(uuid)) {
             PlayingAnimationData entry = QUEUE.remove(uuid);
-            if (!entry.currentEmote().isPlayingAt(entry.calculatedTick(Instant.now())))
+            if (!entry.isPlayingAt(Instant.now()))
                 return null;
             return entry;
         }
@@ -154,8 +154,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
      */
     public static void checkQueue(){
         for (var entry : QUEUE.entrySet()) {
-            int currentTick = entry.getValue().calculatedTick(Instant.now());
-            if (!entry.getValue().currentEmote().isPlayingAt(currentTick)) {
+            if (!entry.getValue().isPlayingAt(Instant.now())) {
                 QUEUE.remove(entry.getKey());
             }
         }

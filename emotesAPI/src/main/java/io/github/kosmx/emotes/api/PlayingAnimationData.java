@@ -8,6 +8,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.Temporal;
 
+/**
+ * @param startTime animation playback start time
+ * @param offsetTime whether to apply {@code startTime} to the loop
+ */
 public record PlayingAnimationData(KeyframeAnimation currentEmote, int tick, Instant startTime, boolean offsetTime, boolean forced) {
     public PlayingAnimationData(NetData data) {
         this(data.emoteData, data.tick, data.startInstant(), data.offsetTime, data.isForced);
@@ -36,11 +40,13 @@ public record PlayingAnimationData(KeyframeAnimation currentEmote, int tick, Ins
                 .configureEmoteTick(tick());
     }
 
-    public int currentTick(Temporal now) {
-        if (!offsetTime()) {
-            return this.tick;
+    public int offsetTick(Temporal now) {
+        KeyframeAnimation data = currentEmote();
+        int t = calculatedTick(now);
+        if (data.isInfinite() && t > data.returnToTick) {
+            t = (t - data.returnToTick) % (data.endTick - data.returnToTick + 1) + data.returnToTick;
         }
-        return calculatedTick(now);
+        return t;
     }
 
     public int calculatedTick(Temporal now) {
@@ -52,6 +58,6 @@ public record PlayingAnimationData(KeyframeAnimation currentEmote, int tick, Ins
     }
 
     public static int calculateTick(Temporal startTime, Temporal newStartTime) {
-        return (int)(Duration.between(startTime, newStartTime).toMillis() / 50);
+        return (int) (Duration.between(startTime, newStartTime).toMillis() / 50);
     }
 }

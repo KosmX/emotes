@@ -252,7 +252,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public boolean playEmote(AbstractClientPlayer playerEntity, int tick) {
-        return playEmote(playerEntity, tick, false);
+        return playEmote(playerEntity, tick, this.emote.isInfinite);
     }
 
     public boolean playEmote(AbstractClientPlayer playerEntity, int tick, boolean offsetTime) {

@@ -27,8 +27,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Instant;
-
 //Mixin it into the player is way easier than storing it somewhere else...
 @Mixin(AbstractClientPlayer.class)
 public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
@@ -55,9 +53,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     public void emotecraft$playEmote(PlayingAnimationData data) {
         this.stopEmote();
         this.emotecraft$data = data;
-        this.emotecraft$container.setAnim(new EmotePlayer(
-                data.currentEmote(), this::emotecraft$noteConsumer, data.currentTick(Instant.now())
-        ));
+        this.emotecraft$container.setAnim(new EmotePlayer(data, this::emotecraft$noteConsumer));
         this.initEmotePerspective(emotecraft$container.getAnim());
     }
 

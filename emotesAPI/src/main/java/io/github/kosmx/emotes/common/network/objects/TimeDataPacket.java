@@ -1,12 +1,15 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import io.github.kosmx.emotes.common.network.CommonNetwork;
+import io.github.kosmx.emotes.common.network.PacketConfig;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class TimeDataPacket extends AbstractNetworkPacket {
     @Override
     public byte getID() {
-        return 55;
+        return PacketConfig.TIME_DATA_PACKET;
     }
 
     @Override
@@ -15,25 +18,24 @@ public class TimeDataPacket extends AbstractNetworkPacket {
     }
 
     @Override
-    public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        config.startTime = byteBuffer.getLong();
-        config.offsetTime = byteBuffer.get() != 0x00;
-        return true;
+    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
+        config.offsetTime = CommonNetwork.readBoolean(byteBuffer);
+        if (config.offsetTime) config.startTime = byteBuffer.getLong();
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
-        byteBuffer.putLong(config.startTime);
-        byteBuffer.put(config.offsetTime ? (byte) 0x01 : (byte) 0x00);
+        CommonNetwork.writeBoolean(byteBuffer, config.offsetTime);
+        if (config.offsetTime) byteBuffer.putLong(config.startTime);
     }
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.startTime > 0;
+        return config.startTime > 0 && config.offsetTime;
     }
 
     @Override
     public int calculateSize(NetData config) {
-        return 9;
+        return config.offsetTime ? 9 : 1;
     }
 }

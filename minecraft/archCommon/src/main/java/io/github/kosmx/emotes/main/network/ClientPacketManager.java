@@ -7,8 +7,10 @@ import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -20,77 +22,48 @@ import java.util.logging.Level;
  * Responsible for calling proxy instances and other stuff
  */
 public final class ClientPacketManager extends EmotesProxyManager {
+    private static final INetworkInstance DEFAULT_NETWORK = PlatformTools.getClientNetworkController();
 
-    private static final INetworkInstance defaultNetwork = PlatformTools.getClientNetworkController();
-    //that casting should always work
-
-    public static void init(){
+    public static void init() {
         setManager(new ClientPacketManager()); //Some dependency injection
     }
 
-    private ClientPacketManager(){} //that is a utility class :D
+    private ClientPacketManager() {} //that is a utility class :D
 
-    /**
-     *
-     * @return Use all network instances even if the server has the mod installed
-     */
-    private static boolean useAlwaysAlt(){
-        return false;
-    }
-
-    public static void send(EmotePacket.Builder packetBuilder, UUID target){
+    public static void send(EmotePacket.Builder packetBuilder, UUID target) {
         if (ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder) == EventResult.FAIL) {
             LoggerService.INSTANCE.log(Level.INFO, "Sending the packet has been canceled by the event!");
             return; // Deny
         }
-        if(!defaultNetwork.isActive() || useAlwaysAlt()){
-            for(INetworkInstance network:networkInstances){
-                if(network.isActive()){
-                    if (target == null || !network.isServerTrackingPlayState()) {
-                        try {
-                            EmotePacket.Builder builder = packetBuilder.copy();
-                            if (!network.sendPlayerID()) builder.removePlayerID();
-                            builder.setSizeLimit(network.maxDataSize(), false);
-                            builder.setVersion(network.getRemoteVersions());
-                            network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
-                        } catch(IOException exception) {
-                            LoggerService.INSTANCE.log(Level.WARNING, "Error while sending packet!", exception);
-                        }
-                    }
-                }
-            }
-        }
-        if(defaultNetwork.isActive() && (target == null || !defaultNetwork.isServerTrackingPlayState())){
-            if(!defaultNetwork.sendPlayerID())packetBuilder.removePlayerID();
+
+        INetworkInstance instance = getActiveNetworkInstance();
+        if (instance != null && instance.isActive()) {
+            if (!instance.sendPlayerID()) packetBuilder.removePlayerID();
+
             try {
-                packetBuilder.setSizeLimit(defaultNetwork.maxDataSize(), false);
-                packetBuilder.setVersion(defaultNetwork.getRemoteVersions());
-                defaultNetwork.sendMessage(packetBuilder, target);
-            }
-            catch (IOException exception){
+                packetBuilder.setSizeLimit(instance.maxDataSize(), false);
+                packetBuilder.setVersion(instance.getRemoteVersions());
+                instance.sendMessage(packetBuilder, target);
+            } catch (IOException exception) {
                 LoggerService.INSTANCE.log(Level.WARNING, "Error while sending packet!", exception);
             }
         }
     }
 
-    static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
+    static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance) {
         try{
             NetData data = new EmotePacket.Builder().setThreshold(PlatformTools.getConfig().validThreshold.get()).build().read(buffer);
-            if(!networkInstance.trustReceivedPlayer()){
-                data.player = null;
-            }
-            if(player != null) {
-                data.player = player;
-            }
-            if(data.player == null && data.purpose.playerBound){
+            if (!networkInstance.trustReceivedPlayer()) data.player = null;
+            if (player != null) data.player = player;
+
+            if (data.player == null && data.purpose.playerBound) {
                 //this is not exactly IO but something went wrong in IO so it is IO fail
                 throw new IOException("Didn't received any player information");
             }
 
             try {
                 ClientEmotePlay.executeMessage(data, networkInstance);
-            }
-            catch (Exception e){//I don't want to break the whole game with a bad message but I'll warn with the highest level
+            } catch (Exception e) { // I don't want to break the whole game with a bad message but I'll warn with the highest level
                 LoggerService.INSTANCE.log(Level.SEVERE, "Critical error has occurred while receiving emote!", e);
             }
         }
@@ -104,23 +77,35 @@ public final class ClientPacketManager extends EmotesProxyManager {
         receiveMessage(buffer, player, networkInstance);
     }
 
-    public static boolean isRemoteAvailable(){
-        return defaultNetwork.isActive();
+    public static boolean isRemoteSupportSync() {
+        INetworkInstance instance = getActiveNetworkInstance();
+        return instance != null && instance.getRemoteVersions().containsKey(PacketConfig.TIME_DATA_PACKET);
+    }
+
+    public static boolean isDefaultRemoteAvailable() {
+        return DEFAULT_NETWORK.isActive();
     }
 
     public static boolean isRemoteTracking() {
-        return isRemoteAvailable() && defaultNetwork.isServerTrackingPlayState();
+        INetworkInstance instance = getActiveNetworkInstance();
+        return instance != null && instance.isServerTrackingPlayState();
     }
 
-    public static boolean isAvailableProxy(){
-        for(INetworkInstance instance : networkInstances){
-            if(instance.isActive()){
-                return true;
-            }
+    public static @Nullable INetworkInstance getActiveNetworkInstance() {
+        if (isDefaultRemoteAvailable()) return DEFAULT_NETWORK;
+        return getAvailableProxyInstance();
+    }
+
+    public static boolean isAvailableProxy() {
+        return getAvailableProxyInstance() != null;
+    }
+
+    public static @Nullable INetworkInstance getAvailableProxyInstance() {
+        for (INetworkInstance instance : networkInstances) {
+            if (instance.isActive()) return instance;
         }
-        return false;
+        return null;
     }
-
 
     /**
      * This shall be invoked when disconnecting from the server

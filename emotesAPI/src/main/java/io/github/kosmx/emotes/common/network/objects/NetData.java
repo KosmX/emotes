@@ -59,7 +59,7 @@ public final class NetData {
 
     HashMap<String, Object> extraData = new HashMap<>();
 
-    public boolean prepareAndValidate(){
+    public boolean prepareAndValidate() {
         if (emoteData != null && !this.extraData.isEmpty()) {
             emoteData.extraData.putAll(extraData);
         }

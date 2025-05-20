@@ -114,7 +114,7 @@ public interface INetworkInstance {
     /**
      * Maximum size of the data what the instance can send
      * <p>
-     * {@link AbstractNetworkInstance#maxDataSize()} defaults to {@link io.github.kosmx.emotes.common.CommonData#MAX_PACKET_SIZE}
+     * Defaults to {@link io.github.kosmx.emotes.common.CommonData#MAX_PACKET_SIZE}
      * @return max size of bytes[]
      */
     default int maxDataSize() {

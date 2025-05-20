@@ -12,6 +12,7 @@
     "ServerPlayTrackerMixin"
   ],
   "client": [
+    "KeyframeAnimationPlayerAccessor",
     "EmotePlayerMixin",
     "EntityRenderDispatcherMixin",
     "KeyEventMixin",

@@ -1,31 +1,39 @@
 package io.github.kosmx.emotes.main.emotePlay;
 
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 
+import io.github.kosmx.emotes.api.PlayingAnimationData;
+import io.github.kosmx.emotes.arch.mixin.KeyframeAnimationPlayerAccessor;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.Song;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.Instant;
 import java.util.function.Consumer;
 
 // modified keyframe animation player to play songs with animations
 public class EmotePlayer extends KeyframeAnimationPlayer {
+    public final PlayingAnimationData data;
+
     @Nullable
-    final MinecraftNbsPlayer song;
+    public final MinecraftNbsPlayer song;
+
+    protected boolean timeSynced;
 
     /**
      *
-     * @param emote emote to play
+     * @param data emote to play
      * @param noteConsumer {@link Note} consumer
-     * @param t begin playing from tick
      */
-    public EmotePlayer(KeyframeAnimation emote, Consumer<Note> noteConsumer, int t) {
-        super(emote, t);
-        if (emote.extraData.containsKey("song")) {
-            this.song = new MinecraftNbsPlayer((Song) emote.extraData.get("song"), noteConsumer, 0);
+    public EmotePlayer(PlayingAnimationData data, Consumer<Note> noteConsumer) {
+        super(data.currentEmote(), data.tick());
+        this.data = data;
+
+        if (data.currentEmote().extraData.get("song") instanceof Song song0) {
+            this.song = new MinecraftNbsPlayer(song0, noteConsumer, 0);
         } else {
             this.song = null;
         }
@@ -33,7 +41,15 @@ public class EmotePlayer extends KeyframeAnimationPlayer {
 
     @Override
     public void tick() {
-        super.tick();
+        if (this.data.offsetTime() && isLoopStarted() && !this.timeSynced) {
+            int offsetTick = this.data.offsetTick(Instant.now());
+            if (getData().returnToTick > offsetTick) { // Debug
+                System.out.println("Invalid tick " + offsetTick);
+            }
+            ((KeyframeAnimationPlayerAccessor) this).setCurrentTick(offsetTick);
+            this.timeSynced = true;
+        } else super.tick();
+
         if (this.song != null && isActive() && !this.song.isRunning()) {
             Component nowPlaying = this.song.getNowPlaying();
             if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);

@@ -29,7 +29,7 @@ public class FastMenuScreen extends Screen {
 
     @Override
     public void init() {
-        if (ClientPacketManager.isRemoteAvailable()) {
+        if (ClientPacketManager.isDefaultRemoteAvailable()) {
             //this.layout.addTitleHeader(getTitle(), this.font); TODO Do we want this?
         } else if (ClientPacketManager.isAvailableProxy()) {
             this.layout.addTitleHeader(FastMenuScreen.WARN_ONLY_PROXY, this.font);
