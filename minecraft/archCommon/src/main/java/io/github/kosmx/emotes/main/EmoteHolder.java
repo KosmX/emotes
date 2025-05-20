@@ -15,7 +15,6 @@ import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import net.minecraft.client.Minecraft;
@@ -25,7 +24,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraft.world.entity.Pose;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -238,8 +236,13 @@ public class EmoteHolder implements Supplier<UUID> {
      * @return True if possible to play
      */
     public static boolean canRunEmote(AbstractClientPlayer player){
-        if(!player.hasPose(Pose.STANDING) && !ClientPacketManager.isRemoteTracking()) return false;
-        return ! (new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(new Vec3d(player.xo, MathHelper.lerp(PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()), player.zo)) > PlatformTools.getConfig().stopThreshold.get());
+        return !(new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(
+
+                new Vec3d(player.xo, MathHelper.lerp(
+                        PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()
+                ), player.zo)
+
+        ) > PlatformTools.getConfig().stopThreshold.get());
     }
 
     public boolean playEmote() {
