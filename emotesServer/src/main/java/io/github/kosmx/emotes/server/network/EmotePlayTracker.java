@@ -1,11 +1,7 @@
 package io.github.kosmx.emotes.server.network;
 
-
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Pair;
-
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 import org.jetbrains.annotations.Nullable;
-import java.time.Duration;
 import java.time.Instant;
 
 /**
@@ -17,27 +13,14 @@ import java.time.Instant;
  *
  */
 public class EmotePlayTracker {
-
-    private KeyframeAnimation currentEmote = null;
-
-    private Instant startTime = null;
-
-    private boolean isForced = false;
+    protected PlayingAnimationData currentEmote = null;
 
     /**
      * Set the currently played emote.
      * @param data Emote, null if stop playing
      */
-    public void setPlayedEmote(@Nullable KeyframeAnimation data, boolean isForced) {
-        currentEmote = data;
-        if (data == null) {
-            startTime = null;
-            this.isForced = false;
-        }
-        else {
-            startTime = Instant.now();
-            this.isForced = isForced;
-        }
+    public void setPlayedEmote(@Nullable PlayingAnimationData data) {
+        this.currentEmote = data;
     }
 
     /**
@@ -47,10 +30,9 @@ public class EmotePlayTracker {
      * @return true if forced, false if not playing any emote.
      */
     public boolean isForced() {
-        if( getPlayedEmote() != null) {
-            return isForced;
-        }
-        else return false;
+        if (getPlayedEmote() != null) {
+            return this.currentEmote.forced();
+        } else return false;
     }
 
     /**
@@ -58,16 +40,12 @@ public class EmotePlayTracker {
      * @return null if not playing emote
      */
     @Nullable
-    public Pair<KeyframeAnimation, Integer> getPlayedEmote() {
+    public PlayingAnimationData getPlayedEmote() {
         if (currentEmote == null) return null;
-        int tick = (int)(Duration.between(startTime, Instant.now()).toMillis() / 50);
-        if (!currentEmote.isInfinite() && currentEmote.getLength() <= tick) {
+        if (!currentEmote.isPlayingAt(Instant.now())) {
             currentEmote = null;
-            startTime = null;
-            isForced = false;
             return null;
         }
-        return new Pair<>(currentEmote, tick);
+        return this.currentEmote;
     }
-
 }

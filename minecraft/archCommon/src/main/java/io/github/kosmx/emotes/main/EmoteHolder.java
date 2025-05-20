@@ -9,6 +9,7 @@ import dev.kosmx.playerAnim.core.util.MathHelper;
 import dev.kosmx.playerAnim.core.util.UUIDMap;
 import dev.kosmx.playerAnim.core.util.Vec3d;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
@@ -162,6 +163,24 @@ public class EmoteHolder implements Supplier<UUID> {
         return list.get(uuid);
     }
 
+    public static @Nullable EmoteHolder getEmoteFromAnimation(KeyframeAnimation animation) {
+        if (animation == null) {
+            return null;
+        }
+
+        EmoteHolder fast = getEmoteFromUuid(animation.getUuid());
+        if (fast != null && fast.emote != null && fast.emote.equals(animation)) {
+            return fast;
+        }
+
+        for (EmoteHolder holder : EmoteHolder.list) {
+            if (holder.emote != null && holder.emote.equals(animation)) {
+                return holder;
+            }
+        }
+        return null;
+    }
+
     public static void addEmoteToList(Iterable<KeyframeAnimation> emotes){
         for(KeyframeAnimation emote : emotes){
             EmoteHolder.list.add(new EmoteHolder(emote));
@@ -196,20 +215,16 @@ public class EmoteHolder implements Supplier<UUID> {
         list.add(hold);
     }
 
-    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player){
-        return playEmote(emote, player, null);
-    }
-
     /**
      * Check if the emote can be played by the main player
      * @param emote emote to play
      * @param player who is the player
-     * @param emoteHolder emote holder object
+     * @param tick first tick
      * @return could be played
      */
-    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player, @Nullable EmoteHolder emoteHolder){
+    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player, int tick, boolean offsetTime) {
         if(canPlayEmote(player)){
-            return ClientEmotePlay.clientStartLocalEmote(emote);
+            return ClientEmotePlay.clientStartLocalEmote(new PlayingAnimationData(emote, tick, offsetTime, false));
         }else{
             return false;
         }
@@ -232,8 +247,16 @@ public class EmoteHolder implements Supplier<UUID> {
         return ! (new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(new Vec3d(player.xo, MathHelper.lerp(PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()), player.zo)) > PlatformTools.getConfig().stopThreshold.get());
     }
 
-    public boolean playEmote(AbstractClientPlayer playerEntity){
-        return playEmote(this.emote, playerEntity, this);
+    public boolean playEmote(AbstractClientPlayer playerEntity) {
+        return playEmote(playerEntity, 0);
+    }
+
+    public boolean playEmote(AbstractClientPlayer playerEntity, int tick) {
+        return playEmote(playerEntity, tick, false);
+    }
+
+    public boolean playEmote(AbstractClientPlayer playerEntity, int tick, boolean offsetTime) {
+        return playEmote(this.emote, playerEntity, tick, offsetTime);
     }
 
     /**
@@ -275,7 +298,9 @@ public class EmoteHolder implements Supplier<UUID> {
             UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
             if(uuid != null){
                 EmoteHolder emoteHolder = list.get(uuid);
-                if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(emoteHolder);
+                if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(
+                        new PlayingAnimationData(emoteHolder.getEmote())
+                );
             }
         }
     }

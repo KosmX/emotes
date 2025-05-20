@@ -50,7 +50,7 @@
   "emotecraft.different_server": "Server has a different version of Emotecraft installed. Other users may not see your emotes play correctly.",
   "emotecraft.only_proxy": "Only proxy streaming is available.",
   "key.emotecraft.fastchoose": "Open Emote Wheel",
-  "key.emotecraft.debug": "Play 'Experiment' Emote",
+  "key.emotecraft.playsameanim": "Play the same animation",
   "key.emotecraft.stop": "Stop Playing Emote",
   "emotecraft.openFolder": "Open Emotes Folder",
   "emotecraft.otherconfig.quark": "Enable Quark Deserializer",
@@ -72,5 +72,6 @@
   "emotecraft.folder": "Folder",
   "emotecraft.folder.main": "main",
   "emotecraft.reloading": "Reloading emotes...",
-  "emotecraft.reloading.done": "Reloading took %s seconds!"
+  "emotecraft.reloading.done": "Reloading took %s seconds!",
+  "key.emotecraft.playsameanim.subtitle": "Press '%s' to play this animation from your library!"
 }

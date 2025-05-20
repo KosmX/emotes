@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.api.events.client;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.impl.event.Event;
 import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 
 import java.util.UUID;
 
@@ -17,9 +17,9 @@ public final class ClientEmoteEvents {
      * Return with {@link EventResult#PASS} if you allow it and {@link EventResult#FAIL} if you deny it.<br>
      * Invoking this event does not mean the emote will be played even if the event wasn't cancelled.
      */
-    public static final Event<EmoteVerifier> EMOTE_VERIFICATION = new Event<>(EmoteVerifier.class, listeners -> (emote, userID) -> {
+    public static final Event<EmoteVerifier> EMOTE_VERIFICATION = new Event<>(EmoteVerifier.class, listeners -> (data, userID) -> {
         for (EmoteVerifier listener : listeners) {
-            EventResult result = listener.verify(emote, userID);
+            EventResult result = listener.verify(data, userID);
             if (result == EventResult.FAIL || result == EventResult.CONSUME) {
                 return result;
             }
@@ -45,7 +45,7 @@ public final class ClientEmoteEvents {
          * I don't even know, why do I allow this
          *
          */
-        EventResult verify(KeyframeAnimation emote, UUID userID);
+        EventResult verify(PlayingAnimationData data, UUID userID);
     }
 
 
@@ -53,9 +53,9 @@ public final class ClientEmoteEvents {
      * Invoked when someone is starting an emote (can be the main player)
      * For checking and cancelling, use {@link ClientEmoteEvents#EMOTE_VERIFICATION}
      */
-    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (emote, tick, userID) -> {
+    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (data, userID) -> {
         for (EmotePlayEvent listener : listeners) {
-            listener.onEmotePlay(emote, tick, userID);
+            listener.onEmotePlay(data, userID);
         }
     });
 
@@ -64,11 +64,10 @@ public final class ClientEmoteEvents {
 
         /**
          * Used to create emote play side effects
-         * @param emoteData The played emote data
-         * @param tick Current tick
+         * @param data The played emote data
          * @param userID User ID
          */
-        void onEmotePlay(KeyframeAnimation emoteData, int tick, UUID userID);
+        void onEmotePlay(PlayingAnimationData data, UUID userID);
     }
 
     /**

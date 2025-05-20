@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.api.events.server;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.impl.event.Event;
 import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 
 import java.util.UUID;
 
@@ -51,9 +52,9 @@ public final class ServerEmoteEvents {
      * Invoked when someone is starting an emote
      * For checking and cancelling, use {@link ServerEmoteEvents#EMOTE_VERIFICATION}
      */
-    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (emote, tick, userID) -> {
+    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (data, userID) -> {
         for (EmotePlayEvent listener : listeners) {
-            listener.onEmotePlay(emote, tick, userID);
+            listener.onEmotePlay(data, userID);
         }
     });
 
@@ -62,11 +63,10 @@ public final class ServerEmoteEvents {
 
         /**
          * Used to create emote play side effects
-         * @param emoteData The played emote data
-         * @param tick Current tick
+         * @param data The played emote data
          * @param userID User ID
          */
-        void onEmotePlay(KeyframeAnimation emoteData, int tick, UUID userID);
+        void onEmotePlay(PlayingAnimationData data, UUID userID);
     }
 
     public static final Event<EmoteStopEvent> EMOTE_STOP_BY_USER = new Event<>(EmoteStopEvent.class, listeners -> (emoteID, userID) -> {

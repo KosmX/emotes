@@ -5,6 +5,8 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -46,6 +48,9 @@ public final class NetData {
     //On stop, the server stops it not because invalid but because event stopped it
     public boolean isForced = false;
 
+    public long startTime = -1;
+    public boolean offsetTime = false;
+
     /**
      * net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket#MAX_PAYLOAD_SIZE
      */
@@ -57,6 +62,11 @@ public final class NetData {
     public boolean prepareAndValidate(){
         if (emoteData != null && !this.extraData.isEmpty()) {
             emoteData.extraData.putAll(extraData);
+        }
+
+        if (this.startTime < 0) { // Not set
+            this.startTime = Instant.now().toEpochMilli();
+            this.offsetTime = false; // Invalid time
         }
 
         if(purpose == PacketTask.UNKNOWN)return false;
@@ -80,7 +90,19 @@ public final class NetData {
         data.player = player;
         data.sizeLimit = sizeLimit;
         data.isForced = isForced;
+        data.startTime = startTime;
+        data.offsetTime = offsetTime;
         return data;
+    }
+
+    public Instant startInstant() {
+        Instant instant = Instant.ofEpochMilli(this.startTime);
+        /*if (instant.isAfter(Instant.now())) {
+            this.offsetTime = false;
+            this.startTime = now.toEpochMilli();
+            return now; // from the future?
+        }*/
+        return instant;
     }
 
     @Override
@@ -91,6 +113,8 @@ public final class NetData {
                 ", stopEmoteID=" + stopEmoteID +
                 ", emoteData=" + emoteData +
                 ", startingAt=" + tick +
+                ", startTime=" + startTime +
+                ", offsetTime=" + offsetTime +
                 ", player=" + player +
                 '}';
     }

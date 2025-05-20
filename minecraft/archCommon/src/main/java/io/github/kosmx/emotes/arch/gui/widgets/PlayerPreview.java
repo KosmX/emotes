@@ -5,6 +5,7 @@ import dev.kosmx.playerAnim.api.IPlayer;
 import dev.kosmx.playerAnim.api.layered.AnimationStack;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Ease;
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -41,7 +42,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
                 return;
             }
         }
-        this.player.emotecraft$playEmote(animation, 0, check);
+        this.player.emotecraft$playEmote(new PlayingAnimationData(animation, check));
     }
 
     @Override

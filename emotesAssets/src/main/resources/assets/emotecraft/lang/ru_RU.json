@@ -50,7 +50,7 @@
   "emotecraft.different_server": "Сервер имеет другую версию Emotecraft, Ваши эмоции могут проигрываться некорректно для других игроков",
   "emotecraft.only_proxy": "Доступен только потоковый прокси.",
   "key.emotecraft.fastchoose": "Открыть колесо выбора эмоций",
-  "key.emotecraft.debug": "Включить отладочную эмоцию",
+  "key.emotecraft.playsameanim": "Воспроизвести эту же анимацию",
   "key.emotecraft.stop": "Остановить воспроизведение эмоции",
   "emotecraft.openFolder": "Открыть папку с эмоциями",
   "emotecraft.otherconfig.quark": "Включить десериализатор Quark",
@@ -72,5 +72,6 @@
   "emotecraft.folder": "Каталог",
   "emotecraft.folder.main": "основ.",
   "emotecraft.reloading": "Перезагрузка эмоций...",
-  "emotecraft.reloading.done": "Перезагрузка заняла %s секунд!"
+  "emotecraft.reloading.done": "Перезагрузка заняла %s секунд!",
+  "key.emotecraft.playsameanim.subtitle": "Нажмите '%s', чтобы воспроизвести эту анимацию из вашей библиотеки!"
 }

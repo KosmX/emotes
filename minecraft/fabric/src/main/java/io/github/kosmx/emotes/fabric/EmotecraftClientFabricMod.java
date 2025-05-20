@@ -13,6 +13,7 @@ public class EmotecraftClientFabricMod extends EmotecraftClientMod implements Cl
     public void onInitializeClient(){
         KeyBindingHelper.registerKeyBinding(OPEN_MENU_KEY);
         KeyBindingHelper.registerKeyBinding(STOP_EMOTE_KEY);
+        KeyBindingHelper.registerKeyBinding(PLAY_SAME_ANIM_KEY);
 
         ClientNetworkInstance.init(); //init network
 

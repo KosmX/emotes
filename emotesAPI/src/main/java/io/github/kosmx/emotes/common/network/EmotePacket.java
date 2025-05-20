@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,6 +36,8 @@ public class EmotePacket {
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new EmoteIconPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new TimeDataPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
     }
 
     public final NetHashMap subPackets = new NetHashMap();
@@ -60,6 +63,7 @@ public class EmotePacket {
         subPackets.put(new SongPacket());
         subPackets.put(new EmoteHeaderPacket());
         subPackets.put(new EmoteIconPacket());
+        subPackets.put(new TimeDataPacket());
     }
 
     //Write packet to a new ByteBuf
@@ -124,7 +128,6 @@ public class EmotePacket {
 
     @Nullable
     public NetData read(ByteBuffer byteBuffer) throws IOException {
-
         try {
             this.version = byteBuffer.getInt();
             if (this.version > CommonData.networkingVersion) throw new IOException("Can't read newer version");
@@ -153,10 +156,8 @@ public class EmotePacket {
 
             if (data.prepareAndValidate()) return this.data;
             else return null;
-        }
-        catch (RuntimeException e){
-            e.printStackTrace();
-            throw new IOException(e.getClass().getTypeName() + " has occurred: " + e.getMessage());
+        } catch (RuntimeException e) {
+            throw new IOException(e);
         }
     }
 
@@ -207,6 +208,12 @@ public class EmotePacket {
             if(sizeLimit <= 0)throw new IllegalArgumentException("Size limit must be positive");
             data.sizeLimit = sizeLimit;
             data.strictSizeLimit = strict;
+            return this;
+        }
+
+        public Builder setStartTime(Instant instant, boolean offset) {
+            this.data.startTime = instant.toEpochMilli();
+            this.data.offsetTime = offset;
             return this;
         }
 

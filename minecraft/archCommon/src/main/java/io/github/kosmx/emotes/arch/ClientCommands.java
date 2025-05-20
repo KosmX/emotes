@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.EmoteArgumentProvider;
@@ -32,7 +33,7 @@ public class ClientCommands {
                 .then(literal("play")
                         .then(argument("emote", StringArgumentType.string()).suggests(new EmoteArgumentProvider(ClientCommands::getEmotes))
                                 .executes(ctx -> {
-                                    if (!ClientEmotePlay.clientStartLocalEmote(EmoteArgumentProvider.getEmote(getEmotes(ctx), ctx, "emote"))) {
+                                    if (!ClientEmotePlay.clientStartLocalEmote(new PlayingAnimationData(EmoteArgumentProvider.getEmote(getEmotes(ctx), ctx, "emote")))) {
                                         throw new SimpleCommandExceptionType(FORCED).create();
                                     }
                                     return 0;

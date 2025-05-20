@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.api.events.client;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 import io.github.kosmx.emotes.api.services.IEmotecraftService;
 import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import org.jetbrains.annotations.Nullable;
@@ -12,26 +13,16 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
      * Stop play an emote.
      */
     public static boolean stopEmote() {
-        return ClientEmoteAPI.playEmote(null);
+        return INSTANCE.playEmoteImpl(null);
     }
 
     /**
      * Start playing an emote.
-     * @param animation animation, <code>null</code> to stop playing.
-     * @return          Can the emote be played: this doesn't check server-side verification
+     * @param data animation data, <code>null</code> to stop playing.
+     * @return Can the emote be played: this doesn't check server-side verification
      */
-    public static boolean playEmote(@Nullable KeyframeAnimation animation) {
-        return ClientEmoteAPI.playEmote(animation, 0);
-    }
-
-    /**
-     * Start playing an emote.
-     * @param animation animation, <code>null</code> to stop playing.
-     * @param tick First tick
-     * @return          Can the emote be played: this doesn't check server-side verification
-     */
-    public static boolean playEmote(@Nullable KeyframeAnimation animation, int tick) {
-        return INSTANCE.playEmoteImpl(animation, tick);
+    public static boolean playEmote(@Nullable PlayingAnimationData data) {
+        return INSTANCE.playEmoteImpl(data);
     }
 
     /**
@@ -47,7 +38,7 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
 
     protected static final ClientEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ClientEmoteAPI.class);
 
-    protected abstract boolean playEmoteImpl(KeyframeAnimation animation, int tick);
+    protected abstract boolean playEmoteImpl(PlayingAnimationData data);
 
     protected abstract Collection<KeyframeAnimation> clientEmoteListImpl();
 

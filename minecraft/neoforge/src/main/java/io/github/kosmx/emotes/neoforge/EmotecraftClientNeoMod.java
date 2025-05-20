@@ -47,5 +47,6 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
     public void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(OPEN_MENU_KEY);
         event.register(STOP_EMOTE_KEY);
+        event.register(PLAY_SAME_ANIM_KEY);
     }
 }

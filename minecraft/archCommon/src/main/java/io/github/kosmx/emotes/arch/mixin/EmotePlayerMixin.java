@@ -3,9 +3,8 @@ package io.github.kosmx.emotes.arch.mixin;
 import com.mojang.authlib.GameProfile;
 import dev.kosmx.playerAnim.api.IPlayer;
 import dev.kosmx.playerAnim.api.layered.AnimationContainer;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -28,6 +27,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
+
 //Mixin it into the player is way easier than storing it somewhere else...
 @Mixin(AbstractClientPlayer.class)
 public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
@@ -39,7 +40,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     private final AnimationContainer<EmotePlayer> emotecraft$container = new AnimationContainer<>(null);
 
     @Unique
-    private boolean emotecraft$isForced = false;
+    private PlayingAnimationData emotecraft$data;
 
     public EmotePlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
@@ -51,11 +52,13 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     }
 
     @Override
-    public void emotecraft$playEmote(KeyframeAnimation emote, int t, boolean isForced) {
+    public void emotecraft$playEmote(PlayingAnimationData data) {
         this.stopEmote();
-        this.emotecraft$container.setAnim(new EmotePlayer(emote, this::emotecraft$noteConsumer, t));
+        this.emotecraft$data = data;
+        this.emotecraft$container.setAnim(new EmotePlayer(
+                data.currentEmote(), this::emotecraft$noteConsumer, data.currentTick(Instant.now())
+        ));
         this.initEmotePerspective(emotecraft$container.getAnim());
-        if (this.isMainPlayer()) this.emotecraft$isForced = isForced;
     }
 
     @Unique
@@ -89,14 +92,16 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     public void tick(CallbackInfo ci) {
         if (this.emotecraft$age <= 1) { //Emote init with a little delay (40-60 ms)
             if(this.emotecraft$age++ == 1) {
-                Pair<KeyframeAnimation, Integer> p = ClientEmotePlay.getEmoteForUUID(getUUID());
-                if(p != null){
-                    ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(p.getLeft(), p.getRight(), getUUID());
-                    this.emotecraft$playEmote(p.getLeft(), p.getRight(), false);
+                PlayingAnimationData data = ClientEmotePlay.getEmoteForUUID(getUUID());
+                if (data != null) {
+                    ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data, getUUID());
+                    this.emotecraft$playEmote(data);
                 }
                 if(!this.isMainPlayer() && PlatformTools.getMainPlayer() != null && PlatformTools.getMainPlayer().isPlayingEmote()){
-                    IPlayerEntity playerEntity = PlatformTools.getMainPlayer();
-                    ClientEmotePlay.clientRepeatLocalEmote(playerEntity.emotecraft$getEmote().getData(), playerEntity.emotecraft$getEmote().getTick(), this.getUUID());
+                    data = PlatformTools.getMainPlayer().emotecraft$getPlayingData();
+                    if (data != null) {
+                        ClientEmotePlay.clientRepeatLocalEmote(data, getUUID());
+                    }
                 }
             }
         }
@@ -120,7 +125,12 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     }
 
     @Override
+    public @Nullable PlayingAnimationData emotecraft$getPlayingData() {
+        return this.emotecraft$data;
+    }
+
+    @Override
     public boolean emotecraft$isForcedEmote() {
-        return this.isPlayingEmote() && this.emotecraft$isForced;
+        return this.isPlayingEmote() && this.emotecraft$data.forced();
     }
 }

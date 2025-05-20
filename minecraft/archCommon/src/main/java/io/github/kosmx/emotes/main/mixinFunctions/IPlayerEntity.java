@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.main.mixinFunctions;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.PlayingAnimationData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
@@ -23,7 +23,7 @@ public interface IPlayerEntity {
         }
     }
 
-    default void emotecraft$playEmote(KeyframeAnimation emote, int tick, boolean isForced) {
+    default void emotecraft$playEmote(PlayingAnimationData data) {
         throw new NotImplementedException();
     }
 
@@ -64,6 +64,11 @@ public interface IPlayerEntity {
     }
 
     default boolean emotecraft$isForcedEmote() {
+        throw new NotImplementedException();
+    }
+
+    @Nullable
+    default PlayingAnimationData emotecraft$getPlayingData() {
         throw new NotImplementedException();
     }
 
