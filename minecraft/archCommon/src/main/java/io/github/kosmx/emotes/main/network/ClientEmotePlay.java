@@ -41,7 +41,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
         ClientPacketManager.send(data.preparePacket(), null);
         ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data, player.getUUID());
-        if (!data.offsetTime() && ClientPacketManager.isRemoteSupportSync()) player.emotecraft$playEmote(data);
+        if (data.canBeSynced() && ClientPacketManager.isRemoteSupportSync()) player.emotecraft$playEmote(data);
         return true;
     }
 

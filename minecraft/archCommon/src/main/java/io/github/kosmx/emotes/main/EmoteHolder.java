@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -217,17 +218,12 @@ public class EmoteHolder implements Supplier<UUID> {
 
     /**
      * Check if the emote can be played by the main player
-     * @param emote emote to play
      * @param player who is the player
-     * @param tick first tick
+     * @param data emote to play
      * @return could be played
      */
-    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player, int tick, boolean offsetTime) {
-        if(canPlayEmote(player)){
-            return ClientEmotePlay.clientStartLocalEmote(new PlayingAnimationData(emote, tick, offsetTime, false));
-        }else{
-            return false;
-        }
+    public static boolean playEmote(AbstractClientPlayer player, PlayingAnimationData data) {
+        return canPlayEmote(player) && ClientEmotePlay.clientStartLocalEmote(data);
     }
 
     private static boolean canPlayEmote(AbstractClientPlayer entity){
@@ -243,20 +239,17 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     public static boolean canRunEmote(AbstractClientPlayer player){
         if(!player.hasPose(Pose.STANDING) && !ClientPacketManager.isRemoteTracking()) return false;
-        //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
         return ! (new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(new Vec3d(player.xo, MathHelper.lerp(PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()), player.zo)) > PlatformTools.getConfig().stopThreshold.get());
     }
 
-    public boolean playEmote(AbstractClientPlayer playerEntity) {
-        return playEmote(playerEntity, 0);
+    public boolean playEmote() {
+        return playEmote(PlatformTools.getMainPlayer(), new PlayingAnimationData(this.emote));
     }
 
-    public boolean playEmote(AbstractClientPlayer playerEntity, int tick) {
-        return playEmote(playerEntity, tick, this.emote.isInfinite);
-    }
-
-    public boolean playEmote(AbstractClientPlayer playerEntity, int tick, boolean offsetTime) {
-        return playEmote(this.emote, playerEntity, tick, offsetTime);
+    public boolean playEmote(Instant startTime, int tick) {
+        return playEmote(PlatformTools.getMainPlayer(), new PlayingAnimationData(
+                this.emote, tick, startTime, true, false
+        ));
     }
 
     /**
@@ -296,11 +289,9 @@ public class EmoteHolder implements Supplier<UUID> {
     public static void handleKeyPress(InputConstants.Key key){
         if(EmoteHolder.canRunEmote(PlatformTools.getMainPlayer())){
             UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
-            if(uuid != null){
+            if (uuid != null) {
                 EmoteHolder emoteHolder = list.get(uuid);
-                if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(
-                        new PlayingAnimationData(emoteHolder.getEmote())
-                );
+                if (emoteHolder != null) emoteHolder.playEmote();
             }
         }
     }

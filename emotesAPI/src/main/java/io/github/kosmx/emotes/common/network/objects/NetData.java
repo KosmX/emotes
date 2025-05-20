@@ -48,8 +48,11 @@ public final class NetData {
     //On stop, the server stops it not because invalid but because event stopped it
     public boolean isForced = false;
 
+    /**
+     * Only counts if from server to client
+     */
     public long startTime = -1;
-    public boolean offsetTime = false;
+    public boolean otherTime = false;
 
     /**
      * net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket#MAX_PAYLOAD_SIZE
@@ -66,7 +69,7 @@ public final class NetData {
 
         if (this.startTime < 0) { // Not set
             this.startTime = Instant.now().toEpochMilli();
-            this.offsetTime = false; // Invalid time
+            this.otherTime = false;
         }
 
         if(purpose == PacketTask.UNKNOWN)return false;
@@ -91,18 +94,13 @@ public final class NetData {
         data.sizeLimit = sizeLimit;
         data.isForced = isForced;
         data.startTime = startTime;
-        data.offsetTime = offsetTime;
+        data.otherTime = otherTime;
         return data;
     }
 
-    public Instant startInstant() {
-        Instant instant = Instant.ofEpochMilli(this.startTime);
-        /*if (instant.isAfter(Instant.now())) {
-            this.offsetTime = false;
-            this.startTime = now.toEpochMilli();
-            return now; // from the future?
-        }*/
-        return instant;
+    public void setStartToNow() {
+        if (this.otherTime) return;
+        this.startTime = Instant.now().toEpochMilli();
     }
 
     @Override
@@ -114,7 +112,7 @@ public final class NetData {
                 ", emoteData=" + emoteData +
                 ", startingAt=" + tick +
                 ", startTime=" + startTime +
-                ", offsetTime=" + offsetTime +
+                ", otherTime=" + otherTime +
                 ", player=" + player +
                 '}';
     }

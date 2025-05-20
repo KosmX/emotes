@@ -48,12 +48,13 @@ public class EmotecraftClientMod {
         if (ClientPacketManager.isRemoteSupportSync() && minecraft.player != null && player.isPlayingEmote()) {
             PlayingAnimationData emotePlayer = player.emotecraft$getPlayingData();
             assert emotePlayer != null; // verified in isPlayingEmote()
+            if (!emotePlayer.currentEmote().isInfinite()) return;
 
             EmoteHolder sameHolder = EmoteHolder.getEmoteFromAnimation(emotePlayer.currentEmote());
             if (sameHolder == null) return;
 
             if (PLAY_SAME_ANIM_KEY.consumeClick()) {
-                sameHolder.playEmote(minecraft.player, 0, true);
+                sameHolder.playEmote(emotePlayer.startTime(), emotePlayer.tick());
 
             } else if (!minecraft.player.isPlayingEmote()) {
                 minecraft.gui.setOverlayMessage(Component.translatable("key.emotecraft.playsameanim.subtitle",

@@ -96,8 +96,9 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         PlayingAnimationData playingData = new PlayingAnimationData(data);
         player.getEmoteTracker().setPlayedEmote(playingData);
         ServerEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(playingData, getUUIDFromPlayer(player));
+        if (playingData.canBeSynced()) data.setStartToNow();
         sendForEveryoneElse(data, player);
-        if (!isFromPlayer || playingData.offsetTime()) {
+        if (!isFromPlayer || playingData.canBeSynced()) {
             sendForPlayer(data, player, player);
         }
     }

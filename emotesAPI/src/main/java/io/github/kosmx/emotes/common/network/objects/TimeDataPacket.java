@@ -19,23 +19,23 @@ public class TimeDataPacket extends AbstractNetworkPacket {
 
     @Override
     public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        config.offsetTime = CommonNetwork.readBoolean(byteBuffer);
-        if (config.offsetTime) config.startTime = byteBuffer.getLong();
+        config.otherTime = CommonNetwork.readBoolean(byteBuffer);
+        config.startTime = byteBuffer.getLong();
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
-        CommonNetwork.writeBoolean(byteBuffer, config.offsetTime);
-        if (config.offsetTime) byteBuffer.putLong(config.startTime);
+        CommonNetwork.writeBoolean(byteBuffer, config.otherTime);
+        byteBuffer.putLong(config.startTime);
     }
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.startTime > 0 && config.offsetTime;
+        return config.startTime > 0;
     }
 
     @Override
     public int calculateSize(NetData config) {
-        return config.offsetTime ? 9 : 1;
+        return 9;
     }
 }

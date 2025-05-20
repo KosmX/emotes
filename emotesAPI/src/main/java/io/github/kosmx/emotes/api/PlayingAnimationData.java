@@ -10,15 +10,15 @@ import java.time.temporal.Temporal;
 
 /**
  * @param startTime animation playback start time
- * @param offsetTime whether to apply {@code startTime} to the loop
+ * @param otherTime whether to apply {@code startTime} to the loop
  */
-public record PlayingAnimationData(KeyframeAnimation currentEmote, int tick, Instant startTime, boolean offsetTime, boolean forced) {
+public record PlayingAnimationData(KeyframeAnimation currentEmote, int tick, Instant startTime, boolean otherTime, boolean forced) {
     public PlayingAnimationData(NetData data) {
-        this(data.emoteData, data.tick, data.startInstant(), data.offsetTime, data.isForced);
+        this(data.emoteData, data.tick, Instant.ofEpochMilli(data.startTime), data.otherTime, data.isForced);
     }
 
-    public PlayingAnimationData(KeyframeAnimation currentEmote, int tick, boolean offsetTime, boolean forced) {
-        this(currentEmote, tick, Instant.now(), offsetTime, forced);
+    public PlayingAnimationData(KeyframeAnimation currentEmote, int tick, boolean syncTime, boolean forced) {
+        this(currentEmote, tick, Instant.now(), syncTime, forced);
     }
 
     public PlayingAnimationData(KeyframeAnimation currentEmote, int tick, boolean forced) {
@@ -36,7 +36,7 @@ public record PlayingAnimationData(KeyframeAnimation currentEmote, int tick, Ins
     public EmotePacket.Builder preparePacket() {
         return new EmotePacket.Builder()
                 .configureToStreamEmote(currentEmote())
-                .setStartTime(startTime(), offsetTime())
+                .setStartTime(startTime(), otherTime())
                 .configureEmoteTick(tick());
     }
 
@@ -59,5 +59,9 @@ public record PlayingAnimationData(KeyframeAnimation currentEmote, int tick, Ins
 
     public static int calculateTick(Temporal startTime, Temporal newStartTime) {
         return (int) (Duration.between(startTime, newStartTime).toMillis() / 50);
+    }
+
+    public boolean canBeSynced() {
+        return currentEmote().isInfinite() && !this.otherTime;
     }
 }
