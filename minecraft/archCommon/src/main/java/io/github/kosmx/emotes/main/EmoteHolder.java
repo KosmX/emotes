@@ -13,7 +13,6 @@ import io.github.kosmx.emotes.api.PlayingAnimationData;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
@@ -225,9 +224,8 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     private static boolean canPlayEmote(AbstractClientPlayer entity){
-        if(! canRunEmote(entity)) return false;
-        if(!entity.isMainPlayer()) return false;
-        return ! (EmotePlayer.isRunningEmote(entity.emotecraft$getEmote()) && ! entity.emotecraft$getEmote().isLoopStarted());
+        if (!canRunEmote(entity)) return false;
+        return entity.isMainPlayer();
     }
 
     /**
