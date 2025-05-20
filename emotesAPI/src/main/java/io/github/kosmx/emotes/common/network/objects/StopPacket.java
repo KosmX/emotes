@@ -1,13 +1,14 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.network.CommonNetwork;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import java.nio.ByteBuffer;
 
 public class StopPacket extends AbstractNetworkPacket {
     @Override
     public byte getID() {
-        return 10;
+        return PacketConfig.STOP_PACKET;
     }
 
     @Override
@@ -16,14 +17,13 @@ public class StopPacket extends AbstractNetworkPacket {
     }
 
     @Override
-    public boolean read(ByteBuffer buf, NetData config, int version){
-        if (version < 1) return false;
+    public void read(ByteBuffer buf, NetData config, int version) {
         config.stopEmoteID = CommonNetwork.readUUID(buf);
-        return true;
     }
 
     @Override
-    public void write(ByteBuffer buf, NetData config){
+    public void write(ByteBuffer buf, NetData config) {
+        assert config.stopEmoteID != null;
         CommonNetwork.writeUUID(buf, config.stopEmoteID);
     }
 

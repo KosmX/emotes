@@ -17,10 +17,8 @@ public abstract class AbstractNetworkPacket {
      * Read byte buf to T type
      * @param byteBuffer ByteBuffer
      * @param config Reader config
-     * @return success
      */
-    public abstract boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException;
-
+    public abstract void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException;
     public abstract void write(ByteBuffer byteBuffer, NetData config) throws IOException;
 
     public abstract boolean doWrite(NetData config);

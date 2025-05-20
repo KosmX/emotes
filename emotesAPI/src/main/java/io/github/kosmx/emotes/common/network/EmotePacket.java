@@ -126,39 +126,37 @@ public class EmotePacket {
         }
     }
 
-    @Nullable
+    @NotNull
     public NetData read(ByteBuffer byteBuffer) throws IOException {
-        try {
-            this.version = byteBuffer.getInt();
-            if (this.version > CommonData.networkingVersion) throw new IOException("Can't read newer version");
-            data.purpose = PacketTask.getTaskFromID(byteBuffer.get());
+        this.version = byteBuffer.getInt();
+        if (this.version > CommonData.networkingVersion) throw new IOException("Can't read newer version");
+        data.purpose = PacketTask.getTaskFromID(byteBuffer.get());
 
-            byte count = byteBuffer.get();
+        byte count = byteBuffer.get();
 
-            for (int i = 0; i < count; i++) {
-                byte id = byteBuffer.get();
-                byte sub_version = byteBuffer.get();
-                int size = byteBuffer.getInt();
-                int currentPos = byteBuffer.position();
-                if (subPackets.containsKey(id)) {
-                    if(!subPackets.get(id).read(byteBuffer, this.data, sub_version)){
-                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + " sub-packet received");
-                    }
-                    if (byteBuffer.position() != size + currentPos) {
-                        ((Buffer)byteBuffer).position(currentPos + size);
-                    }
+        for (int i = 0; i < count; i++) {
+            byte id = byteBuffer.get();
+            byte sub_version = byteBuffer.get();
+            int size = byteBuffer.getInt();
+            int currentPos = byteBuffer.position();
+
+            if (subPackets.containsKey(id)) {
+                try {
+                    subPackets.get(id).read(byteBuffer, this.data, sub_version);
+                } catch (Throwable th) {
+                    throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + " sub-packet received", th);
                 }
-                else {
+
+                if (byteBuffer.position() != size + currentPos) {
                     ((Buffer)byteBuffer).position(currentPos + size);
-                    //byteBuffer.position(currentPos + size);//Skip unknown sub-packets...
                 }
+            } else {
+                ((Buffer)byteBuffer).position(currentPos + size);
             }
-
-            if (data.prepareAndValidate()) return this.data;
-            else return null;
-        } catch (RuntimeException e) {
-            throw new IOException(e);
         }
+
+        if (data.prepareAndValidate()) return this.data;
+        else throw new IOException("no valid data");
     }
 
     /**

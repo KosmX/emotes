@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.nbsplayer.LegacyNBSPacket;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.tools.ByteBufferInputStream;
 import io.github.kosmx.emotes.common.tools.ByteBufferOutputStream;
 import net.raphimc.noteblocklib.NoteBlockLib;
@@ -15,7 +16,7 @@ import java.nio.ByteBuffer;
 public class SongPacket extends AbstractNetworkPacket{
     @Override
     public byte getID() {
-        return 3;
+        return PacketConfig.NBS_CONFIG;
     }
 
     @Override
@@ -24,7 +25,7 @@ public class SongPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
+    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         Song song = switch (version) {
             case 2 -> {
                 try {
@@ -43,14 +44,10 @@ public class SongPacket extends AbstractNetworkPacket{
             default -> null;
         };
         config.extraData.put("song", song);
-        return song != null;
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
-        if (!doWrite(config)) {
-            throw new IOException("You can't write disabled or not existing NBS data");
-        }
         assert config.emoteData != null;
 
         Song song = (Song) config.emoteData.extraData.get("song");

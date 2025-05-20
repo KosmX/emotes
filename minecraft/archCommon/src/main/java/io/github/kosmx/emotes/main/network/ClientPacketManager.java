@@ -76,9 +76,6 @@ public final class ClientPacketManager extends EmotesProxyManager {
     static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
         try{
             NetData data = new EmotePacket.Builder().setThreshold(PlatformTools.getConfig().validThreshold.get()).build().read(buffer);
-            if(data == null){
-                throw new IOException("no valid data");
-            }
             if(!networkInstance.trustReceivedPlayer()){
                 data.player = null;
             }

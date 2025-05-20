@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -30,9 +31,12 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
 
     protected abstract P getPlayerFromUUID(UUID player);
 
-    @SuppressWarnings("ConstantConditions")
     public void receiveMessage(byte[] bytes, P instance) throws IOException{
-        receiveMessage(new EmotePacket.Builder().setThreshold(Serializer.getConfig().validThreshold.get()).build().read(ByteBuffer.wrap(bytes)), instance);
+        receiveMessage(new EmotePacket.Builder()
+                .setThreshold(Serializer.getConfig().validThreshold.get())
+                .build()
+                .read(ByteBuffer.wrap(bytes)), instance
+        );
     }
 
     public void receiveMessage(NetData data, P instance) throws IOException {
@@ -149,20 +153,16 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
             LoggerService.INSTANCE.log(Level.SEVERE, "Failed to send config to client!", e);
         }
         if(instance.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
-            for (ByteBuffer emote : UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).toList()) {
-                try{
-                    instance.sendMessage(emote, null);
-                } catch (Throwable e){
-                    LoggerService.INSTANCE.log(Level.WARNING, "Failed to send save emote message", e);
-                }
-            }
+            UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).forEach(buffer ->
+                    instance.sendMessage(buffer, null)
+            );
         }
     }
 
     public EmotePacket.Builder getS2CConfigPacket(boolean trackPlayState) {
         NetData configData = new EmotePacket.Builder().configureToConfigExchange(true).build().data;
         if (trackPlayState) {
-            configData.versions.put((byte)0x80, (byte)0x01);
+            configData.versions.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)0x01);
         }
         return new EmotePacket.Builder(configData);
     }

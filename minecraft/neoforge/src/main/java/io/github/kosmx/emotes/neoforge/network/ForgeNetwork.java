@@ -3,10 +3,11 @@ package io.github.kosmx.emotes.neoforge.network;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
@@ -14,7 +15,6 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
@@ -52,32 +52,16 @@ public class ForgeNetwork {
                         (arg, configurationPayloadContext) -> {
                             try {
                                 var message = new EmotePacket.Builder().build().read(arg.bytes());
-                                if (message == null || message.purpose != PacketTask.CONFIG) {
-                                    throw new IOException("Wrong packet type for config task");
-                                }
+                                if (message.purpose != PacketTask.CONFIG) throw new IOException("Wrong packet type for config task");
 
                                 ((EmotesMixinConnection) configurationPayloadContext.connection()).emotecraft$setVersions(message.versions);
-
-                                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer -> new EmoteStreamHelper() {
-                                    @Override
-                                    protected int getMaxPacketSize() {
-                                        return Short.MAX_VALUE - 16;
-                                    }
-
-                                    @Override
-                                    protected void sendPlayPacket(ByteBuffer buffer) {
-                                        configurationPayloadContext.reply(EmotePacketPayload.playPacket(buffer));
-                                    }
-
-                                    @Override
-                                    protected void sendStreamChunk(ByteBuffer buffer) {
-                                        configurationPayloadContext.reply(EmotePacketPayload.streamPacket(buffer));
-                                    }
-                                });
+                                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer ->
+                                        configurationPayloadContext.connection().send(NetworkPlatformTools.playPacket(buffer))
+                                );
                                 configurationPayloadContext.finishCurrentTask(ConfigTask.TYPE);
                             } catch (IOException e) {
                                 LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
-                                configurationPayloadContext.channelHandlerContext().disconnect();
+                                configurationPayloadContext.disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
                             }
                         }
                 ))
