@@ -15,7 +15,6 @@ import java.util.logging.Level;
 public class ConfigTask implements ConfigurationTask {
     public static final ConfigurationTask.Type TYPE = new Type("emotes:config");
 
-
     @Override
     public void start(@NotNull Consumer<Packet<?>> consumer) {
         NetData configData = new EmotePacket.Builder().configureToConfigExchange(true).build().data;

@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import io.github.kosmx.emotes.common.network.CommonNetwork;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,7 +11,7 @@ import java.util.List;
 public class EmoteHeaderPacket extends AbstractNetworkPacket{
     @Override
     public byte getID() {
-        return 0x11;
+        return PacketConfig.HEADER_PACKET;
     }
 
     @Override
@@ -19,7 +20,7 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
+    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         config.extraData.put("name", CommonNetwork.readString(byteBuffer));
         config.extraData.put("description", CommonNetwork.readString(byteBuffer));
         config.extraData.put("author", CommonNetwork.readString(byteBuffer));
@@ -27,7 +28,6 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
             config.extraData.put("folderpath", CommonNetwork.readString(byteBuffer));
             config.extraData.put("bages", CommonNetwork.readList(byteBuffer, CommonNetwork::readString));
         }
-        return true;
     }
 
     @Override

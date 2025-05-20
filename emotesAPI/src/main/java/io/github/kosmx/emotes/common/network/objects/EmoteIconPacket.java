@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.nio.ByteBuffer;
 public class EmoteIconPacket extends AbstractNetworkPacket{
     @Override
     public byte getID() {
-        return 0x12;
+        return PacketConfig.ICON_PACKET;
     }
 
     @Override
@@ -18,14 +19,13 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
+    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         int size = byteBuffer.getInt();
         if(size != 0) {
             byte[] bytes = new byte[size];
             byteBuffer.get(bytes);
             config.extraData.put("iconData", ByteBuffer.wrap(bytes));
         }
-        return true;
     }
 
     @Override

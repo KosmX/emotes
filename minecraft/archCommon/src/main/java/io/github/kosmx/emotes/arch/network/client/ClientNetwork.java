@@ -111,24 +111,20 @@ public final class ClientNetwork extends AbstractNetworkInstance {
 
     public void receiveConfigMessage(@NotNull ByteBuffer buf, @NotNull Consumer<Packet<?>> consumer) throws IOException {
         var packet = new EmotePacket.Builder().build().read(buf);
-        if (packet != null) {
-            if (packet.purpose == PacketTask.CONFIG) {
-                setVersions(packet.versions);
-                sendC2SConfig(p -> {
-                    try {
-                        consumer.accept(playPacket(p.build().write()));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                this.isConfiguredNormally = true;
-            } else if (packet.purpose == PacketTask.FILE) {
-                EmoteHolder.addEmoteToList(packet.emoteData).fromInstance = this;
-            } else {
-                LoggerService.INSTANCE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
-            }
+        if (packet.purpose == PacketTask.CONFIG) {
+            setVersions(packet.versions);
+            sendC2SConfig(p -> {
+                try {
+                    consumer.accept(playPacket(p.build().write()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            this.isConfiguredNormally = true;
+        } else if (packet.purpose == PacketTask.FILE) {
+            EmoteHolder.addEmoteToList(packet.emoteData).fromInstance = this;
         } else {
-            throw new IOException("Invalid emotes packet received in config phase");
+            LoggerService.INSTANCE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
         }
     }
 

@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import dev.kosmx.playerAnim.core.data.AnimationBinary;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,7 +11,7 @@ import java.nio.ByteBuffer;
  */
 public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
-    public void write(ByteBuffer buf, NetData config){
+    public void write(ByteBuffer buf, NetData config) {
         int version = getVer(config.versions);
         assert config.emoteData != null;
         buf.putInt(config.tick);
@@ -18,22 +19,15 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     }
 
     @Override
-    public boolean read(ByteBuffer buf, NetData config, int version) throws IOException {
-        try {
-            config.tick = buf.getInt();
-            config.emoteData = AnimationBinary.read(buf, version);
-            config.valid = (boolean) config.emoteData.extraData.get("valid");
-            return true;
-        } catch(IOException|RuntimeException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void read(ByteBuffer buf, NetData config, int version) throws IOException {
+        config.tick = buf.getInt();
+        config.emoteData = AnimationBinary.read(buf, version);
+        config.valid = (boolean) config.emoteData.extraData.get("valid");
     }
-
 
     @Override
     public byte getID() {
-        return 0;
+        return PacketConfig.ANIMATION_FORMAT;
     }
 
     /**
@@ -64,5 +58,4 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
         if(config.emoteData == null)return 0;
         return AnimationBinary.calculateSize(config.emoteData, getVer(config.versions)) + 4;
     }
-
 }

@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import java.nio.ByteBuffer;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 
 public class DiscoveryPacket extends AbstractNetworkPacket{
     @Override
-    public boolean read(ByteBuffer buf, NetData data, int version){
+    public void read(ByteBuffer buf, NetData data, int version){
 
         //Read these into versions
         int size = buf.getInt();
@@ -25,7 +26,6 @@ public class DiscoveryPacket extends AbstractNetworkPacket{
         //apply changes
         data.versions = map;
         data.versionsUpdated = true;
-        return true;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class DiscoveryPacket extends AbstractNetworkPacket{
 
     @Override
     public byte getID() {
-        return 8;
+        return PacketConfig.DISCOVERY_PACKET;
     }
 
     @Override

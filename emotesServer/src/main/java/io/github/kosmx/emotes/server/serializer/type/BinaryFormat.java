@@ -19,7 +19,7 @@ public class BinaryFormat implements ISerializer {
     public List<KeyframeAnimation> read(InputStream stream, String filename) throws EmoteSerializerException {
         try {
             NetData data = new EmotePacket.Builder().strictSizeLimit(false).build().read(MathHelper.readFromIStream(stream));
-            if (data == null || data.purpose != PacketTask.FILE || data.emoteData == null) {
+            if (data.purpose != PacketTask.FILE || data.emoteData == null) {
                 throw new EmoteSerializerException("Binary emote is invalid", getExtension());
             }
             return Collections.singletonList(data.emoteData);
