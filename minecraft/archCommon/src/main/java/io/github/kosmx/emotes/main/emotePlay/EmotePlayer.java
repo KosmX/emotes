@@ -41,12 +41,8 @@ public class EmotePlayer extends KeyframeAnimationPlayer {
 
     @Override
     public void tick() {
-        if (isLoopStarted() && !this.timeSynced) {
-            int offsetTick = this.data.offsetTick(Instant.now());
-            if (getData().returnToTick > offsetTick) { // Debug
-                System.out.println("Invalid tick " + offsetTick);
-            }
-            ((KeyframeAnimationPlayerAccessor) this).setCurrentTick(offsetTick);
+        if (isActive() && !this.timeSynced && isInfinite() && getCurrentTick() >= getData().returnToTick) {
+            ((KeyframeAnimationPlayerAccessor) this).setCurrentTick(this.data.offsetTick(Instant.now()));
             this.timeSynced = true;
         } else super.tick();
 
