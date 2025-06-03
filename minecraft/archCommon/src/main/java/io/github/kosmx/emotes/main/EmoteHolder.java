@@ -104,8 +104,12 @@ public class EmoteHolder implements Supplier<UUID> {
      * Does not remove server-emotes
      */
     public static void clearEmotes() {
+        clearEmotes(null);
+    }
+
+    public static void clearEmotes(INetworkInstance networkInstance) {
         EmoteHolder.list.removeIf(emoteHolder -> {
-            if (emoteHolder.fromInstance != null) return false;
+            if (emoteHolder.fromInstance != networkInstance) return false;
             emoteHolder.closeIcon();
             return true;
         });
@@ -180,20 +184,12 @@ public class EmoteHolder implements Supplier<UUID> {
         }
     }
 
-    EmoteHolder findIfPresent()
-    {
-        if (list.contains(this)) {
-            for (EmoteHolder obj : list) {
-                if (obj.equals(this))
-                    return obj;
-            }
+    EmoteHolder findIfPresent() {
+        if (list.contains(this)) return list.get(get());
+        for (EmoteHolder obj : list) {
+            if (obj.equals(this)) return obj;
         }
         return null;
-    }
-
-    @Deprecated
-    public static void addEmoteToList(EmoteHolder hold){
-        list.add(hold);
     }
 
     public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player){

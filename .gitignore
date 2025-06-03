@@ -34,3 +34,4 @@ crowdin_old.yml
 /.architectury-transformer/*
 /artifacts
 /buildSrc/.kotlin/
+.DS_Store
