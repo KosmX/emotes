@@ -133,7 +133,8 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
 
     @Override
     public boolean isServerTrackingPlayState() {
-        return this.versions.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
+        return this.versions.containsKey(PacketConfig.SERVER_TRACK_EMOTE_PLAY) &&
+                this.versions.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
     }
 
     @Override

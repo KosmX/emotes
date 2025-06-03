@@ -166,6 +166,7 @@ publishMods {
         requires("fabric-api")
         embeds("playeranimator")
         optional("searchables")
+        optional("fabric-permissions-api")
     }
 
     curseforge {
