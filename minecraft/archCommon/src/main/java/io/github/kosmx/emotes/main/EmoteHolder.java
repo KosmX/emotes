@@ -200,7 +200,11 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     EmoteHolder findIfPresent() {
-        if (list.contains(this)) return list.get(get());
+        EmoteHolder fast = getEmoteFromUuid(get());
+        if (fast != null && fast.equals(this)) {
+            return fast;
+        }
+
         for (EmoteHolder obj : list) {
             if (obj.equals(this)) return obj;
         }
