@@ -165,24 +165,6 @@ public class EmoteHolder implements Supplier<UUID> {
         return list.get(uuid);
     }
 
-    public static @Nullable EmoteHolder getEmoteFromAnimation(KeyframeAnimation animation) {
-        if (animation == null) {
-            return null;
-        }
-
-        EmoteHolder fast = getEmoteFromUuid(animation.getUuid());
-        if (fast != null && fast.emote != null && fast.emote.equals(animation)) {
-            return fast;
-        }
-
-        for (EmoteHolder holder : EmoteHolder.list) {
-            if (holder.emote != null && holder.emote.equals(animation)) {
-                return holder;
-            }
-        }
-        return null;
-    }
-
     public static void addEmoteToList(Iterable<KeyframeAnimation> emotes){
         for(KeyframeAnimation emote : emotes){
             EmoteHolder.list.add(new EmoteHolder(emote));
@@ -199,7 +181,7 @@ public class EmoteHolder implements Supplier<UUID> {
         return newEmote;
     }
 
-    EmoteHolder findIfPresent() {
+    public EmoteHolder findIfPresent() {
         EmoteHolder fast = getEmoteFromUuid(get());
         if (fast != null && fast.equals(this)) {
             return fast;

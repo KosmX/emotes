@@ -50,7 +50,7 @@ public class EmotecraftClientMod {
             assert emotePlayer != null; // verified in isPlayingEmote()
             if (!emotePlayer.currentEmote().isInfinite()) return;
 
-            EmoteHolder sameHolder = EmoteHolder.getEmoteFromAnimation(emotePlayer.currentEmote());
+            EmoteHolder sameHolder = new EmoteHolder(emotePlayer.currentEmote()).findIfPresent();
             if (sameHolder == null) return;
 
             if (PLAY_SAME_ANIM_KEY.consumeClick()) {
