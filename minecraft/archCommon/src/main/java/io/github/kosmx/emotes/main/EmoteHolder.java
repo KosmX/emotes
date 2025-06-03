@@ -172,16 +172,14 @@ public class EmoteHolder implements Supplier<UUID> {
         }
     }
 
-    public static EmoteHolder addEmoteToList(KeyframeAnimation emote){
+    public static EmoteHolder addEmoteToList(KeyframeAnimation emote) {
         EmoteHolder newEmote = new EmoteHolder(emote);
+
         EmoteHolder old = newEmote.findIfPresent();
-        if(old == null){
-            list.add(newEmote);
-            return newEmote;
-        }
-        else {
-            return old;
-        }
+        if (old != null) return old;
+
+        list.add(newEmote);
+        return newEmote;
     }
 
     EmoteHolder findIfPresent() {
