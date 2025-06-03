@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+@Deprecated
 public class LegacyNBSPacket {
     NbsSong song;
     boolean sendExtraData = false; //true if send/receive name, author and other not important data to play the song
@@ -71,7 +72,7 @@ public class LegacyNBSPacket {
             NbsLayer layer = layerEntry.getValue();
             if(sendExtraData){
                 NetworkHelper.writeString(buf, layer.getNameOr(""));
-                CommonNetwork.writeBoolean(buf, layer.isLocked());
+                CommonNetwork.writeBoolean(buf, layer.getStatus() == NbsLayer.Status.LOCKED);
             }
             buf.put(layer.getVolume());
             buf.put((byte) layer.getPanning());
@@ -173,7 +174,7 @@ public class LegacyNBSPacket {
 
                 length = Math.max(length, tick);
             }
-            layer.setLocked(locked); //If I lock it too early, I won't be able to add the notes to the layer...
+            if (locked) layer.setStatus(NbsLayer.Status.LOCKED); //If I lock it too early, I won't be able to add the notes to the layer...
         }
         this.song.setLength((short) length);
 

@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+@SuppressWarnings("deprecation")
 public class SongPacket extends AbstractNetworkPacket{
     @Override
     public byte getID() {
