@@ -64,7 +64,8 @@ public interface IPlayerEntity {
     }
 
     default boolean emotecraft$isForcedEmote() {
-        throw new NotImplementedException();
+        PlayingAnimationData data = emotecraft$getPlayingData();
+        return data != null && isPlayingEmote() && data.forced();
     }
 
     @Nullable

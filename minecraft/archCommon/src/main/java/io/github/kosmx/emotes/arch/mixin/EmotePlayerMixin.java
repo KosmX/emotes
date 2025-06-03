@@ -124,9 +124,4 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     public @Nullable PlayingAnimationData emotecraft$getPlayingData() {
         return this.emotecraft$data;
     }
-
-    @Override
-    public boolean emotecraft$isForcedEmote() {
-        return this.isPlayingEmote() && this.emotecraft$data.forced();
-    }
 }
