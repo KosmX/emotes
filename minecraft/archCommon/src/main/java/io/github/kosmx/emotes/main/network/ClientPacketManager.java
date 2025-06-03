@@ -112,8 +112,8 @@ public final class ClientPacketManager extends EmotesProxyManager {
      * @param networkInstance ...
      */
     @Override
-    public void onDisconnectFromServer(INetworkInstance networkInstance){
-        if(networkInstance == null)throw new NullPointerException("network instance must be non-null");
-        EmoteHolder.list.removeIf(emoteHolder -> emoteHolder.fromInstance == networkInstance);
+    public void onDisconnectFromServer(INetworkInstance networkInstance) {
+        if (networkInstance == null) throw new NullPointerException("network instance must be non-null");
+        EmoteHolder.clearEmotes(networkInstance);
     }
 }
