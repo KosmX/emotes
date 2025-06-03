@@ -67,8 +67,9 @@ public final class NetData {
             emoteData.extraData.putAll(extraData);
         }
 
-        if (this.startTime < 0) { // Not set
-            this.startTime = Instant.now().toEpochMilli();
+        long nowTime = Instant.now().toEpochMilli();
+        if (this.startTime < 0 || this.startTime > nowTime) {
+            this.startTime = nowTime;
             this.otherTime = false;
         }
 

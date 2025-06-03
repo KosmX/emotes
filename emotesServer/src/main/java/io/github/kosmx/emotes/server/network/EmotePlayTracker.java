@@ -30,9 +30,9 @@ public class EmotePlayTracker {
      * @return true if forced, false if not playing any emote.
      */
     public boolean isForced() {
-        if (getPlayedEmote() != null) {
-            return this.currentEmote.forced();
-        } else return false;
+        PlayingAnimationData data = getPlayedEmote();
+        if (data == null) return false;
+        return this.currentEmote.forced();
     }
 
     /**
