@@ -110,7 +110,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     public void filter(ISearchEngine engine, boolean excludeFolders, String search) {
         clearEntries();
         engine.filter(getEmotes(excludeFolders).stream(), search).forEach(this::addEntry);
-        this.setScrollAmount(0);
+        refreshScrollAmount();
     }
 
     public FolderEntry createFoldersTree(List<Component> folders) {
