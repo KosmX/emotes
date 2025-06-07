@@ -107,11 +107,11 @@ public class EmoteMenu extends EmoteSubScreen {
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, button -> this.minecraft.setScreen(new ConfigScreen(this)))
+        linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
+        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, button -> this.minecraft.setScreen(new ConfigScreen(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );

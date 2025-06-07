@@ -8,7 +8,9 @@ import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 public class FastMenuScreen extends Screen {
@@ -39,7 +41,12 @@ public class FastMenuScreen extends Screen {
 
         this.fastMenu = this.layout.addToContents(new FastMenuWidget(0, 0, 0));
 
-        this.layout.addToFooter(Button.builder(FullMenuScreen.TITLE, button -> this.minecraft.setScreen(new FullMenuScreen(this)))
+        LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
+        linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
+                .width(Button.SMALL_WIDTH)
+                .build()
+        );
+        linearLayout.addChild(Button.builder(FullMenuScreen.TITLE, button -> this.minecraft.setScreen(new FullMenuScreen(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
