@@ -18,7 +18,7 @@ public class FullMenuScreen extends EmoteSubScreen {
     protected static final Component CONFIG = Component.translatable("emotecraft.config");
 
     public FullMenuScreen(Screen parent) {
-        super(TITLE, parent);
+        super(TITLE, false, parent);
     }
 
     @Override

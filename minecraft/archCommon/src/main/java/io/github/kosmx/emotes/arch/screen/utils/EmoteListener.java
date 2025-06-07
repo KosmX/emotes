@@ -4,36 +4,33 @@ import com.google.common.base.Stopwatch;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
+import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.text.DecimalFormat;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-public class EmoteListener implements Closeable {
+public class EmoteListener extends PackSelectionScreen.Watcher {
     private static final DecimalFormat FORMAT = new DecimalFormat("#0.000");
 
-    private WatchService watcher;
     private CompletableFuture<?> loader;
 
-    public EmoteListener(Path path) {
-        try {
-            this.watcher = path.getFileSystem().newWatchService();
+    protected EmoteListener(Path path) throws IOException {
+        super(path);
+    }
 
-            path.register(this.watcher,
-                    StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE,
-                    StandardWatchEventKinds.ENTRY_MODIFY
-            );
-        } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to start file watcher!", th);
+    @Nullable
+    public static EmoteListener create(Path packPath) {
+        try {
+            return new EmoteListener(packPath);
+        } catch (IOException ex) {
+            LoggerService.INSTANCE.log(Level.WARNING, "Failed to initialize emote dir monitoring", ex);
+            return null;
         }
     }
 
@@ -56,35 +53,14 @@ public class EmoteListener implements Closeable {
         return this.loader != null && !this.loader.isDone();
     }
 
-    public boolean isFilesChanged() {
-        if (isLoading()) {
-            return false;
-        }
-
-        boolean bl = false;
-        WatchKey key;
-        if(watcher != null && (key = watcher.poll()) != null){
-            bl = !key.pollEvents().isEmpty();//there is something...
-            key.reset();
-        }
-        return bl;
-    }
-
     @Override
     public void close() throws IOException {
+        super.close();
+
         if (this.loader != null) {
             this.loader.cancel(true);
             this.loader = null;
         }
-
-        if (this.watcher != null) {
-            this.watcher.close();
-            this.watcher = null;
-        }
-    }
-
-    public boolean isWatcherClosed() {
-        return this.watcher == null;
     }
 
     public void blockWhileLoading() {

@@ -2,16 +2,13 @@ package io.github.kosmx.emotes.arch.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
-import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -23,7 +20,6 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class EmoteMenu extends EmoteSubScreen {
     private static final Component TITLE = Component.translatable("emotecraft.menu");
@@ -49,8 +45,6 @@ public class EmoteMenu extends EmoteSubScreen {
     private static final Component RESET_ALL_TITLE = Component.translatable("emotecraft.resetAllKeys.title");
     private static final Component RESET_ALL_MSG = Component.translatable("emotecraft.resetAllKeys.message");
 
-    public final EmoteListener watcher;
-
     public long activeKeyTime;
     private Button setKeyButton;
     private Button resetButton;
@@ -59,9 +53,7 @@ public class EmoteMenu extends EmoteSubScreen {
     protected FastChooseWidget fastChoose;
 
     public EmoteMenu(Screen parent) {
-        super(EmoteMenu.TITLE, parent);
-        this.watcher = new EmoteListener(InstanceService.INSTANCE.getExternalEmoteDir());
-        this.watcher.load(this::addOptions);
+        super(EmoteMenu.TITLE, true, parent);
     }
 
     @Override
@@ -184,9 +176,6 @@ public class EmoteMenu extends EmoteSubScreen {
         if(activeKeyTime != 0){
             activeKeyTime--;
         }
-        if (this.watcher != null && this.watcher.isFilesChanged()){
-            this.watcher.load(this::addOptions);
-        }
         super.tick();
     }
 
@@ -244,14 +233,8 @@ public class EmoteMenu extends EmoteSubScreen {
 
     @Override
     public void removed() {
-        this.watcher.blockWhileLoading();
         super.removed();
         Serializer.INSTANCE.saveConfig();
-        try {
-            this.watcher.close();
-        } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to close watcher!", th);
-        }
     }
 
     @Override

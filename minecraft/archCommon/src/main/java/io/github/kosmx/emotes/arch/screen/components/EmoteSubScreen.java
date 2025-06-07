@@ -1,8 +1,15 @@
 package io.github.kosmx.emotes.arch.screen.components;
 
+import dev.kosmx.playerAnim.core.data.AnimationFormat;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
+import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
+import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
+import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -15,7 +22,13 @@ import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.stream.Stream;
 
 /**
  * Like {@link OptionsSubScreen} but with emotes.
@@ -24,9 +37,12 @@ import java.util.Objects;
 public abstract class EmoteSubScreen extends Screen {
     private static final Component SEARCH = Component.translatable("gui.recipebook.search_hint");
 
+    protected final boolean reloadOnOpen;
     protected final ISearchEngine searchEngine;
     protected Screen lastScreen;
 
+    @Nullable
+    public EmoteListener watcher;
     @Nullable
     protected PlayerPreview preview;
     @Nullable
@@ -35,14 +51,29 @@ public abstract class EmoteSubScreen extends Screen {
     @Nullable
     protected EditBox searchBox;
 
+    @Deprecated(forRemoval = true)
     protected EmoteSubScreen(Component title, Screen lastScreen) {
-        this(title, ISearchEngine.getInstance(), lastScreen);
+        this(title, false, lastScreen);
     }
 
-    protected EmoteSubScreen(Component title, ISearchEngine searchEngine, Screen lastScreen) {
+    protected EmoteSubScreen(Component title, boolean reloadOnOpen, Screen lastScreen) {
+        this(title, reloadOnOpen, ISearchEngine.getInstance(), lastScreen);
+    }
+
+    protected EmoteSubScreen(Component title, boolean reloadOnOpen, ISearchEngine searchEngine, Screen lastScreen) {
         super(title);
+        this.reloadOnOpen = reloadOnOpen;
         this.searchEngine = searchEngine;
         this.lastScreen = lastScreen;
+    }
+
+    @Override
+    public void added() {
+        if (this.watcher == null) {
+            this.watcher = EmoteListener.create(InstanceService.INSTANCE.getExternalEmoteDir());
+            if (this.reloadOnOpen && this.watcher != null) this.watcher.load(this::addOptions);
+        }
+        super.added();
     }
 
     @Override
@@ -126,6 +157,16 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     public void tick() {
+        if (this.watcher != null) {
+            try {
+                if (this.watcher.pollForChanges()) {
+                    this.watcher.load(this::addOptions);
+                }
+            } catch (IOException ex) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to poll for directory changes, stopping", ex);
+                this.closeWatcher();
+            }
+        }
         super.tick();
         if (this.preview != null) {
             EmoteListWidget.ListEntry hovered = this.list.getHovered();
@@ -143,8 +184,20 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     public void removed() {
+        if (this.watcher != null) this.watcher.blockWhileLoading();
         super.removed();
         if (this.preview != null) this.preview.getPlayer().stopEmote();
+    }
+
+    private void closeWatcher() {
+        if (this.watcher != null) {
+            try {
+                this.watcher.close();
+                this.watcher = null;
+            } catch (Throwable th) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to close watcher!", th);
+            }
+        }
     }
 
     @Override
