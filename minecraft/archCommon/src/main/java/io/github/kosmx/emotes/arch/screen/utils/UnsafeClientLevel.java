@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.AbortableIterationConsumer;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -129,5 +130,12 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
     @Override
     public long getDayTime() {
         return 0L;
+    }
+
+    private final ClientLevelData clientLevelData = new ClientLevelData(Difficulty.PEACEFUL, false, true);
+
+    @Override
+    public @NotNull ClientLevelData getLevelData() {
+        return this.clientLevelData;
     }
 }
