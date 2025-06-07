@@ -12,11 +12,14 @@ import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.text.DecimalFormat;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class EmoteListener implements Closeable {
+    private static final DecimalFormat FORMAT = new DecimalFormat("#0.000");
+
     private WatchService watcher;
     private CompletableFuture<?> loader;
 
@@ -44,7 +47,7 @@ public class EmoteListener implements Closeable {
         Stopwatch stopwatch = Stopwatch.createStarted();
         this.loader = EmotecraftClientMod.loadEmotes()
                 .thenRun(() -> PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
-                        (double) stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000D
+                        FORMAT.format((double) stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000D)
                 )))
                 .thenRun(onComplete);
     }
