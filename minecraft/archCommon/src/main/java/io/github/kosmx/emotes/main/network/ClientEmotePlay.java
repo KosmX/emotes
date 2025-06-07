@@ -118,7 +118,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 LoggerService.INSTANCE.log(Level.INFO, "Legacy versions was received: " + data.versions);
                 break;
             case FILE:
-                EmoteHolder.addEmoteToList(data.emoteData).fromInstance = networkInstance;
+                EmoteHolder.addEmoteToList(data.emoteData, networkInstance);
             case UNKNOWN:
                 LoggerService.INSTANCE.log(Level.WARNING, "Packet execution is not possible unknown purpose");
                 break;

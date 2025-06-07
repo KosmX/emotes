@@ -12,9 +12,7 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import net.minecraft.client.Minecraft;
@@ -24,7 +22,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import net.minecraft.world.entity.Pose;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +60,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * Null if imported locally
      */
     @Nullable
-    public INetworkInstance fromInstance = null;
+    private INetworkInstance fromInstance = null;
 
     /**
      * Create cache from emote data
@@ -158,65 +155,57 @@ public class EmoteHolder implements Supplier<UUID> {
     /**
      * @return Playable EmotePlayer
      */
-    public KeyframeAnimation getEmote(){
+    public KeyframeAnimation getEmote() {
         return emote;
     }
 
-    public static EmoteHolder getEmoteFromUuid(UUID uuid){
+    public static EmoteHolder getEmoteFromUuid(UUID uuid) {
         return list.get(uuid);
     }
 
-    public static void addEmoteToList(Iterable<KeyframeAnimation> emotes){
-        for(KeyframeAnimation emote : emotes){
-            EmoteHolder.list.add(new EmoteHolder(emote));
-        }
-    }
+    public static EmoteHolder findIfPresent(KeyframeAnimation animation) {
+        if (animation == null) return null;
 
-    public static EmoteHolder addEmoteToList(KeyframeAnimation emote) {
-        EmoteHolder newEmote = new EmoteHolder(emote);
-
-        EmoteHolder old = newEmote.findIfPresent();
-        if (old != null) return old;
-
-        list.add(newEmote);
-        return newEmote;
-    }
-
-    EmoteHolder findIfPresent() {
-        EmoteHolder fast = getEmoteFromUuid(get());
-        if (fast != null && fast.equals(this)) {
+        EmoteHolder fast = getEmoteFromUuid(animation.getUuid());
+        if (fast != null && fast.emote != null && fast.emote.equals(animation)) {
             return fast;
         }
 
-        for (EmoteHolder obj : list) {
-            if (obj.equals(this)) return obj;
+        for (EmoteHolder holder : EmoteHolder.list) {
+            if (holder.emote != null && holder.emote.equals(animation)) {
+                return holder;
+            }
         }
         return null;
     }
 
-    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player){
-        return playEmote(emote, player, null);
+    public static void addEmoteToList(Iterable<KeyframeAnimation> emotes, @Nullable INetworkInstance fromInstance) {
+        for (KeyframeAnimation emote : emotes) addEmoteToList(emote, fromInstance);
+    }
+
+    public static EmoteHolder addEmoteToList(KeyframeAnimation emote, @Nullable INetworkInstance fromInstance) {
+        EmoteHolder old = findIfPresent(emote);
+        if (old != null) return old;
+
+        EmoteHolder newEmote = new EmoteHolder(emote);
+        newEmote.fromInstance = fromInstance;
+        list.add(newEmote);
+        return newEmote;
     }
 
     /**
      * Check if the emote can be played by the main player
      * @param emote emote to play
      * @param player who is the player
-     * @param emoteHolder emote holder object
      * @return could be played
      */
-    public static boolean playEmote(KeyframeAnimation emote, AbstractClientPlayer player, @Nullable EmoteHolder emoteHolder){
-        if(canPlayEmote(player)){
-            return ClientEmotePlay.clientStartLocalEmote(emote);
-        }else{
-            return false;
-        }
+    public static boolean playEmote(AbstractClientPlayer player, KeyframeAnimation emote) {
+        return canPlayEmote(player) && ClientEmotePlay.clientStartLocalEmote(emote);
     }
 
     private static boolean canPlayEmote(AbstractClientPlayer entity){
-        if(! canRunEmote(entity)) return false;
-        if(!entity.isMainPlayer()) return false;
-        return ! (EmotePlayer.isRunningEmote(entity.emotecraft$getEmote()) && ! entity.emotecraft$getEmote().isLoopStarted());
+        if (!canRunEmote(entity)) return false;
+        return entity.isMainPlayer();
     }
 
     /**
@@ -225,13 +214,17 @@ public class EmoteHolder implements Supplier<UUID> {
      * @return True if possible to play
      */
     public static boolean canRunEmote(AbstractClientPlayer player){
-        if(!player.hasPose(Pose.STANDING) && !ClientPacketManager.isRemoteTracking()) return false;
-        //System.out.println(player.getPos().distanceTo(new Vec3d(player.prevX, player.prevY, player.prevZ)));
-        return ! (new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(new Vec3d(player.xo, MathHelper.lerp(PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()), player.zo)) > PlatformTools.getConfig().stopThreshold.get());
+        return !(new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(
+
+                new Vec3d(player.xo, MathHelper.lerp(
+                        PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()
+                ), player.zo)
+
+        ) > PlatformTools.getConfig().stopThreshold.get());
     }
 
-    public boolean playEmote(AbstractClientPlayer playerEntity){
-        return playEmote(this.emote, playerEntity, this);
+    public boolean playEmote() {
+        return playEmote(PlatformTools.getMainPlayer(), this.emote);
     }
 
     /**
@@ -241,25 +234,22 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     @Override
     public int hashCode() {
-        if(hash == null)
-            hash = new AtomicInteger(this.emote.hashCode());
+        if (hash == null) hash = new AtomicInteger(this.emote.hashCode());
         return hash.get();
     }
 
-    public UUID getUuid(){
+    public UUID getUuid() {
         return this.emote.getUuid();
     }
+
     /**
      * The emote holder data may not be equal, but this is only cache. We may skip some work with this
      * @param o Emote holder
      * @return true if eq.... you know
      */
     @Override
-    public boolean equals(Object o){
-        if(o instanceof EmoteHolder){
-            return (this.emote.equals(((EmoteHolder)o).emote));
-        }
-        return false;
+    public boolean equals(Object o) {
+        return o instanceof EmoteHolder other && this.emote.equals(other.emote);
     }
 
     @Override
@@ -267,17 +257,15 @@ public class EmoteHolder implements Supplier<UUID> {
         return this.emote.get();
     }
 
-
-    public static void handleKeyPress(InputConstants.Key key){
-        if(EmoteHolder.canRunEmote(PlatformTools.getMainPlayer())){
+    public static void handleKeyPress(InputConstants.Key key) {
+        if (EmoteHolder.canRunEmote(PlatformTools.getMainPlayer())) {
             UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
-            if(uuid != null){
+            if (uuid != null) {
                 EmoteHolder emoteHolder = list.get(uuid);
-                if(emoteHolder != null)ClientEmotePlay.clientStartLocalEmote(emoteHolder);
+                if (emoteHolder != null) emoteHolder.playEmote();
             }
         }
     }
-
 
     public static EmoteHolder getNonNull(@NotNull UUID emote) {
         EmoteHolder emoteHolder = list.get(emote);
@@ -288,7 +276,11 @@ public class EmoteHolder implements Supplier<UUID> {
     @SuppressWarnings("deprecation")
     public static class Empty extends EmoteHolder {
         public Empty(UUID uuid) {
-            super(new KeyframeAnimation.AnimationBuilder(AnimationFormat.UNKNOWN).setName("{\"color\":\"red\",\"text\":\"INVALID\"}").setUuid(uuid).build());
+            super(new KeyframeAnimation.AnimationBuilder(AnimationFormat.UNKNOWN)
+                    .setName("{\"color\":\"red\",\"text\":\"INVALID\"}")
+                    .setUuid(uuid)
+                    .build()
+            );
         }
     }
 }

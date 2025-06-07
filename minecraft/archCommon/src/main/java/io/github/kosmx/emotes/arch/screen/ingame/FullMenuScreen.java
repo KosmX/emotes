@@ -6,7 +6,6 @@ import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
-import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
@@ -42,12 +41,11 @@ public class FullMenuScreen extends EmoteSubScreen {
 
     @Override
     protected void onPressed(EmoteListWidget.ListEntry selected) {
-        if (selected instanceof EmoteListWidget.EmoteEntry entry) {
-            ClientEmotePlay.clientStartLocalEmote(entry.getEmote());
-
-            if (this.lastScreen instanceof FastMenuScreen fast) {
-                this.lastScreen = fast.parent;
-            }
+        if (selected instanceof EmoteListWidget.EmoteEntry entry &&
+                entry.getEmote().playEmote() &&
+                this.lastScreen instanceof FastMenuScreen fast
+        ) {
+            this.lastScreen = fast.parent;
         }
     }
 

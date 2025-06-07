@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
-import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
@@ -121,8 +120,8 @@ public class FastMenuScreen extends Screen {
         @Override
         protected boolean onClick(IChooseWheel.IChooseElement element, int button){
             if(element.getEmote() != null){
-                boolean bl = element.getEmote().playEmote(PlatformTools.getMainPlayer());
-                Minecraft.getInstance().setScreen(null);
+                boolean bl = element.getEmote().playEmote();
+                if (bl) Minecraft.getInstance().setScreen(null);
                 return bl;
             }
             return false;

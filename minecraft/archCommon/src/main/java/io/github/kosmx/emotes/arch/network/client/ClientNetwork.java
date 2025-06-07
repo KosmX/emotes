@@ -122,7 +122,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
             });
             this.isConfiguredNormally = true;
         } else if (packet.purpose == PacketTask.FILE) {
-            EmoteHolder.addEmoteToList(packet.emoteData).fromInstance = this;
+            EmoteHolder.addEmoteToList(packet.emoteData, this);
         } else {
             LoggerService.INSTANCE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
         }

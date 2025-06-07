@@ -48,7 +48,7 @@ public class EmotecraftClientMod {
         return CompletableFuture.supplyAsync(UniversalEmoteSerializer::loadEmotes, Util.ioPool())
                 .thenAccept(emotes -> {
                     EmoteHolder.clearEmotes();
-                    EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes());
+                    EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes(), null);
                 })
                 .exceptionally(th -> {
                     LoggerService.INSTANCE.log(Level.WARNING, "Failed to reload emotes!", th);
