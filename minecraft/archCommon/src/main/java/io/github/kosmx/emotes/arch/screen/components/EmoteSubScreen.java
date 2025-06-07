@@ -166,6 +166,27 @@ public abstract class EmoteSubScreen extends Screen {
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onFilesDrop(List<Path> paths) {
+        for (Path path : paths) {
+            try (Stream<Path> stream = Files.walk(path)) {
+                stream.forEach(emote -> {
+                    List<KeyframeAnimation> animations = EmoteSerializer.serializeExternalEmote(emote);
+                    if (animations.isEmpty() || animations.getFirst().animationFormat != AnimationFormat.BINARY) return;
+
+                    try {
+                        Util.copyBetweenDirs(emote.getParent(), InstanceService.INSTANCE.getExternalEmoteDir(), emote);
+                    } catch (Throwable th) {
+                        LoggerService.INSTANCE.log(Level.WARNING, "Failed to move animation!", th);
+                    }
+                });
+            } catch (Throwable th) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to walk!", th);
+            }
+        }
+    }
+
     public boolean isSearchActive() {
         return this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue());
     }
