@@ -10,10 +10,11 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 
 public class EmotecraftClientFabricMod extends EmotecraftClientMod implements ClientModInitializer {
     @Override
-    public void onInitializeClient(){
+    public void onInitializeClient() {
         KeyBindingHelper.registerKeyBinding(OPEN_MENU_KEY);
         KeyBindingHelper.registerKeyBinding(STOP_EMOTE_KEY);
 
+        super.onInitializeClient();
         ClientNetworkInstance.init(); //init network
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);

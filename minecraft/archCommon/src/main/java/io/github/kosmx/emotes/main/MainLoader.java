@@ -28,8 +28,6 @@ public class MainLoader {
 
         if (isClient) {
             Serializer.INSTANCE = new Serializer<>(new ClientConfigSerializer(), ClientConfig.class);
-            MainClientInit.init();
-
         } else {
             Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
             UniversalEmoteSerializer.loadEmotes();

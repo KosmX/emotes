@@ -21,6 +21,7 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
 
     public EmotecraftClientNeoMod(ModContainer container, IEventBus modEventBus) {
         container.registerExtensionPoint(IConfigScreenFactory.class, (minecraft, screen) -> new EmoteMenu(screen));
+        super.onInitializeClient();
 
         NeoForge.EVENT_BUS.addListener(this::onClientTickPost);
         NeoForge.EVENT_BUS.addListener(this::onLoggingOut);

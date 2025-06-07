@@ -94,7 +94,7 @@ public class UniversalEmoteSerializer {
                 .map(reader -> (ISerializer) reader);
     }
 
-    public static void loadEmotes() {
+    public static UUIDMap<KeyframeAnimation> loadEmotes() {
         SERVER_EMOTES.clear();
         HIDDEN_SERVER_EMOTES.clear();
 
@@ -121,9 +121,11 @@ public class UniversalEmoteSerializer {
         EmoteSerializer.serializeEmotes(Serializer.getConfig().loadEmotesServerSide.get() ? SERVER_EMOTES : HIDDEN_SERVER_EMOTES, path);
 
         Path serverEmotesDir = path.resolve("server");
-        if(Files.isDirectory(serverEmotesDir)) {
+        if (Files.isDirectory(serverEmotesDir)) {
             EmoteSerializer.serializeEmotes(SERVER_EMOTES, serverEmotesDir);
         }
+
+        return UniversalEmoteSerializer.getLoadedEmotes();
     }
 
     private static void serializeInternalJson(String name){

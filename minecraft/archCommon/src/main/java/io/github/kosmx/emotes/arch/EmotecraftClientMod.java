@@ -2,12 +2,20 @@ package io.github.kosmx.emotes.arch;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
+import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public class EmotecraftClientMod {
     public static final KeyMapping OPEN_MENU_KEY = new KeyMapping(
@@ -16,6 +24,11 @@ public class EmotecraftClientMod {
     public static final KeyMapping STOP_EMOTE_KEY = new KeyMapping(
             "key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding"
     );
+
+    protected void onInitializeClient() {
+        EmotecraftClientMod.loadEmotes();
+        ClientPacketManager.init(); // initialize proxy service
+    }
 
     protected void onClientTick(Minecraft minecraft) {
         MainLoader.tick();
@@ -29,5 +42,17 @@ public class EmotecraftClientMod {
         if (STOP_EMOTE_KEY.consumeClick()) {
             ClientEmotePlay.clientStopLocalEmote();
         }
+    }
+
+    public static CompletableFuture<Void> loadEmotes() {
+        return CompletableFuture.supplyAsync(UniversalEmoteSerializer::loadEmotes, Util.ioPool())
+                .thenAccept(emotes -> {
+                    EmoteHolder.clearEmotes();
+                    EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes());
+                })
+                .exceptionally(th -> {
+                    LoggerService.INSTANCE.log(Level.WARNING, "Failed to reload emotes!", th);
+                    return null;
+                });
     }
 }

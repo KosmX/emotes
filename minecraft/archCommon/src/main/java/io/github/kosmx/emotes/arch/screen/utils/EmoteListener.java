@@ -3,8 +3,7 @@ package io.github.kosmx.emotes.arch.screen.utils;
 import com.google.common.base.Stopwatch;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.main.MainClientInit;
-import net.minecraft.Util;
+import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import net.minecraft.network.chat.Component;
 
 import java.io.Closeable;
@@ -42,18 +41,12 @@ public class EmoteListener implements Closeable {
 
         PlatformTools.addToast(Component.translatable("emotecraft.reloading"));
 
-        this.loader = CompletableFuture.runAsync(() -> {
-            Stopwatch stopwatch = Stopwatch.createStarted();
-            try {
-                MainClientInit.loadEmotes();
-
-                PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
-                        stopwatch.stop().elapsed(TimeUnit.SECONDS)
-                ));
-            } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to reload emotes!", th);
-            }
-        }, Util.ioPool()).thenRun(onComplete);
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        this.loader = EmotecraftClientMod.loadEmotes()
+                .thenRun(() -> PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
+                        (double) stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000D
+                )))
+                .thenRun(onComplete);
     }
 
     public boolean isLoading() {
