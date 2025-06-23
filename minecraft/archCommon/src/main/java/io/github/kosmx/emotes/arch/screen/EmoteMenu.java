@@ -95,7 +95,7 @@ public class EmoteMenu extends EmoteConfigScreen {
         this.addRenderableWidget(searchBox);
 
         int x7 = this.getWidth() / 2 - 154;
-        int y1 = this.getHeight() - 30;
+        int y1 = this.getHeight() - 28;
         Component msg4 = Component.translatable("emotecraft.openFolder");
         this.addRenderableWidget(Button.builder(msg4, ((Consumer<Button>) (buttonWidget) -> PlatformTools.openExternalEmotesDir())::accept).pos(x7, y1).size(150, 20).build());
 
@@ -112,10 +112,10 @@ public class EmoteMenu extends EmoteConfigScreen {
         int x5 = this.getWidth() - 200;
         Component msg2 = Component.translatable("emotecraft.options.export");
         this.addRenderableWidget(Button.builder(msg2, (button2 -> openExportMenuScreen())).pos(x5, 4).size(96, 20).build());
-        int x4 = this.getWidth() / 2 + 10;
-        int y = this.getHeight() - 30;
+        int x4 = this.getWidth() / 2 + 4;
+        int y = this.getHeight() - 28;
         Component msg1 = CommonComponents.GUI_DONE;
-        this.addRenderableWidget(Button.builder(msg1, (button1 -> this.openParent())).pos(x4, y).size(96, 20).build());
+        this.addRenderableWidget(Button.builder(msg1, (button1 -> this.openParent())).pos(x4, y).size(150, 20).build());
         int x3 = this.getWidth() / 2 + 6;
         setKeyButton = Button.builder(unboundText, ((Consumer<Button>) button -> this.activateKey())::accept).pos(x3, 60).size(96, 20).build();
         this.addRenderableWidget(setKeyButton);
@@ -207,7 +207,7 @@ public class EmoteMenu extends EmoteConfigScreen {
 
     @Override
     public void render(@NotNull GuiGraphics matrices, int mouseX, int mouseY, float delta){
-        this.renderDirtBackground(matrices);
+        super.render(matrices, mouseX, mouseY, delta);
         if(this.emoteList.getSelectedEntry() == null){
             this.setKeyButton.active = false;
             //this.resetKey.setActive(false);
@@ -239,7 +239,6 @@ public class EmoteMenu extends EmoteConfigScreen {
         this.searchBox.render(matrices, mouseX, mouseY, delta);
         this.fastMenu.render(matrices, mouseX, mouseY, delta);
         updateKeyText();
-        super.render(matrices, mouseX, mouseY, delta);
     }
 
     private boolean setKey(InputConstants.Key key){

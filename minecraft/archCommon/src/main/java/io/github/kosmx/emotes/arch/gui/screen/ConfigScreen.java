@@ -68,12 +68,12 @@ public class ConfigScreen extends OptionsSubScreen {
                     this::resetAll,
                     Component.translatable("emotecraft.resetConfig.title"),
                     Component.translatable("emotecraft.resetConfig.message")));
-        }).pos(this.width / 2 - 155, this.height - 27).width(150).build());
+        }).pos(this.width / 2 - 154, this.height - 28).width(150).build());
 
         this.addRenderableWidget(new Button.Builder(CommonComponents.GUI_DONE, (button -> {
             ClientSerializer.saveConfig();
             this.minecraft.setScreen(this.lastScreen);
-        })).pos(this.width / 2 - 155 + 160, this.height - 27).width(150).build());
+        })).pos(this.width / 2 + 4, this.height - 28).width(150).build());
 
         this.addWidget(options);
     }
@@ -135,14 +135,12 @@ public class ConfigScreen extends OptionsSubScreen {
         this.minecraft.setScreen(this);
     }
 
+    @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        this.renderBackground(graphics, mouseX, mouseY, delta);
+        super.render(graphics, mouseX, mouseY, delta);
         this.options.render(graphics, mouseX, mouseY, delta);
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 5, 16777215);
-        super.render(graphics, mouseX, mouseY, delta);
     }
-
-
 
     protected static List<FormattedCharSequence> splitTooltip(Component component) {
         return Minecraft.getInstance().font.split(component, 200);

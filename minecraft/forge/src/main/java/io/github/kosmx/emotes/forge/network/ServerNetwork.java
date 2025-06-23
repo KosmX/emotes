@@ -12,17 +12,18 @@ import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.event.EventNetworkChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.custom.payload.SimplePayload;
+import net.neoforged.neoforge.network.event.EventNetworkChannel;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -56,13 +57,13 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     }
 
     public void receiveByteBuf(NetworkEvent.ClientCustomPayloadEvent event){
-        instance.receiveMessage(event.getSource().get().getSender(), event.getSource().get().getSender().connection, event.getPayload());
-        event.getSource().get().setPacketHandled(true);//it was handled just in a bit weirder way me :D
+        instance.receiveMessage(event.getSource().getSender(), event.getSource().getSender().connection, event.getPayload());
+        event.getSource().setPacketHandled(true);//it was handled just in a bit weirder way me :D
     }
 
     public void receiveGeyserEvent(NetworkEvent.ClientCustomPayloadEvent networkEvent){
-        receiveGeyserMessage(networkEvent.getSource().get().getSender(), toBytes(networkEvent.getPayload()));
-        networkEvent.getSource().get().setPacketHandled(true);
+        receiveGeyserMessage(networkEvent.getSource().getSender(), toBytes(networkEvent.getPayload()));
+        networkEvent.getSource().setPacketHandled(true);
     }
 
     void receiveMessage(ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf) {
@@ -149,11 +150,11 @@ public class ServerNetwork extends AbstractServerEmotePlay<Player> {
     public static Packet newS2CEmotesPacket(NetData data, ServerPlayer player) throws IOException {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
         packetBuilder.setVersion(((IServerNetworkInstance)player.connection).getRemoteVersions());
-        return new ClientboundCustomPayloadPacket(channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBuilder.build().write().array())));//:D
+        return new ClientboundCustomPayloadPacket(new SimplePayload(new FriendlyByteBuf(Unpooled.wrappedBuffer(packetBuilder.build().write().array())), channelID, 0));//:D
     }
 
     public static Packet newS2CEmotesPacket(ResourceLocation channelID, byte[] data) throws IOException {
-        return new ClientboundCustomPayloadPacket(channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(data)));
+        return new ClientboundCustomPayloadPacket(new SimplePayload(new FriendlyByteBuf(Unpooled.wrappedBuffer(data)), channelID, 0));
     }
 
     @Override

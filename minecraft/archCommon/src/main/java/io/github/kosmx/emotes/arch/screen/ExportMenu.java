@@ -10,12 +10,10 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,12 +42,12 @@ public class ExportMenu extends EmoteConfigScreen {
         addRenderableWidget(Button.builder(msg2, (iButton -> this.saveAllBinary())).pos(x2, y2).size(200, 20).build());
 
         //TODO toast notification
-        int x1 = getWidth() / 2 + 10;
-        int y1 = getHeight() - 30;
+        int x1 = getWidth() / 2 - 154;
+        int y1 = getHeight() - 28;
         Component msg1 = CommonComponents.GUI_DONE;
-        addRenderableWidget(Button.builder(msg1, (button -> openParent())).pos(x1, y1).size(96, 20).build());
-        int x = getWidth() / 2 - 154;
-        int y = getHeight() - 30;
+        addRenderableWidget(Button.builder(msg1, (button -> openParent())).pos(x1, y1).size(150, 20).build());
+        int x = getWidth() / 2 + 4;
+        int y = getHeight() - 28;
         Component msg = Component.translatable("emotecraft.openFolder");
         addRenderableWidget(Button.builder(msg, ((Consumer<Button>) (buttonWidget) -> PlatformTools.openExternalEmotesDir())::accept).pos(x, y).size(150, 20).build());
     }
@@ -122,11 +120,5 @@ public class ExportMenu extends EmoteConfigScreen {
             file = originPath.resolve(finalName + "_" + i++ + "." + format.getExtension());
         }
         return file;
-    }
-
-    @Override
-    public void render(@NotNull GuiGraphics matrices, int mouseX, int mouseY, float tickDelta) {
-        renderDirtBackground(matrices);
-        super.render(matrices, mouseX, mouseY, tickDelta);
     }
 }

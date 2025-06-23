@@ -51,7 +51,7 @@ configurations {
 
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
+    developmentNeoForge.extendsFrom common
 }
 
 dependencies {
@@ -62,13 +62,13 @@ dependencies {
 
     common(project(path: ":${project.module_name}:archCommon", configuration: 'namedElements')) {transitive false}
 
-    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionForge")) { transitive false }
+    compileModule(project(path: ":${project.module_name}:archCommon", configuration: "transformProductionNeoForge")) { transitive false }
 
 
     neoForge "net.neoforged:neoforge:${project.neoforge_version}"
 
-    modRuntimeOnly("io.github.kosmx.bendy-lib:bendy-lib-forge:${project.bendylib_version}")
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}")
+    include modImplementation("io.github.kosmx.bendy-lib:bendy-lib-forge:${project.bendylib_version}")
+    include modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim}")
 }
 
 processResources {

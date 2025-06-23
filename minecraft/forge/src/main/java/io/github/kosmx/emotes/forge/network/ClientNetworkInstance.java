@@ -7,7 +7,10 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.custom.payload.SimplePayload;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -44,7 +47,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
 
     private void receiveJunk(NetworkEvent.ServerCustomPayloadEvent event){
         receiveMessage(event.getPayload());
-        event.getSource().get().setPacketHandled(true);
+        event.getSource().setPacketHandled(true);
     }
 
     private void registerServerSide(NetworkEvent.ChannelRegistrationChangeEvent event){
@@ -79,7 +82,7 @@ public class ClientNetworkInstance extends AbstractNetworkInstance {
     }
 
     public static ServerboundCustomPayloadPacket newC2SEmotePacket(NetData data) throws IOException {
-        return new ServerboundCustomPayloadPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())));
+        return new ServerboundCustomPayloadPacket(new SimplePayload(new FriendlyByteBuf(Unpooled.wrappedBuffer(new EmotePacket.Builder(data).build().write().array())), ServerNetwork.channelID, 0));
     }
 
     @Override

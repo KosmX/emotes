@@ -19,7 +19,6 @@ import java.util.UUID;
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkInstance implements IServerNetworkInstance {
     private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
-    @Shadow public abstract void send(Packet<?> packet);
 
     @Shadow public ServerPlayer player;
 
@@ -49,14 +48,14 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
         //sendMessage(builder.build().write(), null);
-        this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
+        this.player.connection.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
     }
 
     @Override
     public void sendConfigCallback() {
         EmotePacket.Builder builder = new EmotePacket.Builder().configureToConfigExchange(true);
         try{
-            this.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
+            this.player.connection.send(ServerNetwork.newS2CEmotesPacket(builder.copyAndGetData(), this.player));
         }
         catch (IOException e){
             e.printStackTrace();

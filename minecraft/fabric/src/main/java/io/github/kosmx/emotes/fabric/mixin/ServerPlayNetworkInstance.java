@@ -27,10 +27,10 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
 
     @Unique
     private final EmotePlayTracker emoteTracker = new EmotePlayTracker();
-    @Shadow public abstract void send(Packet<?> packet);
 
     @Shadow public abstract ServerPlayer getPlayer();
 
+    @Shadow public ServerPlayer player;
     @Unique
     HashMap<Byte, Byte> versions = new HashMap<>();
     @Override
@@ -59,14 +59,14 @@ public abstract class ServerPlayNetworkInstance implements IServerNetworkInstanc
     }
 
     public void sendMessage(byte[] bytes, @Nullable UUID target) {
-        this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))));
+        this.player.connection.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))));
     }
 
     @Override
     public void sendConfigCallback() {
         EmotePacket.Builder builder = new EmotePacket.Builder().configureToConfigExchange(true);
         try{
-            this.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write()))));
+            this.player.connection.send(ServerPlayNetworking.createS2CPacket(ServerNetwork.channelID, new FriendlyByteBuf(Unpooled.wrappedBuffer(builder.build().write()))));
         }
         catch (IOException e){
             e.printStackTrace();

@@ -35,7 +35,7 @@ public class ClientInit {
 
     static void initClient() {
         initKeyBinding();
-        FMLJavaModLoadingContext.get().getModEventBus().register(new ClientInit());
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientInit::keyBindingRegister);
     }
 
     static void setupClient() {
@@ -55,7 +55,7 @@ public class ClientInit {
     }
 
     @SubscribeEvent
-    public void keyBindingRegister(RegisterKeyMappingsEvent event) {
+    public static void keyBindingRegister(RegisterKeyMappingsEvent event) {
         event.register(openMenuKey);
         event.register(stopEmote);
         if (debugKey != null) event.register(debugKey);
