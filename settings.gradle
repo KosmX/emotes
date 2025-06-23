@@ -37,12 +37,12 @@ include 'minecraft:forge'
 
 //Bukkit plugin stuff
 include 'bukkit'
-include 'bukkit:debug'
+// include 'bukkit:debug'
 
 //Bungee plugin stuff
-include 'bungee'
+// include 'bungee'
 
 //Velocity plugin stuff
-include 'velocity'
+// include 'velocity'
 
 //*/
