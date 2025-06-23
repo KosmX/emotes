@@ -9,13 +9,7 @@ pluginManagement {
             name = 'Architectury maven'
             url = 'https://maven.architectury.dev/'
         }
-        maven {
-            name = 'hell'
-            url = 'https://maven.minecraftforge.net/'
-            content{
-                excludeGroupByRegex "org\\.eclipse\\.?.*"
-            }
-        }
+        maven { url "https://maven.neoforged.net/releases" }
     }
 }
 

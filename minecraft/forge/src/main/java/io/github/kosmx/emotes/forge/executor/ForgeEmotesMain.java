@@ -3,8 +3,8 @@ package io.github.kosmx.emotes.forge.executor;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.executor.Logger;
 import io.github.kosmx.emotes.forge.ForgeWrapper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.nio.file.Path;
 

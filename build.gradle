@@ -27,6 +27,7 @@ allprojects {
         maven {
             url "https://libraries.minecraft.net"
         }
+        maven { url "https://maven.neoforged.net/releases" }
     }
 
     tasks.withType(JavaCompile).configureEach {

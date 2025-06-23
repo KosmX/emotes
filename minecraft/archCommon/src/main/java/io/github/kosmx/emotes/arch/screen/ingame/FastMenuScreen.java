@@ -48,7 +48,7 @@ public class FastMenuScreen extends EmoteConfigScreen {
 
     @Override
     public void render(GuiGraphics matrices, int mouseX, int mouseY, float delta){
-        renderBackground(matrices);
+        renderBackground(matrices, mouseX, mouseY, delta);
         widget.render(matrices, mouseX, mouseY, delta);
         if(!((ClientConfig)EmoteInstance.config).hideWarningMessage.get()) {
             int remoteVer = ClientPacketManager.isRemoteAvailable() ? 2 : ClientPacketManager.isAvailableProxy() ? 1 : 0;
