@@ -6,6 +6,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import io.github.kosmx.emotes.bukkit.executor.BukkitInstance;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
@@ -58,11 +59,15 @@ public class BukkitWrapper extends JavaPlugin {
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EmotePacket);
     }
 
+    private static final MinecraftVersion VERSION_1_20_2 = new MinecraftVersion(1, 20, 2);
+
     public void registerProtocolListener() {
-        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+        PacketType packetType = VERSION_1_20_2.atOrAbove() ? PacketType.Play.Server.SPAWN_ENTITY : PacketType.Play.Server.NAMED_ENTITY_SPAWN;
+
+        protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, packetType) {
             @Override
             public void onPacketSending(PacketEvent packetEvent) {
-                if (packetEvent.getPacketType().equals(PacketType.Play.Server.NAMED_ENTITY_SPAWN)) {
+                if (packetEvent.getPacketType().equals(packetType)) {
                     //Field trackedField = packetEvent.getPacket().getStructures().getField(2);
                     UUID tracked = packetEvent.getPacket().getUUIDs().readSafely(0);
 
