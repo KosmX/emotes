@@ -76,7 +76,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
      * @return Emote and time, NULL if not playing
      */
     @Nullable
-    public static Pair<Animation, Integer> getPlayedEmote(UUID player) {
+    public static Pair<Animation, Float> getPlayedEmote(UUID player) {
         return INSTANCE.getPlayedEmoteImpl(player);
     }
 
@@ -94,7 +94,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
     protected static final ServerEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ServerEmoteAPI.class);
 
     protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation KeyframeAnimation, int tick, boolean isForced);
-    protected abstract Pair<Animation, Integer> getPlayedEmoteImpl(UUID player);
+    protected abstract Pair<Animation, Float> getPlayedEmoteImpl(UUID player);
 
     protected abstract boolean isForcedEmoteImpl(UUID player);
 

@@ -21,6 +21,8 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -209,14 +211,13 @@ public class EmoteHolder implements Supplier<UUID> {
      * @return True if possible to play
      */
     public static boolean canRunEmote(AbstractClientPlayer player){
-        /*return !(new Vec3f((float) player.getX(), (float) player.getY(), (float) player.getZ()).distanceTo(
+        return !(new Vec3(player.getX(), player.getY(), player.getZ()).distanceTo(
 
-                new Vec3f(player.xo, MathHelper.lerp(
-                        PlatformTools.getConfig().yRatio.get(), (float) player.yo, (float) player.getY()
+                new Vec3(player.xo, Mth.lerp(
+                        PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()
                 ), player.zo)
 
-        ) > PlatformTools.getConfig().stopThreshold.get());*/
-        return true; // TODO
+        ) > PlatformTools.getConfig().stopThreshold.get());
     }
 
     public boolean playEmote() {

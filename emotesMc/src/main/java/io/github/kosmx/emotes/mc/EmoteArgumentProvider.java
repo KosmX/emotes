@@ -40,7 +40,7 @@ public class EmoteArgumentProvider implements SuggestionProvider<CommandSourceSt
         List<String> suggestions = new LinkedList<>();
         for (var emote : emotes.apply(context).values()) {
             if (emote.data().has("name")) {
-                String name = McUtils.fromJson(emote.data().get("name"), this.registries).getString();
+                String name = McUtils.fromJson(emote.data().getRaw("name"), this.registries).getString();
                 if (name.contains(" ")) {
                     name = "\"" + name + "\"";
                 }
@@ -64,7 +64,7 @@ public class EmoteArgumentProvider implements SuggestionProvider<CommandSourceSt
 
         for (var emote : emotes.values()) {
             if (emote.data().has("name")) {
-                String name = StringUtil.filterText(McUtils.fromJson(emote.data().get("name"), RegistryAccess.EMPTY).getString());
+                String name = StringUtil.filterText(McUtils.fromJson(emote.data().getRaw("name"), RegistryAccess.EMPTY).getString());
                 if (name.equals(id)) return emote;
             }
         }

@@ -52,16 +52,15 @@ public class EmotePlayTracker {
      * @return null if not playing emote
      */
     @Nullable
-    public Pair<Animation, Integer> getPlayedEmote() {
+    public Pair<Animation, Float> getPlayedEmote() {
         if (currentEmote == null) return null;
-        int tick = (int)(Duration.between(startTime, Instant.now()).toMillis() / 50);
-        /* if (!currentEmote.isInfinite() && currentEmote.getLength() <= tick) {
-            currentEmote = null; TODO
+        float tick = Duration.between(startTime, Instant.now()).toMillis() / 50F;
+        if (!currentEmote.isPlayingAt(tick)) {
+            currentEmote = null;
             startTime = null;
             isForced = false;
             return null;
-        }*/
+        }
         return Pair.of(currentEmote, tick);
     }
-
 }

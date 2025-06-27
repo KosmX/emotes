@@ -70,8 +70,8 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         if (!data.valid && doValidate()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
             if (result != EventResult.FAIL) {
-                /*EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.getUuid()).configureTarget(getUUIDFromPlayer(instance)).setSizeLimit(0x100000, true);
-                if(instance != null)instance.sendMessage(stopMSG, null); TODO */
+                EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.uuid()).configureTarget(getUUIDFromPlayer(instance)).setSizeLimit(0x100000, true);
+                if(instance != null)instance.sendMessage(stopMSG, null);
                 return;
             }
         }
@@ -103,23 +103,23 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     protected void stopEmote(P player, @Nullable NetData originalMessage) {
-        /*Pair<Animation, Integer> emote = player.getEmoteTracker().getPlayedEmote();
-        player.getEmoteTracker().setPlayedEmote(null, false); TODO
+        Pair<Animation, Float> emote = player.getEmoteTracker().getPlayedEmote();
+        player.getEmoteTracker().setPlayedEmote(null, false);
         if (emote != null) {
-            ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.left().getUuid(), getUUIDFromPlayer(player));
-            NetData data = new EmotePacket.Builder().configureToSendStop(emote.left().getUuid(), getUUIDFromPlayer(player)).build().data;
+            ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.left().uuid(), getUUIDFromPlayer(player));
+            NetData data = new EmotePacket.Builder().configureToSendStop(emote.left().uuid(), getUUIDFromPlayer(player)).build().data;
 
             sendForEveryoneElse(data, player);
             if (originalMessage == null) { //If the stop is not from the player, server needs to notify the player too
                 data.isForced = true;
                 sendForPlayer(data, player, player);
             }
-        }*/
+        }
     }
 
     public void playerStartTracking(P tracked, P tracker) {
         if (tracked == null || tracker == null) return;
-        Pair<Animation, Integer> playedEmote = tracked.getEmoteTracker().getPlayedEmote();
+        Pair<Animation, Float> playedEmote = tracked.getEmoteTracker().getPlayedEmote();
         if (playedEmote != null) {
             sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.left()).configureEmoteTick(playedEmote.right()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, tracker);
         }
@@ -140,7 +140,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     @Override
-    protected Pair<Animation, Integer> getPlayedEmoteImpl(UUID player) {
+    protected Pair<Animation, Float> getPlayedEmoteImpl(UUID player) {
         return getPlayerFromUUID(player).getEmoteTracker().getPlayedEmote();
     }
 
