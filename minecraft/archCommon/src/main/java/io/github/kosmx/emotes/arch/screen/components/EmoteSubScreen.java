@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.components;
 
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
@@ -225,8 +225,8 @@ public abstract class EmoteSubScreen extends Screen {
         for (Path path : paths) {
             try (Stream<Path> stream = Files.walk(path)) {
                 stream.forEach(emote -> {
-                    List<KeyframeAnimation> animations = EmoteSerializer.serializeExternalEmote(emote);
-                    if (animations.isEmpty() || animations.getFirst().animationFormat != AnimationFormat.BINARY) return;
+                    List<Animation> animations = EmoteSerializer.serializeExternalEmote(emote);
+                    if (animations.isEmpty()/* || animations.getFirst().animationFormat != AnimationFormat.BINARY*/) return;
 
                     try {
                         Util.copyBetweenDirs(emote.getParent(), InstanceService.INSTANCE.getExternalEmoteDir(), emote);

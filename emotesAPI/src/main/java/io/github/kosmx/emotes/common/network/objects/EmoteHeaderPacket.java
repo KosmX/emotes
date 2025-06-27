@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.network.CommonNetwork;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 
@@ -34,12 +34,12 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     @SuppressWarnings("unchecked")
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
         assert config.emoteData != null;
-        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.extraData.get("name"));
-        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.extraData.get("description"));
-        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.extraData.get("author"));
+        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("name"));
+        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("description"));
+        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("author"));
         if (getVer(config.versions) >= 2) {
-            CommonNetwork.writeString(byteBuffer, (String) config.emoteData.extraData.get("folderpath"));
-            CommonNetwork.writeList(byteBuffer, (List<String>) config.emoteData.extraData.get("bages"), CommonNetwork::writeString);
+            CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("folderpath"));
+            CommonNetwork.writeList(byteBuffer, (List<String>) config.emoteData.data().getRaw("bages"), CommonNetwork::writeString);
         }
     }
 
@@ -51,18 +51,18 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     @Override
     @SuppressWarnings("unchecked")
     public int calculateSize(NetData config) {
-        KeyframeAnimation emote = config.emoteData;
+        Animation emote = config.emoteData;
         if (emote == null) return 0;
 
         int baseSize = sumStrings(
-                (String) emote.extraData.get("name"),
-                (String) emote.extraData.get("description"),
-                (String) emote.extraData.get("author")
+                (String) emote.data().getRaw("name"),
+                (String) emote.data().getRaw("description"),
+                (String) emote.data().getRaw("author")
         );
 
         if (getVer(config.versions) >= 2) {
-            baseSize += CommonNetwork.stringSize((String) emote.extraData.get("folderpath"));
-            baseSize += CommonNetwork.listSize((List<String>) config.emoteData.extraData.get("bages"), CommonNetwork::stringSize);
+            baseSize += CommonNetwork.stringSize((String) emote.data().getRaw("folderpath"));
+            baseSize += CommonNetwork.listSize((List<String>) config.emoteData.data().getRaw("bages"), CommonNetwork::stringSize);
         }
         return baseSize;
     }

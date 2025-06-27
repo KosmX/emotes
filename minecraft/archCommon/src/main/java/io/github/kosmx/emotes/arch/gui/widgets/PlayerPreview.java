@@ -1,10 +1,10 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.mojang.authlib.GameProfile;
-import dev.kosmx.playerAnim.api.IPlayer;
-import dev.kosmx.playerAnim.api.layered.AnimationStack;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Ease;
+import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
+import com.zigythebird.playeranim.animation.PlayerAnimManager;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.EasingType;
 import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -34,7 +34,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         setAlpha(0.0F);
     }
 
-    public void playAnimation(KeyframeAnimation animation, boolean check) {
+    public void playAnimation(Animation animation, boolean check) {
         if (check && animation != null) {
             EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
             if (emotePlayer != null && animation.equals(emotePlayer.getData())) {
@@ -46,7 +46,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         guiGraphics.enableScissor(getX(), getY(), getRight(), getBottom());
 
         if (this.renderBackround) {
@@ -55,7 +55,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
             ));
         }
 
-        guiGraphics.pose().translate(0, 0, 500);
+        // guiGraphics.pose().translate(0, 0, 500);
         try {
             InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
         } catch (Throwable th) {
@@ -63,11 +63,11 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         }
 
         guiGraphics.disableScissor();
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
-        if (this.animTime > 0.0F) {
+        /*if (this.animTime > 0.0F) {
             setAlpha(1.0F - Ease.OUTQUART.invoke(this.animTime));
-        }
+        }*/
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        AnimationStack stack = ((IPlayer) this.player).playerAnimator$getAnimationStack();
+        PlayerAnimManager stack = ((IAnimatedPlayer) this.player).playerAnimLib$getAnimManager();
         if (stack.isActive()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);

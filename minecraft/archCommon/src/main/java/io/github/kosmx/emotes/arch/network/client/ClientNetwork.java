@@ -67,7 +67,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         var writer = builder.build();
         sendMessage(writer.write(), null);
 
-        if (writer.data.emoteData != null && writer.data.emoteData.extraData.containsKey("song") && !writer.data.writeSong) {
+        if (writer.data.emoteData != null && writer.data.emoteData.data().has("song") && !writer.data.writeSong) {
             PlatformTools.sendChatMessage(Component.translatable("emotecraft.song_too_big_to_send"));
         }
     }

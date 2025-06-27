@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.screen;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.services.LoggerService;
@@ -70,8 +70,8 @@ public class ExportMenu extends Screen {
 
     private void exportEmotesInFormat(ISerializer format) {
         for(EmoteHolder emoteHolder:EmoteHolder.list){
-            KeyframeAnimation emote = emoteHolder.getEmote();
-            if(emote.extraData.containsKey("isBuiltin") && !PlatformTools.getConfig().exportBuiltin.get()){
+            Animation emote = emoteHolder.getEmote();
+            if(emote.data().has("isBuiltin") && !PlatformTools.getConfig().exportBuiltin.get()){
                 continue;
             }
 
@@ -90,18 +90,18 @@ public class ExportMenu extends Screen {
                 if (format.onlyEmoteFile()) {
                     String fileName = FilenameUtils.removeExtension(file.getFileName().toString());
 
-                    if (emote.extraData.containsKey("iconData")) {
+                    if (emote.data().has("iconData")) {
                         Path iconPath = exportDir.resolve(fileName + ".png");
                         if (Files.exists(iconPath)) throw new IOException("File already exists: " + iconPath);
                         try (OutputStream iconStream = Files.newOutputStream(iconPath)) {
-                            iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) emote.extraData.get("iconData")));
+                            iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer((ByteBuffer) emote.data().getRaw("iconData")));
                             iconStream.flush();
                         }
                     }
-                    if (emote.extraData.containsKey("song")) {
+                    if (emote.data().has("song")) {
                         Path songPath = exportDir.resolve(fileName + ".nbs");
                         if (Files.exists(songPath)) throw new IOException("File already exists: " + songPath);
-                        NoteBlockLib.writeSong((Song) emote.extraData.get("song"), songPath);
+                        NoteBlockLib.writeSong((Song) emote.data().getRaw("song"), songPath);
                     }
                 }
             } catch (Exception e) {

@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.common.nbsplayer;
 
-import dev.kosmx.playerAnim.core.util.NetworkHelper;
 import io.github.kosmx.emotes.common.network.CommonNetwork;
 import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
@@ -16,7 +15,6 @@ import java.util.Map;
 @Deprecated
 public class LegacyNBSPacket {
     NbsSong song;
-    boolean sendExtraData = false; //true if send/receive name, author and other not important data to play the song
     int version = 1;
     final int packetVersion = 1;
 
@@ -36,30 +34,10 @@ public class LegacyNBSPacket {
 
     public void write(ByteBuffer buf){
         buf.putInt(packetVersion); //reserved for later use/changes
-        buf.put((byte) (sendExtraData ? 1 : 0));
+        buf.put((byte) 0);
         buf.put((byte) song.getVanillaInstrumentCount());
-        if(sendExtraData){
-            buf.putShort(song.getLength());
-            NetworkHelper.writeString(buf, song.getTitleOrFileNameOr(""));
-            NetworkHelper.writeString(buf, song.getAuthorOr(""));
-            NetworkHelper.writeString(buf, song.getOriginalAuthorOr(""));
-            NetworkHelper.writeString(buf, song.getDescriptionOr(""));
-        }
         buf.putShort(song.getTempo()); //that one is important;
-        if(sendExtraData){
-            CommonNetwork.writeBoolean(buf, song.isAutoSave());
-            buf.put(song.getAutoSaveInterval());
-        }
         buf.put(song.getTimeSignature());
-        if(sendExtraData){
-            //There comes a lot of only editor relevant data...
-            buf.putInt(song.getMinutesSpent());
-            buf.putInt(song.getLeftClicks());
-            buf.putInt(song.getRightClicks());
-            buf.putInt(song.getNoteBlocksAdded());
-            buf.putInt(song.getNoteBlocksRemoved());
-            NetworkHelper.writeString(buf, song.getSourceFileNameOr(""));
-        }
         CommonNetwork.writeBoolean(buf, song.isLoop());
         buf.put(song.getMaxLoopCount());
         buf.putShort(song.getLoopStartTick());
@@ -70,10 +48,6 @@ public class LegacyNBSPacket {
     public void writeLayersAndNotes(ByteBuffer buf){
         for (Map.Entry<Integer, NbsLayer> layerEntry : song.getLayers().entrySet()) {
             NbsLayer layer = layerEntry.getValue();
-            if(sendExtraData){
-                NetworkHelper.writeString(buf, layer.getNameOr(""));
-                CommonNetwork.writeBoolean(buf, layer.getStatus() == NbsLayer.Status.LOCKED);
-            }
             buf.put(layer.getVolume());
             buf.put((byte) layer.getPanning());
             int tick = -1;
@@ -98,32 +72,13 @@ public class LegacyNBSPacket {
      */
     public boolean read(ByteBuffer buf) throws IOException {
         version = buf.getInt();
-        sendExtraData = buf.get() != 0;
+        buf.get(); // sendExtraData
         NbsSong builder = new NbsSong();
         builder.setVersion((byte) 5);
 
         builder.setVanillaInstrumentCount(buf.get());
-        if(sendExtraData) {
-            builder.setLength(buf.getShort());
-            builder.setTitle(NetworkHelper.readString(buf));
-            builder.setAuthor(NetworkHelper.readString(buf));
-            builder.setOriginalAuthor(NetworkHelper.readString(buf));
-            builder.setDescription(NetworkHelper.readString(buf));
-        }
         builder.setTempo(buf.getShort());
-        if(sendExtraData){
-            builder.setAutoSave(CommonNetwork.readBoolean(buf));
-            builder.setAutoSaveInterval(buf.get());
-        }
         builder.setTimeSignature(buf.get());
-        if(sendExtraData){
-            builder.setMinutesSpent(buf.getInt());
-            builder.setLeftClicks(buf.getInt());
-            builder.setRightClicks(buf.getInt());
-            builder.setNoteBlocksAdded(buf.getInt());
-            builder.setNoteBlocksRemoved(buf.getInt());
-            builder.setSourceFileName(NetworkHelper.readString(buf));
-        }
         builder.setLoop(CommonNetwork.readBoolean(buf));
         builder.setMaxLoopCount(buf.get());
         builder.setLoopStartTick(buf.getShort());
@@ -136,7 +91,7 @@ public class LegacyNBSPacket {
         return valid;
     }
 
-    void readLayersAndNotes(ByteBuffer buf) throws IOException {
+    void readLayersAndNotes(ByteBuffer buf) {
         Map<Integer, NbsLayer> layers = this.song.getLayers();
         if (song.getLayerCount() != layers.size()) {
             if (!layers.isEmpty()) {
@@ -152,11 +107,6 @@ public class LegacyNBSPacket {
         int length = 0;
         for(Map.Entry<Integer, NbsLayer> layerEntry : layers.entrySet()) { //Layers are existing but not configured.
             NbsLayer layer = layerEntry.getValue();
-            boolean locked = false;
-            if(sendExtraData){
-                layer.setName(NetworkHelper.readString(buf));
-                locked = buf.get() != 0;
-            }
             layer.setVolume(buf.get());
             layer.setPanning(buf.get());
 
@@ -174,7 +124,6 @@ public class LegacyNBSPacket {
 
                 length = Math.max(length, tick);
             }
-            if (locked) layer.setStatus(NbsLayer.Status.LOCKED); //If I lock it too early, I won't be able to add the notes to the layer...
         }
         this.song.setLength((short) length);
 

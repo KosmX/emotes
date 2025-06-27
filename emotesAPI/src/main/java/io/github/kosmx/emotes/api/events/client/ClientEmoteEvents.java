@@ -1,8 +1,9 @@
 package io.github.kosmx.emotes.api.events.client;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.impl.event.Event;
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
+
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.event.Event;
+import com.zigythebird.playeranimcore.event.EventResult;
 
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public final class ClientEmoteEvents {
          * I don't even know, why do I allow this
          *
          */
-        EventResult verify(KeyframeAnimation emote, UUID userID);
+        EventResult verify(Animation emote, UUID userID);
     }
 
 
@@ -68,7 +69,7 @@ public final class ClientEmoteEvents {
          * @param tick Current tick
          * @param userID User ID
          */
-        void onEmotePlay(KeyframeAnimation emoteData, int tick, UUID userID);
+        void onEmotePlay(Animation emoteData, float tick, UUID userID);
     }
 
     /**

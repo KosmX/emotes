@@ -44,7 +44,7 @@ dependencies {
         pomCompile(this)
     }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibFabric:${properties["player_animator_version"] as String}") {
         include(this)
         pomCompile(this)
     }
@@ -55,9 +55,9 @@ dependencies {
     }
 
     // Third-party
-    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
+    /*modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
         isTransitive = false
-    }
+    }*/
 
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))

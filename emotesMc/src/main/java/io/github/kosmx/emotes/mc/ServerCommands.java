@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -16,9 +16,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static net.minecraft.commands.Commands.*;
 
@@ -110,7 +108,7 @@ public final class ServerCommands {
         );
     }
 
-    private static HashMap<UUID, KeyframeAnimation> getEmotes(CommandContext<CommandSourceStack> context) {
+    private static Map<UUID, Animation> getEmotes(CommandContext<CommandSourceStack> context) {
         return IPermissionService.INSTANCE.check(context.getSource(), "emotes.play.showhidden", 1) ? UniversalEmoteSerializer.getLoadedEmotes() : UniversalEmoteSerializer.SERVER_EMOTES;
     }
 }

@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.api.events.client;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.services.IEmotecraftService;
 import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,7 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
      * @param animation animation, <code>null</code> to stop playing.
      * @return          Can the emote be played: this doesn't check server-side verification
      */
-    public static boolean playEmote(@Nullable KeyframeAnimation animation) {
+    public static boolean playEmote(@Nullable Animation animation) {
         return ClientEmoteAPI.playEmote(animation, 0);
     }
 
@@ -30,7 +29,7 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
      * @param tick First tick
      * @return          Can the emote be played: this doesn't check server-side verification
      */
-    public static boolean playEmote(@Nullable KeyframeAnimation animation, int tick) {
+    public static boolean playEmote(@Nullable Animation animation, int tick) {
         return INSTANCE.playEmoteImpl(animation, tick);
     }
 
@@ -39,7 +38,7 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
      * You can not modify the list.
      * @return Client-side active emotes
      */
-    public static Collection<KeyframeAnimation> clientEmoteList() {
+    public static Collection<Animation> clientEmoteList() {
         return INSTANCE.clientEmoteListImpl();
     }
 
@@ -47,9 +46,9 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
 
     protected static final ClientEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ClientEmoteAPI.class);
 
-    protected abstract boolean playEmoteImpl(KeyframeAnimation animation, int tick);
+    protected abstract boolean playEmoteImpl(Animation animation, int tick);
 
-    protected abstract Collection<KeyframeAnimation> clientEmoteListImpl();
+    protected abstract Collection<Animation> clientEmoteListImpl();
 
     @Override
     public boolean isActive() {

@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.api.events.client;
 
-import dev.kosmx.playerAnim.core.impl.event.Event;
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import com.zigythebird.playeranimcore.event.Event;
+import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 
 /**

@@ -1,19 +1,17 @@
 package io.github.kosmx.emotes.main.mixinFunctions;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
-import net.minecraft.client.CameraType;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public interface IPlayerEntity {
-    CameraType FPPerspective = CameraType.FIRST_PERSON;
+    /*CameraType FPPerspective = CameraType.FIRST_PERSON;
     Supplier<CameraType> TPBPerspective = () -> (PlatformTools.getConfig().frontAsTPPerspective.get() ? CameraType.THIRD_PERSON_FRONT : CameraType.THIRD_PERSON_BACK);
 
     default void initEmotePerspective(EmotePlayer emotePlayer){
@@ -21,9 +19,9 @@ public interface IPlayerEntity {
             emotePlayer.perspective = 1;
             PlatformTools.setPerspective(TPBPerspective.get());
         }
-    }
+    }*/
 
-    default void emotecraft$playEmote(KeyframeAnimation emote, int tick, boolean isForced) {
+    default void emotecraft$playEmote(Animation emote, float tick, boolean isForced) {
         throw new NotImplementedException();
     }
 
@@ -45,22 +43,16 @@ public interface IPlayerEntity {
      */
     default void stopEmote(){
         EmotePlayer emotePlayer = emotecraft$getEmote();
-        if(emotePlayer != null) {
+        if (emotePlayer != null) {
             emotePlayer.stop();
-            this.emotecraft$voidEmote();
         }
     }
 
     default void stopEmote(UUID emoteID){
         EmotePlayer emotePlayer = emotecraft$getEmote();
-        if(emotePlayer != null && emotePlayer.getData().getUuid().equals(emoteID)){
+        if(emotePlayer != null && emotePlayer.getData().uuid().equals(emoteID)){
             emotePlayer.stop();
-            this.emotecraft$voidEmote();
         }
-    }
-
-    default void emotecraft$voidEmote() {
-        throw new NotImplementedException();
     }
 
     default boolean emotecraft$isForcedEmote() {

@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.server.network;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
-import dev.kosmx.playerAnim.core.util.Pair;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
@@ -13,6 +12,7 @@ import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
+import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -70,8 +70,8 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         if (!data.valid && doValidate()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
             if (result != EventResult.FAIL) {
-                EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.getUuid()).configureTarget(getUUIDFromPlayer(instance)).setSizeLimit(0x100000, true);
-                if(instance != null)instance.sendMessage(stopMSG, null);
+                /*EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.getUuid()).configureTarget(getUUIDFromPlayer(instance)).setSizeLimit(0x100000, true);
+                if(instance != null)instance.sendMessage(stopMSG, null); TODO */
                 return;
             }
         }
@@ -103,30 +103,30 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     protected void stopEmote(P player, @Nullable NetData originalMessage) {
-        Pair<KeyframeAnimation, Integer> emote = player.getEmoteTracker().getPlayedEmote();
-        player.getEmoteTracker().setPlayedEmote(null, false);
+        /*Pair<Animation, Integer> emote = player.getEmoteTracker().getPlayedEmote();
+        player.getEmoteTracker().setPlayedEmote(null, false); TODO
         if (emote != null) {
-            ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.getLeft().getUuid(), getUUIDFromPlayer(player));
-            NetData data = new EmotePacket.Builder().configureToSendStop(emote.getLeft().getUuid(), getUUIDFromPlayer(player)).build().data;
+            ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.left().getUuid(), getUUIDFromPlayer(player));
+            NetData data = new EmotePacket.Builder().configureToSendStop(emote.left().getUuid(), getUUIDFromPlayer(player)).build().data;
 
             sendForEveryoneElse(data, player);
             if (originalMessage == null) { //If the stop is not from the player, server needs to notify the player too
                 data.isForced = true;
                 sendForPlayer(data, player, player);
             }
-        }
+        }*/
     }
 
     public void playerStartTracking(P tracked, P tracker) {
         if (tracked == null || tracker == null) return;
-        Pair<KeyframeAnimation, Integer> playedEmote = tracked.getEmoteTracker().getPlayedEmote();
+        Pair<Animation, Integer> playedEmote = tracked.getEmoteTracker().getPlayedEmote();
         if (playedEmote != null) {
-            sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.getLeft()).configureEmoteTick(playedEmote.getRight()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, tracker);
+            sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.left()).configureEmoteTick(playedEmote.right()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracked, tracker);
         }
     }
 
     @Override
-    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation emoteData, int tick, boolean isForced) {
+    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation emoteData, int tick, boolean isForced) {
         if (emoteData != null) {
             EmotePacket packet = new EmotePacket.Builder()
                     .configureToStreamEmote(emoteData)
@@ -140,7 +140,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     @Override
-    protected Pair<KeyframeAnimation, Integer> getPlayedEmoteImpl(UUID player) {
+    protected Pair<Animation, Integer> getPlayedEmoteImpl(UUID player) {
         return getPlayerFromUUID(player).getEmoteTracker().getPlayedEmote();
     }
 

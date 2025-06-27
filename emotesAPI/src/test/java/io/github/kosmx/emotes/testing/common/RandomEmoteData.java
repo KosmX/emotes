@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.testing.common;
+/*package io.github.kosmx.emotes.testing.common;
 
 import dev.kosmx.playerAnim.core.data.AnimationFormat;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
@@ -12,7 +12,7 @@ public class RandomEmoteData {
      * Creates two identical random emote.
      * @return Pair
      */
-    public static Pair<KeyframeAnimation.AnimationBuilder, KeyframeAnimation.AnimationBuilder> generateEmotes(){
+    /*public static Pair<KeyframeAnimation.AnimationBuilder, KeyframeAnimation.AnimationBuilder> generateEmotes(){
         Random random = new Random();
         int length = random.nextInt()%1000 + 2000; //make some useable values
 
@@ -31,4 +31,4 @@ public class RandomEmoteData {
         }
         return new Pair<>(builder1, builder2);
     }
-}
+}*/

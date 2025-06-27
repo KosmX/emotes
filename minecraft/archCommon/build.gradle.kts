@@ -14,11 +14,11 @@ dependencies {
     implementation(project(":emotesServer"))
     api(project(path = ":emotesMc", configuration = "namedElements"))
 
-    modApi("dev.kosmx.player-anim:player-animation-lib:${properties["player_animator_version"] as String}")
-    modImplementation("dev.kosmx.player-anim:anim-core:${properties["player_animator_version"] as String}")
+    modApi("com.zigythebird.playeranim:PlayerAnimationLibCommon:${properties["player_animator_version"] as String}")
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibCore:${properties["player_animator_version"] as String}")
 
     // Third-party
-    compileOnly("com.blamejared.searchables:Searchables-common-${minecraft_version}:${properties["searchables_version"] as String}") {
+    compileOnly("com.blamejared.searchables:Searchables-common-1.21.5:${properties["searchables_version"] as String}") {
         isTransitive = false
     }
 

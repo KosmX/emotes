@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.main.network;
 
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
 import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;

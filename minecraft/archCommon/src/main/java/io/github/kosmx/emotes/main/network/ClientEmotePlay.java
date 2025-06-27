@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.main.network;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
-import dev.kosmx.playerAnim.core.util.Pair;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteAPI;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
@@ -12,6 +11,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainLoader;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -36,11 +36,11 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         clientStartLocalEmote(emoteHolder.getEmote());
     }
 
-    public static boolean clientStartLocalEmote(KeyframeAnimation emote) {
+    public static boolean clientStartLocalEmote(Animation emote) {
         return clientStartLocalEmote(emote, 0);
     }
 
-    public static boolean clientStartLocalEmote(KeyframeAnimation emote, int tick) {
+    public static boolean clientStartLocalEmote(Animation emote, int tick) {
         LocalPlayer player = PlatformTools.getMainPlayer();
         if (player.emotecraft$isForcedEmote()) {
             return false;
@@ -55,7 +55,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         return true;
     }
 
-    public static void clientRepeatLocalEmote(KeyframeAnimation emote, int tick, UUID target) {
+    public static void clientRepeatLocalEmote(Animation emote, float tick, UUID target) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
         packetBuilder.configureToStreamEmote(emote, PlatformTools.getMainPlayer().getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
@@ -73,10 +73,10 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         return player.emotecraft$isForcedEmote();
     }
 
-    public static boolean clientStopLocalEmote(KeyframeAnimation emoteData) {
+    public static boolean clientStopLocalEmote(Animation emoteData) {
         if (emoteData != null && !PlatformTools.getMainPlayer().emotecraft$isForcedEmote()) {
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-            packetBuilder.configureToSendStop(emoteData.getUuid(), PlatformTools.getMainPlayer().getUUID());
+            packetBuilder.configureToSendStop(emoteData.uuid(), PlatformTools.getMainPlayer().getUUID());
             ClientPacketManager.send(packetBuilder, null);
             PlatformTools.getMainPlayer().stopEmote();
 
@@ -125,7 +125,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         }
     }
 
-    static void receivePlayPacket(KeyframeAnimation emoteData, UUID player, int tick, boolean isForced) {
+    static void receivePlayPacket(Animation emoteData, UUID player, float tick, boolean isForced) {
         AbstractClientPlayer playerEntity = PlatformTools.getPlayerFromUUID(player);
         if(isEmoteAllowed(emoteData, player)) {
             EventResult result = ClientEmoteEvents.EMOTE_VERIFICATION.invoker().verify(emoteData, player);
@@ -140,9 +140,8 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         }
     }
 
-    public static boolean isEmoteAllowed(KeyframeAnimation emoteData, UUID player) {
-        return (PlatformTools.getConfig().enablePlayerSafety.get() || !PlatformTools.isPlayerBlocked(player))
-                && (!emoteData.nsfw || PlatformTools.getConfig().enableNSFW.get());
+    public static boolean isEmoteAllowed(Animation emoteData, UUID player) {
+        return (PlatformTools.getConfig().enablePlayerSafety.get() || !PlatformTools.isPlayerBlocked(player));
     }
 
 
@@ -150,14 +149,14 @@ public class ClientEmotePlay extends ClientEmoteAPI {
      * @param uuid get emote for this player
      * @return KeyframeAnimation, current tick of the emote
      */
-    public static @Nullable Pair<KeyframeAnimation, Integer> getEmoteForUUID(UUID uuid) {
+    public static @Nullable Pair<Animation, Float> getEmoteForUUID(UUID uuid) {
         if (QUEUE.containsKey(uuid)) {
             QueueEntry entry = QUEUE.get(uuid);
-            KeyframeAnimation emoteData = entry.emoteData;
-            int tick = entry.beginTick - entry.receivedTick + MainLoader.getTick();
+            Animation emoteData = entry.emoteData;
+            float tick = entry.beginTick - entry.receivedTick + MainLoader.getTick();
             QUEUE.remove(uuid);
             if (!emoteData.isPlayingAt(tick)) return null;
-            return new Pair<>(emoteData, tick);
+            return Pair.of(emoteData, tick);
         }
         return null;
     }
@@ -177,7 +176,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     @Override
-    protected boolean playEmoteImpl(KeyframeAnimation animation, int tick) {
+    protected boolean playEmoteImpl(Animation animation, int tick) {
         if (animation != null) {
             return clientStartLocalEmote(animation, tick);
         } else {
@@ -186,16 +185,16 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     @Override
-    protected Collection<KeyframeAnimation> clientEmoteListImpl() {
+    protected Collection<Animation> clientEmoteListImpl() {
         return EmoteHolder.list.values().stream().map(EmoteHolder::getEmote).collect(Collectors.toList());
     }
 
     static class QueueEntry {
-        final KeyframeAnimation emoteData;
-        final int beginTick;
+        final Animation emoteData;
+        final float beginTick;
         final int receivedTick;
 
-        QueueEntry(KeyframeAnimation emoteData, int begin, int received) {
+        QueueEntry(Animation emoteData, float begin, int received) {
             this.emoteData = emoteData;
             this.beginTick = begin;
             this.receivedTick = received;

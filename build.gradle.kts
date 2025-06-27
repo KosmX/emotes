@@ -27,11 +27,13 @@ subprojects {
             name = "BlameJared Maven"
         }
         maven("https://repo.redlance.org/public")
-        maven("https://libraries.minecraft.net")
-        maven("https://maven.neoforged.net/releases")
-        maven("https://maven.lenni0451.net/snapshots") {
-            name = "Lenni0451"
+        maven("https://libraries.minecraft.net") {
+            content { // Fix issue with lwjgl-freetype not being found on macOS
+                includeModule("org.lwjgl", "lwjgl-freetype")
+            }
         }
+        maven("https://maven.neoforged.net/releases")
+        mavenLocal()
     }
 
     tasks.withType(JavaCompile::class).configureEach {

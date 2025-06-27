@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.EmoteArgumentProvider;
@@ -51,7 +51,7 @@ public class ClientCommands {
         );
     }
 
-    private static Map<UUID, KeyframeAnimation> getEmotes(CommandContext<CommandSourceStack> context) {
+    private static Map<UUID, Animation> getEmotes(CommandContext<CommandSourceStack> context) {
         return EmoteHolder.list.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey, entry -> entry.getValue().emote
         ));

@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.common.network;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
@@ -205,7 +205,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(KeyframeAnimation emoteData, @Nullable UUID player){
+        public Builder configureToStreamEmote(Animation emoteData, @Nullable UUID player){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
@@ -213,7 +213,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToSaveEmote(KeyframeAnimation emoteData){
+        public Builder configureToSaveEmote(Animation emoteData){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("already configured?!");
             data.purpose = PacketTask.FILE;
             data.sizeLimit = Integer.MAX_VALUE;
@@ -221,7 +221,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureEmoteTick(int tick){
+        public Builder configureEmoteTick(float tick) {
             this.data.tick = tick;
             return this;
         }
@@ -231,7 +231,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(KeyframeAnimation emoteData){
+        public Builder configureToStreamEmote(Animation emoteData) {
             return configureToStreamEmote(emoteData, null);
         }
 

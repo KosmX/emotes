@@ -1,31 +1,30 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
 import com.google.gson.JsonParseException;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.data.gson.AnimationSerializing;
-import io.github.kosmx.emotes.server.config.Serializer;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("removal")
-public class JsonEmoteWrapper implements ISerializer {
+public class JsonEmoteWrapper implements IReader {
 
     @Override
-    public List<KeyframeAnimation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
+    public List<Animation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
         try {
-            List<KeyframeAnimation> deserialized = AnimationSerializing.deserializeAnimation(inputStream);
+            Map<String, Animation> deserialized = UniversalAnimLoader.loadPlayerAnim(inputStream);
             if (deserialized == null) throw new IOException("Can't load emote, " + filename + " is empty.");
-            return fixStopTick(deserialized);
-        } catch (JsonParseException | IOException e){
+            return new ArrayList<>(deserialized.values());
+        } catch (JsonParseException | IOException e) {
             throw new EmoteSerializerException("Exception has occurred", getExtension(), e);
         }
     }
 
-    @Override
-    public void write(KeyframeAnimation emote, OutputStream outputStream, String filename) throws EmoteSerializerException {
+    /*@Override
+    public void write(Animation emote, OutputStream outputStream, String filename) throws EmoteSerializerException {
         try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))) {
             AnimationSerializing.writeAnimation(emote, bufferedWriter);
         } catch (Exception e) {
@@ -36,14 +35,14 @@ public class JsonEmoteWrapper implements ISerializer {
     @Override
     public boolean onlyEmoteFile() {
         return true;
-    }
+    }*/
 
     @Override
     public String getExtension() {
         return "json";
     }
 
-    private List<KeyframeAnimation> fixStopTick(List<KeyframeAnimation> deserializeAnimation) {
+    /*private List<KeyframeAnimation> fixStopTick(List<KeyframeAnimation> deserializeAnimation) {
         if (!Serializer.getConfig().autoFixEmoteStop.get()) return deserializeAnimation;
         List<KeyframeAnimation> fixed = new LinkedList<>();
         for (KeyframeAnimation emote: deserializeAnimation) {
@@ -80,5 +79,5 @@ public class JsonEmoteWrapper implements ISerializer {
     private static int lastKeyPos(KeyframeAnimation.StateCollection.State part) {
         if (part.getKeyFrames().isEmpty()) return 0;
         return part.getKeyFrames().getLast().tick;
-    }
+    }*/
 }

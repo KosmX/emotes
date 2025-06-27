@@ -1,37 +1,28 @@
 package io.github.kosmx.emotes.main.emotePlay;
 
-import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranim.animation.PlayerAnimationController;
 
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.AnimationProcessor;
+import com.zigythebird.playeranimcore.enums.PlayState;
+import net.minecraft.client.player.AbstractClientPlayer;
 import org.jetbrains.annotations.Nullable;
-import java.util.function.Consumer;
 
 // modified keyframe animation player to play songs with animations
-public class EmotePlayer extends KeyframeAnimationPlayer {
+public class EmotePlayer extends PlayerAnimationController {
     @Nullable
-    final MinecraftNbsPlayer song;
+    private MinecraftNbsPlayer song;
 
-    /**
-     *
-     * @param emote emote to play
-     * @param noteConsumer {@link Note} consumer
-     * @param t begin playing from tick
-     */
-    public EmotePlayer(KeyframeAnimation emote, Consumer<Note> noteConsumer, int t) {
-        super(emote, t);
-        if (emote.extraData.containsKey("song")) {
+    public EmotePlayer(AbstractClientPlayer player) {
+        super(player, (controller, state, animSetter) -> PlayState.STOP);
+        /*if (emote.extraData.containsKey("song")) {
             this.song = new MinecraftNbsPlayer((Song) emote.extraData.get("song"), noteConsumer, 0);
         } else {
             this.song = null;
-        }
+        }*/
     }
 
-    @Override
+    /*@Override
     public void tick() {
         super.tick();
         if (this.song != null && isActive() && !this.song.isRunning()) {
@@ -39,15 +30,14 @@ public class EmotePlayer extends KeyframeAnimationPlayer {
             if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
             this.song.start();
         }
-    }
+    }*/
 
     @Override
     public void stop() {
+        stopTriggeredAnimation();
         super.stop();
+        this.animationQueue.clear();
         if (this.song != null) this.song.stop();
-        if(this.perspective == 1){
-            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
-        }
     }
 
     /**
@@ -58,5 +48,12 @@ public class EmotePlayer extends KeyframeAnimationPlayer {
      */
     public static boolean isRunningEmote(@Nullable EmotePlayer emote) {
         return emote != null && emote.isActive();
+    }
+
+    @SuppressWarnings("all")
+    public Animation getData() {
+        AnimationProcessor.QueuedAnimation animation = getCurrentAnimation();
+        if (animation == null) return null;
+        return animation.animation();
     }
 }

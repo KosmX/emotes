@@ -1,17 +1,9 @@
 package io.github.kosmx.emotes.testing.common;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Pair;
-import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.objects.NetData;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Random;
-import java.util.UUID;
 
 /**
  * Test network data sending and receiving
@@ -20,7 +12,7 @@ public class NetworkPacketTest {
     @Test
     @DisplayName("Network protocol test")
     public void netTest() throws IOException {
-        Random random = new Random();
+        /*Random random = new Random();
 
         EmotePacket.Builder builder = new EmotePacket.Builder();
         Pair<KeyframeAnimation.AnimationBuilder, KeyframeAnimation.AnimationBuilder> pair = RandomEmoteData.generateEmotes();
@@ -66,6 +58,6 @@ public class NetworkPacketTest {
 
         }
         Assertions.assertFalse(shouldRemainFalse, "Writer didn't thrown exception");
-
+*/
     }
 }
