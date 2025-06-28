@@ -39,7 +39,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
      */
     @Override
     public byte getVer() {
-        return AnimationBinary.CURRENT_VERSION;
+        return (byte) LegacyAnimationBinary.getCurrentVersion();
     }
 
     @Override
