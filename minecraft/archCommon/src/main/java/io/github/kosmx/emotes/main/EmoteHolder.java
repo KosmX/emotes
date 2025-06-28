@@ -274,7 +274,7 @@ public class EmoteHolder implements Supplier<UUID> {
         public Empty(UUID uuid) {
             super(new Animation(new ExtraAnimationData(
                             ExtraAnimationData.NAME_KEY, "{\"color\":\"red\",\"text\":\"INVALID\"}"
-            ), 0, Animation.LoopType.PLAY_ONCE, new ArrayList<>(), UniversalAnimLoader.NO_KEYFRAMES, new HashMap<>(), new HashMap<>()));
+            ), 0, Animation.LoopType.PLAY_ONCE, Collections.emptyMap(), UniversalAnimLoader.NO_KEYFRAMES, new HashMap<>(), new HashMap<>()));
             emote.data().put(ExtraAnimationData.UUID_KEY, uuid);
         }
     }

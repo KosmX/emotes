@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 
 /**
  * Send everything emotes mod data...
@@ -21,7 +23,9 @@ public class EmotePacket {
     public static final HashMap<Byte, Byte> defaultVersions = new HashMap<>();
 
     static {
-        AbstractNetworkPacket tmp = new EmoteDataPacket();
+        AbstractNetworkPacket tmp = new NewAnimPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new EmoteDataPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new PlayerDataPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
@@ -53,6 +57,7 @@ public class EmotePacket {
         });
 
         this.data = data;
+        subPackets.put(new NewAnimPacket());
         subPackets.put(new EmoteDataPacket());
         subPackets.put(new PlayerDataPacket());
         subPackets.put(new StopPacket());
@@ -92,9 +97,15 @@ public class EmotePacket {
         buf.put(data.purpose.id);
         buf.put(partCount.get());
 
+        boolean legacyAnim = false;
+        boolean newAnim = false;
+
         try {
             for (AbstractNetworkPacket packet : this.subPackets.values()) {
-                writeSubPacket(buf, packet);
+                boolean written = writeSubPacket(buf, packet);
+
+                if (packet instanceof EmoteDataPacket) legacyAnim = written;
+                if (packet instanceof NewAnimPacket) newAnim = written;
             }
         } catch (Throwable th) {
             throw new IOException("Exception while writing sub-packages", th);
@@ -102,10 +113,18 @@ public class EmotePacket {
             ((Buffer)buf).flip(); // make it ready to read
         }
 
+        if (legacyAnim && newAnim) {
+            LoggerService.INSTANCE.log(Level.SEVERE, "Used both binary formats");
+        } else if (legacyAnim) {
+            LoggerService.INSTANCE.log(Level.WARNING, "Used legacy binary format");
+        } else if (newAnim) {
+            LoggerService.INSTANCE.log(Level.INFO, "Used new binary format");
+        }
+
         return buf;
     }
 
-    void writeSubPacket(ByteBuffer byteBuffer, AbstractNetworkPacket packetSender) throws IOException {
+    boolean writeSubPacket(ByteBuffer byteBuffer, AbstractNetworkPacket packetSender) throws IOException {
         if(packetSender.doWrite(this.data)){
             //This is not time critical task, HeapByteBuf is more secure and I can wrap it again.
             int len = packetSender.calculateSize(this.data);
@@ -119,7 +138,9 @@ public class EmotePacket {
                         packetSender.getClass(), len, byteBuffer.position() - currentIndex
                 ));
             }
+            return true;
         }
+        return false;
     }
 
     @NotNull

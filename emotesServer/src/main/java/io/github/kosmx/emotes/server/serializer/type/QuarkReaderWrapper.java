@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import com.zigythebird.playeranimcore.misc.EmptyException;
 import io.github.kosmx.emotes.server.config.Serializer;
 
 import java.io.InputStream;
@@ -18,7 +17,7 @@ public class QuarkReaderWrapper implements IReader {
         } catch (Throwable th) {
             throw new EmoteSerializerException("Quark error", getExtension(), th);
         }*/
-        throw new EmoteSerializerException("Quark error", getExtension(), new EmptyException("quark is not supported"));
+        throw new EmoteSerializerException("Quark error", getExtension(), new UnsupportedOperationException("quark is not supported"));
     }
 
     @Override

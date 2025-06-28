@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import com.zigythebird.playeranimcore.network.AnimationBinary;
 import com.zigythebird.playeranimcore.network.LegacyAnimationBinary;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 
@@ -28,7 +27,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
 
     @Override
     public byte getID() {
-        return PacketConfig.ANIMATION_FORMAT;
+        return PacketConfig.LEGACY_ANIMATION_FORMAT;
     }
 
     /**
@@ -44,7 +43,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
 
     @Override
     public boolean doWrite(NetData data) {
-        return data.emoteData != null && data.stopEmoteID == null;
+        return data.emoteData != null && data.stopEmoteID == null && !data.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT);
     }
 
     /*
@@ -56,7 +55,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
      */
     @Override
     public int calculateSize(NetData config) {
-        if (config.emoteData == null) return 0;
+        if (config.emoteData == null || config.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT)) return 0;
         return LegacyAnimationBinary.calculateSize(config.emoteData, getVer(config.versions)) + 4;
     }
 }
