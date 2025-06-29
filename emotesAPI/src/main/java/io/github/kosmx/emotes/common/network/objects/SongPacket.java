@@ -36,12 +36,7 @@ public class SongPacket extends AbstractNetworkPacket{
                 }
             }
 
-            case 1 -> {
-                LegacyNBSPacket reader = new LegacyNBSPacket();
-                reader.read(byteBuffer);
-                yield reader.getSong();
-            }
-
+            case 1 -> LegacyNBSPacket.read(byteBuffer);
             default -> null;
         };
         config.extraData.put("song", song);
@@ -61,8 +56,7 @@ public class SongPacket extends AbstractNetworkPacket{
                 throw new IOException(e);
             }
         } else {
-            LegacyNBSPacket writer = new LegacyNBSPacket((NbsSong) song);
-            writer.write(byteBuffer);
+            LegacyNBSPacket.write((NbsSong) song, byteBuffer);
         }
     }
 

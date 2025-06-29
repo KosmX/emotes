@@ -14,26 +14,8 @@ import java.util.Map;
 
 @Deprecated
 public class LegacyNBSPacket {
-    NbsSong song;
-    int version = 1;
-    final int packetVersion = 1;
-
-    boolean valid = true;
-
-    public LegacyNBSPacket(NbsSong song) {
-        this.song = song;
-    }
-
-    public LegacyNBSPacket() {
-
-    }
-
-    public NbsSong getSong() {
-        return song;
-    }
-
-    public void write(ByteBuffer buf){
-        buf.putInt(packetVersion); //reserved for later use/changes
+    public static void write(NbsSong song, ByteBuffer buf) {
+        buf.putInt(1); //reserved for later use/changes
         buf.put((byte) 0);
         buf.put((byte) song.getVanillaInstrumentCount());
         buf.putShort(song.getTempo()); //that one is important;
@@ -42,10 +24,10 @@ public class LegacyNBSPacket {
         buf.put(song.getMaxLoopCount());
         buf.putShort(song.getLoopStartTick());
         buf.putShort((short) song.getLayers().size());
-        writeLayersAndNotes(buf);
+        writeLayersAndNotes(song, buf);
     }
 
-    public void writeLayersAndNotes(ByteBuffer buf){
+    private static void writeLayersAndNotes(NbsSong song, ByteBuffer buf) {
         for (Map.Entry<Integer, NbsLayer> layerEntry : song.getLayers().entrySet()) {
             NbsLayer layer = layerEntry.getValue();
             buf.put(layer.getVolume());
@@ -68,10 +50,10 @@ public class LegacyNBSPacket {
     /**
      *
      * @param buf input ByteBuf
-     * @return true if reading was success
+     * @return nbs song
      */
-    public boolean read(ByteBuffer buf) throws IOException {
-        version = buf.getInt();
+    public static NbsSong read(ByteBuffer buf) throws IOException {
+        buf.getInt(); // version
         buf.get(); // sendExtraData
         NbsSong builder = new NbsSong();
         builder.setVersion((byte) 5);
@@ -85,17 +67,14 @@ public class LegacyNBSPacket {
 
         builder.setLayerCount(buf.getShort());
 
-        this.song = builder;
-        readLayersAndNotes(buf);
-
-        return valid;
+        readLayersAndNotes(builder, buf);
+        return builder;
     }
 
-    void readLayersAndNotes(ByteBuffer buf) {
-        Map<Integer, NbsLayer> layers = this.song.getLayers();
+    private static void readLayersAndNotes(NbsSong song, ByteBuffer buf) {
+        Map<Integer, NbsLayer> layers = song.getLayers();
         if (song.getLayerCount() != layers.size()) {
             if (!layers.isEmpty()) {
-                this.valid = false;
                 return;
             }
 
@@ -125,7 +104,7 @@ public class LegacyNBSPacket {
                 length = Math.max(length, tick);
             }
         }
-        this.song.setLength((short) length);
+        song.setLength((short) length);
 
         { // Fill generalized song structure with data
             song.getTempoEvents().set(0, song.getTempo() / 100F);
