@@ -49,12 +49,15 @@ public class EmotePacket {
 
     protected EmotePacket(@NotNull NetData data) {
         //Make sure every packet has a version...
-        if(data.versions == null)data.versions = new HashMap<>();
-        defaultVersions.forEach((aByte, bByte) -> {
-            if(!data.versions.containsKey(aByte)){
-                data.versions.put(aByte, bByte);
-            }
-        });
+        if (data.versions == null || data.versions.isEmpty()) {
+            data.versions = new HashMap<>(defaultVersions);
+        } /*else {
+            defaultVersions.forEach((aByte, bByte) -> {
+                if(!data.versions.containsKey(aByte)){
+                    data.versions.put(aByte, bByte);
+                }
+            });
+        }*/
 
         this.data = data;
         subPackets.put(new NewAnimPacket());

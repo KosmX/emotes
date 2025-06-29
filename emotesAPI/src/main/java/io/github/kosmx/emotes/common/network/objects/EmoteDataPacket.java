@@ -22,7 +22,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public void read(ByteBuffer buf, NetData config, int version) throws IOException {
         config.tick = buf.getInt();
         config.emoteData = LegacyAnimationBinary.read(buf, version);
-        config.valid = config.emoteData.data().<Boolean>get("valid").orElse(false);
+        config.valid = true;
     }
 
     @Override
