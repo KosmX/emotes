@@ -11,6 +11,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 
 import java.io.IOException;
 
@@ -20,25 +21,32 @@ public class ForgeNetwork {
     public static void registerPlay(final RegisterPayloadHandlersEvent event) {
         event.registrar("emotecraft") // Play networking
                 .optional()
-                .playBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER,
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.unwrapBytes(), playPayloadContext.player()),
-                        (arg, playPayloadContext) -> ClientNetwork.INSTANCE.receiveMessage(arg.unwrapBytes())
-                )
+                .playBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER, new DirectionalPayloadHandler<>(
+                        (arg, playPayloadContext) -> ClientNetwork.INSTANCE.receiveMessage(arg.unwrapBytes()),
+                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.unwrapBytes(), playPayloadContext.player())
+                ))
 
                 .optional()
-                .playBidirectional(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER,
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player()),
+                .playBidirectional(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER, new DirectionalPayloadHandler<>(
                         (arg, playPayloadContext) -> {
                             try {
                                 ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), null);
                             } catch (IOException e) {
                                 CommonData.LOGGER.error("", e);
                             }
-                        }
-                )
+                        },
+                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player())
+                ))
 
                 .optional()
-                .configurationBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER,
+                .configurationBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER, new DirectionalPayloadHandler<>(
+                        (arg, configurationPayloadContext) -> {
+                            try {
+                                ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
+                            } catch (IOException e) {
+                                CommonData.LOGGER.error("", e);
+                            }
+                        },
                         (arg, configurationPayloadContext) -> {
                             try {
                                 var message = new EmotePacket.Builder().build().read(arg.bytes());
@@ -53,15 +61,8 @@ public class ForgeNetwork {
                                 CommonData.LOGGER.error("", e);
                                 configurationPayloadContext.disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
                             }
-                        },
-                        (arg, configurationPayloadContext) -> {
-                            try {
-                                ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
-                            } catch (IOException e) {
-                                CommonData.LOGGER.error("", e);
-                            }
                         }
-                )
+                ))
 
                 .optional()
                 .configurationToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER, (arg, configurationPayloadContext) -> {
