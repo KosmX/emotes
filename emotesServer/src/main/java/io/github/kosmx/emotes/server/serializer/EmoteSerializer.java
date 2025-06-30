@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import net.raphimc.noteblocklib.NoteBlockLib;
@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 /**
@@ -42,7 +41,7 @@ public class EmoteSerializer {
                 emotes.addAll(serializeExternalEmote(file, folderPath));
             });
         } catch (Throwable e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to walk emotes!", e);
+            CommonData.LOGGER.warn("Failed to walk emotes!", e);
         }
     }
 
@@ -71,7 +70,7 @@ public class EmoteSerializer {
                         emote.data().put("iconData", byteBuffer);
                     }
                 } catch (Throwable th) {
-                    LoggerService.INSTANCE.log(Level.WARNING, "Error while reading icon: " + icon.getFileName(), th);
+                    CommonData.LOGGER.warn("Error while reading icon: {}", icon.getFileName(), th);
                 }
             }
 
@@ -84,13 +83,13 @@ public class EmoteSerializer {
                         emote.data().put("song", nbs);
                     }
                 } catch (Throwable th) {
-                    LoggerService.INSTANCE.log(Level.WARNING, "Error while reading song: " + song.getFileName(), th);
+                    CommonData.LOGGER.warn("Error while reading song: {}", song.getFileName(), th);
                 }
             }
 
             return emotes;
         } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Error while importing external emote: " + file.getFileName(), th);
+            CommonData.LOGGER.warn("Error while importing external emote: {}", file.getFileName(), th);
             return Collections.emptyList();
         }
     }

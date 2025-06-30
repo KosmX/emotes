@@ -1,12 +1,11 @@
 package io.github.kosmx.emotes.server.config;
 
 import com.google.gson.*;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
 
 import java.lang.reflect.Type;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 
 public class ConfigSerializer<T extends SerializableConfig> implements JsonDeserializer<T>, JsonSerializer<T> {
     protected final Supplier<T> configSuppler;
@@ -24,10 +23,10 @@ public class ConfigSerializer<T extends SerializableConfig> implements JsonDeser
             config.configVersion = node.get("config_version").getAsInt();
 
         if (config.configVersion < SerializableConfig.staticConfigVersion) {
-            LoggerService.INSTANCE.log(Level.FINE, "Serializing config with older version...");
+            CommonData.LOGGER.debug("Serializing config with older version...");
 
         } else if (config.configVersion > SerializableConfig.staticConfigVersion) {
-            LoggerService.INSTANCE.log(Level.WARNING, "You are trying to load version " + config.configVersion + " config. The mod can only load correctly up to v" + SerializableConfig.staticConfigVersion + ". If you won't modify any config, I won't overwrite your config file.");
+            CommonData.LOGGER.warn("You are trying to load version {} config. The mod can only load correctly up to {}. If you won't modify any config, I won't overwrite your config file.", config.configVersion, SerializableConfig.staticConfigVersion);
         }
 
         config.iterate(entry -> deserializeEntry(entry, node, context));

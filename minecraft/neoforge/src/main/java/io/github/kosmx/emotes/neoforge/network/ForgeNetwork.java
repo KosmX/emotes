@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.neoforge.network;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
@@ -15,9 +14,8 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CommonData.MOD_ID)
 public class ForgeNetwork {
     @SubscribeEvent
     public static void registerPlay(final RegisterPayloadHandlersEvent event) {
@@ -34,7 +32,7 @@ public class ForgeNetwork {
                             try {
                                 ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), null);
                             } catch (IOException e) {
-                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                                CommonData.LOGGER.error("", e);
                             }
                         },
                         (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player())
@@ -46,7 +44,7 @@ public class ForgeNetwork {
                             try {
                                 ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
                             } catch (IOException e) {
-                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                                CommonData.LOGGER.error("", e);
                             }
                         },
                         (arg, configurationPayloadContext) -> {
@@ -60,7 +58,7 @@ public class ForgeNetwork {
                                 );
                                 configurationPayloadContext.finishCurrentTask(ConfigTask.TYPE);
                             } catch (IOException e) {
-                                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                                CommonData.LOGGER.error("", e);
                                 configurationPayloadContext.disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
                             }
                         }
@@ -71,7 +69,7 @@ public class ForgeNetwork {
                     try {
                         ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
                     } catch (IOException e) {
-                        LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                        CommonData.LOGGER.error("", e);
                     }
                 });
     }
@@ -83,7 +81,7 @@ public class ForgeNetwork {
 
             event.register(new ConfigTask());
         } else {
-            LoggerService.INSTANCE.log(Level.FINE, "Client doesn't support emotes, ignoring");
+            CommonData.LOGGER.debug("Client doesn't support emotes, ignoring");
         }
     }
 }

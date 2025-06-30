@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = CommonData.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.DEDICATED_SERVER)
+@EventBusSubscriber(modid = CommonData.MOD_ID, value = Dist.DEDICATED_SERVER)
 public class NeoPermissionService implements IPermissionService {
     private static final Map<String, PermissionNode<Boolean>> NODES = new HashMap<>();
 

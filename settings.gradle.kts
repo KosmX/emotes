@@ -18,7 +18,7 @@ include("emotesMc")
 include("minecraft")
 include("minecraft:archCommon")
 include("minecraft:fabric")
-// include("minecraft:neoforge")
+include("minecraft:neoforge")
 
 // Paper plugin
 include("paper")

@@ -20,6 +20,6 @@ public class VanillaPermissionService implements IPermissionService {
 
     @Override
     public int getPriority() {
-        return ServiceLoaderUtil.LOWEST_SYSTEM_PRIORITY;
+        return ServiceLoaderUtil.LOWEST_PRIORITY;
     }
 }

@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.tools.MathHelper;
@@ -20,7 +19,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class UniversalEmoteSerializer {
@@ -143,7 +141,7 @@ public class UniversalEmoteSerializer {
 
             HIDDEN_SERVER_EMOTES.addAll(emotes);
         } catch (EmoteSerializerException | IOException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to load built-in emote!", e);
+            CommonData.LOGGER.warn("Failed to load built-in emote!", e);
         }
     }
 
@@ -173,7 +171,7 @@ public class UniversalEmoteSerializer {
             try {
                 return new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000, false).setVersion(compatibilityMap).build().write();
             } catch (IOException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to prepare emote packet!", e);
+                CommonData.LOGGER.warn("Failed to prepare emote packet!", e);
                 return null;
             }
         }).filter(Objects::nonNull);

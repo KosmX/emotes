@@ -4,9 +4,8 @@ import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
 import com.zigythebird.playeranim.animation.PlayerAnimManager;
 import com.zigythebird.playeranimcore.animation.Animation;
-import com.zigythebird.playeranimcore.animation.EasingType;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -17,8 +16,6 @@ import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-
-import java.util.logging.Level;
 
 public class PlayerPreview extends AbstractWidget implements LayoutElement {
     protected final boolean renderBackround;
@@ -59,7 +56,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         try {
             InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
         } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to render entity preview!", th);
+            CommonData.LOGGER.warn("Failed to render entity preview!", th);
         }
 
         guiGraphics.disableScissor();
@@ -84,7 +81,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
             try {
                 this.player.tick();
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to tick entity preview!", th);
+                CommonData.LOGGER.warn("Failed to tick entity preview!", th);
             }
         } else {
             this.animTime = Math.min(1.0F, this.animTime + 0.1F);

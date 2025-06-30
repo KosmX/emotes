@@ -1,21 +1,20 @@
 package io.github.kosmx.emotes.common.tools;
 
 import io.github.kosmx.emotes.api.services.IEmotecraftService;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class ServiceLoaderUtil {
     private static final Comparator<IEmotecraftService> COMPARATOR = Comparator.comparingInt(IEmotecraftService::getPriority);
 
     public static final int DEFAULT_PRIORITY = 0;
-    public static final int HIGHEST_SYSTEM_PRIORITY = 1000;
-    public static final int LOWEST_SYSTEM_PRIORITY = -1000;
+    public static final int HIGHEST_PRIORITY = 1000;
+    public static final int LOWEST_PRIORITY = -1000;
 
     public static <T extends IEmotecraftService> Stream<T> loadServices(Class<T> serviceClass) {
         ModuleLayer layer = ServiceLoaderUtil.class.getModule().getLayer(); // NeoForge compat?
@@ -43,11 +42,7 @@ public class ServiceLoaderUtil {
 
     public static <T extends IEmotecraftService> Optional<T> loadOptionalService(Class<T> serviceClass) {
         Optional<T> optional = ServiceLoaderUtil.loadServices(serviceClass).max(COMPARATOR);
-
-        optional.ifPresent(service -> (service instanceof LoggerService loggerService ?
-                loggerService : LoggerService.INSTANCE).log(Level.FINE, "Selected service: " + toString(service))
-        );
-
+        optional.ifPresent(service -> CommonData.LOGGER.debug("Selected service {} for {}", toString(service), serviceClass.getName()));
         return optional;
     }
 

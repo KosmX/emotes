@@ -3,9 +3,9 @@ package io.github.kosmx.emotes.arch.network.client;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import io.github.kosmx.emotes.common.network.PacketTask;
@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 /**
  * Don't forget to fire events:
@@ -80,7 +79,9 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Override
     public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
         sendPlayPacket(playPacket(byteBuffer));
-        LoggerService.INSTANCE.log(Level.FINE, "Sent packet size is " + byteBuffer.remaining() + " byte(s).");
+        if (byteBuffer.remaining() >= CommonData.MAX_PACKET_SIZE) {
+            CommonData.LOGGER.error("Sent packet size is {} byte(s)!", byteBuffer.remaining());
+        }
     }
 
     @ExpectPlatform
@@ -124,7 +125,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         } else if (packet.purpose == PacketTask.FILE) {
             EmoteHolder.addEmoteToList(packet.emoteData, this);
         } else {
-            LoggerService.INSTANCE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
+            CommonData.LOGGER.warn("Invalid emotes packet type in configuration phase: " + packet.purpose);
         }
     }
 
@@ -135,7 +136,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Deprecated
     public void configureOnPlay(@NotNull Consumer<Packet<?>> consumer) {
         if (!this.isConfiguredNormally && isActive()) {
-            LoggerService.INSTANCE.log(Level.WARNING, "The server failed to configure the client, attempting to configure...");
+            CommonData.LOGGER.warn("The server failed to configure the client, attempting to configure...");
 
             sendC2SConfig(p -> {
                 try {

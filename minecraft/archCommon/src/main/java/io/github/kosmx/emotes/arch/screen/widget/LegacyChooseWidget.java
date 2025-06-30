@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
@@ -14,7 +14,6 @@ import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class LegacyChooseWidget implements IChooseWheel {
 
@@ -182,7 +181,7 @@ public class LegacyChooseWidget implements IChooseWheel {
                 if (PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] != null) {
                     drawCenteredText(matrices, EmoteHolder.getNonNull(PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id]).name, this.angle);
                 } else {
-                    LoggerService.INSTANCE.log(Level.WARNING, "Tried to render non-existing name");
+                    CommonData.LOGGER.warn("Tried to render non-existing name");
                 }
             }
         }

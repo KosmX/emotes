@@ -30,8 +30,8 @@ public class NetworkPacketTest {
 
         NetData data = new EmotePacket.Builder().build().read(ByteBuffer.wrap(bytes)); //That read expression is kinda funny
         Assertions.assertNotNull(data, "Data should be not null");
-        //Assertions.assertEquals(pair.left(), data.emoteData, "The received data should contain the same emote");
-        //Assertions.assertEquals(pair.left().hashCode(), data.emoteData.hashCode(), "The received data should contain the same emote");
+        Assertions.assertEquals(pair.left().boneAnimations(), data.emoteData.boneAnimations(), "The received data should contain the same emote");
+        Assertions.assertEquals(pair.left().boneAnimations().hashCode(), data.emoteData.boneAnimations().hashCode(), "The received data should contain the same emote");
 
 
         UUID randID = UUID.randomUUID();

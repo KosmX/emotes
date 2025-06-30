@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.common.network;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 
 /**
  * Send everything emotes mod data...
@@ -117,11 +115,11 @@ public class EmotePacket {
         }
 
         if (legacyAnim && newAnim) {
-            LoggerService.INSTANCE.log(Level.SEVERE, "Used both binary formats");
+            CommonData.LOGGER.error("Used both binary formats");
         } else if (legacyAnim) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Used legacy binary format");
+            CommonData.LOGGER.warn("Used legacy binary format");
         } else if (newAnim) {
-            LoggerService.INSTANCE.log(Level.INFO, "Used new binary format");
+            CommonData.LOGGER.info("Used new binary format");
         }
 
         return buf;

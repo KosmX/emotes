@@ -9,7 +9,7 @@ import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
@@ -33,7 +33,6 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -87,7 +86,7 @@ public class EmoteHolder implements Supplier<UUID> {
             try {
                 components.add(McUtils.fromJson(element, RegistryAccess.EMPTY));
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to serialize bage!", th);
+                CommonData.LOGGER.warn("Failed to serialize bage!", th);
             }
         }
         return Collections.unmodifiableList(components);
@@ -126,7 +125,7 @@ public class EmoteHolder implements Supplier<UUID> {
                     new DynamicTexture(this.iconIdentifier::toString, NativeImage.read(stream))
             );
         } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Can't open emote icon!", th);
+            CommonData.LOGGER.warn("Can't open emote icon!", th);
             this.iconIdentifier = null;
 
             /*if (!PlatformTools.getConfig().neverRemoveBadIcon.get()) {

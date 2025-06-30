@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.fabric.network;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.common.CommonData;
@@ -13,7 +12,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 public final class ServerNetworkStuff {
     public static void init() {
@@ -28,7 +26,7 @@ public final class ServerNetworkStuff {
 
                 handler.addTask(new ConfigTask());
             } else {
-                LoggerService.INSTANCE.log(Level.FINE, "Client doesn't support emotes, ignoring");
+                CommonData.LOGGER.debug("Client doesn't support emotes, ignoring");
             }
             // No disconnect, vanilla clients can connect
         });
@@ -44,7 +42,7 @@ public final class ServerNetworkStuff {
                 );
                 context.networkHandler().completeTask(ConfigTask.TYPE); // And, we're done here
             } catch (IOException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                CommonData.LOGGER.error("", e);
                 context.networkHandler().disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
             }
         });

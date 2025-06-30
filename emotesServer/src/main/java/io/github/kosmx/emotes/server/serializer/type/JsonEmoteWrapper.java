@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("removal")
 public class JsonEmoteWrapper implements IReader {
 
     @Override
     public List<Animation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
         try {
-            Map<String, Animation> deserialized = UniversalAnimLoader.loadPlayerAnim(inputStream);
+            Map<String, Animation> deserialized = UniversalAnimLoader.loadAnimations(inputStream);
             if (deserialized == null) throw new IOException("Can't load emote, " + filename + " is empty.");
             return new ArrayList<>(deserialized.values());
         } catch (JsonParseException | IOException e) {

@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.bukkit.fuckery;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
 import net.minecraft.network.codec.StreamCodec;
@@ -12,7 +12,6 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 @SuppressWarnings({"unchecked", "deprecation"})
 public class StreamCodecUtils {
@@ -44,7 +43,7 @@ public class StreamCodecUtils {
             }
         }
         if (exception != null) {
-            LoggerService.INSTANCE.log(Level.INFO, Arrays.toString(codec.getClass().getDeclaredFields()));
+            CommonData.LOGGER.info(Arrays.toString(codec.getClass().getDeclaredFields()));
             throw exception;
         }
     }
@@ -54,7 +53,7 @@ public class StreamCodecUtils {
             VarHandle varHandle = TRUSTED_LOOKUP.findVarHandle(codec.getClass(), "this$0", StreamCodec.class);
             return (StreamCodec<? extends ByteBuf, ? extends Packet<?>>) varHandle.get(codec);
         } catch (ReflectiveOperationException ex) {
-            LoggerService.INSTANCE.log(Level.INFO, Arrays.toString(codec.getClass().getDeclaredFields()));
+            CommonData.LOGGER.info(Arrays.toString(codec.getClass().getDeclaredFields()));
             throw ex;
         }
     }

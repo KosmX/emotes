@@ -5,7 +5,7 @@ import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * This will be used for modded servers
@@ -41,7 +40,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     public void receiveMessage(NetData data, P instance) throws IOException {
-        LoggerService.INSTANCE.log(Level.FINEST, "[emotes server] Received data from: " + instance + " data: " + data);
+        CommonData.LOGGER.trace("[emotes server] Received data from: {} data: {}", instance, data);
         switch (data.purpose){
             case STOP:
                 stopEmote(instance, data);
@@ -76,11 +75,11 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
             }
         }
         if (data.player != null && instance.trackPlayState()) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Player: " + instance + " does not respect server-side emote tracking. Ignoring repeat");
-            return;
+            CommonData.LOGGER.warn("Player {} does not respect server-side emote tracking", instance);
         }
         if (instance.getEmoteTracker().isForced()) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Player: " + instance + " is disobeying force play flag and tried to override it");
+            CommonData.LOGGER.warn("Player {} is disobeying force play flag and tried to override it", instance);
+            return;
         }
         streamEmote(data, instance, false, true);
     }
@@ -154,7 +153,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         try {
             instance.sendMessage(getS2CConfigPacket(trackPlayState), null);
         } catch(IOException e) {
-            LoggerService.INSTANCE.log(Level.SEVERE, "Failed to send config to client!", e);
+            CommonData.LOGGER.error("Failed to send config to client!", e);
         }
         if(instance.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
             UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).forEach(buffer ->
@@ -190,7 +189,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
             packetBuilder.setVersion(target.getRemoteVersions());
             target.sendMessage(packetBuilder, null);
         } catch (Exception e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);
+            CommonData.LOGGER.warn("Failed to send packet!", e);
         }
     }
 

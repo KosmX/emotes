@@ -6,7 +6,7 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteAPI;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ClientEmotePlay extends ClientEmoteAPI {
@@ -87,9 +86,9 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     static void executeMessage(NetData data, INetworkInstance networkInstance) throws NullPointerException {
-        LoggerService.INSTANCE.log(Level.FINE, "[emotes client] Received message: " + data);
+        CommonData.LOGGER.trace("[emotes client] Received message: {}", data);
         if (data.purpose == null) {
-            LoggerService.INSTANCE.log(Level.INFO, "Packet execution is not possible without a purpose");
+            CommonData.LOGGER.error("Packet execution is not possible without a purpose");
             return;
         }
 
@@ -115,12 +114,12 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 break;
             case CONFIG:
                 networkInstance.setVersions(Objects.requireNonNull(data.versions));
-                LoggerService.INSTANCE.log(Level.INFO, "Legacy versions was received: " + data.versions);
+                CommonData.LOGGER.warn("Legacy versions was received: {}", data.versions);
                 break;
             case FILE:
                 EmoteHolder.addEmoteToList(data.emoteData, networkInstance);
             case UNKNOWN:
-                LoggerService.INSTANCE.log(Level.WARNING, "Packet execution is not possible unknown purpose");
+                CommonData.LOGGER.error("Packet execution is not possible unknown purpose");
                 break;
         }
     }

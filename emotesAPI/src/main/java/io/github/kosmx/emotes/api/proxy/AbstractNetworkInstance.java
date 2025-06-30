@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.api.proxy;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 
@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 /**
  * Implement this if you want to act as a proxy for EmoteX
@@ -145,7 +144,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
         try {
             consumer.accept(packetBuilder);
         } catch (Exception e){
-            LoggerService.INSTANCE.log(Level.WARNING, "Error while writing packet!", e);
+            CommonData.LOGGER.warn("Error while writing packet!", e);
         }
     }
 }

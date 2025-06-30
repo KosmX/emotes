@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.arch.screen;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.type.ISerializer;
@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.logging.Level;
 
 public class ExportMenu extends Screen {
     private static final Component TITLE = Component.translatable("emotecraft.options.export");
@@ -75,7 +74,7 @@ public class ExportMenu extends Screen {
                 continue;
             }
 
-            LoggerService.INSTANCE.log(Level.FINE, "Saving " + emoteHolder.name.getString() + " into " + format.getExtension());
+            CommonData.LOGGER.debug("Saving {} into {}", emoteHolder.name.getString(), format.getExtension());
             try {
                 Path exportDir = InstanceService.INSTANCE.getExternalEmoteDir().resolve(format.getExtension() + "_export");
                 if (!exportDir.toFile().isDirectory()) {
@@ -105,7 +104,7 @@ public class ExportMenu extends Screen {
                     }
                 }
             } catch (Exception e) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to export!", e);
+                CommonData.LOGGER.warn("Failed to export!", e);
                 PlatformTools.addToast(Component.translatable(
                         "emotecraft.export.error", format.getExtension()
                 ), emoteHolder.name);
@@ -114,7 +113,7 @@ public class ExportMenu extends Screen {
         PlatformTools.addToast(Component.translatable(
                 "emotecraft.export.done", format.getExtension()
         ), Component.literal("emotes/" + format.getExtension() + "_export/"));
-        LoggerService.INSTANCE.log(Level.INFO, "All emotes are saved in " + format.getExtension() + " format!");
+        CommonData.LOGGER.info("All emotes are saved in {} format!", format.getExtension());
     }
 
     private static Path createFileName(EmoteHolder emote, Path originPath, String format) {
