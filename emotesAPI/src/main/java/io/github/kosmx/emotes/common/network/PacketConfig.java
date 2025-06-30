@@ -14,7 +14,7 @@ public final class PacketConfig {
 
     /**
      * Max animation version supported by the other side.
-     * (playeranimator)
+     * (playeranimationlib)
      */
     public static final byte NEW_ANIMATION_FORMAT = (byte) 0x99;
 

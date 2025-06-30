@@ -29,7 +29,7 @@ subprojects {
         configurations.getByName("minecraft")("com.mojang:minecraft:${minecraft_version}")
         configurations.getByName("mappings")(loom.layered {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
+            parchment("org.parchmentmc.data:parchment-1.21.6:${parchment_version}@zip")
         })
     }
 }
