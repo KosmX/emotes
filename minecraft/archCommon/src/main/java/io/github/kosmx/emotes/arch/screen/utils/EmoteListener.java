@@ -65,7 +65,12 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
 
     public void blockWhileLoading() {
         if (this.loader != null && !this.loader.isDone() && !this.loader.isCompletedExceptionally()) {
-            this.loader.join();
+            try {
+                this.loader.get(10, TimeUnit.SECONDS);
+            } catch (Throwable th) {
+                LoggerService.INSTANCE.log(Level.WARNING, "Failed to wait for emote loading!", th);
+                this.loader.cancel(true);
+            }
         }
     }
 }
