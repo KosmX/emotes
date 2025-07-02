@@ -49,10 +49,6 @@ public final class PlatformTools {
         return Minecraft.getInstance().isBlocked(uuid);
     }
 
-    public static LocalPlayer getMainPlayer() {
-        return Minecraft.getInstance().player;
-    }
-
     public static CameraType getPerspective() {
         return Minecraft.getInstance().options.getCameraType();
     }

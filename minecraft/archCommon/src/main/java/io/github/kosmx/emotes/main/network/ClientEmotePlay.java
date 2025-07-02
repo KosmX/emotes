@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main.network;
 
+import com.zigythebird.playeranim.util.ClientUtil;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.PlatformTools;
@@ -40,7 +41,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     public static boolean clientStartLocalEmote(Animation emote, int tick) {
-        LocalPlayer player = PlatformTools.getMainPlayer();
+        LocalPlayer player = ClientUtil.getClientPlayer();
         if (player.emotecraft$isForcedEmote()) {
             return false;
         }
@@ -56,28 +57,27 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     public static void clientRepeatLocalEmote(Animation emote, float tick, UUID target) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToStreamEmote(emote, PlatformTools.getMainPlayer().getUUID()).configureEmoteTick(tick);
+        packetBuilder.configureToStreamEmote(emote, ClientUtil.getClientPlayer().getUUID()).configureEmoteTick(tick);
         ClientPacketManager.send(packetBuilder, target);
     }
 
     public static boolean clientStopLocalEmote() {
-        if (PlatformTools.getMainPlayer().isPlayingEmote()) {
-            return clientStopLocalEmote(PlatformTools.getMainPlayer().emotecraft$getEmote().getData());
+        if (ClientUtil.getClientPlayer().isPlayingEmote()) {
+            return clientStopLocalEmote(ClientUtil.getClientPlayer().emotecraft$getEmote().getData());
         }
         return false;
     }
 
     public static boolean isForcedEmote() {
-        LocalPlayer player = PlatformTools.getMainPlayer();
-        return player.emotecraft$isForcedEmote();
+        return ClientUtil.getClientPlayer().emotecraft$isForcedEmote();
     }
 
-    public static boolean clientStopLocalEmote(Animation emoteData) {
-        if (emoteData != null && !PlatformTools.getMainPlayer().emotecraft$isForcedEmote()) {
+    public static boolean clientStopLocalEmote(@Nullable Animation emoteData) {
+        if (emoteData != null && !ClientUtil.getClientPlayer().emotecraft$isForcedEmote()) {
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-            packetBuilder.configureToSendStop(emoteData.uuid(), PlatformTools.getMainPlayer().getUUID());
+            packetBuilder.configureToSendStop(emoteData.uuid(), ClientUtil.getClientPlayer().getUUID());
             ClientPacketManager.send(packetBuilder, null);
-            PlatformTools.getMainPlayer().stopEmote();
+            ClientUtil.getClientPlayer().stopEmote();
 
             ClientEmoteEvents.LOCAL_EMOTE_STOP.invoker().onEmoteStop();
             return true;

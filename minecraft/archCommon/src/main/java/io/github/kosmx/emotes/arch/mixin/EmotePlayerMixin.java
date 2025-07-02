@@ -2,9 +2,8 @@ package io.github.kosmx.emotes.arch.mixin;
 
 import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
+import com.zigythebird.playeranim.util.ClientUtil;
 import com.zigythebird.playeranimcore.animation.Animation;
-import com.zigythebird.playeranimcore.animation.RawAnimation;
-import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -19,15 +18,16 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.raphimc.noteblocklib.model.Note;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import org.jetbrains.annotations.Nullable;
-
-//Mixin it into the player is way easier than storing it somewhere else...
+/**
+ * Mixin it into the player is way easier than storing it somewhere else...
+ */
 @Mixin(AbstractClientPlayer.class)
 public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
 
@@ -52,7 +52,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     @Override
     public void emotecraft$playEmote(Animation emote, float tick, boolean isForced) {
         stopEmote();
-        this.emotecraft$container.triggerAnimation(RawAnimation.begin().thenPlay(emote), tick);
+        this.emotecraft$container.triggerAnimation(emote, tick);
         // this.initEmotePerspective(emotecraft$container.getAnim());
         if (this.isMainPlayer()) this.emotecraft$isForced = isForced;
     }
@@ -73,9 +73,8 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
         }
     }
 
-    @Nullable
     @Override
-    public EmotePlayer emotecraft$getEmote() {
+    public @NotNull EmotePlayer emotecraft$getEmote() {
         return this.emotecraft$container;
     }
 
@@ -88,8 +87,8 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(p.left(), p.right(), getUUID());
                     this.emotecraft$playEmote(p.left(), p.right(), false);
                 }
-                if(!this.isMainPlayer() && PlatformTools.getMainPlayer() != null && PlatformTools.getMainPlayer().isPlayingEmote()){
-                    IPlayerEntity playerEntity = PlatformTools.getMainPlayer();
+                if(!this.isMainPlayer() && ClientUtil.getClientPlayer() != null && ClientUtil.getClientPlayer().isPlayingEmote()){
+                    IPlayerEntity playerEntity = ClientUtil.getClientPlayer();
                     ClientEmotePlay.clientRepeatLocalEmote(playerEntity.emotecraft$getEmote().getData(), playerEntity.emotecraft$getEmote().getAnimationTicks(), this.getUUID());
                 }
             }
@@ -98,16 +97,14 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
         if (isPlayingEmote()) {
             this.yBodyRot = this.yHeadRot;
 
-            EmotePlayer emotePlayer = emotecraft$getEmote();
-
-            if (isMainPlayer() && emotePlayer != null) {
+            if (isMainPlayer()) {
                 /*if (emotePlayer.perspective == 1 && PlatformTools.getPerspective() != TPBPerspective.get()) {
                     emotePlayer.perspective = 0;
                 }*/
 
-                if(!this.emotecraft$isForcedEmote() && !EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)) {
-                    emotePlayer.stop();
-                    ClientEmotePlay.clientStopLocalEmote(emotePlayer.getData());
+                if (!this.emotecraft$isForcedEmote() && !EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)) {
+                    stopEmote();
+                    ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getData());
                 }
             }
         }

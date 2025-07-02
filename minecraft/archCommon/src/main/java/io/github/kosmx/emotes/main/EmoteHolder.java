@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.main;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.zigythebird.playeranim.util.ClientUtil;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
@@ -220,7 +221,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public boolean playEmote() {
-        return playEmote(PlatformTools.getMainPlayer(), this.emote);
+        return playEmote(ClientUtil.getClientPlayer(), this.emote);
     }
 
     /**
@@ -254,7 +255,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public static void handleKeyPress(InputConstants.Key key) {
-        if (EmoteHolder.canRunEmote(PlatformTools.getMainPlayer())) {
+        if (EmoteHolder.canRunEmote(ClientUtil.getClientPlayer())) {
             UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
             if (uuid != null) {
                 EmoteHolder emoteHolder = list.get(uuid);

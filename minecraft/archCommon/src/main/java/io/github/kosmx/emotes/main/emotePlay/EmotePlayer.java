@@ -8,7 +8,9 @@ import com.zigythebird.playeranimcore.enums.PlayState;
 import net.minecraft.client.player.AbstractClientPlayer;
 import org.jetbrains.annotations.Nullable;
 
-// modified keyframe animation player to play songs with animations
+/**
+ * Modified keyframe animation player to play songs with animations
+ */
 public class EmotePlayer extends PlayerAnimationController {
     @Nullable
     private MinecraftNbsPlayer song;
@@ -33,6 +35,7 @@ public class EmotePlayer extends PlayerAnimationController {
     }*/
 
     @Override
+    @SuppressWarnings("UnstableApiUsage")
     public void stop() {
         stopTriggeredAnimation();
         super.stop();
@@ -47,11 +50,11 @@ public class EmotePlayer extends PlayerAnimationController {
      * @return is running
      */
     public static boolean isRunningEmote(@Nullable EmotePlayer emote) {
-        return emote != null && emote.isActive();
+        return emote != null && emote.isPlayingTriggeredAnimation();
     }
 
-    @SuppressWarnings("all")
-    public Animation getData() {
+    @SuppressWarnings("UnstableApiUsage")
+    public @Nullable Animation getData() {
         AnimationProcessor.QueuedAnimation animation = getCurrentAnimation();
         if (animation == null) return null;
         return animation.animation();

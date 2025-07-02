@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main.mixinFunctions;
 
+import com.zigythebird.playeranim.util.ClientUtil;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -7,7 +8,8 @@ import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+
 import java.util.UUID;
 
 public interface IPlayerEntity {
@@ -25,8 +27,7 @@ public interface IPlayerEntity {
         throw new NotImplementedException();
     }
 
-    @Nullable
-    default EmotePlayer emotecraft$getEmote() {
+    default @NonNull EmotePlayer emotecraft$getEmote() {
         throw new NotImplementedException();
     }
 
@@ -34,24 +35,21 @@ public interface IPlayerEntity {
         return EmotePlayer.isRunningEmote(this.emotecraft$getEmote());
     }
 
-    default boolean isMainPlayer(){
-        return PlatformTools.getMainPlayer() == this;
+    default boolean isMainPlayer() {
+        return ClientUtil.getClientPlayer() == this;
     }
 
     /**
      * Use this ONLY for the main player
      */
-    default void stopEmote(){
-        EmotePlayer emotePlayer = emotecraft$getEmote();
-        if (emotePlayer != null) {
-            emotePlayer.stop();
-        }
+    default void stopEmote() {
+        emotecraft$getEmote().stop();
     }
 
-    default void stopEmote(UUID emoteID){
-        EmotePlayer emotePlayer = emotecraft$getEmote();
-        if(emotePlayer != null && emotePlayer.getData().uuid().equals(emoteID)){
-            emotePlayer.stop();
+    default void stopEmote(UUID emoteID) {
+        Animation animation = emotecraft$getEmote().getData();
+        if (animation != null &&animation.uuid().equals(emoteID)) {
+            stopEmote();
         }
     }
 
@@ -64,9 +62,8 @@ public interface IPlayerEntity {
             return;
         }
 
-        EmotePlayer emotePlayer = emotecraft$getEmote();
-        if (emotePlayer != null && PlatformTools.getConfig().checkPose.get()) {
-            ClientEmotePlay.clientStopLocalEmote(emotePlayer.getData());
+        if (PlatformTools.getConfig().checkPose.get()) {
+            ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getData());
         }
     }
 
