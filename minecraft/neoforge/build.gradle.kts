@@ -35,7 +35,12 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${properties["player_animator_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${properties["playeranimlib_version"] as String}") {
+        include(this)
+        pomCompile(this)
+    }
+
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${properties["bendablecuboids_version"] as String}") {
         include(this)
         pomCompile(this)
     }

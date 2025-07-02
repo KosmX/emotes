@@ -7,7 +7,7 @@ plugins {
 version = mod_version
 
 dependencies {
-    api("com.zigythebird.playeranim:PlayerAnimationLibCore:${properties["player_animator_version"] as String}")
+    api("com.zigythebird.playeranim:PlayerAnimationLibCore:${properties["playeranimlib_version"] as String}")
     api("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}")
     implementation("com.google.code.gson:gson:2.11.0") // gson for MC 1.21.4
     api("org.jetbrains:annotations:24.0.1")
