@@ -1,9 +1,8 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.mojang.authlib.GameProfile;
-import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
-import com.zigythebird.playeranim.animation.PlayerAnimManager;
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.EasingType;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -52,7 +51,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
             ));
         }
 
-        // guiGraphics.pose().translate(0, 0, 500);
+        //guiGraphics.pose().translate(0, 0, 500);
         try {
             InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
         } catch (Throwable th) {
@@ -62,9 +61,9 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         guiGraphics.disableScissor();
         guiGraphics.pose().popMatrix();
 
-        /*if (this.animTime > 0.0F) {
-            setAlpha(1.0F - Ease.OUTQUART.invoke(this.animTime));
-        }*/
+        if (this.animTime > 0.0F) {
+            setAlpha(1.0F - EasingType.EASE_OUT_QUART.buildTransformer(null).get(this.animTime));
+        }
     }
 
     @Override
@@ -73,8 +72,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        PlayerAnimManager stack = ((IAnimatedPlayer) this.player).playerAnimLib$getAnimManager();
-        if (stack.isActive()) {
+        if (true) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
 
