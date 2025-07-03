@@ -18,10 +18,10 @@ public final class ClientEmoteEvents {
      * Return with {@link EventResult#PASS} if you allow it and {@link EventResult#FAIL} if you deny it.<br>
      * Invoking this event does not mean the emote will be played even if the event wasn't cancelled.
      */
-    public static final Event<EmoteVerifier> EMOTE_VERIFICATION = new Event<>(EmoteVerifier.class, listeners -> (emote, userID) -> {
+    public static final Event<EmoteVerifier> EMOTE_VERIFICATION = new Event<>(listeners -> (emote, userID) -> {
         for (EmoteVerifier listener : listeners) {
             EventResult result = listener.verify(emote, userID);
-            if (result == EventResult.FAIL || result == EventResult.CONSUME) {
+            if (result == EventResult.FAIL || result == EventResult.SUCCESS) {
                 return result;
             }
         }
@@ -38,10 +38,10 @@ public final class ClientEmoteEvents {
          * {@link EventResult#FAIL}:
          * verification failed, won't allow user to play the emote
          * <p>
-         * {@link EventResult#PASS} or {@link EventResult#SUCCESS}:
+         * {@link EventResult#PASS}:
          * this callback allows the emote to be played. NOTE: other callbacks can refuse it
          * <p>
-         * {@link EventResult#CONSUME}:
+         * {@link EventResult#SUCCESS}:
          * Emote will be allowed BUT no other callbacks will be invoked. DO NOT DO THIS
          * I don't even know, why do I allow this
          *
@@ -54,7 +54,7 @@ public final class ClientEmoteEvents {
      * Invoked when someone is starting an emote (can be the main player)
      * For checking and cancelling, use {@link ClientEmoteEvents#EMOTE_VERIFICATION}
      */
-    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(EmotePlayEvent.class, listeners -> (emote, tick, userID) -> {
+    public static final Event<EmotePlayEvent> EMOTE_PLAY = new Event<>(listeners -> (emote, tick, userID) -> {
         for (EmotePlayEvent listener : listeners) {
             listener.onEmotePlay(emote, tick, userID);
         }
@@ -77,7 +77,7 @@ public final class ClientEmoteEvents {
      * <p>
      * NOTE: Emote ending won't trigger any events
      */
-    public static final Event<EmoteStopEvent> EMOTE_STOP = new Event<>(EmoteStopEvent.class, listeners -> (emote, userID) -> {
+    public static final Event<EmoteStopEvent> EMOTE_STOP = new Event<>(listeners -> (emote, userID) -> {
         for (EmoteStopEvent listener : listeners) {
             listener.onEmoteStop(emote, userID);
         }
@@ -99,7 +99,7 @@ public final class ClientEmoteEvents {
      * The client player is stopping its own emote
      * It will trigger only if the command is from the client
      */
-    public static final Event<LocalEmoteStopEvent> LOCAL_EMOTE_STOP = new Event<>(LocalEmoteStopEvent.class, listeners -> () -> {
+    public static final Event<LocalEmoteStopEvent> LOCAL_EMOTE_STOP = new Event<>(listeners -> () -> {
         for (LocalEmoteStopEvent listener : listeners) {
             listener.onEmoteStop();
         }

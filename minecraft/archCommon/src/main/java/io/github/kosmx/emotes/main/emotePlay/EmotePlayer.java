@@ -41,6 +41,7 @@ public class EmotePlayer extends PlayerAnimationController {
         super.stop();
         this.animationQueue.clear();
         if (this.song != null) this.song.stop();
+        resetEventKeyFrames();
     }
 
     /**
@@ -50,7 +51,7 @@ public class EmotePlayer extends PlayerAnimationController {
      * @return is running
      */
     public static boolean isRunningEmote(@Nullable EmotePlayer emote) {
-        return emote != null && emote.isPlayingTriggeredAnimation();
+        return emote != null && emote.animationState.isActive();
     }
 
     @SuppressWarnings("UnstableApiUsage")
