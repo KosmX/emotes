@@ -9,7 +9,10 @@ import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEve
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.network.chat.Component;
+import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,31 +24,34 @@ public class EmotePlayer extends PlayerAnimationController {
 
     public EmotePlayer(AbstractClientPlayer player) {
         super(player, (controller, state, animSetter) -> PlayState.STOP);
-        /*if (emote.extraData.containsKey("song")) {
-            this.song = new MinecraftNbsPlayer((Song) emote.extraData.get("song"), noteConsumer, 0);
-        } else {
-            this.song = null;
-        }*/
     }
 
-    /*@Override
-    public void tick() {
-        super.tick();
-        if (this.song != null && isActive() && !this.song.isRunning()) {
-            Component nowPlaying = this.song.getNowPlaying();
-            if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
-            this.song.start();
+    @Override
+    protected void setupNewAnimation() {
+        super.setupNewAnimation();
+
+        Animation emote = getData();
+
+        if (this.song != null) this.song.stop();
+        if (emote != null && emote.data().has("song")) {
+            this.song = new MinecraftNbsPlayer(getPlayer(), emote.data().<NbsSong>get("song").orElseThrow());
+        } else {
+            this.song = null;
         }
-    }*/
+    }
 
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void stop() {
-        stopTriggeredAnimation();
         super.stop();
+        stopTriggeredAnimation();
         this.animationQueue.clear();
+    }
+
+    @Override
+    protected void resetEventKeyFrames() {
+        super.resetEventKeyFrames();
         if (this.song != null) this.song.stop();
-        resetEventKeyFrames();
     }
 
     /**
@@ -55,7 +61,7 @@ public class EmotePlayer extends PlayerAnimationController {
      * @return is running
      */
     public static boolean isRunningEmote(@Nullable EmotePlayer emote) {
-        return emote != null && emote.animationState.isActive();
+        return emote != null && emote.isActive();
     }
 
     @SuppressWarnings("UnstableApiUsage")
@@ -67,6 +73,12 @@ public class EmotePlayer extends PlayerAnimationController {
 
     @Override
     protected <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, CustomKeyFrameEvents.@Nullable CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
+        if (this.song != null && isActive() && !this.song.isRunning()) {
+            Component nowPlaying = this.song.getNowPlaying();
+            if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
+            this.song.start();
+        }
+
         if (this.player instanceof UnsafeRemotePlayer) return;
         super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
     }

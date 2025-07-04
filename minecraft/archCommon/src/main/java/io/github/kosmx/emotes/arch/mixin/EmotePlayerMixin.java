@@ -7,17 +7,13 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
-import io.github.kosmx.emotes.main.emotePlay.InstrumentConventer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import it.unimi.dsi.fastutil.Pair;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.raphimc.noteblocklib.model.Note;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -55,22 +51,6 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
         this.emotecraft$container.triggerAnimation(emote, tick);
         // this.initEmotePerspective(emotecraft$container.getAnim());
         if (this.isMainPlayer()) this.emotecraft$isForced = isForced;
-    }
-
-    @Unique
-    private void emotecraft$noteConsumer(Note note) {
-        emotecraft$playRawSound(InstrumentConventer.getInstrument(note, position()), true);
-    }
-
-    @Override
-    public void emotecraft$playRawSound(SoundInstance instance, boolean distanceDelay) {
-        double d = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(position());
-        if (distanceDelay && d > 100.0) {
-            double e = Math.sqrt(d) / 40.0;
-            Minecraft.getInstance().execute(() -> Minecraft.getInstance().getSoundManager().playDelayed(instance, (int)(e * 20.0)));
-        } else {
-            Minecraft.getInstance().execute(() -> Minecraft.getInstance().getSoundManager().play(instance));
-        }
     }
 
     @Override

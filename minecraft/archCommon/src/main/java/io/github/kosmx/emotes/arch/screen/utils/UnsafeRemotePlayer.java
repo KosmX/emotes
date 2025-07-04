@@ -1,12 +1,9 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
 import com.mojang.authlib.GameProfile;
-import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.RemotePlayer;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
@@ -79,10 +76,5 @@ public class UnsafeRemotePlayer extends RemotePlayer {
     @Override
     public @NotNull BlockState getInBlockState() {
         return Blocks.VOID_AIR.defaultBlockState();
-    }
-
-    @Override
-    public void emotecraft$playRawSound(SoundInstance instance, boolean distanceDelay) {
-        Minecraft.getInstance().execute(() -> Minecraft.getInstance().getSoundManager().play(instance));
     }
 }

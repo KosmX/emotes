@@ -6,6 +6,8 @@ import com.zigythebird.playeranimcore.animation.EasingType;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.layouts.LayoutElement;
@@ -17,6 +19,8 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
 public class PlayerPreview extends AbstractWidget implements LayoutElement {
+    private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_OUT_QUART.buildTransformer(null);
+
     protected final boolean renderBackround;
     protected RemotePlayer player;
 
@@ -25,7 +29,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     public PlayerPreview(GameProfile profile, int x, int y, int width, int height, boolean renderBackround) {
         super(x, y, width, height, Component.empty());
 
-        this.player = new UnsafeRemotePlayer(null, profile);
+        this.player = new UnsafeRemotePlayer(Minecraft.getInstance().level, profile);
         this.renderBackround = renderBackround;
         setAlpha(0.0F);
     }
@@ -33,7 +37,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     public void playAnimation(Animation animation, boolean check) {
         if (check && animation != null) {
             EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
-            if (emotePlayer != null && animation.equals(emotePlayer.getData())) {
+            if (animation.equals(emotePlayer.getData())) {
                 return;
             }
         }
@@ -51,7 +55,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
             ));
         }
 
-        //guiGraphics.pose().translate(0, 0, 500);
+        guiGraphics.nextStratum();
         try {
             InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
         } catch (Throwable th) {
@@ -62,7 +66,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         guiGraphics.pose().popMatrix();
 
         if (this.animTime > 0.0F) {
-            setAlpha(1.0F - EasingType.EASE_OUT_QUART.buildTransformer(null).get(this.animTime));
+            setAlpha(1.0F - EASING_TRANSFORMER.get(this.animTime));
         }
     }
 
@@ -72,7 +76,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        if (true) {
+        if (this.player != null && this.player.isPlayingEmote()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
 

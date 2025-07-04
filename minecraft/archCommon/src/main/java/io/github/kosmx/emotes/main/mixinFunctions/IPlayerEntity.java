@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jspecify.annotations.NonNull;
@@ -31,7 +32,7 @@ public interface IPlayerEntity {
         throw new NotImplementedException();
     }
 
-    default boolean isPlayingEmote(){
+    default boolean isPlayingEmote() {
         return EmotePlayer.isRunningEmote(this.emotecraft$getEmote());
     }
 
@@ -67,7 +68,7 @@ public interface IPlayerEntity {
         }
     }
 
-    default void emotecraft$playRawSound(SoundInstance instance, boolean distanceDelay) {
-        throw new NotImplementedException();
+    default void emotecraft$playRawSound(SoundInstance instance) {
+        Minecraft.getInstance().getSoundManager().play(instance);
     }
 }

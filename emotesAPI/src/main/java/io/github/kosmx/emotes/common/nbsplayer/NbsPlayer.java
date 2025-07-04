@@ -8,27 +8,25 @@ import net.raphimc.noteblocklib.player.SongPlayer;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
 
-public class NbsPlayer extends SongPlayer {
+public abstract class NbsPlayer extends SongPlayer {
     private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(5,
             Thread.ofVirtual().name("Emotecraft-NBSplayer-", 0).factory()
     );
 
-    private final Consumer<Note> noteConsumer;
     protected int loopCount = 0;
 
-    public NbsPlayer(Song song, Consumer<Note> noteConsumer, int tick) {
+    public NbsPlayer(Song song) {
         super(song);
-        setTick(tick);
         setCustomScheduler(EXECUTOR);
-        this.noteConsumer = noteConsumer;
     }
 
     @Override
     protected void playNotes(List<Note> notes) {
-        for (Note note : notes) this.noteConsumer.accept(note);
+        for (Note note : notes) playNote(note);
     }
+
+    protected abstract void playNote(Note note);
 
     @Override
     protected void onFinished() {
