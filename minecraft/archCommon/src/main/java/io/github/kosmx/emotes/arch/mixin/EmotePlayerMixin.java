@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
 import com.zigythebird.playeranim.util.ClientUtil;
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
@@ -49,7 +50,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     public void emotecraft$playEmote(Animation emote, float tick, boolean isForced) {
         stopEmote();
         this.emotecraft$container.triggerAnimation(emote, tick);
-        // this.initEmotePerspective(emotecraft$container.getAnim());
+        this.initEmotePerspective();
         if (this.isMainPlayer()) this.emotecraft$isForced = isForced;
     }
 
@@ -74,18 +75,13 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
             }
         }
 
-        if (isPlayingEmote()) {
-            this.yBodyRot = this.yHeadRot;
+        if (isPlayingEmote() && isMainPlayer()) {
+            if (emotecraft$getEmote().perspective && PlatformTools.getPerspective() != PlatformTools.getConfig().getCameraType()) {
+                emotecraft$getEmote().perspective = false;
+            }
 
-            if (isMainPlayer()) {
-                /*if (emotePlayer.perspective == 1 && PlatformTools.getPerspective() != TPBPerspective.get()) {
-                    emotePlayer.perspective = 0;
-                }*/
-
-                if (!this.emotecraft$isForcedEmote() && !EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)) {
-                    stopEmote();
-                    ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getData());
-                }
+            if (!EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)) {
+                ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getData());
             }
         }
     }

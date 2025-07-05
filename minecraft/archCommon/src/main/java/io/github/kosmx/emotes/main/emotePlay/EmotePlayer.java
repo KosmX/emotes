@@ -8,7 +8,9 @@ import com.zigythebird.playeranimcore.animation.AnimationProcessor;
 import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
 import com.zigythebird.playeranimcore.enums.PlayState;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
@@ -21,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 public class EmotePlayer extends PlayerAnimationController {
     @Nullable
     private MinecraftNbsPlayer song;
+
+    public boolean perspective = false;
 
     public EmotePlayer(AbstractClientPlayer player) {
         super(player, (controller, state, animSetter) -> PlayState.STOP);
@@ -46,6 +50,10 @@ public class EmotePlayer extends PlayerAnimationController {
         super.stop();
         stopTriggeredAnimation();
         this.animationQueue.clear();
+        if (this.perspective && PlatformTools.getPerspective() == PlatformTools.getConfig().getCameraType()) {
+            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+            this.perspective = false;
+        }
     }
 
     @Override

@@ -126,10 +126,9 @@ public class EmoteHolder implements Supplier<UUID> {
                     new DynamicTexture(this.iconIdentifier::toString, NativeImage.read(stream))
             );
         } catch (Throwable th) {
-            CommonData.LOGGER.warn("Can't open emote icon!", th);
-            this.iconIdentifier = null;
-
+            CommonData.LOGGER.warn("Can't open emote {} icon!", emote, th);
             /*if (!PlatformTools.getConfig().neverRemoveBadIcon.get()) {
+                this.iconIdentifier = null;
                 this.emote.data().remove("iconData");
             }*/
         }
@@ -210,7 +209,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * @param player Witch entity (player)
      * @return True if possible to play
      */
-    public static boolean canRunEmote(AbstractClientPlayer player){
+    public static boolean canRunEmote(AbstractClientPlayer player) {
         return !(new Vec3(player.getX(), player.getY(), player.getZ()).distanceTo(
 
                 new Vec3(player.xo, Mth.lerp(

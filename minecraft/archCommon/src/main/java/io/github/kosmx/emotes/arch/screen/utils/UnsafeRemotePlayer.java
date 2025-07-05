@@ -41,10 +41,10 @@ public class UnsafeRemotePlayer extends RemotePlayer {
         return true;
     }
 
-    /*@Override
-    public void initEmotePerspective(EmotePlayer emotePlayer) {
+    @Override
+    public void initEmotePerspective() {
         // no-op
-    }*/
+    }
 
     @Override
     public boolean touchingUnloadedChunk() {

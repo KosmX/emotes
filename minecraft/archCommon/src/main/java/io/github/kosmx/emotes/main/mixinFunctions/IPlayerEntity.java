@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
@@ -14,15 +15,12 @@ import org.jspecify.annotations.NonNull;
 import java.util.UUID;
 
 public interface IPlayerEntity {
-    /*CameraType FPPerspective = CameraType.FIRST_PERSON;
-    Supplier<CameraType> TPBPerspective = () -> (PlatformTools.getConfig().frontAsTPPerspective.get() ? CameraType.THIRD_PERSON_FRONT : CameraType.THIRD_PERSON_BACK);
-
-    default void initEmotePerspective(EmotePlayer emotePlayer){
-        if(PlatformTools.getConfig().enablePerspective.get() && isMainPlayer() && PlatformTools.getPerspective() == FPPerspective) {
-            emotePlayer.perspective = 1;
-            PlatformTools.setPerspective(TPBPerspective.get());
+    default void initEmotePerspective() {
+        if (isMainPlayer() && PlatformTools.getConfig().enablePerspective.get() && PlatformTools.getPerspective() == CameraType.FIRST_PERSON) {
+            emotecraft$getEmote().perspective = true;
+            PlatformTools.setPerspective(PlatformTools.getConfig().getCameraType());
         }
-    }*/
+    }
 
     default void emotecraft$playEmote(Animation emote, float tick, boolean isForced) {
         throw new NotImplementedException();
