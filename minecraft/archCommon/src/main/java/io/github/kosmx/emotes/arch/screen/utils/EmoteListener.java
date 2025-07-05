@@ -67,7 +67,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
             try {
                 this.loader.get(10, TimeUnit.SECONDS);
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to wait for emote loading!", th);
+                CommonData.LOGGER.warn("Failed to wait for emote loading!", th);
                 this.loader.cancel(true);
             }
         }
