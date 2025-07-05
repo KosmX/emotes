@@ -20,6 +20,7 @@ public class SoundEventInstance extends AbstractSoundInstance {
         this.x = pos.x();
         this.y = pos.y();
         this.z = pos.z();
+        this.relative = false;
     }
 
     @Override

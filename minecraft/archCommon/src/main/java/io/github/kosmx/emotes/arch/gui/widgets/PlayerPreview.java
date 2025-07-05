@@ -7,7 +7,6 @@ import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.layouts.LayoutElement;
@@ -29,7 +28,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     public PlayerPreview(GameProfile profile, int x, int y, int width, int height, boolean renderBackround) {
         super(x, y, width, height, Component.empty());
 
-        this.player = new UnsafeRemotePlayer(Minecraft.getInstance().level, profile);
+        this.player = new UnsafeRemotePlayer(null, profile);
         this.renderBackround = renderBackround;
         setAlpha(0.0F);
     }

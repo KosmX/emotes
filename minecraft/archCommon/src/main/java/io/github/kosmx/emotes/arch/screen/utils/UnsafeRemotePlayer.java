@@ -1,8 +1,10 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
@@ -10,6 +12,7 @@ import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +63,7 @@ public class UnsafeRemotePlayer extends RemotePlayer {
 
     @Override
     public void baseTick() {
-        // no-op
+        tickCount++;
     }
 
     @Override
@@ -76,5 +79,12 @@ public class UnsafeRemotePlayer extends RemotePlayer {
     @Override
     public @NotNull BlockState getInBlockState() {
         return Blocks.VOID_AIR.defaultBlockState();
+    }
+
+    @Override
+    public @NotNull Vec3 position() {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        if (localPlayer == null) return super.position();
+        return localPlayer.position();
     }
 }

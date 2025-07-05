@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.common.nbsplayer.NbsPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.chat.Component;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.Song;
@@ -26,8 +27,9 @@ public class MinecraftNbsPlayer extends NbsPlayer {
 
     @Override
     protected boolean preTick() {
+        if (this.player instanceof UnsafeRemotePlayer) return true;
         Minecraft mc = Minecraft.getInstance();
-        if (!(this.player instanceof UnsafeRemotePlayer) && mc.level != this.player.level()) {
+        if (mc.level != this.player.level()) {
             stop();
             return false;
         }
@@ -53,8 +55,7 @@ public class MinecraftNbsPlayer extends NbsPlayer {
 
     @Override
     protected void playNote(Note note) {
-        Minecraft.getInstance().execute(() -> this.player.emotecraft$playRawSound(
-                InstrumentConventer.getInstrument(note, this.player.position())
-        ));
+        SoundInstance sound = InstrumentConventer.getInstrument(note, this.player.position());
+        Minecraft.getInstance().execute(() -> this.player.emotecraft$playRawSound(sound));
     }
 }
