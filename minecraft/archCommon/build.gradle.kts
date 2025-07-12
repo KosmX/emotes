@@ -18,7 +18,7 @@ dependencies {
     implementation("com.zigythebird.playeranim:PlayerAnimationLibCore:${properties["playeranimlib_version"] as String}")
 
     // Third-party
-    compileOnly("com.blamejared.searchables:Searchables-common-1.21.5:${properties["searchables_version"] as String}") {
+    compileOnly("com.blamejared.searchables:Searchables-common-${minecraft_version}:${properties["searchables_version"] as String}") {
         isTransitive = false
     }
 
