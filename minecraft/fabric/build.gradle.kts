@@ -120,7 +120,7 @@ components.getByName<AdhocComponentWithVariants>("java") {
     }
 }
 
-/*publishing {
+publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             // add all the jars that should be included when publishing to maven
@@ -145,7 +145,7 @@ components.getByName<AdhocComponentWithVariants>("java") {
             mavenLocal()
         }
     }
-}*/
+}
 
 publishMods {
     modLoaders.add("fabric")

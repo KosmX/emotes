@@ -21,7 +21,15 @@ dependencies {
 
     compileApi(project(":emotesServer")) {
         exclude(group = "org.jetbrains", module = "annotations")
+
         exclude(module = "gson")
+        exclude(module = "slf4j-api")
+        exclude(module = "fastutil")
+        exclude(module = "netty-buffer")
+        exclude(module = "jspecify")
+        exclude(module = "guava")
+        exclude(module = "error_prone_annotations")
+        exclude(module = "netty-buffer")
     }
     compileApi(project(":emotesAssets"))
     compileApi(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
@@ -51,6 +59,9 @@ tasks.shadowJar {
     configurations = listOf(compileApi)
     archiveClassifier.set("")
     mergeServiceFiles()
+
+    relocate("team.unnamed.mocha", "com.zigythebird.playeranim.lib.mochafloats")
+    relocate("javassist", "com.zigythebird.playeranim.lib.javassist")
 }
 
 tasks.jar {
@@ -65,7 +76,7 @@ java {
     withSourcesJar()
 }
 
-/*publishing {
+publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             artifactId = "emotesBukkit"
@@ -81,7 +92,7 @@ java {
             mavenLocal()
         }
     }
-}*/
+}
 
 publishMods {
     modLoaders.add("paper")
