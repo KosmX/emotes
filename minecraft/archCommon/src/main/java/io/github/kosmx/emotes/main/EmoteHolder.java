@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.main;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -63,14 +65,13 @@ public class EmoteHolder implements Supplier<UUID> {
      * Create cache from emote data
      * @param emote emote
      */
-    @SuppressWarnings("unchecked")
     public EmoteHolder(Animation emote) {
         this.emote = emote;
         this.name = McUtils.fromJson(emote.data().getRaw("name"), RegistryAccess.EMPTY);
         this.description = McUtils.fromJson(emote.data().getRaw("description"), RegistryAccess.EMPTY);
         this.author = McUtils.fromJson(emote.data().getRaw("author"), RegistryAccess.EMPTY);
         this.folder = computeFolderPath((String) emote.data().getRaw(EmoteSerializer.FOLDER_PATH_KEY));
-        this.bages = computeBages((List<String>) emote.data().getRaw("bages"));
+        this.bages = computeBages((JsonArray) emote.data().getRaw("bages"));
     }
 
     private static List<Component> computeFolderPath(String folderPath) {
@@ -80,10 +81,10 @@ public class EmoteHolder implements Supplier<UUID> {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private static List<Component> computeBages(List<String> bages) {
+    private static List<Component> computeBages(JsonArray bages) {
         if (bages == null) return Collections.emptyList();
         List<Component> components = new ArrayList<>(bages.size());
-        for (String element : bages) {
+        for (JsonElement element : bages) {
             try {
                 components.add(McUtils.fromJson(element, RegistryAccess.EMPTY));
             } catch (Throwable th) {
