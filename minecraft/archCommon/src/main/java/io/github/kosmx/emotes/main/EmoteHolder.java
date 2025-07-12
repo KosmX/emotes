@@ -1,17 +1,19 @@
 package io.github.kosmx.emotes.main;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.MathHelper;
-import dev.kosmx.playerAnim.core.util.UUIDMap;
-import dev.kosmx.playerAnim.core.util.Vec3d;
+import com.zigythebird.playeranim.util.ClientUtil;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
+import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
@@ -22,6 +24,8 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,14 +33,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
  */
 public class EmoteHolder implements Supplier<UUID> {
 
-    public final KeyframeAnimation emote;
+    public final Animation emote;
     public final Component name;
     public final Component description;
     public final Component author;
@@ -66,14 +65,13 @@ public class EmoteHolder implements Supplier<UUID> {
      * Create cache from emote data
      * @param emote emote
      */
-    @SuppressWarnings("unchecked")
-    public EmoteHolder(KeyframeAnimation emote) {
+    public EmoteHolder(Animation emote) {
         this.emote = emote;
-        this.name = McUtils.fromJson(emote.extraData.get("name"), RegistryAccess.EMPTY);
-        this.description = McUtils.fromJson(emote.extraData.get("description"), RegistryAccess.EMPTY);
-        this.author = McUtils.fromJson(emote.extraData.get("author"), RegistryAccess.EMPTY);
-        this.folder = computeFolderPath((String) emote.extraData.get(EmoteSerializer.FOLDER_PATH_KEY));
-        this.bages = computeBages((List<String>) emote.extraData.get("bages"));
+        this.name = McUtils.fromJson(emote.data().getRaw("name"), RegistryAccess.EMPTY);
+        this.description = McUtils.fromJson(emote.data().getRaw("description"), RegistryAccess.EMPTY);
+        this.author = McUtils.fromJson(emote.data().getRaw("author"), RegistryAccess.EMPTY);
+        this.folder = computeFolderPath((String) emote.data().getRaw(EmoteSerializer.FOLDER_PATH_KEY));
+        this.bages = computeBages((JsonArray) emote.data().getRaw("bages"));
     }
 
     private static List<Component> computeFolderPath(String folderPath) {
@@ -83,14 +81,14 @@ public class EmoteHolder implements Supplier<UUID> {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private static List<Component> computeBages(List<String> bages) {
+    private static List<Component> computeBages(JsonArray bages) {
         if (bages == null) return Collections.emptyList();
         List<Component> components = new ArrayList<>(bages.size());
-        for (String element : bages) {
+        for (JsonElement element : bages) {
             try {
                 components.add(McUtils.fromJson(element, RegistryAccess.EMPTY));
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to serialize bage!", th);
+                CommonData.LOGGER.warn("Failed to serialize bage!", th);
             }
         }
         return Collections.unmodifiableList(components);
@@ -113,7 +111,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public @Nullable ResourceLocation getIconIdentifier() {
-        if (this.emote.extraData.get("iconData") instanceof ByteBuffer buff && this.iconIdentifier == null) {
+        if (this.emote.data().getRaw("iconData") instanceof ByteBuffer buff && this.iconIdentifier == null) {
             registerIcon(buff);
         }
         return this.iconIdentifier;
@@ -129,12 +127,11 @@ public class EmoteHolder implements Supplier<UUID> {
                     new DynamicTexture(this.iconIdentifier::toString, NativeImage.read(stream))
             );
         } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Can't open emote icon!", th);
-            this.iconIdentifier = null;
-
-            if (!PlatformTools.getConfig().neverRemoveBadIcon.get()) {
-                this.emote.extraData.remove("iconData");
-            }
+            CommonData.LOGGER.warn("Can't open emote {} icon!", emote, th);
+            /*if (!PlatformTools.getConfig().neverRemoveBadIcon.get()) {
+                this.iconIdentifier = null;
+                this.emote.data().remove("iconData");
+            }*/
         }
     }
 
@@ -155,7 +152,7 @@ public class EmoteHolder implements Supplier<UUID> {
     /**
      * @return Playable EmotePlayer
      */
-    public KeyframeAnimation getEmote() {
+    public Animation getEmote() {
         return emote;
     }
 
@@ -163,10 +160,10 @@ public class EmoteHolder implements Supplier<UUID> {
         return list.get(uuid);
     }
 
-    public static EmoteHolder findIfPresent(KeyframeAnimation animation) {
+    public static EmoteHolder findIfPresent(Animation animation) {
         if (animation == null) return null;
 
-        EmoteHolder fast = getEmoteFromUuid(animation.getUuid());
+        EmoteHolder fast = getEmoteFromUuid(animation.uuid());
         if (fast != null && fast.emote != null && fast.emote.equals(animation)) {
             return fast;
         }
@@ -179,11 +176,11 @@ public class EmoteHolder implements Supplier<UUID> {
         return null;
     }
 
-    public static void addEmoteToList(Iterable<KeyframeAnimation> emotes, @Nullable INetworkInstance fromInstance) {
-        for (KeyframeAnimation emote : emotes) addEmoteToList(emote, fromInstance);
+    public static void addEmoteToList(Iterable<Animation> emotes, @Nullable INetworkInstance fromInstance) {
+        for (Animation emote : emotes) addEmoteToList(emote, fromInstance);
     }
 
-    public static EmoteHolder addEmoteToList(KeyframeAnimation emote, @Nullable INetworkInstance fromInstance) {
+    public static EmoteHolder addEmoteToList(Animation emote, @Nullable INetworkInstance fromInstance) {
         EmoteHolder old = findIfPresent(emote);
         if (old != null) return old;
 
@@ -199,7 +196,7 @@ public class EmoteHolder implements Supplier<UUID> {
      * @param player who is the player
      * @return could be played
      */
-    public static boolean playEmote(AbstractClientPlayer player, KeyframeAnimation emote) {
+    public static boolean playEmote(AbstractClientPlayer player, Animation emote) {
         return canPlayEmote(player) && ClientEmotePlay.clientStartLocalEmote(emote);
     }
 
@@ -213,10 +210,10 @@ public class EmoteHolder implements Supplier<UUID> {
      * @param player Witch entity (player)
      * @return True if possible to play
      */
-    public static boolean canRunEmote(AbstractClientPlayer player){
-        return !(new Vec3d(player.getX(), player.getY(), player.getZ()).distanceTo(
+    public static boolean canRunEmote(AbstractClientPlayer player) {
+        return !(new Vec3(player.getX(), player.getY(), player.getZ()).distanceTo(
 
-                new Vec3d(player.xo, MathHelper.lerp(
+                new Vec3(player.xo, Mth.lerp(
                         PlatformTools.getConfig().yRatio.get(), player.yo, player.getY()
                 ), player.zo)
 
@@ -224,7 +221,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public boolean playEmote() {
-        return playEmote(PlatformTools.getMainPlayer(), this.emote);
+        return playEmote(ClientUtil.getClientPlayer(), this.emote);
     }
 
     /**
@@ -239,7 +236,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public UUID getUuid() {
-        return this.emote.getUuid();
+        return this.emote.uuid();
     }
 
     /**
@@ -258,7 +255,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public static void handleKeyPress(InputConstants.Key key) {
-        if (EmoteHolder.canRunEmote(PlatformTools.getMainPlayer())) {
+        if (EmoteHolder.canRunEmote(ClientUtil.getClientPlayer())) {
             UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
             if (uuid != null) {
                 EmoteHolder emoteHolder = list.get(uuid);
@@ -273,14 +270,12 @@ public class EmoteHolder implements Supplier<UUID> {
         return emoteHolder;
     }
 
-    @SuppressWarnings("deprecation")
     public static class Empty extends EmoteHolder {
         public Empty(UUID uuid) {
-            super(new KeyframeAnimation.AnimationBuilder(AnimationFormat.UNKNOWN)
-                    .setName("{\"color\":\"red\",\"text\":\"INVALID\"}")
-                    .setUuid(uuid)
-                    .build()
-            );
+            super(new Animation(new ExtraAnimationData(
+                            ExtraAnimationData.NAME_KEY, "{\"color\":\"red\",\"text\":\"INVALID\"}"
+            ), 0, Animation.LoopType.PLAY_ONCE, Collections.emptyMap(), UniversalAnimLoader.NO_KEYFRAMES, new HashMap<>(), new HashMap<>()));
+            emote.data().put(ExtraAnimationData.UUID_KEY, uuid);
         }
     }
 }

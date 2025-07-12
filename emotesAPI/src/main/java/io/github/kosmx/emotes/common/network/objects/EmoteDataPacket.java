@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import dev.kosmx.playerAnim.core.data.AnimationBinary;
+import com.zigythebird.playeranimcore.network.LegacyAnimationBinary;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import java.io.IOException;
@@ -14,20 +14,20 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public void write(ByteBuffer buf, NetData config) {
         int version = getVer(config.versions);
         assert config.emoteData != null;
-        buf.putInt(config.tick);
-        AnimationBinary.write(config.emoteData, buf, version);
+        buf.putInt((int) config.tick);
+        LegacyAnimationBinary.write(config.emoteData, buf, version);
     }
 
     @Override
     public void read(ByteBuffer buf, NetData config, int version) throws IOException {
         config.tick = buf.getInt();
-        config.emoteData = AnimationBinary.read(buf, version);
-        config.valid = (boolean) config.emoteData.extraData.get("valid");
+        config.emoteData = LegacyAnimationBinary.read(buf, version);
+        config.valid = true; // TODO
     }
 
     @Override
     public byte getID() {
-        return PacketConfig.ANIMATION_FORMAT;
+        return PacketConfig.LEGACY_ANIMATION_FORMAT;
     }
 
     /**
@@ -38,12 +38,12 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
      */
     @Override
     public byte getVer() {
-        return (byte) AnimationBinary.getCurrentVersion();
+        return (byte) LegacyAnimationBinary.getCurrentVersion();
     }
 
     @Override
     public boolean doWrite(NetData data) {
-        return data.emoteData != null && data.stopEmoteID == null;
+        return data.emoteData != null && data.stopEmoteID == null && !data.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT);
     }
 
     /*
@@ -55,7 +55,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
      */
     @Override
     public int calculateSize(NetData config) {
-        if(config.emoteData == null)return 0;
-        return AnimationBinary.calculateSize(config.emoteData, getVer(config.versions)) + 4;
+        if (config.emoteData == null || config.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT)) return 0;
+        return LegacyAnimationBinary.calculateSize(config.emoteData, getVer(config.versions)) + 4;
     }
 }

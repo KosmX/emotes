@@ -1,11 +1,11 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.MathHelper;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
+import io.github.kosmx.emotes.common.tools.MathHelper;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class BinaryFormat implements ISerializer {
     @Override
-    public List<KeyframeAnimation> read(InputStream stream, String filename) throws EmoteSerializerException {
+    public List<Animation> read(InputStream stream, String filename) throws EmoteSerializerException {
         try {
             NetData data = new EmotePacket.Builder().strictSizeLimit(false).build().read(MathHelper.readFromIStream(stream));
             if (data.purpose != PacketTask.FILE || data.emoteData == null) {
@@ -29,7 +29,7 @@ public class BinaryFormat implements ISerializer {
     }
 
     @Override
-    public void write(KeyframeAnimation emote, OutputStream stream, String filename) throws EmoteSerializerException {
+    public void write(Animation emote, OutputStream stream, String filename) throws EmoteSerializerException {
         try {
             ByteBuffer byteBuffer = new EmotePacket.Builder().strictSizeLimit(false).configureToSaveEmote(emote).build().write();
             stream.write(Objects.requireNonNull(AbstractNetworkInstance.safeGetBytesFromBuffer(byteBuffer)));

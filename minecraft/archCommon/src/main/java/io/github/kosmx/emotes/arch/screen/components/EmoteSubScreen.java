@@ -1,12 +1,11 @@
 package io.github.kosmx.emotes.arch.screen.components;
 
-import dev.kosmx.playerAnim.core.data.AnimationFormat;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.Util;
@@ -27,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 /**
@@ -163,7 +161,7 @@ public abstract class EmoteSubScreen extends Screen {
                     this.watcher.load(this::addOptions);
                 }
             } catch (IOException ex) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to poll for directory changes, stopping", ex);
+                CommonData.LOGGER.warn("Failed to poll for directory changes, stopping", ex);
                 this.closeWatcher();
             }
         }
@@ -195,7 +193,7 @@ public abstract class EmoteSubScreen extends Screen {
                 this.watcher.close();
                 this.watcher = null;
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to close watcher!", th);
+                CommonData.LOGGER.warn("Failed to close watcher!", th);
             }
         }
     }
@@ -225,17 +223,17 @@ public abstract class EmoteSubScreen extends Screen {
         for (Path path : paths) {
             try (Stream<Path> stream = Files.walk(path)) {
                 stream.forEach(emote -> {
-                    List<KeyframeAnimation> animations = EmoteSerializer.serializeExternalEmote(emote);
-                    if (animations.isEmpty() || animations.getFirst().animationFormat != AnimationFormat.BINARY) return;
+                    List<Animation> animations = EmoteSerializer.serializeExternalEmote(emote);
+                    if (animations.isEmpty()/* || animations.getFirst().animationFormat != AnimationFormat.BINARY*/) return;
 
                     try {
                         Util.copyBetweenDirs(emote.getParent(), InstanceService.INSTANCE.getExternalEmoteDir(), emote);
                     } catch (Throwable th) {
-                        LoggerService.INSTANCE.log(Level.WARNING, "Failed to move animation!", th);
+                        CommonData.LOGGER.warn("Failed to move animation!", th);
                     }
                 });
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to walk!", th);
+                CommonData.LOGGER.warn("Failed to walk!", th);
             }
         }
     }

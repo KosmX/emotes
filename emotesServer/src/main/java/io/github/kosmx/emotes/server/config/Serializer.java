@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.server.services.InstanceService;
 
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 /**
  * Serialize Emotecraft related jsons but not animations
@@ -61,14 +60,14 @@ public class Serializer<T extends SerializableConfig> {
             this.serializer.toJson(config, this.configClass, writer);
             return true;
         } catch(IOException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to save config!", e);
+            CommonData.LOGGER.error("Failed to save config!", e);
             return false;
         }
     }
 
     public T readConfig() {
         if (this.config == null) {
-            LoggerService.INSTANCE.log(Level.INFO, "Loading config...");
+            CommonData.LOGGER.debug("Loading config...");
             this.config = readConfig(InstanceService.INSTANCE.getConfigPath());
         }
         return this.config;
@@ -79,8 +78,8 @@ public class Serializer<T extends SerializableConfig> {
             try (BufferedReader reader = Files.newBufferedReader(path)) {
                 return readConfig(reader);
             } catch(IOException | JsonParseException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to read config!", e);
-                LoggerService.INSTANCE.log(Level.WARNING, "If you want to regenerate the config, delete the old files!");
+                CommonData.LOGGER.warn("Failed to read config!", e);
+                CommonData.LOGGER.warn("If you want to regenerate the config, delete the old files!");
             }
         } else {
             T config = readConfig((BufferedReader) null);

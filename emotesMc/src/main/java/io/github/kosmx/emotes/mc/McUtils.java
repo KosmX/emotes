@@ -2,9 +2,11 @@ package io.github.kosmx.emotes.mc;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import io.github.kosmx.emotes.common.CommonData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 
 public class McUtils {
@@ -13,12 +15,13 @@ public class McUtils {
     public static final Component BACK = Component.literal("<").withStyle(style -> style.withBold(true));
 
     public static Component fromJson(String json, HolderLookup.Provider registries) {
-        if (json == null) {
-            return Component.empty();
-        }
+        if (json == null || json.isBlank()) return Component.empty();
 
         try {
-            return Component.Serializer.fromJson(JsonParser.parseString(json), registries);
+            return ComponentSerialization.CODEC.parse(
+                    registries.createSerializationContext(JsonOps.INSTANCE),
+                    JsonParser.parseString(json)
+            ).getOrThrow();
         } catch (Throwable e) {
             return Component.nullToEmpty(json);
         }
@@ -30,7 +33,9 @@ public class McUtils {
 
             case String string -> McUtils.fromJson(string, registries);
 
-            case JsonElement element -> Component.Serializer.fromJson(element, registries);
+            case JsonElement element -> ComponentSerialization.CODEC.parse(
+                    registries.createSerializationContext(JsonOps.INSTANCE), element
+            ).getOrThrow();
 
             default -> throw new IllegalArgumentException("Can not create Text from " + obj.getClass().getName());
         };

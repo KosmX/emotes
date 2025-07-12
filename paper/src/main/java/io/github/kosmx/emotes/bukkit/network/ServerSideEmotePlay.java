@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.bukkit.network;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNetworkInstance> implements Listener {
     private static final BukkitWrapper PLUGIN = BukkitWrapper.getPlugin(BukkitWrapper.class);
@@ -27,10 +26,10 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
                 try {
                     this.receiveMessage(message, playerNetwork);
                 } catch (Exception e) {
-                    LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                    CommonData.LOGGER.error("", e);
                 }
             } else {
-                LoggerService.INSTANCE.log(Level.WARNING, "Player: " + player.getName() + " is not registered");
+                CommonData.LOGGER.warn("Player {} is not registered!", player.getName());
             }
         }
     }
@@ -49,7 +48,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
         if (!this.players.containsKey(playerUuid)) {
             Player player = PLUGIN.getServer().getPlayer(playerUuid);
             if (player == null) return null;
-            LoggerService.INSTANCE.log(Level.INFO, "Player " + player.getName() + " never joined. If it is a fake player, the fake-player plugin forgot to fire join event.");
+            CommonData.LOGGER.error("Player {} never joined. If it is a fake player, the fake-player plugin forgot to fire join event.", player);
             this.players.put(playerUuid, new BukkitNetworkInstance(player));
         }
         return this.players.get(playerUuid);

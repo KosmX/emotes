@@ -26,7 +26,7 @@ public class PlayerTrackUtils {
     }
 
     public static EntityTrackerAccessor getEntityTracker(ServerPlayer player) {
-        ServerChunkCacheAccessor source = (ServerChunkCacheAccessor) player.serverLevel().getChunkSource().chunkMap;
+        ServerChunkCacheAccessor source = (ServerChunkCacheAccessor) player.level().getChunkSource().chunkMap;
         return source.getTrackedEntity().get(player.getId());
     }
 }

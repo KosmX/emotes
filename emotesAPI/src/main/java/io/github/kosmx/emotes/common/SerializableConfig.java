@@ -20,7 +20,7 @@ public class SerializableConfig {
 
     public int configVersion; //this has a different job... not a config
 
-    public final ConfigEntry<Boolean> showDebug = new ConfigEntry<>("debug", "showDebug", true, false, expert);
+    // public final ConfigEntry<Boolean> showDebug = new ConfigEntry<>("debug", "showDebug", true, false, expert);
     public final ConfigEntry<Boolean> validateEmote = new ConfigEntry<>("validate", false, true, expert);
 
     public final ConfigEntry<Float> validThreshold = new FloatConfigEntry("validationThreshold", "validThreshold", 8f, true, expert, "options.generic_value", 0.2f, 16f, 0f);
@@ -31,7 +31,7 @@ public class SerializableConfig {
 
     public final ConfigEntry<String> emotesDir = new ConfigEntry<>("emotesDirectory", "emotes", false, expert, true);
 
-    public final ConfigEntry<Boolean> autoFixEmoteStop = new ConfigEntry<>("autoFixEmoteStop", true, true, expert, false);
+    // public final ConfigEntry<Boolean> autoFixEmoteStop = new ConfigEntry<>("autoFixEmoteStop", true, true, expert, false);
 
     public void iterate(Consumer<ConfigEntry<?>> consumer) {
         basics.forEach(consumer);

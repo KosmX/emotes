@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.api.events.client;
 
-import dev.kosmx.playerAnim.core.impl.event.Event;
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import com.zigythebird.playeranimcore.event.Event;
+import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 
 /**
@@ -14,7 +14,7 @@ public class ClientNetworkEvents {
      * <p>
      * Return with {@link EventResult#PASS} if you want to continue sending, and {@link EventResult#FAIL} if otherwise
      */
-    public static final Event<PacketSendEvent> PACKET_SEND = new Event<>(PacketSendEvent.class, listeners -> packet -> {
+    public static final Event<PacketSendEvent> PACKET_SEND = new Event<>(listeners -> packet -> {
         for (PacketSendEvent listener : listeners) {
             if (listener.onPacketSend(packet) == EventResult.FAIL) {
                 return EventResult.FAIL;

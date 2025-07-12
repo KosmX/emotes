@@ -1,18 +1,18 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
 import com.mojang.authlib.GameProfile;
-import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ public class UnsafeRemotePlayer extends RemotePlayer {
     }
 
     @Override
-    public void initEmotePerspective(EmotePlayer emotePlayer) {
+    public void initEmotePerspective() {
         // no-op
     }
 
@@ -63,7 +63,7 @@ public class UnsafeRemotePlayer extends RemotePlayer {
 
     @Override
     public void baseTick() {
-        // no-op
+        tickCount++;
     }
 
     @Override
@@ -82,7 +82,9 @@ public class UnsafeRemotePlayer extends RemotePlayer {
     }
 
     @Override
-    public void emotecraft$playRawSound(SoundInstance instance, boolean distanceDelay) {
-        Minecraft.getInstance().execute(() -> Minecraft.getInstance().getSoundManager().play(instance));
+    public @NotNull Vec3 position() {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        if (localPlayer == null) return super.position();
+        return localPlayer.position();
     }
 }

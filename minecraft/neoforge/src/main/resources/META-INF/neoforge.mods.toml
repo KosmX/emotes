@@ -18,9 +18,22 @@ description="${description}"
 config = "emotecraft-arch.mixins.json"
 
 [[dependencies.emotecraft]]
-modId="playeranimator"
-mandatory=true
+modId = "neoforge"
+type = "required"
+versionRange = "[21.7,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.emotecraft]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.6,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.emotecraft]]
+modId="player_animation_library"
 type="required"
-versionRange="[2.0.3.1+1.21.5,)"
+versionRange="[1.0.0+mc1.21.7,)"
 ordering="NONE"
 side="BOTH"

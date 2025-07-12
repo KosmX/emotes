@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.main.config;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.tools.BiMap;
+import net.minecraft.client.CameraType;
 
 import java.util.UUID;
 
@@ -14,7 +15,6 @@ public class ClientConfig extends SerializableConfig {
     public final ConfigEntry<Boolean> enablePerspective = new ConfigEntry<>("perspective", true, false, basics);
     public final ConfigEntry<Boolean> frontAsTPPerspective = new ConfigEntry<>("default3rdPersonFront", false, false, basics);
     public final ConfigEntry<Boolean> showIcons = new ConfigEntry<>("showicon", "showIcon", true, false, basics);
-    public final ConfigEntry<Boolean> enableNSFW = new ConfigEntry<>("enableNSFW", false, true, basics);
     public final ConfigEntry<Boolean> checkPose = new ConfigEntry<>("checkPose", true, true, expert);
 
     public final ConfigEntry<Boolean> alwaysOpenEmoteScreen = new ConfigEntry<>("alwaysOpenScreen", false, true, basics);
@@ -50,7 +50,7 @@ public class ClientConfig extends SerializableConfig {
         }
     };
     public final ConfigEntry<Boolean> showHiddenConfig = new ConfigEntry<>("showHiddenConfig", false, true, expert, false);
-    public final ConfigEntry<Boolean> neverRemoveBadIcon = new ConfigEntry<>("neverRemoveBadIcon", false, expert, true);
+    // public final ConfigEntry<Boolean> neverRemoveBadIcon = new ConfigEntry<>("neverRemoveBadIcon", false, expert, true);
     public final ConfigEntry<Boolean> exportBuiltin = new ConfigEntry<>("exportBuiltin", false, expert, true);
 
 
@@ -72,4 +72,8 @@ public class ClientConfig extends SerializableConfig {
     //------------------------ Random tweak stuff ------------------------//
 
     public final ConfigEntry<Boolean> hideWarningMessage = new ConfigEntry<>("hideWarning", false, expert, true);
+
+    public CameraType getCameraType() {
+        return frontAsTPPerspective.get() ? CameraType.THIRD_PERSON_FRONT : CameraType.THIRD_PERSON_BACK;
+    }
 }

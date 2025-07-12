@@ -31,7 +31,7 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
         assert config.emoteData != null;
-        ByteBuffer iconData = (ByteBuffer)config.emoteData.extraData.get("iconData");
+        ByteBuffer iconData = (ByteBuffer)config.emoteData.data().getRaw("iconData");
         byteBuffer.putInt(iconData.remaining());
         byteBuffer.put(iconData);
         ((Buffer)iconData).position(0);
@@ -39,12 +39,12 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.purpose == PacketTask.FILE && config.emoteData != null && config.emoteData.extraData.containsKey("iconData");
+        return config.purpose == PacketTask.FILE && config.emoteData != null && config.emoteData.data().has("iconData");
     }
 
     @Override
     public int calculateSize(NetData config) {
         if (config.emoteData == null) return 0;
-        return ((ByteBuffer)config.emoteData.extraData.get("iconData")).remaining() + 4;
+        return ((ByteBuffer)config.emoteData.data().getRaw("iconData")).remaining() + 4;
     }
 }

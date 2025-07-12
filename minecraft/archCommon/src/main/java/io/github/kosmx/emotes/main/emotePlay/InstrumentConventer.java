@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.main.emotePlay;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.instances.SoundDirectInstance;
 import io.github.kosmx.emotes.main.emotePlay.instances.SoundEventInstance;
 import net.minecraft.client.Minecraft;
@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.logging.Level;
 
 public class InstrumentConventer {
     public static SoundInstance getInstrument(Note note, Vec3 pos) {
@@ -49,10 +48,10 @@ public class InstrumentConventer {
                 return new SoundEventInstance(event, note.getVolume(), note.getPitch(), pos);
             }
 
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed parse custom instrument: name=" + instrument.getNameOr("") + ", file=" + file);
+            CommonData.LOGGER.warn("Failed parse custom instrument: name={}, file={}", instrument.getNameOr(""), file);
             return new SoundDirectInstance(SoundManager.EMPTY_SOUND, note.getVolume(), note.getPitch(), pos);
         } else {
-            LoggerService.INSTANCE.log(Level.WARNING, "Unsupported instrument type: " + note.getInstrument().getClass().getName());
+            CommonData.LOGGER.warn("Unsupported instrument type: {}", note.getInstrument().getClass().getName());
             return createForNoteBlock(NoteBlockInstrument.HARP, pos, note.getVolume(), note.getPitch());
         }
     }

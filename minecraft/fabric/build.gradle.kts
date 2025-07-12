@@ -44,7 +44,12 @@ dependencies {
         pomCompile(this)
     }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibFabric:${properties["playeranimlib_version"] as String}") {
+        include(this)
+        pomCompile(this)
+    }
+
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${properties["bendablecuboids_version"] as String}") {
         include(this)
         pomCompile(this)
     }

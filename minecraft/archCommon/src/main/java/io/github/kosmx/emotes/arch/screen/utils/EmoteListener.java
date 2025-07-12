@@ -2,8 +2,8 @@ package io.github.kosmx.emotes.arch.screen.utils;
 
 import com.google.common.base.Stopwatch;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
+import io.github.kosmx.emotes.common.CommonData;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,6 @@ import java.nio.file.*;
 import java.text.DecimalFormat;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 public class EmoteListener extends PackSelectionScreen.Watcher {
     private static final DecimalFormat FORMAT = new DecimalFormat("#0.000");
@@ -29,7 +28,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
         try {
             return new EmoteListener(packPath);
         } catch (IOException ex) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to initialize emote dir monitoring", ex);
+            CommonData.LOGGER.warn("Failed to initialize emote dir monitoring", ex);
             return null;
         }
     }
@@ -68,7 +67,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
             try {
                 this.loader.get(10, TimeUnit.SECONDS);
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to wait for emote loading!", th);
+                CommonData.LOGGER.warn("Failed to wait for emote loading!", th);
                 this.loader.cancel(true);
             }
         }

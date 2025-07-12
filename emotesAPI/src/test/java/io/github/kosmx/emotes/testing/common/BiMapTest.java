@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.testing.common;
 
-import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.common.tools.BiMap;
+import it.unimi.dsi.fastutil.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ public class BiMapTest {
 
         Pair<String, Integer> element;
 
-        Pair<String, Integer> nullPair = new Pair<>(null, null);
+        Pair<String, Integer> nullPair = Pair.of(null, null);
 
         element = biMap.put("a", 1);
         Assertions.assertEquals(element, nullPair, "there were no element like that in the map");
@@ -29,12 +29,12 @@ public class BiMapTest {
         Assertions.assertEquals(element, nullPair, "there were no element like that in the map");
 
         element = biMap.put("a", 2);
-        Assertions.assertEquals(element, new Pair<>("b", 1));
+        Assertions.assertEquals(element, Pair.of("b", 1));
 
 
-        Assertions.assertFalse(biMap.contains(new Pair<>("a", 1)));
-        Assertions.assertFalse(biMap.contains(new Pair<>("b", 2)));
-        Assertions.assertTrue(biMap.contains(new Pair<>("a", 2)));
+        Assertions.assertFalse(biMap.contains(Pair.of("a", 1)));
+        Assertions.assertFalse(biMap.contains(Pair.of("b", 2)));
+        Assertions.assertTrue(biMap.contains(Pair.of("a", 2)));
         Assertions.assertEquals(1, biMap.size());
 
         Assertions.assertEquals(biMap.removeL("a"), 2);
@@ -44,7 +44,7 @@ public class BiMapTest {
         for(int n = 0; n < i; n++){
             String str = Double.toString(random.nextDouble());
             i = random.nextInt();
-            biMap.add(new Pair<>(str, i));
+            biMap.add(Pair.of(str, i));
             biMap1.put(str, i);
         }
         Assertions.assertEquals(biMap, biMap1);

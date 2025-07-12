@@ -1,9 +1,7 @@
 package io.github.kosmx.emotes.server.network;
 
-
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Pair;
-
+import com.zigythebird.playeranimcore.animation.Animation;
+import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.time.Instant;
@@ -17,25 +15,22 @@ import java.time.Instant;
  *
  */
 public class EmotePlayTracker {
-
-    private KeyframeAnimation currentEmote = null;
-
+    private Animation currentEmote = null;
     private Instant startTime = null;
-
     private boolean isForced = false;
 
     /**
      * Set the currently played emote.
      * @param data Emote, null if stop playing
      */
-    public void setPlayedEmote(@Nullable KeyframeAnimation data, boolean isForced) {
-        currentEmote = data;
+    public void setPlayedEmote(@Nullable Animation data, boolean isForced) {
+        this.currentEmote = data;
+
         if (data == null) {
-            startTime = null;
+            this.startTime = null;
             this.isForced = false;
-        }
-        else {
-            startTime = Instant.now();
+        } else {
+            this.startTime = Instant.now();
             this.isForced = isForced;
         }
     }
@@ -47,10 +42,9 @@ public class EmotePlayTracker {
      * @return true if forced, false if not playing any emote.
      */
     public boolean isForced() {
-        if( getPlayedEmote() != null) {
+        if (getPlayedEmote() != null) {
             return isForced;
-        }
-        else return false;
+        } else return false;
     }
 
     /**
@@ -58,16 +52,15 @@ public class EmotePlayTracker {
      * @return null if not playing emote
      */
     @Nullable
-    public Pair<KeyframeAnimation, Integer> getPlayedEmote() {
+    public Pair<Animation, Float> getPlayedEmote() {
         if (currentEmote == null) return null;
-        int tick = (int)(Duration.between(startTime, Instant.now()).toMillis() / 50);
-        if (!currentEmote.isInfinite() && currentEmote.getLength() <= tick) {
+        float tick = Duration.between(startTime, Instant.now()).toMillis() / 50F;
+        if (!currentEmote.isPlayingAt(tick)) {
             currentEmote = null;
             startTime = null;
             isForced = false;
             return null;
         }
-        return new Pair<>(currentEmote, tick);
+        return Pair.of(currentEmote, tick);
     }
-
 }

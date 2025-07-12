@@ -13,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,10 +46,6 @@ public final class PlatformTools {
 
     public static boolean isPlayerBlocked(UUID uuid) {
         return Minecraft.getInstance().isBlocked(uuid);
-    }
-
-    public static LocalPlayer getMainPlayer() {
-        return Minecraft.getInstance().player;
     }
 
     public static CameraType getPerspective() {

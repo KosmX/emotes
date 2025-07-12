@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -137,5 +138,10 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
     @Override
     public @NotNull ClientLevelData getLevelData() {
         return this.clientLevelData;
+    }
+
+    @Override
+    public @NotNull List<Entity> getPushableEntities(Entity entity, AABB boundingBox) {
+        return Collections.emptyList();
     }
 }

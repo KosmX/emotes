@@ -2,8 +2,8 @@ package io.github.kosmx.emotes.arch;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
@@ -15,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
 public class EmotecraftClientMod {
     public static final KeyMapping OPEN_MENU_KEY = new KeyMapping(
@@ -51,7 +50,7 @@ public class EmotecraftClientMod {
                     EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes(), null);
                 })
                 .exceptionally(th -> {
-                    LoggerService.INSTANCE.log(Level.WARNING, "Failed to reload emotes!", th);
+                    CommonData.LOGGER.error("Failed to reload emotes!", th);
                     return null;
                 });
     }

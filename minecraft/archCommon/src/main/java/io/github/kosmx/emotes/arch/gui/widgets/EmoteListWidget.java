@@ -2,25 +2,25 @@ package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.kosmx.playerAnim.core.util.MathHelper;
-import dev.kosmx.playerAnim.core.util.Pair;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
 import io.github.kosmx.emotes.arch.screen.utils.BageUtils;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -124,8 +124,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     public Iterable<EmoteHolder> getEmptyEmotes() {
         Collection<EmoteHolder> empties = new LinkedList<>();
         for(Pair<UUID, InputConstants.Key> pair : PlatformTools.getConfig().emoteKeyMap){
-            if(!EmoteHolder.list.containsKey(pair.getLeft())){
-                empties.add(new EmoteHolder.Empty(pair.getLeft()));
+            if(!EmoteHolder.list.containsKey(pair.left())){
+                empties.add(new EmoteHolder.Empty(pair.left()));
             }
         }
         return empties;
@@ -193,12 +193,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             int maxX = x + entryWidth - 3 - (compactMode && scrollbarVisible() ? 7 : 0);
             matrices.enableScissor(x - 1, y - 1, maxX, y + entryHeight + 1);
             if (hovered) {
-                matrices.fill(x - 1, y - 1, maxX, y + entryHeight + 1, MathHelper.colorHelper(66, 66, 66, 128));
+                matrices.fill(x - 1, y - 1, maxX, y + entryHeight + 1, ARGB.color(128, 66, 66, 66));
             }
             int maxBagesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (x + 34);
             int bageWidth = BageUtils.drawBadges(matrices, minecraft.font, this.bages, maxX, y + 1, maxBagesWidth, true);
-            renderScrollingString(matrices, minecraft.font, this.name, x + 34, x + 34, y + 1, maxX - bageWidth, y + 1 + minecraft.font.lineHeight, 16777215);
-            matrices.drawString(minecraft.font, this.description, x + 34, y + 12, 8421504);
+            renderScrollingString(matrices, minecraft.font, this.name, x + 34, x + 34, y + 1, maxX - bageWidth, y + 1 + minecraft.font.lineHeight, -1);
+            matrices.drawString(minecraft.font, this.description, x + 34, y + 12, -8355712);
             renderAdditional(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickDelta);
             matrices.disableScissor();
         }
@@ -243,13 +243,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                         .withStyle(ChatFormatting.GOLD)
                         .append(this.emote.author);
 
-                matrices.drawString(minecraft.font, text, x + 34, y + 23, 8421504);
+                matrices.drawString(minecraft.font, text, x + 34, y + 23, -8355712);
             }
 
             ResourceLocation texture = this.emote.getIconIdentifier();
             if (texture != null){
                 GlStateManager._enableBlend();
-                matrices.blit(RenderType::guiTextured, texture, x, y, 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
+                matrices.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
                 GlStateManager._disableBlend();
             }
         }
@@ -309,7 +309,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         @Override
         public void renderAdditional(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-            guiGraphics.blit(RenderType::guiTextured, hovering ? FOLDER_OPEN : FOLDER, left, top, 0.0F, 0.0F, 32, 32, 32, 32);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, left, top, 0.0F, 0.0F, 32, 32, 32, 32);
         }
 
         public boolean isInvalid() {

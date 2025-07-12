@@ -1,13 +1,12 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.mojang.authlib.GameProfile;
-import dev.kosmx.playerAnim.api.IPlayer;
-import dev.kosmx.playerAnim.api.layered.AnimationStack;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Ease;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.layouts.LayoutElement;
@@ -18,9 +17,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
-import java.util.logging.Level;
-
 public class PlayerPreview extends AbstractWidget implements LayoutElement {
+    private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_OUT_QUART.buildTransformer(null);
+
     protected final boolean renderBackround;
     protected RemotePlayer player;
 
@@ -34,10 +33,10 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         setAlpha(0.0F);
     }
 
-    public void playAnimation(KeyframeAnimation animation, boolean check) {
+    public void playAnimation(Animation animation, boolean check) {
         if (check && animation != null) {
             EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
-            if (emotePlayer != null && animation.equals(emotePlayer.getData())) {
+            if (animation.equals(emotePlayer.getData())) {
                 return;
             }
         }
@@ -46,7 +45,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         guiGraphics.enableScissor(getX(), getY(), getRight(), getBottom());
 
         if (this.renderBackround) {
@@ -55,18 +54,18 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
             ));
         }
 
-        guiGraphics.pose().translate(0, 0, 500);
+        guiGraphics.nextStratum();
         try {
             InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
         } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to render entity preview!", th);
+            CommonData.LOGGER.warn("Failed to render entity preview!", th);
         }
 
         guiGraphics.disableScissor();
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
         if (this.animTime > 0.0F) {
-            setAlpha(1.0F - Ease.OUTQUART.invoke(this.animTime));
+            setAlpha(1.0F - EASING_TRANSFORMER.get(this.animTime));
         }
     }
 
@@ -76,15 +75,14 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        AnimationStack stack = ((IPlayer) this.player).playerAnimator$getAnimationStack();
-        if (stack.isActive()) {
+        if (this.player != null && this.player.isPlayingEmote()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
 
             try {
                 this.player.tick();
             } catch (Throwable th) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to tick entity preview!", th);
+                CommonData.LOGGER.warn("Failed to tick entity preview!", th);
             }
         } else {
             this.animTime = Math.min(1.0F, this.animTime + 0.1F);

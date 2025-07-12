@@ -8,8 +8,15 @@ package io.github.kosmx.emotes.common.network;
 public final class PacketConfig {
     /**
      * Max animation version supported by the other side.
+     * (playeranimator)
      */
-    public static final byte ANIMATION_FORMAT = (byte) 0;
+    public static final byte LEGACY_ANIMATION_FORMAT = (byte) 0;
+
+    /**
+     * Max animation version supported by the other side.
+     * (playeranimlib)
+     */
+    public static final byte NEW_ANIMATION_FORMAT = (byte) 0x99;
 
     /**
      * Enable/disable NBS on this server/client.

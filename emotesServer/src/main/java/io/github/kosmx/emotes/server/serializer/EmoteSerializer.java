@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.server.serializer;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.MathHelper;
-import dev.kosmx.playerAnim.core.util.UUIDMap;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.tools.MathHelper;
+import io.github.kosmx.emotes.common.tools.UUIDMap;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.model.Song;
@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 /**
@@ -25,7 +24,7 @@ import java.util.stream.Stream;
 public class EmoteSerializer {
     public static final String FOLDER_PATH_KEY = "folderpath";
 
-    public static void serializeEmotes(UUIDMap<KeyframeAnimation> emotes, Path externalEmotes) {
+    public static void serializeEmotes(UUIDMap<Animation> emotes, Path externalEmotes) {
         if (!Files.isDirectory(externalEmotes)) {
             return; // Just skip
         }
@@ -42,23 +41,23 @@ public class EmoteSerializer {
                 emotes.addAll(serializeExternalEmote(file, folderPath));
             });
         } catch (Throwable e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to walk emotes!", e);
+            CommonData.LOGGER.warn("Failed to walk emotes!", e);
         }
     }
 
-    public static List<KeyframeAnimation> serializeExternalEmote(Path file) {
+    public static List<Animation> serializeExternalEmote(Path file) {
         return EmoteSerializer.serializeExternalEmote(file, null);
     }
 
-    public static List<KeyframeAnimation> serializeExternalEmote(Path file, String folderPath) {
+    public static List<Animation> serializeExternalEmote(Path file, String folderPath) {
         String fileName = file.getFileName().toString();
         String baseFileName = getBaseName(fileName);
 
         try (InputStream reader = Files.newInputStream(file)) {
-            List<KeyframeAnimation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
+            List<Animation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
             if (folderPath != null && !folderPath.isBlank()) {
-                for (KeyframeAnimation emote : emotes) { // Avoid lambda
-                    emote.extraData.put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
+                for (Animation emote : emotes) { // Avoid lambda
+                    emote.data().put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
                 }
             }
 
@@ -67,11 +66,11 @@ public class EmoteSerializer {
                 try (InputStream iconStream = Files.newInputStream(icon)) {
                     final ByteBuffer byteBuffer = MathHelper.readFromIStream(iconStream);
 
-                    for (KeyframeAnimation emote : emotes) { // Avoid lambda
-                        emote.extraData.put("iconData", byteBuffer);
+                    for (Animation emote : emotes) { // Avoid lambda
+                        emote.data().put("iconData", byteBuffer);
                     }
                 } catch (Throwable th) {
-                    LoggerService.INSTANCE.log(Level.WARNING, "Error while reading icon: " + icon.getFileName(), th);
+                    CommonData.LOGGER.warn("Error while reading icon: {}", icon.getFileName(), th);
                 }
             }
 
@@ -80,17 +79,17 @@ public class EmoteSerializer {
                 try {
                     Song nbs = NoteBlockLib.readSong(song, SongFormat.NBS);
 
-                    for (KeyframeAnimation emote : emotes) { // Avoid lambda
-                        emote.extraData.put("song", nbs);
+                    for (Animation emote : emotes) { // Avoid lambda
+                        emote.data().put("song", nbs);
                     }
                 } catch (Throwable th) {
-                    LoggerService.INSTANCE.log(Level.WARNING, "Error while reading song: " + song.getFileName(), th);
+                    CommonData.LOGGER.warn("Error while reading song: {}", song.getFileName(), th);
                 }
             }
 
             return emotes;
         } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Error while importing external emote: " + file.getFileName(), th);
+            CommonData.LOGGER.warn("Error while importing external emote: {}", file.getFileName(), th);
             return Collections.emptyList();
         }
     }
