@@ -170,7 +170,7 @@ publishMods {
 
         requires("fabric-api")
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        // requires("bendable-cuboids")
         optional("searchables")
         optional("fabric-permissions-api")
     }
@@ -186,7 +186,7 @@ publishMods {
 
         requires("fabric-api")
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        // requires("bendable-cuboids")
         optional("searchables")
     }
 }

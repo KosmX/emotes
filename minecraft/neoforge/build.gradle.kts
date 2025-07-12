@@ -156,7 +156,7 @@ publishMods {
         version = "${mod_version}+${removePreRc(minecraft_version)}-forge"
 
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        // requires("bendable-cuboids")
         optional("searchables")
     }
 
@@ -170,7 +170,7 @@ publishMods {
         minecraftVersions.add(curseforge_minecraft_version)
 
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        // requires("bendable-cuboids")
         optional("searchables")
     }
 }
