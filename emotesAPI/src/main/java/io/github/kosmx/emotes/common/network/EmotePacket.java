@@ -98,15 +98,9 @@ public class EmotePacket {
         buf.put(data.purpose.id);
         buf.put(partCount.get());
 
-        boolean legacyAnim = false;
-        boolean newAnim = false;
-
         try {
             for (AbstractNetworkPacket packet : this.subPackets.values()) {
-                boolean written = writeSubPacket(buf, packet);
-
-                if (packet instanceof EmoteDataPacket) legacyAnim = written;
-                if (packet instanceof NewAnimPacket) newAnim = written;
+                writeSubPacket(buf, packet);
             }
         } catch (Throwable th) {
             throw new IOException("Exception while writing sub-packages", th);
@@ -114,18 +108,10 @@ public class EmotePacket {
             ((Buffer)buf).flip(); // make it ready to read
         }
 
-        if (legacyAnim && newAnim) {
-            CommonData.LOGGER.error("Used both binary formats");
-        } else if (legacyAnim) {
-            CommonData.LOGGER.warn("Used legacy binary format");
-        } else if (newAnim) {
-            CommonData.LOGGER.info("Used new binary format");
-        }
-
         return buf;
     }
 
-    boolean writeSubPacket(ByteBuffer byteBuffer, AbstractNetworkPacket packetSender) throws IOException {
+    void writeSubPacket(ByteBuffer byteBuffer, AbstractNetworkPacket packetSender) throws IOException {
         if(packetSender.doWrite(this.data)){
             //This is not time critical task, HeapByteBuf is more secure and I can wrap it again.
             int len = packetSender.calculateSize(this.data);
@@ -139,9 +125,7 @@ public class EmotePacket {
                         packetSender.getClass(), len, byteBuffer.position() - currentIndex
                 ));
             }
-            return true;
         }
-        return false;
     }
 
     @NotNull
