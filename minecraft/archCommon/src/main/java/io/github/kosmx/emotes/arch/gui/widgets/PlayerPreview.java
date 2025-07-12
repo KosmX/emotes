@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranimcore.animation.Animation;
-import com.zigythebird.playeranimcore.animation.EasingType;
+import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
