@@ -155,7 +155,8 @@ publishMods {
         displayName = mod_version
         version = "${mod_version}+${removePreRc(minecraft_version)}-forge"
 
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 
@@ -168,7 +169,8 @@ publishMods {
         displayName = base.archivesName.get() + "-$mod_version"
         minecraftVersions.add(curseforge_minecraft_version)
 
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 }

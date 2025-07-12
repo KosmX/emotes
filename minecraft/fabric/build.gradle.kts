@@ -169,7 +169,8 @@ publishMods {
         version = "${mod_version}+${removePreRc(minecraft_version)}-fabric"
 
         requires("fabric-api")
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
         optional("fabric-permissions-api")
     }
@@ -184,7 +185,8 @@ publishMods {
         minecraftVersions.add(curseforge_minecraft_version)
 
         requires("fabric-api")
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 }
