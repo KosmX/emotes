@@ -110,7 +110,7 @@ components.getByName<AdhocComponentWithVariants>("java") {
     }
 }
 
-publishing {
+/*publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             artifactId = "emotesNeo"
@@ -133,7 +133,7 @@ publishing {
             mavenLocal()
         }
     }
-}
+}*/
 
 publishMods {
     modLoaders.add("neoforge")

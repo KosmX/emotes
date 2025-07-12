@@ -65,7 +65,7 @@ java {
     withSourcesJar()
 }
 
-publishing {
+/*publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             artifactId = "emotesBukkit"
@@ -81,7 +81,7 @@ publishing {
             mavenLocal()
         }
     }
-}
+}*/
 
 publishMods {
     modLoaders.add("paper")
