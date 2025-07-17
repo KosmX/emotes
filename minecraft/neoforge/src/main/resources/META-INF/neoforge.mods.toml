@@ -8,11 +8,11 @@ modId="emotecraft"
 version="${version}"
 displayName="Emotecraft"
 updateJSONURL="https://api.modrinth.com/updates/emotecraft/forge_updates.json?neoforge=include"
-displayURL="https://kosmx.gitbook.io/emotecraft/"
+displayURL="https://docs.zigythebird.com/emotecraft/gettingstarted"
 logoFile="emotecraft_mod_logo.png"
 authors="KosmX, dima_dencep"
-credits="Kale Ko, BoBkiNN"
-description="${description}"
+credits="Kale Ko, ZigyTheBird, BoBkiNN"
+description='''${description}'''
 
 [[mixins]]
 config = "emotecraft-arch.mixins.json"

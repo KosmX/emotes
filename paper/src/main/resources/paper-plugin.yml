@@ -1,8 +1,8 @@
 name: emotecraft
-description: ${description}
+description: "${description}"
 main: io.github.kosmx.emotes.bukkit.BukkitWrapper
 version: ${version}
 api-version: ${mcversion}
-website: https://kosmx.gitbook.io/emotecraft/
+website: https://docs.zigythebird.com/emotecraft/gettingstarted
 authors: [KomsX, dima_dencep]
 folia-supported: true

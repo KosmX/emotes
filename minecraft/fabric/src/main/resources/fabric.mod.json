@@ -10,11 +10,13 @@
   ],
   "contributors": [
     "Kale Ko",
+    "ZigyTheBird",
     "BoBkiNN"
   ],
   "contact": {
     "issues": "https://github.com/KosmX/emotes/issues",
-    "homepage": "https://kosmx.gitbook.io/emotecraft/"
+    "homepage": "https://docs.zigythebird.com/emotecraft/gettingstarted",
+    "sources": "https://github.com/KosmX/emotes"
   },
   "license": "GPL3",
   "icon": "emotecraft_mod_logo.png",
@@ -44,7 +46,10 @@
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/6NfdRuE"
+        "modmenu.curseforge": "https://curseforge.com/minecraft/mc-mods/emotecraft",
+        "modmenu.discord": "https://discord.gg/6NfdRuE",
+        "modmenu.github_releases": "https://github.com/KosmX/emotes/releases",
+        "modmenu.modrinth": "https://modrinth.com/mod/emotecraft"
       }
     }
   }
