@@ -29,13 +29,19 @@ configurations.apply {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric_api_version"] as String}")
+
+    // Fabric API
+    modImplementation(fabricApi.module("fabric-command-api-v2", properties["fabric_api_version"] as String))
+    modImplementation(fabricApi.module("fabric-networking-api-v1", properties["fabric_api_version"] as String))
+    modImplementation(fabricApi.module("fabric-key-binding-api-v1", properties["fabric_api_version"] as String))
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", properties["fabric_api_version"] as String))
 
     commonModule(project(":emotesAPI")) { isTransitive = false }
     commonModule(project(":emotesServer")) { isTransitive = false }
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
+    modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", properties["fabric_api_version"] as String))
     modImplementation("com.terraformersmc:modmenu:${properties["modmenu_version"] as String}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
@@ -170,7 +176,7 @@ publishMods {
 
         requires("fabric-api")
         requires("player-animation-library")
-        // requires("bendable-cuboids")
+        requires("bendable-cuboids")
         optional("searchables")
         optional("fabric-permissions-api")
     }
@@ -186,7 +192,7 @@ publishMods {
 
         requires("fabric-api")
         requires("player-animation-library")
-        // requires("bendable-cuboids")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 }

@@ -64,6 +64,7 @@ dependencies {
 
     // Temp fixes
     forgeRuntimeLibrary("org.javassist:javassist:3.30.2-GA")
+    forgeRuntimeLibrary("com.zigythebird:mochafloats:1.1.2")
 }
 
 tasks.processResources {
@@ -156,7 +157,7 @@ publishMods {
         version = "${mod_version}+${removePreRc(minecraft_version)}-forge"
 
         requires("player-animation-library")
-        // requires("bendable-cuboids")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 
@@ -170,7 +171,7 @@ publishMods {
         minecraftVersions.add(curseforge_minecraft_version)
 
         requires("player-animation-library")
-        // requires("bendable-cuboids")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 }

@@ -26,7 +26,6 @@
     "client": [
       "io.github.kosmx.emotes.fabric.EmotecraftClientFabricMod"
     ],
-    "server": [],
     "modmenu": [
       "io.github.kosmx.emotes.fabric.ModMenu"
     ]
@@ -35,10 +34,12 @@
     "emotecraft-arch.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.14",
-    "fabric-api": "*",
-    "minecraft": ">=1.21.6",
-    "player_animation_library": ">=1.0.0+mc1.21.7"
+    "fabric-command-api-v2": "*",
+    "fabric-networking-api-v1": "*",
+    "fabric-key-binding-api-v1": "*",
+    "fabric-lifecycle-events-v1": "*",
+    "minecraft": ">=1.21.7",
+    "player_animation_library": ">=1.0.4+mc1.21.7"
   },
   "custom": {
     "modmenu": {
