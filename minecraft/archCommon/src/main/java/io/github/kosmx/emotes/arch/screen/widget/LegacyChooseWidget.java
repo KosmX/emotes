@@ -44,7 +44,7 @@ public class LegacyChooseWidget implements IChooseWheel {
     public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y) {
         int c = PlatformTools.getConfig().dark.get() ? 255 : 0; //:D
         float x1 = x - (float) Minecraft.getInstance().font.width(stringRenderable) / 2;
-        matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), ARGB.color(1, c, c, c));
+        matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), ARGB.color(255, c, c, c));
     }
 
     @Nullable
