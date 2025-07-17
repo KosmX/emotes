@@ -54,11 +54,6 @@ public class EmotePlayer extends PlayerAnimationController {
             Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
             this.perspective = false;
         }
-    }
-
-    @Override
-    protected void resetEventKeyFrames() {
-        super.resetEventKeyFrames();
         if (this.song != null) this.song.stop();
     }
 
@@ -81,7 +76,7 @@ public class EmotePlayer extends PlayerAnimationController {
 
     @Override
     protected <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, CustomKeyFrameEvents.@Nullable CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
-        if (this.song != null && isActive() && !this.song.isRunning()) {
+        if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning()) {
             Component nowPlaying = this.song.getNowPlaying();
             if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
             this.song.start();

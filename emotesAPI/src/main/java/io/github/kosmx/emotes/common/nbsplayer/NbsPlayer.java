@@ -15,6 +15,7 @@ public abstract class NbsPlayer extends SongPlayer {
     );
 
     protected int loopCount = 0;
+    private boolean firstSongPlayed;
 
     public NbsPlayer(Song song) {
         super(song);
@@ -23,6 +24,7 @@ public abstract class NbsPlayer extends SongPlayer {
 
     @Override
     protected void playNotes(List<Note> notes) {
+        this.firstSongPlayed = true;
         for (Note note : notes) playNote(note);
     }
 
@@ -36,5 +38,9 @@ public abstract class NbsPlayer extends SongPlayer {
                 this.start((int) (1000 / this.getCurrentTicksPerSecond()), nbsSong.getLoopStartTick());
             }
         }
+    }
+
+    public boolean isFirstSongPlayed() {
+        return this.firstSongPlayed;
     }
 }
