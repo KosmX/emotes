@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import io.github.kosmx.emotes.common.CommonData;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +26,10 @@ public class McUtils {
         } catch (Throwable e) {
             return Component.nullToEmpty(json);
         }
+    }
+
+    public static Component fromJson(Object obj) {
+        return McUtils.fromJson(obj, RegistryAccess.EMPTY);
     }
 
     public static Component fromJson(Object obj, HolderLookup.Provider registries) {

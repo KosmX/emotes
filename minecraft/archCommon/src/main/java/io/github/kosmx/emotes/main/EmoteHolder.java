@@ -47,6 +47,8 @@ public class EmoteHolder implements Supplier<UUID> {
     public final Component author;
     public final List<Component> folder;
     public final List<Component> bages;
+    @Nullable
+    public final Component fileName;
 
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
@@ -71,6 +73,10 @@ public class EmoteHolder implements Supplier<UUID> {
         this.author = McUtils.fromJson(emote.data().getRaw("author"), RegistryAccess.EMPTY);
         this.folder = computeFolderPath((String) emote.data().getRaw(EmoteSerializer.FOLDER_PATH_KEY));
         this.bages = computeBages((List<String>) emote.data().getRaw("bages"));
+
+        this.fileName = emote.data().get(EmoteSerializer.FILENAME_KEY)
+                .map(McUtils::fromJson)
+                .orElse(null);
     }
 
     private static List<Component> computeFolderPath(String folderPath) {
