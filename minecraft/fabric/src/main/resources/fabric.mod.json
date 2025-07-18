@@ -43,6 +43,10 @@
     "minecraft": ">=1.21.7",
     "player_animation_library": ">=1.0.4+mc1.21.7"
   },
+  "breaks": {
+    "grimac": "*",
+    "packetevents": "*"
+  },
   "custom": {
     "modmenu": {
       "links": {
