@@ -195,9 +195,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             if (hovered) {
                 matrices.fill(x - 1, y - 1, maxX, y + entryHeight + 1, ARGB.color(128, 66, 66, 66));
             }
-            int maxBagesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (x + 34);
-            int bageWidth = BageUtils.drawBadges(matrices, minecraft.font, this.bages, maxX, y + 1, maxBagesWidth, true);
-            renderScrollingString(matrices, minecraft.font, this.name, x + 34, x + 34, y + 1, maxX - bageWidth, y + 1 + minecraft.font.lineHeight, -1);
+            int maxBadgesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (x + 34);
+            int badgeWidth = BageUtils.drawBadges(matrices, minecraft.font, this.bages, maxX, y + 1, maxBadgesWidth, true);
+            renderScrollingString(matrices, minecraft.font, this.name, x + 34, x + 34, y + 1, maxX - badgeWidth, y + 1 + minecraft.font.lineHeight, -1);
             matrices.drawString(minecraft.font, this.description, x + 34, y + 12, -8355712);
             renderAdditional(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, hovered, tickDelta);
             matrices.disableScissor();
@@ -238,7 +238,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         @Override
         public void renderAdditional(GuiGraphics matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            if(!this.emote.author.getString().isEmpty()) {
+            if (!this.emote.author.getString().isEmpty()) {
                 Component text = Component.translatable("emotecraft.emote.author")
                         .withStyle(ChatFormatting.GOLD)
                         .append(this.emote.author);
@@ -247,7 +247,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             }
 
             ResourceLocation texture = this.emote.getIconIdentifier();
-            if (texture != null){
+            if (texture != null) {
                 GlStateManager._enableBlend();
                 matrices.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
                 GlStateManager._disableBlend();
@@ -267,6 +267,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public boolean matches(String string) {
             return super.matches(string) ||
                     description.getString().toLowerCase().contains(string.toLowerCase()) ||
+                    (emote.fileName != null && emote.fileName.getString().toLowerCase().contains(string.toLowerCase())) ||
                     emote.author.getString().equalsIgnoreCase(string);
         }
 

@@ -7,6 +7,7 @@ import com.blamejared.searchables.api.context.ContextVisitor;
 import com.blamejared.searchables.api.context.SearchContext;
 import com.blamejared.searchables.lang.StringSearcher;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -38,6 +39,11 @@ public class SearchablesSearch implements ISearchEngine {
             ))
             .component(SearchableComponent.create("author",
                     entry -> entry instanceof EmoteListWidget.EmoteEntry holder ? Optional.ofNullable(holder.emote.author)
+                            .map(Component::getString)
+                            .filter(str -> !str.isEmpty()) : Optional.empty()
+            ))
+            .component(SearchableComponent.create(EmoteSerializer.FILENAME_KEY,
+                    entry -> entry instanceof EmoteListWidget.EmoteEntry holder ? Optional.ofNullable(holder.emote.fileName)
                             .map(Component::getString)
                             .filter(str -> !str.isEmpty()) : Optional.empty()
             ))

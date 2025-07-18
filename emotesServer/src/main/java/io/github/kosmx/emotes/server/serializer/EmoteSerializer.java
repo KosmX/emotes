@@ -23,6 +23,7 @@ import java.util.stream.Stream;
  */
 public class EmoteSerializer {
     public static final String FOLDER_PATH_KEY = "folderpath";
+    public static final String FILENAME_KEY = "fileName";
 
     public static void serializeEmotes(UUIDMap<Animation> emotes, Path externalEmotes) {
         if (!Files.isDirectory(externalEmotes)) {
@@ -55,10 +56,11 @@ public class EmoteSerializer {
 
         try (InputStream reader = Files.newInputStream(file)) {
             List<Animation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
-            if (folderPath != null && !folderPath.isBlank()) {
-                for (Animation emote : emotes) { // Avoid lambda
+            for (Animation emote : emotes) { // Avoid lambda
+                if (folderPath != null && !folderPath.isBlank()) {
                     emote.data().put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
                 }
+                emote.data().put(EmoteSerializer.FILENAME_KEY, fileName);
             }
 
             Path icon = file.getParent().resolve(baseFileName + ".png");
