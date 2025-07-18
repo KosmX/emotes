@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -70,7 +71,14 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        this.players.put(event.getPlayer().getUniqueId(), new BukkitNetworkInstance(event.getPlayer()));
+        registerPlayer(event.getPlayer());
+    }
+
+    @ApiStatus.Internal
+    public void registerPlayer(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (this.players.containsKey(uuid)) return;
+        this.players.put(uuid, new BukkitNetworkInstance(player));
     }
 
     @EventHandler
