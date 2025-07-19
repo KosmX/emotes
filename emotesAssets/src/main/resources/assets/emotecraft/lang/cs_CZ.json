@@ -1,4 +1,5 @@
 {
+  "modmenu.descriptionTranslation.emotecraft": "Přehrajte emoty v Minecraftu\nOtevřete nabídku a nastavte si rozhraní pro rychlý výběr\n\nMůžete přidat vlastní emoty a používat je, i když je ostatní nemají\n\nZvláštní poděkování:\nKale Ko za vytvoření emotů a pomoc s návrhem uživatelského rozhraní\nOrsond za inspiraci a poskytnutí CollarMC\nArchitectury za Forge build nástroje",
   "emotecraft.menu": "Nastavení emocí",
   "emotecraft.options.options": "Možnosti módu",
   "emotecraft.options.keybind": "Nastavit klávesu pro přehrání vybrané emoce.",
