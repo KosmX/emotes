@@ -75,7 +75,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        if (this.player != null && this.player.isPlayingEmote()) {
+        if (this.visible && this.player != null && this.player.isPlayingEmote()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
 
