@@ -37,3 +37,10 @@ type="required"
 versionRange="[1.0.4+mc1.21.7,)"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.emotecraft]]
+modId="bendable_cuboids"
+type="incompatible"
+versionRange="[1.0,1.0.2+mc1.21.7)"
+ordering="NONE"
+side="BOTH"

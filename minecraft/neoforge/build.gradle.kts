@@ -36,7 +36,6 @@ dependencies {
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
     modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${properties["playeranimlib_version"] as String}") {
-        include(this)
         pomCompile(this)
     }
 

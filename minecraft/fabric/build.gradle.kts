@@ -51,7 +51,6 @@ dependencies {
     }
 
     modImplementation("com.zigythebird.playeranim:PlayerAnimationLibFabric:${properties["playeranimlib_version"] as String}") {
-        include(this)
         pomCompile(this)
     }
 
