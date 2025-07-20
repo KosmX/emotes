@@ -46,7 +46,8 @@
   "breaks": {
     "bendable_cuboids": "<1.0.2+mc1.21.7",
     "grimac": "*",
-    "packetevents": "*"
+    "packetevents": "*",
+    "proxchat": "*"
   },
   "custom": {
     "modmenu": {
