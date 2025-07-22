@@ -17,7 +17,15 @@ public class FabricWrapper implements ModInitializer {
     public void onInitialize() {
         MainLoader.main(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT);
         setupFabric(); //Init keyBinding, networking etc...
-
+        
+        // Initialize emote moderation
+        try {
+            Class.forName("io.github.kosmx.emotes.server.moderation.EmoteModerator")
+                    .getMethod("initialize")
+                    .invoke(null);
+        } catch (Exception e) {
+            // Moderation module not available - this is fine for client-only builds
+        }
     }
 
     private static void setupFabric(){
