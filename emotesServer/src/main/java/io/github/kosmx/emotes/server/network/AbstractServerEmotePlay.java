@@ -24,7 +24,7 @@ import java.util.UUID;
  */
 public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> extends ServerEmoteAPI {
     protected boolean doValidate() {
-        return (Serializer.getConfig().enableEmoteWhitelist.get() || Serializer.getConfig().validateEmote.get());
+        return Serializer.getConfig().validateEmote.get();
     }
 
     protected abstract UUID getUUIDFromPlayer(P player);
