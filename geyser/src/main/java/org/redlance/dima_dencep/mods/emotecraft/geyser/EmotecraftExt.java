@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EmotecraftExt implements Extension {
     private static final Map<GeyserSession, GeyserNetworkInstance> INSTANCES = new ConcurrentHashMap<>();
 
-    public static final Key MIECRAFT_REGISTER_TYPE = MinecraftKey.key("register");
+    public static final Key MINECRAFT_REGISTER_TYPE = MinecraftKey.key("register");
     public static final Key EMOTECAFT_EMOTE_TYPE = Key.key(CommonData.MOD_ID, CommonData.playEmoteID);
 
     private static EmotecraftExt instance;
@@ -59,7 +59,7 @@ public class EmotecraftExt implements Extension {
                 onEmotecraftPayload(session, packet.getChannel(), packet.getData());
                 return false; // Discard
 
-            } else if (MIECRAFT_REGISTER_TYPE.equals(type)) {
+            } else if (MINECRAFT_REGISTER_TYPE.equals(type)) {
                 onMinecraftRegisterPayload(session, packet.getChannel(), packet.getData());
             }
             return true; // Pass

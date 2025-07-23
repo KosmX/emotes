@@ -5,75 +5,66 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonObject;
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.common.network.objects.NetData;
 import net.raphimc.minecraftauth.util.JsonUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public class BedrockEmoteLoader {
+public class BedrockEmoteLoader extends CacheLoader<String, CompletableFuture<Animation>> {
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
+            .version(HttpClient.Version.HTTP_2)
             .followRedirects(HttpClient.Redirect.ALWAYS)
             .build();
 
     private static final LoadingCache<String, CompletableFuture<Animation>> BEDROCK_KEYFRAMES = CacheBuilder.newBuilder()
             .maximumSize(128)
             .expireAfterAccess(5, TimeUnit.HOURS)
-            .build(new CacheLoader<>() {
-                @Override
-                public @NotNull CompletableFuture<Animation> load(@NotNull String emoteId) {
-                    HttpRequest request = HttpRequest.newBuilder()
-                            .build();
+            .build(new BedrockEmoteLoader());
 
-                    return BedrockEmoteLoader.HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
-                            .thenCompose(this::parseAnimation)
-                            .exceptionally(throwable -> {
-                                BedrockEmoteLoader.BEDROCK_KEYFRAMES.invalidate(emoteId);
-                                CommonData.LOGGER.error("Failed to load emote!", throwable);
-                                return null;
-                            });
-                }
+    @Override
+    public @NotNull CompletableFuture<Animation> load(@NotNull String emoteId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .build();
 
-                private CompletableFuture<Animation> parseAnimation(HttpResponse<InputStream> response) {
-                    try (Reader reader = new InputStreamReader(response.body())) {
-                        JsonObject obj = JsonUtil.GSON.fromJson(reader, JsonObject.class);
+        return BedrockEmoteLoader.HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
+                .thenApply(this::parseAnimation)
+                .exceptionally(throwable -> {
+                    BedrockEmoteLoader.BEDROCK_KEYFRAMES.invalidate(emoteId);
+                    CommonData.LOGGER.error("Failed to load emote!", throwable);
+                    return null;
+                });
+    }
 
-                        if (!JsonUtil.getBooleanOr(obj, "present", false)) {
-                            return CompletableFuture.failedFuture(new NullPointerException());
-                        }
+    private Animation parseAnimation(HttpResponse<InputStream> response) {
+        try (Reader reader = new InputStreamReader(response.body())) {
+            JsonObject obj = JsonUtil.GSON.fromJson(reader, JsonObject.class);
 
-                        NetData data = new EmotePacket.Builder()
-                                .setSizeLimit(Integer.MAX_VALUE, false)
-                                .build()
-                                .read(ByteBuffer.wrap(
-                                        JsonUtil.GSON.fromJson(obj.get("bytes"), byte[].class)
-                                ));
+            if (!JsonUtil.getBooleanOr(obj, "present", false)) {
+                throw new NullPointerException(JsonUtil.getStringOr(obj, "message", "Animation is not present!"));
 
-                        if (data.purpose != PacketTask.STREAM) {
-                            return CompletableFuture.failedFuture(new IllegalStateException("Binary emote is invalid!"));
-                        }
+            } else if (obj.has("message")) {
+                CommonData.LOGGER.warn(obj.get("message").getAsString());
+            }
 
-                        return CompletableFuture.completedFuture(data.emoteData);
-                    } catch (IOException e) {
-                        return CompletableFuture.failedFuture(e);
-                    }
-                }
-            });
+            for (Map.Entry<String, Animation> animation : UniversalAnimLoader.loadAnimations(obj.getAsJsonObject("emotes")).entrySet()) {
+                return animation.getValue();
+            }
+
+            throw new NullPointerException();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 
     public static void preloadEmotes(List<UUID> emotes) {
         for (UUID emoteId : emotes) {
