@@ -13,9 +13,8 @@ configurations.api.configure { extendsFrom(compileApi) }
 
 dependencies {
     compileOnly("org.geysermc.geyser:core:${properties["geyser_version"] as String}")
-    runtimeOnly("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}") {
-        exclude(module = "netty-incubator-transport-native-io_uring")
-    }
+    implementation("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}")
+    implementation("org.ow2.asm:asm:9.8")
 
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesAPI")) {
