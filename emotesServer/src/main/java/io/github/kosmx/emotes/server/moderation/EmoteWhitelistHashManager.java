@@ -33,10 +33,6 @@ import io.github.kosmx.emotes.server.config.Serializer;
  * Manages emote hashes for whitelist folder.
  */
 public class EmoteWhitelistHashManager {
-    static {
-        EmoteModerator.initialize();
-    }
-
     /**
      * Force-reload the emote whitelist: deletes hashes file, then re-hashes all emotes.
      */
