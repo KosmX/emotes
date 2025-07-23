@@ -111,23 +111,26 @@ public final class ServerCommands {
                         }
                 ))
                 .then(literal("whitelist").requires(ctx -> isDedicated)
-                        .then(literal("toggle").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.toggle", 4))
+                        .then(literal("set")
+                            .requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.toggle", 4))
+                            .then(argument("enabled", BoolArgumentType.bool())
                                 .executes(context -> {
                                     try {
                                         SerializableConfig config = Serializer.getConfig();
-                                        boolean currentValue = config.enableEmoteWhitelist.get();
-                                        config.enableEmoteWhitelist.set(!currentValue);
+                                        boolean enabled = BoolArgumentType.getBool(context, "enabled");
+                                        config.enableEmoteWhitelist.set(enabled);
                                         Serializer.INSTANCE.saveConfig();
-                                        if (!currentValue) {
+                                        if (enabled) {
                                             EmoteWhitelistHashManager.setupWhitelistConfig();
                                         }
-                                        context.getSource().sendSuccess(() -> Component.literal("Emote whitelist " + (!currentValue ? "enabled" : "disabled")), true);
+                                        context.getSource().sendSuccess(() -> Component.literal("Emote whitelist " + (enabled ? "enabled" : "disabled")), true);
                                         return 0;
                                     } catch (Exception e) {
-                                        context.getSource().sendFailure(Component.literal("Failed to toggle whitelist: " + e.getMessage()));
+                                        context.getSource().sendFailure(Component.literal("Failed to set whitelist: " + e.getMessage()));
                                         return -1;
                                     }
                                 })
+                            )
                         )
                         .then(literal("reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
                                 .executes(context -> {
