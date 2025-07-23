@@ -1,15 +1,19 @@
 package io.github.kosmx.emotes.server.moderation;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.keyframe.event.data.SoundKeyframeData;
+import com.zigythebird.playeranimcore.animation.keyframe.event.data.ParticleKeyframeData;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
 import java.io.InputStream;
+import java.util.zip.CRC32;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.nio.file.Files;
+import io.github.kosmx.emotes.server.services.InstanceService;
 import java.nio.file.FileVisitResult;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
@@ -19,9 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collections;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.config.Serializer;
 
@@ -29,6 +33,10 @@ import io.github.kosmx.emotes.server.config.Serializer;
  * Manages emote hashes for whitelist folder.
  */
 public class EmoteWhitelistHashManager {
+    static {
+        EmoteModerator.initialize();
+    }
+
     /**
      * Force-reload the emote whitelist: deletes hashes file, then re-hashes all emotes.
      */
@@ -47,51 +55,53 @@ public class EmoteWhitelistHashManager {
     }
 
     public static void setupWhitelistConfig(boolean doHash) {
-        io.github.kosmx.emotes.server.moderation.EmoteModerator.initialize();
         if (Serializer.getConfig().enableEmoteWhitelist.get()) {
-            Path whitelistDir = Path.of(Serializer.getConfig().whitelistedEmotesDir.get());
+            Path whitelistDir = InstanceService.INSTANCE.getGameDirectory().resolve(Serializer.getConfig().whitelistedEmotesDir.get());
             createWhitelistDirIfNeeded(whitelistDir);
             EmoteWhitelistHashManager hashManager = getInstance();
-            Path jarLastModifiedFile = whitelistDir.resolve("emotecraft_last_modified.txt");
+            Path jarHashFile = whitelistDir.resolve("emotecraft_jar_hash.txt");
             try {
                 String jarPath = EmoteWhitelistHashManager.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-
                 if (System.getProperty("os.name").toLowerCase().contains("win") && jarPath.length() > 2 && jarPath.charAt(0) == '/' && jarPath.charAt(2) == ':') {
                     jarPath = jarPath.substring(1);
                 }
-
-                Path jarFile = Path.of(jarPath);
-                long jarLastModified = Files.getLastModifiedTime(jarFile).toMillis();
-                if (Files.exists(jarLastModifiedFile)) {
-                    String stored = Files.readAllLines(jarLastModifiedFile).get(0).trim();
-                    long storedLastModified = 0;
-                    try {
-                        storedLastModified = Long.parseLong(stored);
-                    } catch (NumberFormatException ignored) {}
-                    if (jarLastModified > storedLastModified) {
-                        hashManager.forceRefreshHashes();
-                        String humanReadable = java.time.Instant.ofEpochMilli(jarLastModified)
-                            .atZone(java.time.ZoneId.systemDefault())
-                            .format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                        String fileContent = jarLastModified + "\n" + humanReadable + "\n";
-                        Files.writeString(jarLastModifiedFile, fileContent);
+                Path jarFile = InstanceService.INSTANCE.getGameDirectory().resolve(jarPath);
+                String jarHash = computeFileCRC32(jarFile);
+                boolean refresh = false;
+                if (Files.exists(jarHashFile)) {
+                    String storedHash = Files.readAllLines(jarHashFile).get(0).trim();
+                    if (!jarHash.equals(storedHash)) {
+                        refresh = true;
                     }
                 } else {
-                    String humanReadable = java.time.Instant.ofEpochMilli(jarLastModified)
-                        .atZone(java.time.ZoneId.systemDefault())
-                        .format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                    String fileContent = jarLastModified + "\n" + humanReadable + "\n";
-                    Files.writeString(jarLastModifiedFile, fileContent);
+                    refresh = true;
                 }
-
+                if (refresh) {
+                    hashManager.forceRefreshHashes();
+                    Files.writeString(jarHashFile, jarHash + "\n");
+                }
             } catch (Exception e) {
-                CommonData.LOGGER.warn("Failed to check/store jar last modified time on startup", e);
+                CommonData.LOGGER.warn("Failed to check/store jar hash on startup, this is not a critical error, but consider force reloading your whitelisted emotes when you update emotecraft (it will not be done automatically)", e);
             }
             if (doHash) {
                 hashManager.hashEmotes();
             }
         }
     }
+
+    private static String computeFileCRC32(Path file) throws IOException {
+        CRC32 crc = new CRC32();
+        try (InputStream in = Files.newInputStream(file)) {
+            byte[] buffer = new byte[8192];
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                crc.update(buffer, 0, len);
+            }
+        }
+        return Long.toHexString(crc.getValue());
+    }
+
+
     private static EmoteWhitelistHashManager INSTANCE;
 
     private static final String HASHES_FILE = "emoteHashes.json";
@@ -151,7 +161,7 @@ public class EmoteWhitelistHashManager {
 
     public static EmoteWhitelistHashManager getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new EmoteWhitelistHashManager(Path.of(Serializer.getConfig().whitelistedEmotesDir.get()));
+            INSTANCE = new EmoteWhitelistHashManager(InstanceService.INSTANCE.getGameDirectory().resolve(Serializer.getConfig().whitelistedEmotesDir.get()));
         }
         return INSTANCE;
     }
@@ -187,7 +197,7 @@ public class EmoteWhitelistHashManager {
         final Map<String, EmoteFileInfo>[] previousHashesArr = (Map<String, EmoteFileInfo>[]) new Map[]{new HashMap<>()};
         if (Files.exists(hashesFile)) {
             try (Reader reader = Files.newBufferedReader(hashesFile)) {
-                Type type = new com.google.gson.reflect.TypeToken<Map<String, EmoteFileInfo>>(){}.getType();
+                Type type = new TypeToken<Map<String, EmoteFileInfo>>(){}.getType();
                 previousHashesArr[0] = GSON.fromJson(reader, type);
                 if (previousHashesArr[0] == null) previousHashesArr[0] = new HashMap<>();
             } catch (Exception e) {
@@ -270,10 +280,10 @@ public class EmoteWhitelistHashManager {
 
     public int calculateEmoteHash(Animation emote) {
         int hash = emote.boneAnimations().hashCode();
-        for (var sound : emote.keyFrames().sounds()) {
+        for (SoundKeyframeData sound : emote.keyFrames().sounds()) {
             hash = combineHash(hash, sound.hashCode());
         }
-        for (var particle : emote.keyFrames().particles()) {
+        for (ParticleKeyframeData particle : emote.keyFrames().particles()) {
             hash = combineHash(hash, particle.hashCode());
         }
         return hash;
@@ -281,9 +291,5 @@ public class EmoteWhitelistHashManager {
 
     private int combineHash(int existing, int newValue) {
         return 31 * existing + newValue;
-    }
-
-    public Map<String, EmoteFileInfo> getFileInfoMap() {
-        return Collections.unmodifiableMap(fileInfoMap);
     }
 }
