@@ -41,7 +41,7 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
 
         Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class); //it does register itself
         UniversalEmoteSerializer.loadEmotes();
-        EmoteWhitelistHashManager.setupWhitelistConfig();
+        EmoteWhitelistHashManager.setupWhitelistConfig(true);
 
         for (String permission : ServerCommands.PERMISSIONS) {
             Bukkit.getPluginManager().addPermission(new Permission(permission));

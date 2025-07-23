@@ -22,7 +22,7 @@ public class MainLoader {
         } else {
             Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
             UniversalEmoteSerializer.loadEmotes();
-            EmoteWhitelistHashManager.setupWhitelistConfig();
+            EmoteWhitelistHashManager.setupWhitelistConfig(true);
         }
     }
 

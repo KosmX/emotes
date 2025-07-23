@@ -121,7 +121,7 @@ public final class ServerCommands {
                                         config.enableEmoteWhitelist.set(enabled);
                                         Serializer.INSTANCE.saveConfig();
                                         if (enabled) {
-                                            EmoteWhitelistHashManager.setupWhitelistConfig();
+                                            EmoteWhitelistHashManager.setupWhitelistConfig(true);
                                         }
                                         context.getSource().sendSuccess(() -> Component.literal("Emote whitelist " + (enabled ? "enabled" : "disabled")), true);
                                         return 0;
@@ -136,7 +136,7 @@ public final class ServerCommands {
                                 .executes(context -> {
                                     SerializableConfig config = Serializer.getConfig();
                                     if (config.enableEmoteWhitelist.get()) {
-                                        EmoteWhitelistHashManager.setupWhitelistConfig();
+                                        EmoteWhitelistHashManager.setupWhitelistConfig(true);
                                         context.getSource().sendSuccess(() -> Component.literal("Whitelist reloaded"), true);
                                     }
                                     else {
@@ -150,7 +150,7 @@ public final class ServerCommands {
                                 .executes(context -> {
                                     SerializableConfig config = Serializer.getConfig();
                                     if (config.enableEmoteWhitelist.get()) {
-                                        EmoteWhitelistHashManager.setupWhitelistConfig(true);
+                                        EmoteWhitelistHashManager.setupWhitelistConfig(false);
                                         EmoteWhitelistHashManager.forceReloadWhitelist();
                                         context.getSource().sendSuccess(() -> Component.literal("Whitelist force-reloaded"), true);
                                     }
