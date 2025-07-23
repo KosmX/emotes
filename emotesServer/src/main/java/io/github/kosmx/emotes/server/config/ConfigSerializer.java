@@ -1,63 +1,176 @@
-package io.github.kosmx.emotes.server.config;
+package io.github.kosmx.emotes.mc;
 
-import com.google.gson.*;
-import io.github.kosmx.emotes.common.CommonData;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
+import io.github.kosmx.emotes.mc.services.IPermissionService;
 import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.Commands.CommandSelection;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
 
-import java.lang.reflect.Type;
-import java.util.function.Supplier;
+import java.util.*;
 
-public class ConfigSerializer<T extends SerializableConfig> implements JsonDeserializer<T>, JsonSerializer<T> {
-    protected final Supplier<T> configSuppler;
+import static net.minecraft.commands.Commands.*;
 
-    public ConfigSerializer(Supplier<T> configSuppler) {
-        this.configSuppler = configSuppler;
+/**
+ * Server commands for Emotecraft (Fabric/Neoforge/Paper)
+ * <p>
+ * /emotes [play/stop]
+ * - play [what ID/name] (Player) (forced:false)
+ * - stop Player
+ * status?
+ */
+public final class ServerCommands {
+    public static final List<String> PERMISSIONS = List.of(
+            "emotes.play.player",
+            "emotes.stop.player",
+            "emotes.stop.forced",
+            "emotes.play.showhidden",
+            "emotes.reload",
+            "emotes.whitelist.toggle",
+            "emotes.whitelist.reload"
+    );
+
+    public static <T> void register(CommandDispatcher<T> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
+        register(dispatcher, environment == CommandSelection.DEDICATED);
     }
 
-    @Override
-    public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException{
-        JsonObject node = json.getAsJsonObject();
-        T config = this.configSuppler.get();
-        config.configVersion = SerializableConfig.staticConfigVersion;
-        if (node.has("config_version"))
-            config.configVersion = node.get("config_version").getAsInt();
+    @SuppressWarnings("unchecked")
+    public static <T> void register(CommandDispatcher<T> dispatcher, boolean isDedicated) {
+        dispatcher.register((LiteralArgumentBuilder<T>) literal("emotes")
+                .then(literal("play")
+                        .then(argument("emote", StringArgumentType.string())
+                                .suggests(new EmoteArgumentProvider(ServerCommands::getEmotes))
+                                .executes(context -> {
+                                    var player = context.getSource().getPlayerOrException().getUUID();
+                                    boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", 2);
+                                    var emote = EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote");
+                                    if (!admin && ServerEmoteAPI.isForcedEmote(player))
+                                        throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
+                                    ServerEmoteAPI.playEmote(player, emote, false);
+                                    return 0;
+                                })
+                                .then(argument("player", EntityArgument.players()).requires(IPermissionService.INSTANCE.require("emotes.play.player", 2))
+                                        .executes(context -> {
+                                            ServerEmoteAPI.playEmote(
+                                                    EntityArgument.getPlayer(context, "player").getUUID(),
+                                                    EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote"),
+                                                    false);
+                                            return 0;
+                                        })
+                                        .then(argument("forced", BoolArgumentType.bool())
+                                                .executes(context -> {
+                                                    ServerEmoteAPI.playEmote(
+                                                            EntityArgument.getPlayer(context, "player").getUUID(),
+                                                            EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote"),
+                                                            BoolArgumentType.getBool(context, "forced"));
+                                                    return 0;
+                                                })
+                                        )
+                                )
+                        )
+                )
+                .then(literal("stop")
+                        .executes(context -> {
+                            boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", 2);
+                            var player = context.getSource().getPlayerOrException().getUUID();
+                            boolean canStop = admin || !ServerEmoteAPI.isForcedEmote(player);
+                            if (canStop) {
+                                ServerEmoteAPI.playEmote(player, null, false);
+                                return 0;
+                            }
+                            throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
+                        })
+                        .then(argument("player", EntityArgument.players()).requires(IPermissionService.INSTANCE.require("emotes.stop.player", 2))
+                                .executes(context -> {
+                                    ServerEmoteAPI.playEmote(
+                                            EntityArgument.getPlayer(context, "player").getUUID(),
+                                            null,
+                                            false
+                                    );
+                                    return 0;
+                                })
+                        )
+                )
+                .then(literal("reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.reload", 4) && isDedicated).executes(
+                        context -> {
+                            UniversalEmoteSerializer.loadEmotes(); //Reload server-side emotes
+                            return 0;
+                        }
+                ))
+                .then(literal("whitelist").requires(ctx -> isDedicated)
+                        .then(literal("toggle").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.toggle", 4))
+                                .executes(context -> {
+                                    try {
+                                        SerializableConfig config = Serializer.getConfig();
+                                        boolean currentValue = config.enableEmoteWhitelist.get();
+                                        config.enableEmoteWhitelist.set(!currentValue);
+                                        Serializer.INSTANCE.saveConfig();
+                                        if (!currentValue) {
+                                            EmoteWhitelistHashManager.setupWhitelistConfig();
+                                        }
+                                        context.getSource().sendSuccess(() -> Component.literal("Emote whitelist " + (!currentValue ? "enabled" : "disabled")), true);
+                                        return 0;
+                                    } catch (Exception e) {
+                                        context.getSource().sendFailure(Component.literal("Failed to toggle whitelist: " + e.getMessage()));
+                                        return -1;
+                                    }
+                                })
+                        )
+                        .then(literal("reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
+                                .executes(context -> {
+                                    SerializableConfig config = Serializer.getConfig();
+                                    if (config.enableEmoteWhitelist.get()) {
+                                        EmoteWhitelistHashManager.setupWhitelistConfig();
+                                        context.getSource().sendSuccess(() -> Component.literal("Whitelist reloaded"), true);
+                                    }
+                                    else {
+                                        context.getSource().sendSuccess(() -> Component.literal("Whitelist is off in the config, enable in order to allow only whitelisted emotes to be used on the server"), true);
+                                    }
+                                    
+                                    return 0;
+                                })
+                        )
+                        .then(literal("force-reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
+                                .executes(context -> {
+                                    SerializableConfig config = Serializer.getConfig();
+                                    if (config.enableEmoteWhitelist.get()) {
+                                        EmoteWhitelistHashManager.setupWhitelistConfig(true);
+                                        EmoteWhitelistHashManager.forceReloadWhitelist();
+                                        context.getSource().sendSuccess(() -> Component.literal("Whitelist force-reloaded"), true);
+                                    }
+                                    else {
+                                        context.getSource().sendSuccess(() -> Component.literal("Whitelist is off in the config, enable in order to allow only whitelisted emotes to be used on the server"), true);
+                                    }
+                                    
+                                    return 0;
+                                })
+                        )
+                        .then(literal("status")
+                                .executes(context -> {
+                                    boolean enabled = Serializer.getConfig().enableEmoteWhitelist.get();
+                                    context.getSource().sendSuccess(() -> Component.literal("Emote whitelist is " + (enabled ? "enabled" : "disabled")), false);
+                                    return 0;
+                                })
+                        )
+                )
 
-        if (config.configVersion < SerializableConfig.staticConfigVersion) {
-            CommonData.LOGGER.debug("Serializing config with older version...");
-
-        } else if (config.configVersion > SerializableConfig.staticConfigVersion) {
-            CommonData.LOGGER.warn("You are trying to load version {} config. The mod can only load correctly up to {}. If you won't modify any config, I won't overwrite your config file.", config.configVersion, SerializableConfig.staticConfigVersion);
-        }
-
-        config.iterate(entry -> deserializeEntry(entry, node, context));
-
-        return config;
+        );
     }
 
-    protected <E> void deserializeEntry(SerializableConfig.ConfigEntry<E> entry, JsonObject node, JsonDeserializationContext context) {
-        String id = null;
-        if (node.has(entry.getName())) {
-            id = entry.getName();
-
-        } else if (node.has(entry.getOldConfigName())) {
-            id = entry.getOldConfigName();
-        }
-
-        if (id == null)
-            return;
-
-        entry.set(context.deserialize(node.get(id), entry.get().getClass()));
-    }
-
-    @Override
-    public JsonElement serialize(SerializableConfig config, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject node = new JsonObject();
-        node.addProperty("config_version", SerializableConfig.staticConfigVersion); //I always save config with the latest format.
-        config.iterate(entry -> serializeEntry(entry, node, context));
-        return node;
-    }
-
-    protected <E> void serializeEntry(SerializableConfig.ConfigEntry<E> entry, JsonObject node, JsonSerializationContext context) {
-        node.add(entry.getName(), context.serialize(entry.get()));
+    private static Map<UUID, Animation> getEmotes(CommandContext<CommandSourceStack> context) {
+        return IPermissionService.INSTANCE.check(context.getSource(), "emotes.play.showhidden", 1) ? UniversalEmoteSerializer.getLoadedEmotes() : UniversalEmoteSerializer.SERVER_EMOTES;
     }
 }
