@@ -123,7 +123,7 @@ public class EmoteWhitelistHashManager {
                             if (emoteStream != null) {
                                 Path targetFile = whitelistDir.resolve(emoteName + ".json");
                                 Files.copy(emoteStream, targetFile);
-                                CommonData.LOGGER.info("Copied internal emote '{}' to whitelist directory", emoteName);
+                                CommonData.LOGGER.info("Added internal emote '{}' to whitelist directory", emoteName);
                             } else {
                                 CommonData.LOGGER.warn("Internal emote resource not found: {}", jsonPath);
                             }
@@ -223,7 +223,7 @@ public class EmoteWhitelistHashManager {
                             for (Animation emote : emotes) {
                                 int hash = calculateEmoteHash(emote);
                                 fileInfoMap.put(relFileName, new EmoteFileInfo(relFileName, lastMod, hash));
-                                CommonData.LOGGER.info("Hashed emote file: {}", relFileName);
+                                CommonData.LOGGER.info("Hashed emote file {} (hash {})", relFileName, hash);
                             }
                         } catch (Throwable th) {
                             CommonData.LOGGER.warn("Error while importing emote for hashing: {}", file.getFileName(), th);
@@ -276,7 +276,6 @@ public class EmoteWhitelistHashManager {
         for (var particle : emote.keyFrames().particles()) {
             hash = combineHash(hash, particle.hashCode());
         }
-        hash = combineHash(hash, emote.loopType().getClass().hashCode());
         return hash;
     }
 
