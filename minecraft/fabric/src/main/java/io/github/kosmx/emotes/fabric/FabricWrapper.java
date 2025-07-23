@@ -17,6 +17,7 @@ public class FabricWrapper implements ModInitializer {
     public void onInitialize() {
         MainLoader.main(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT);
         setupFabric(); //Init keyBinding, networking etc...
+
     }
 
     private static void setupFabric(){

@@ -68,7 +68,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     protected void handleStreamEmote(NetData data, P instance) throws IOException {        
         if ((!data.valid && doValidate()) || Serializer.getConfig().enableEmoteWhitelist.get()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
-            if (result != EventResult.FAIL) {
+            if (result == EventResult.FAIL) { // Emote is not allowed, stop playing it
                 EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.uuid()).configureTarget(getUUIDFromPlayer(instance)).setSizeLimit(0x100000, true);
                 if(instance != null)instance.sendMessage(stopMSG, null);
                 return;

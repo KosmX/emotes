@@ -27,7 +27,6 @@ public class EmoteModerator {
         ServerEmoteEvents.EMOTE_VERIFICATION.register(EmoteModerator::verifyEmote);
         
         initialized = true;
-        CommonData.LOGGER.info("Emote moderator initialized successfully");
     }
     
     /**
@@ -39,7 +38,7 @@ public class EmoteModerator {
     private static EventResult verifyEmote(Animation emote, UUID userID) {
         // If whitelist is not enabled, allow all emotes
         if (!Serializer.getConfig().enableEmoteWhitelist.get()) {
-            return EventResult.FAIL;
+            return EventResult.PASS;
         }
         
         EmoteWhitelistHashManager hashManager = EmoteWhitelistHashManager.getInstance();
@@ -48,6 +47,10 @@ public class EmoteModerator {
         int hash = hashManager.calculateEmoteHash(emote);
         boolean isAllowed = hashManager.isHashAllowed(hash);
 
-        return isAllowed ? EventResult.FAIL : EventResult.PASS;
+        if (!isAllowed) {
+            CommonData.LOGGER.info("Emote with hash {} denied for user with uuid {}", hash, userID);
+        }
+
+        return isAllowed ? EventResult.PASS : EventResult.FAIL;
     }
 }
