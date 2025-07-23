@@ -13,8 +13,12 @@ import io.github.kosmx.emotes.server.config.Serializer;
  * This class integrates with the ServerEmoteEvents to intercept and validate emotes.
  */
 public class EmoteModerator {
-    static {
-        ServerEmoteEvents.EMOTE_VERIFICATION.register(EmoteModerator::verifyEmote);
+    private static boolean registered = false;
+    public static void register() {
+        if (!registered) {
+            ServerEmoteEvents.EMOTE_VERIFICATION.register(EmoteModerator::verifyEmote);
+            registered = true;
+        }
     }
     
     /**

@@ -168,6 +168,7 @@ public class EmoteWhitelistHashManager {
     public EmoteWhitelistHashManager(Path whitelistDir) {
         this.whitelistDir = whitelistDir;
         this.hashesFile = whitelistDir.resolve(HASHES_FILE);
+        EmoteModerator.register();
     }
 
     public boolean isHashAllowed(int hash) {
