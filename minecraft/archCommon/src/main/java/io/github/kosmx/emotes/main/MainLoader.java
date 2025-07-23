@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager;
 
 /**
  * Emotecraft's loader
@@ -21,7 +22,7 @@ public class MainLoader {
         } else {
             Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
             UniversalEmoteSerializer.loadEmotes();
-            io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig();
+            EmoteWhitelistHashManager.setupWhitelistConfig();
         }
     }
 
