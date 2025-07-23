@@ -29,11 +29,11 @@ public class SerializableConfig {
     public final ConfigEntry<Boolean> loadEmotesServerSide = new ConfigEntry<>("emotesFolderOnLogicalServer", false, true, expert, true);
     public final ConfigEntry<Boolean> enableQuark = new ConfigEntry<>("quark", "enablequark", false, true, basics);
 
-    public final ConfigEntry<String> emotesDir = new ConfigEntry<>("emotesDirectory", "emotes", false, expert, true);
+    public final ConfigEntry<String> emotesDir = new ConfigEntry<>("emotesDirectory", "config/emotecraft/emotes", false, expert, true);
 
     // Emote whitelist configuration
     public final ConfigEntry<Boolean> enableEmoteWhitelist = new ConfigEntry<>("enableEmoteWhitelist", false, false, basics);
-    public final ConfigEntry<String> emoteWhitelistPath = new ConfigEntry<>("emoteWhitelistPath", "whitelist.txt", false, expert, true);
+    public final ConfigEntry<String> whitelistedEmotesDir = new ConfigEntry<>("emoteWhitelistDir", "config/emotecraft/whitelist", false, expert, true);
 
     // public final ConfigEntry<Boolean> autoFixEmoteStop = new ConfigEntry<>("autoFixEmoteStop", true, true, expert, false);
 
