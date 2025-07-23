@@ -116,24 +116,26 @@ public class EmoteWhitelistHashManager {
                 Files.createDirectories(whitelistDir);
                 CommonData.LOGGER.info("Created whitelist emotes directory: {}", whitelistDir.toAbsolutePath());
                 // Add all internal emotes to the whitelist directory
+                List<String> copiedEmotes = new ArrayList<>();
                 try {
-                    // List of built-in emote names (see UniversalEmoteSerializer)
                     String[] internalEmotes = {
                         "waving", "clap", "crying", "point", "here", "palm", "backflip",
                         "roblox_potion_dance", "kazotsky_kick", "twerk", "club_penguin_dance"
                     };
                     for (String emoteName : internalEmotes) {
-                        // Load the resource as a stream
                         String jsonPath = "/assets/" + CommonData.MOD_ID + "/emotes/" + emoteName + ".json";
                         try (InputStream emoteStream = EmoteWhitelistHashManager.class.getResourceAsStream(jsonPath)) {
                             if (emoteStream != null) {
                                 Path targetFile = whitelistDir.resolve(emoteName + ".json");
                                 Files.copy(emoteStream, targetFile);
-                                CommonData.LOGGER.info("Added internal emote '{}' to whitelist directory", emoteName);
+                                copiedEmotes.add(emoteName);
                             } else {
                                 CommonData.LOGGER.warn("Internal emote resource not found: {}", jsonPath);
                             }
                         }
+                    }
+                    if (!copiedEmotes.isEmpty()) {
+                        CommonData.LOGGER.info("Added internal emotes to whitelist directory: {}", String.join(", ", copiedEmotes));
                     }
                 } catch (Exception e) {
                     CommonData.LOGGER.warn("Failed to copy internal emotes to whitelist directory", e);
