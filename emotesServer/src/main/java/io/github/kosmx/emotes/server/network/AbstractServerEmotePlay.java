@@ -65,7 +65,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      * @throws IOException probably not
      */
     @SuppressWarnings("ConstantConditions")
-    protected void handleStreamEmote(NetData data, P instance) throws IOException {        
+    protected void handleStreamEmote(NetData data, P instance) throws IOException {
         if ((!data.valid && doValidate()) || Serializer.getConfig().enableEmoteWhitelist.get()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
             if (result == EventResult.FAIL) { // Emote is not allowed, stop playing it
