@@ -89,36 +89,41 @@ public class UniversalEmoteSerializer {
     }
 
     public static UUIDMap<Animation> loadEmotes() {
-        SERVER_EMOTES.clear();
-        HIDDEN_SERVER_EMOTES.clear();
+        if (Serializer.getConfig().loadEmotesServerSide.get()) { // FORCE FALSE WHILE WE DON'T DO ANYTHING WITH EMOTES
+            Serializer.getConfig().loadEmotesServerSide.set(false);
+        }
+        if (Serializer.getConfig().loadEmotesServerSide.get()) { // remove when we start actually using emotes server side
+            SERVER_EMOTES.clear();
+            HIDDEN_SERVER_EMOTES.clear();
 
-        serializeInternalJson("waving");
-        serializeInternalJson("clap");
-        serializeInternalJson("crying");
-        serializeInternalJson("point");
-        serializeInternalJson("here");
-        serializeInternalJson("palm");
-        serializeInternalJson("backflip");
-        serializeInternalJson("roblox_potion_dance");
-        serializeInternalJson("kazotsky_kick");
-        serializeInternalJson("twerk");
-        serializeInternalJson("club_penguin_dance");
+            serializeInternalJson("waving");
+            serializeInternalJson("clap");
+            serializeInternalJson("crying");
+            serializeInternalJson("point");
+            serializeInternalJson("here");
+            serializeInternalJson("palm");
+            serializeInternalJson("backflip");
+            serializeInternalJson("roblox_potion_dance");
+            serializeInternalJson("kazotsky_kick");
+            serializeInternalJson("twerk");
+            serializeInternalJson("club_penguin_dance");
 
-        Path path = InstanceService.INSTANCE.getExternalEmoteDir();
-        if (!Files.isDirectory(path)) {
-            try {
-                Files.createDirectories(path);
-            } catch(IOException ignored) {
+            Path path = InstanceService.INSTANCE.getExternalEmoteDir();
+            if (!Files.isDirectory(path)) {
+                try {
+                    Files.createDirectories(path);
+                } catch(IOException ignored) {
+                }
+            }
+
+            EmoteSerializer.serializeEmotes(SERVER_EMOTES, path);
+            // ^ CHANGED WITH LOADEMOTESSERVERSIDE CHANGED (change back?) -- EmoteSerializer.serializeEmotes(Serializer.getConfig().loadEmotesServerSide.get() ? SERVER_EMOTES : HIDDEN_SERVER_EMOTES, path);
+
+            Path serverEmotesDir = path.resolve("server");
+            if (Files.isDirectory(serverEmotesDir)) {
+                EmoteSerializer.serializeEmotes(SERVER_EMOTES, serverEmotesDir);
             }
         }
-
-        EmoteSerializer.serializeEmotes(Serializer.getConfig().loadEmotesServerSide.get() ? SERVER_EMOTES : HIDDEN_SERVER_EMOTES, path);
-
-        Path serverEmotesDir = path.resolve("server");
-        if (Files.isDirectory(serverEmotesDir)) {
-            EmoteSerializer.serializeEmotes(SERVER_EMOTES, serverEmotesDir);
-        }
-
         return UniversalEmoteSerializer.getLoadedEmotes();
     }
 
