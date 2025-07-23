@@ -6,6 +6,7 @@
   "mixins": [
     "ConnectionHandlerMixin",
     "EntityTrackerAccessor",
+    "PlayerAnimationProcessorMixin",
     "ServerChunkCacheAccessor",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin",
@@ -13,8 +14,12 @@
   ],
   "client": [
     "EmotePlayerMixin",
+    "EntityRenderDispatcherMixin",
     "KeyEventMixin",
-    "PlayerMixin"
+    "LivingEntityRendererMixin",
+    "PlayerMixin",
+    "SoundEngineMixin",
+    "emf.EMFAnimationEntityContextMixin"
   ],
   "server": [],
   "injectors": {

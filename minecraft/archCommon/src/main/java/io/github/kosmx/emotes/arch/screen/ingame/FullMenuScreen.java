@@ -6,7 +6,7 @@ import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
-import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,7 +18,7 @@ public class FullMenuScreen extends EmoteSubScreen {
     protected static final Component CONFIG = Component.translatable("emotecraft.config");
 
     public FullMenuScreen(Screen parent) {
-        super(TITLE, parent);
+        super(TITLE, false, parent);
     }
 
     @Override
@@ -30,6 +30,8 @@ public class FullMenuScreen extends EmoteSubScreen {
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
+        if (this.list != null) linearLayout.addChild(this.list.createBackButton());
+
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
                 .build()
         );
@@ -39,31 +41,39 @@ public class FullMenuScreen extends EmoteSubScreen {
     }
 
     @Override
-    protected void onPressed(EmoteListWidget.EmoteEntry selected) {
-        if (selected != null) {
-            ClientEmotePlay.clientStartLocalEmote(selected.getEmote());
-
-            if (this.lastScreen instanceof FastMenuScreen fast) {
-                this.lastScreen = fast.parent;
-            }
+    protected void onPressed(EmoteListWidget.ListEntry selected) {
+        if (selected instanceof EmoteListWidget.EmoteEntry entry &&
+                entry.getEmote().playEmote() &&
+                this.lastScreen instanceof FastMenuScreen fast
+        ) {
+            this.lastScreen = fast.parent;
         }
     }
 
     @Override
-    protected void renderBlurredBackground() {
+    protected void renderBlurredBackground(GuiGraphics guiGraphics) {
         if (this.minecraft.player instanceof IPlayerEntity entity &&
                 EmotePlayer.isRunningEmote(entity.emotecraft$getEmote())
         ) {
             return;
         }
 
-        super.renderBlurredBackground();
+        super.renderBlurredBackground(guiGraphics);
     }
 
     @Override
     protected void repositionElements() {
         addOptions();
         super.repositionElements();
+        this.layout.arrangeElements();
+    }
+
+    @Override
+    public void tick() {
+        if (this.preview != null && this.list.getSelected() == this.list.getHovered()) {
+            this.preview.getPlayer().stopEmote();
+        }
+        super.tick();
     }
 
     @Override

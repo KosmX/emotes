@@ -2,12 +2,11 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     id("xyz.wagyourtail.jvmdowngrader") version("1.2.2") apply false
-    id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
+    id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
-    id("com.gradleup.shadow") version "8.3.6" apply false
+    id("com.gradleup.shadow") version "8.3.8" apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
-
 
 subprojects {
     apply(plugin = "java")
@@ -16,6 +15,12 @@ subprojects {
     group = "io.github.kosmx.emotes"
 
     repositories {
+        maven("https://api.modrinth.com/maven") {
+            name = "Modrinth"
+            content {
+                includeGroup("maven.modrinth")
+            }
+        }
         maven("https://maven.terraformersmc.com/") {
             name = "TerraformersMC maven"
         }
@@ -23,7 +28,11 @@ subprojects {
             name = "BlameJared Maven"
         }
         maven("https://repo.redlance.org/public")
-        maven("https://libraries.minecraft.net")
+        maven("https://libraries.minecraft.net") {
+            content { // Fix issue with lwjgl-freetype not being found on macOS
+                includeModule("org.lwjgl", "lwjgl-freetype")
+            }
+        }
         maven("https://maven.neoforged.net/releases")
         maven("https://repo.opencollab.dev/main/") {
             name = "Geyser"

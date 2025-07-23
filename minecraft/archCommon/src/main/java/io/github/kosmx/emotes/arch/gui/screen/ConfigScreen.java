@@ -5,7 +5,7 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ExportMenu;
 import io.github.kosmx.emotes.common.SerializableConfig;
-import io.github.kosmx.emotes.main.config.ClientSerializer;
+import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
@@ -114,6 +114,6 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @Override
     public void removed() {
-        ClientSerializer.INSTANCE.saveConfig();
+        Serializer.INSTANCE.saveConfig();
     }
 }

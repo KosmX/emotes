@@ -14,10 +14,5 @@
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "المؤلف: ",
   "emotecraft.options.export": "قائمة التصدير",
-  "emotecraft.exportjson": "تصدير الرموز التعبيرية في Json",
-  "emotecraft.export.error.json": "فشل التصدير إلى JSON",
-  "emotecraft.export.error.emotecraft": "فشل التصدير إلى .emotecraft",
-  "emotecraft.export.done.json": "تم تصدير .json",
-  "emotecraft.export.done.emotecraft": "تم تصدير .emotecraft",
   "emotecraft.song_too_big_to_send": "الأغنية كبيرة جدًا، ولا يمكن إرسالها إلى الخادم. يُمكن إرسال الرموز التعبيرية فقط"
 }

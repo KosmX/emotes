@@ -5,8 +5,6 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public abstract class AbstractNetworkPacket {
-
-
     public abstract byte getID();
     public abstract byte getVer();
 
@@ -19,21 +17,11 @@ public abstract class AbstractNetworkPacket {
      * Read byte buf to T type
      * @param byteBuffer ByteBuffer
      * @param config Reader config
-     * @return success
      */
-    public abstract boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException;
-
+    public abstract void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException;
     public abstract void write(ByteBuffer byteBuffer, NetData config) throws IOException;
 
     public abstract boolean doWrite(NetData config);
-
-    protected boolean getBoolean(ByteBuffer byteBuffer){
-        return byteBuffer.get() != 0;
-    }
-
-    protected void putBoolean(ByteBuffer byteBuffer, boolean bl){
-       byteBuffer.put((byte) (bl ? 1 : 0));
-    }
 
     /**
      * Estimated size to create buffers

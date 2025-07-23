@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.network;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -10,11 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 public class ConfigTask implements ConfigurationTask {
     public static final ConfigurationTask.Type TYPE = new Type("emotes:config");
-
 
     @Override
     public void start(@NotNull Consumer<Packet<?>> consumer) {
@@ -24,7 +22,7 @@ public class ConfigTask implements ConfigurationTask {
             var bytes = new EmotePacket.Builder(configData).build().write();
             consumer.accept(NetworkPlatformTools.playPacket(bytes)); // Config init
         } catch (IOException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to configure client!", e);
+            CommonData.LOGGER.warn("Failed to configure client!", e);
         }
     }
 

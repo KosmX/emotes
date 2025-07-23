@@ -14,7 +14,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public int getPriority() {
-        return ServiceLoaderUtil.LOWEST_SYSTEM_PRIORITY;
+        return ServiceLoaderUtil.LOWEST_PRIORITY;
     }
 
     @Override

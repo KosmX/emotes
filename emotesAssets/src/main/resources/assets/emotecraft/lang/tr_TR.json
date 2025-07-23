@@ -49,12 +49,6 @@
   "emotecraft.resetAllKeys.title": "Tüm kısayolları sıfırla",
   "emotecraft.resetAllKeys.message": "Tüm kısayolları sıfırlamak istediğine emin miisn?",
   "emotecraft.options.export": "Dışa Aktarma Menüsü",
-  "emotecraft.exportjson": "İfadeleri JSON olarak dışa aktar",
-  "emotecraft.exportbin": "İfadeleri .emotecraft klasörüne aktar",
-  "emotecraft.export.error.json": "JSON olarak dışa aktarma başarısız...",
-  "emotecraft.export.error.emotecraft": ".emotecraft klasörüne aktarma başarısız...",
-  "emotecraft.export.done.json": "JSON olarak dışa aktarma başarılı!",
-  "emotecraft.export.done.emotecraft": ".emotecraft klasörüne aktarma başarılı!",
   "emotecraft.song_too_big_to_send": "Ses sunucuda kullanmak için çok büyük, sadece ifade oynatılıyor...",
   "emotecraft.cant.override.forced": "Mevcut ifadeyi oynatmak zorundasın! Bu değiştirilemez."
 }

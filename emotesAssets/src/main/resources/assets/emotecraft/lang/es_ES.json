@@ -61,12 +61,6 @@
   "emotecraft.resetAllKeys.title": "Restablecer todos los atajos de emotes",
   "emotecraft.resetAllKeys.message": "¿Realmente desea restablecer los atajos de sus emotes?",
   "emotecraft.options.export": "Menú de exportación",
-  "emotecraft.exportjson": "Exportar Emotes en JSON",
-  "emotecraft.exportbin": "Exportar Emotes en .emotecraft binario",
-  "emotecraft.export.error.json": "Exportación fallida a JSON...",
-  "emotecraft.export.error.emotecraft": "Exportación fallida a .emotecraft...",
-  "emotecraft.export.done.json": "¡Exportación JSON terminada!",
-  "emotecraft.export.done.emotecraft": "¡Exportación de .emotecraft hecha!",
   "emotecraft.song_too_big_to_send": "La canción es demasiado grande para enviarla al servidor. Enviando solo emote...",
   "emotecraft.cant.override.forced": "Estás obligado a jugar con el emote actual, no se puede cambiar."
 }

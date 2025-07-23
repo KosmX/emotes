@@ -55,12 +55,6 @@
   "emotecraft.resetAllKeys.title": "Эмоцияләр өчен барлык төймәләр билгеләнүләрен ташлату",
   "emotecraft.resetAllKeys.message": "Сез чыннан да барлык төймәләр билгеләнүләрен ташлатырга телисезме?",
   "emotecraft.options.export": "Экспорт менюсы",
-  "emotecraft.exportjson": "JSON форматында экспортлау",
-  "emotecraft.exportbin": ".emotecraft форматында экспортлау",
-  "emotecraft.export.error.json": "JSON форматында экспортлап булмады...",
-  "emotecraft.export.error.emotecraft": ".emotecraft форматында экспортлап булмады...",
-  "emotecraft.export.done.json": "JSON форматында экспортланды!",
-  "emotecraft.export.done.emotecraft": ".emotecraft форматында экспортланды!",
   "emotecraft.song_too_big_to_send": "Серверга җибәрү өчен җыр артык зур. Эмоция генә җибәрү...",
   "emotecraft.cant.override.forced": "Сез хәзерге эмоцияне кулланырга мәҗбүр; бу үзгәртелә алмый."
 }

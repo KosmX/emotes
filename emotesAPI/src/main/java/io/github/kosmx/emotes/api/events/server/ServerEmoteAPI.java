@@ -1,12 +1,13 @@
 package io.github.kosmx.emotes.api.events.server;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Pair;
-
+import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.api.services.IEmotecraftService;
+import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
+import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
-public abstract class ServerEmoteAPI {
+public abstract class ServerEmoteAPI implements IEmotecraftService {
 
     /**
      * Set the player to play emote.
@@ -14,7 +15,7 @@ public abstract class ServerEmoteAPI {
      * However this is not recommended for verification. {@link ServerEmoteEvents#EMOTE_VERIFICATION} is used for that
      * @param emote the new emote
      */
-    public static void setPlayerPlayingEmote(UUID player, @Nullable KeyframeAnimation emote) {
+    public static void setPlayerPlayingEmote(UUID player, @Nullable Animation emote) {
         ServerEmoteAPI.setPlayerPlayingEmote(player, emote, 0);
     }
 
@@ -25,7 +26,7 @@ public abstract class ServerEmoteAPI {
      * @param emote the new emote
      * @param tick First tick
      */
-    public static void setPlayerPlayingEmote(UUID player, @Nullable KeyframeAnimation emote, int tick) {
+    public static void setPlayerPlayingEmote(UUID player, @Nullable Animation emote, int tick) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, tick, false);
     }
 
@@ -34,7 +35,7 @@ public abstract class ServerEmoteAPI {
      * Forced emotes can only be stopped by a plugin, or by ending the emote.
      * @param emote the new emote
      */
-    public static void forcePlayEmote(UUID player, @Nullable KeyframeAnimation emote) {
+    public static void forcePlayEmote(UUID player, @Nullable Animation emote) {
         ServerEmoteAPI.forcePlayEmote(player, emote, 0);
     }
 
@@ -44,7 +45,7 @@ public abstract class ServerEmoteAPI {
      * @param emote the new emote
      * @param tick First tick
      */
-    public static void forcePlayEmote(UUID player, @Nullable KeyframeAnimation emote, int tick) {
+    public static void forcePlayEmote(UUID player, @Nullable Animation emote, int tick) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, tick, true);
     }
 
@@ -54,7 +55,7 @@ public abstract class ServerEmoteAPI {
      * @param emote animation, <code>null</code> to stop playing.
      * @param forced can they stop
      */
-    public static void playEmote(UUID player, @Nullable KeyframeAnimation emote, boolean forced) {
+    public static void playEmote(UUID player, @Nullable Animation emote, boolean forced) {
         ServerEmoteAPI.playEmote(player, emote, 0, forced);
     }
 
@@ -65,7 +66,7 @@ public abstract class ServerEmoteAPI {
      * @param tick First tick
      * @param forced can they stop
      */
-    public static void playEmote(UUID player, @Nullable KeyframeAnimation emote, int tick, boolean forced) {
+    public static void playEmote(UUID player, @Nullable Animation emote, int tick, boolean forced) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, tick, forced);
     }
 
@@ -75,7 +76,7 @@ public abstract class ServerEmoteAPI {
      * @return Emote and time, NULL if not playing
      */
     @Nullable
-    public static Pair<KeyframeAnimation, Integer> getPlayedEmote(UUID player) {
+    public static Pair<Animation, Float> getPlayedEmote(UUID player) {
         return INSTANCE.getPlayedEmoteImpl(player);
     }
 
@@ -90,11 +91,15 @@ public abstract class ServerEmoteAPI {
 
     // ---- IMPLEMENTATION ---- //
 
-    protected static ServerEmoteAPI INSTANCE;
+    protected static final ServerEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ServerEmoteAPI.class);
 
-    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable KeyframeAnimation KeyframeAnimation, int tick, boolean isForced);
-    protected abstract Pair<KeyframeAnimation, Integer> getPlayedEmoteImpl(UUID player);
+    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation KeyframeAnimation, int tick, boolean isForced);
+    protected abstract Pair<Animation, Float> getPlayedEmoteImpl(UUID player);
 
     protected abstract boolean isForcedEmoteImpl(UUID player);
 
+    @Override
+    public boolean isActive() {
+        return true;
+    }
 }

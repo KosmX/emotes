@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import dev.kosmx.playerAnim.core.data.AnimationBinary;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.network.LegacyAnimationBinary;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,43 +10,24 @@ import java.nio.ByteBuffer;
  * It should be placed into emotecraftCommon, but it has too many references to minecraft codes...
  */
 public class EmoteDataPacket extends AbstractNetworkPacket {
-
-    public int tick = 0;
-
-    public EmoteDataPacket(){
-    }
-
     @Override
-    public void write(ByteBuffer buf, NetData config){
-        int version = calculateVersion(config);
+    public void write(ByteBuffer buf, NetData config) {
+        int version = getVer(config.versions);
         assert config.emoteData != null;
-        buf.putInt(config.tick);
-        AnimationBinary.write(config.emoteData, buf, version);
+        buf.putInt((int) config.tick);
+        LegacyAnimationBinary.write(config.emoteData, buf, version);
     }
 
     @Override
-    public boolean read(ByteBuffer buf, NetData config, int version) throws IOException {
-        try {
-            config.tick = buf.getInt();
-            KeyframeAnimation animation = AnimationBinary.read(buf, version);
-
-            config.valid = (boolean) animation.extraData.get("valid");
-
-            config.emoteBuilder = animation.mutableCopy();
-
-            config.wasEmoteData = true;
-
-            return true;
-        } catch(IOException|RuntimeException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void read(ByteBuffer buf, NetData config, int version) throws IOException {
+        config.tick = buf.getInt();
+        config.emoteData = LegacyAnimationBinary.read(buf, version);
+        config.valid = true; // TODO
     }
-
 
     @Override
     public byte getID() {
-        return 0;
+        return PacketConfig.LEGACY_ANIMATION_FORMAT;
     }
 
     /**
@@ -57,16 +38,12 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
      */
     @Override
     public byte getVer() {
-        return (byte) AnimationBinary.getCurrentVersion();
-    }
-
-    protected int calculateVersion(NetData config) {
-        return Math.min(config.versions.get(getID()), getVer());
+        return (byte) LegacyAnimationBinary.getCurrentVersion();
     }
 
     @Override
     public boolean doWrite(NetData data) {
-        return data.emoteData != null && data.stopEmoteID == null;
+        return data.emoteData != null && data.stopEmoteID == null && !data.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT);
     }
 
     /*
@@ -78,8 +55,7 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
      */
     @Override
     public int calculateSize(NetData config) {
-        if(config.emoteData == null)return 0;
-        return AnimationBinary.calculateSize(config.emoteData, calculateVersion(config)) + 4;
+        if (config.emoteData == null || config.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT)) return 0;
+        return LegacyAnimationBinary.calculateSize(config.emoteData, getVer(config.versions)) + 4;
     }
-
 }

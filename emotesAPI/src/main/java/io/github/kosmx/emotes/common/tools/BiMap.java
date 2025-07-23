@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.common.tools;
 
 
-import dev.kosmx.playerAnim.core.util.Pair;
-
+import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
@@ -45,13 +44,13 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
             or = lToR.remove(l);
             ol = ol != null ? ol :  rToL.remove(or);
             or = or != null ? or : lToR.remove(ol);
-            collection.removeIf(obj -> obj.getLeft().equals(l) || obj.getRight().equals(r));
+            collection.removeIf(obj -> obj.left().equals(l) || obj.right().equals(r));
             //collection.remove(new Pair<>(ol, or));
         }
         rToL.put(r, l);
         lToR.put(l, r);
-        collection.add(new Pair<>(l, r));
-        return new Pair<>(ol, or);
+        collection.add(Pair.of(l, r));
+        return Pair.of(ol, or);
     }
 
     /**
@@ -62,9 +61,9 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
      */
     @Override
     public boolean add(Pair<L, R> pair) {
-        if(pair == null || pair.getLeft() == null || pair.getRight() == null)throw new NullPointerException("BiMap does not allow null elements");
+        if(pair == null || pair.left() == null || pair.right() == null)throw new NullPointerException("BiMap does not allow null elements");
         if(collection.contains(pair))return false;
-        this.put(pair.getLeft(), pair.getRight());
+        this.put(pair.left(), pair.right());
         return true;
     }
 
@@ -78,7 +77,7 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
         R r = lToR.remove(l);
         if(r != null){
             rToL.remove(r);
-            collection.remove(new Pair<>(l, r));
+            collection.remove(Pair.of(l, r));
         }
         return r;
     }
@@ -93,7 +92,7 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
         L l = rToL.remove(r);
         if(l != null){
             rToL.remove(r);
-            collection.remove(new Pair<>(l, r));
+            collection.remove(Pair.of(l, r));
         }
         return l;
     }
@@ -103,8 +102,8 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
         boolean bl = collection.remove(o);
         if(bl){
             Pair<L, R> pair = (Pair<L, R>) o;
-            lToR.remove(pair.getLeft());
-            rToL.remove(pair.getRight());
+            lToR.remove(pair.left());
+            rToL.remove(pair.right());
         }
         return bl;
     }
@@ -193,8 +192,8 @@ public class BiMap<L, R> implements Collection<Pair<L, R>> {
             @Override
             public void remove() {
                 _iter.remove();
-                lToR.remove(_var.getLeft());
-                rToL.remove(_var.getRight());
+                lToR.remove(_var.left());
+                rToL.remove(_var.right());
             }
         };
     }

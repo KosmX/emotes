@@ -59,12 +59,6 @@
   "emotecraft.resetAllKeys.title": "すべてのエモートキー割り当てをリセット",
   "emotecraft.resetAllKeys.message": "本当にエモートキーバインディングをリセットしますか？",
   "emotecraft.options.export": "エクスポートメニュー",
-  "emotecraft.exportjson": "エモートをJSON形式でエクスポート",
-  "emotecraft.exportbin": "エモートを .emotecraft バイナリでエクスポート",
-  "emotecraft.export.error.json": "JSON のエクスポートに失敗しました...",
-  "emotecraft.export.error.emotecraft": ".emotecraftへのエクスポートに失敗しました...",
-  "emotecraft.export.done.json": "JSONのエクスポートが完了しました！",
-  "emotecraft.export.done.emotecraft": ".emotecraftのエクスポートが完了しました！",
   "emotecraft.song_too_big_to_send": "曲が大きすぎるため、サーバーに送信できません。エモートのみ送信しています...",
   "emotecraft.cant.override.forced": "強制的に現在のエモートを再生します。変更することはできません。"
 }

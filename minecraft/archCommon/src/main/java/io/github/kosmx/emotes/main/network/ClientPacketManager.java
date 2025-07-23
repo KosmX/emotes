@@ -1,11 +1,11 @@
 package io.github.kosmx.emotes.main.network;
 
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
 import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -13,7 +13,6 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * Client emote proxy manager
@@ -40,7 +39,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
 
     public static void send(EmotePacket.Builder packetBuilder, UUID target){
         if (ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder) == EventResult.FAIL) {
-            LoggerService.INSTANCE.log(Level.INFO, "Sending the packet has been canceled by the event!");
+            CommonData.LOGGER.warn("Sending the packet has been canceled by the event!");
             return; // Deny
         }
         if(!defaultNetwork.isActive() || useAlwaysAlt()){
@@ -54,7 +53,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
                             builder.setVersion(network.getRemoteVersions());
                             network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
                         } catch(IOException exception) {
-                            LoggerService.INSTANCE.log(Level.WARNING, "Error while sending packet!", exception);
+                            CommonData.LOGGER.error("Error while sending packet!", exception);
                         }
                     }
                 }
@@ -68,17 +67,14 @@ public final class ClientPacketManager extends EmotesProxyManager {
                 defaultNetwork.sendMessage(packetBuilder, target);
             }
             catch (IOException exception){
-                LoggerService.INSTANCE.log(Level.WARNING, "Error while sending packet!", exception);
+                CommonData.LOGGER.error("Error while sending packet!", exception);
             }
         }
     }
 
     static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
-        try{
+        try {
             NetData data = new EmotePacket.Builder().setThreshold(PlatformTools.getConfig().validThreshold.get()).build().read(buffer);
-            if(data == null){
-                throw new IOException("no valid data");
-            }
             if(!networkInstance.trustReceivedPlayer()){
                 data.player = null;
             }
@@ -92,13 +88,11 @@ public final class ClientPacketManager extends EmotesProxyManager {
 
             try {
                 ClientEmotePlay.executeMessage(data, networkInstance);
+            } catch (Exception e) {//I don't want to break the whole game with a bad message but I'll warn with the highest level
+                CommonData.LOGGER.error("Critical error has occurred while receiving emote!", e);
             }
-            catch (Exception e){//I don't want to break the whole game with a bad message but I'll warn with the highest level
-                LoggerService.INSTANCE.log(Level.SEVERE, "Critical error has occurred while receiving emote!", e);
-            }
-        }
-        catch (IOException e){
-            LoggerService.INSTANCE.log(Level.WARNING, "Error while receiving packet!", e);
+        } catch (IOException e) {
+            CommonData.LOGGER.warn("Error while receiving packet!", e);
         }
     }
 
@@ -124,14 +118,13 @@ public final class ClientPacketManager extends EmotesProxyManager {
         return false;
     }
 
-
     /**
      * This shall be invoked when disconnecting from the server
      * @param networkInstance ...
      */
     @Override
-    public void onDisconnectFromServer(INetworkInstance networkInstance){
-        if(networkInstance == null)throw new NullPointerException("network instance must be non-null");
-        EmoteHolder.list.removeIf(emoteHolder -> emoteHolder.fromInstance == networkInstance);
+    public void onDisconnectFromServer(INetworkInstance networkInstance) {
+        if (networkInstance == null) throw new NullPointerException("network instance must be non-null");
+        EmoteHolder.clearEmotes(networkInstance);
     }
 }

@@ -1,26 +1,25 @@
 package io.github.kosmx.emotes.fabric.network;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
+import io.github.kosmx.emotes.common.CommonData;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 public class ClientNetworkInstance {
-
-    public static void init(){
+    @SuppressWarnings("deprecation")
+    public static void init() {
         // Configuration
 
         ClientConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (buf, context) -> {
             try {
                 ClientNetwork.INSTANCE.receiveConfigMessage(buf.bytes(), context.responseSender()::sendPacket);
             } catch (IOException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                CommonData.LOGGER.error("", e);
             }
         });
 
@@ -28,7 +27,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), context.responseSender()::sendPacket);
             } catch (IOException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                CommonData.LOGGER.error("", e);
             }
         });
 
@@ -49,7 +48,7 @@ public class ClientNetworkInstance {
             try {
                 ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), null);
             } catch (IOException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, e.getMessage(), e);
+                CommonData.LOGGER.error("", e);
             }
         });
     }

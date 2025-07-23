@@ -56,11 +56,5 @@
   "emotecraft.resetAllKeys.title": "Minden emote gyorsbillentyű visszaállítása",
   "emotecraft.resetAllKeys.message": "Tényleg vissza akarsz állítani minden emote gyorsbillentyűt?",
   "emotecraft.options.export": "Menü exportálása",
-  "emotecraft.exportjson": "Emoteok exportálása Jsonban",
-  "emotecraft.exportbin": ".emotecraft exportálása bináris formátumban",
-  "emotecraft.export.error.json": "Sikertelen exportálás JSON-ba",
-  "emotecraft.export.error.emotecraft": "Sikertelen exportálás .emotecraftba",
-  "emotecraft.export.done.json": ".json export sikeres",
-  "emotecraft.export.done.emotecraft": ".emotecraft export sikeres",
   "emotecraft.song_too_big_to_send": "A zenel túl nagy méretű, nem lehetséges feltölteni a szerverre. Csak emote küldése engedélyezett"
 }

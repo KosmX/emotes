@@ -10,11 +10,13 @@
   ],
   "contributors": [
     "Kale Ko",
+    "ZigyTheBird",
     "BoBkiNN"
   ],
   "contact": {
     "issues": "https://github.com/KosmX/emotes/issues",
-    "homepage": "https://kosmx.gitbook.io/emotecraft/"
+    "homepage": "https://docs.zigythebird.com/emotecraft/gettingstarted",
+    "sources": "https://github.com/KosmX/emotes"
   },
   "license": "GPL3",
   "icon": "emotecraft_mod_logo.png",
@@ -24,9 +26,8 @@
       "io.github.kosmx.emotes.fabric.FabricWrapper"
     ],
     "client": [
-      "io.github.kosmx.emotes.fabric.ClientInit"
+      "io.github.kosmx.emotes.fabric.EmotecraftClientFabricMod"
     ],
-    "server": [],
     "modmenu": [
       "io.github.kosmx.emotes.fabric.ModMenu"
     ]
@@ -35,15 +36,26 @@
     "emotecraft-arch.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.10",
-    "fabric-api": "*",
-    "minecraft": ">=1.21.4",
-    "playeranimator": ">=2.0.1.1+1.21.4"
+    "fabric-command-api-v2": "*",
+    "fabric-networking-api-v1": "*",
+    "fabric-key-binding-api-v1": "*",
+    "fabric-lifecycle-events-v1": "*",
+    "minecraft": ">=1.21.7",
+    "player_animation_library": ">=1.0.4+mc1.21.7"
+  },
+  "breaks": {
+    "bendable_cuboids": "<1.0.2+mc1.21.7",
+    "grimac": "*",
+    "packetevents": "*",
+    "proxchat": "*"
   },
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/6NfdRuE"
+        "modmenu.curseforge": "https://curseforge.com/minecraft/mc-mods/emotecraft",
+        "modmenu.discord": "https://discord.gg/6NfdRuE",
+        "modmenu.github_releases": "https://github.com/KosmX/emotes/releases",
+        "modmenu.modrinth": "https://modrinth.com/mod/emotecraft"
       }
     }
   }

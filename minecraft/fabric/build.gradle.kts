@@ -29,13 +29,19 @@ configurations.apply {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${properties["fabric_api_version"] as String}")
+
+    // Fabric API
+    modImplementation(fabricApi.module("fabric-command-api-v2", properties["fabric_api_version"] as String))
+    modImplementation(fabricApi.module("fabric-networking-api-v1", properties["fabric_api_version"] as String))
+    modImplementation(fabricApi.module("fabric-key-binding-api-v1", properties["fabric_api_version"] as String))
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", properties["fabric_api_version"] as String))
 
     commonModule(project(":emotesAPI")) { isTransitive = false }
     commonModule(project(":emotesServer")) { isTransitive = false }
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
+    modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", properties["fabric_api_version"] as String))
     modImplementation("com.terraformersmc:modmenu:${properties["modmenu_version"] as String}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
@@ -44,7 +50,16 @@ dependencies {
         pomCompile(this)
     }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-fabric:${properties["player_animator_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibFabric:${properties["playeranimlib_version"] as String}") {
+        pomCompile(this)
+    }
+
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${properties["bendablecuboids_version"] as String}") {
+        include(this)
+        pomCompile(this)
+    }
+
+    implementation("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}") {
         include(this)
         pomCompile(this)
     }
@@ -90,7 +105,7 @@ java {
 
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
-    archiveClassifier.set("")
+    archiveClassifier.set("dev-shadow")
     mergeServiceFiles()
 }
 
@@ -101,7 +116,7 @@ tasks.remapJar {
 }
 
 tasks.jar {
-    archiveClassifier.set("")
+    archiveClassifier.set("dev")
 }
 
 components.getByName<AdhocComponentWithVariants>("java") {
@@ -110,23 +125,12 @@ components.getByName<AdhocComponentWithVariants>("java") {
     }
 }
 
-tasks.register<Jar>("devJar") {
-    from(sourceSets["main"].output)
-    archiveClassifier.set("dev")
-}
-
-tasks.build {
-    dependsOn("devJar")
-}
-
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             // add all the jars that should be included when publishing to maven
 
             artifactId = "emotesFabric"
-
-            artifact(tasks.named("devJar"))
 
             artifact(tasks.remapJar) {
                 builtBy(tasks.remapJar)
@@ -167,11 +171,13 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${mod_version}+${minecraft_version}-fabric"
+        version = "${mod_version}+${removePreRc(minecraft_version)}-fabric"
 
         requires("fabric-api")
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
+        optional("fabric-permissions-api")
     }
 
     curseforge {
@@ -181,10 +187,11 @@ publishMods {
         projectSlug = providers.gradleProperty("curseforge_slug_fabric")
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
-        minecraftVersions.add(minecraft_version)
+        minecraftVersions.add(curseforge_minecraft_version)
 
         requires("fabric-api")
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 }

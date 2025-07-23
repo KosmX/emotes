@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.network.CommonNetwork;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -8,7 +9,7 @@ import java.nio.ByteBuffer;
 public class PlayerDataPacket extends AbstractNetworkPacket{
     @Override
     public byte getID() {
-        return 1;
+        return PacketConfig.PLAYER_DATA_PACKET;
     }
 
     @Override
@@ -17,14 +18,14 @@ public class PlayerDataPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public boolean read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
+    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
         config.player = CommonNetwork.readUUID(byteBuffer);
         if (version >= 1) config.isForced = byteBuffer.get() != 0x00;
-        return true;
     }
 
     @Override
     public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
+        assert config.player != null;
         CommonNetwork.writeUUID(byteBuffer, config.player);
         byteBuffer.put(config.isForced ? (byte) 0x01 : (byte) 0x00);
     }

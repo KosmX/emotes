@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.common.network;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
@@ -21,7 +21,9 @@ public class EmotePacket {
     public static final HashMap<Byte, Byte> defaultVersions = new HashMap<>();
 
     static {
-        AbstractNetworkPacket tmp = new EmoteDataPacket();
+        AbstractNetworkPacket tmp = new NewAnimPacket();
+        defaultVersions.put(tmp.getID(), tmp.getVer());
+        tmp = new EmoteDataPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new PlayerDataPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
@@ -45,14 +47,18 @@ public class EmotePacket {
 
     protected EmotePacket(@NotNull NetData data) {
         //Make sure every packet has a version...
-        if(data.versions == null)data.versions = new HashMap<>();
-        defaultVersions.forEach((aByte, bByte) -> {
-            if(!data.versions.containsKey(aByte)){
-                data.versions.put(aByte, bByte);
-            }
-        });
+        if (data.versions == null || data.versions.isEmpty()) {
+            data.versions = new HashMap<>(defaultVersions);
+        } /*else {
+            defaultVersions.forEach((aByte, bByte) -> {
+                if(!data.versions.containsKey(aByte)){
+                    data.versions.put(aByte, bByte);
+                }
+            });
+        }*/
 
         this.data = data;
+        subPackets.put(new NewAnimPacket());
         subPackets.put(new EmoteDataPacket());
         subPackets.put(new PlayerDataPacket());
         subPackets.put(new StopPacket());
@@ -122,42 +128,37 @@ public class EmotePacket {
         }
     }
 
-    @Nullable
+    @NotNull
     public NetData read(ByteBuffer byteBuffer) throws IOException {
+        this.version = byteBuffer.getInt();
+        if (this.version > CommonData.networkingVersion) throw new IOException("Can't read newer version");
+        data.purpose = PacketTask.getTaskFromID(byteBuffer.get());
 
-        try {
-            this.version = byteBuffer.getInt();
-            if (this.version > CommonData.networkingVersion) throw new IOException("Can't read newer version");
-            data.purpose = PacketTask.getTaskFromID(byteBuffer.get());
+        byte count = byteBuffer.get();
 
-            byte count = byteBuffer.get();
+        for (int i = 0; i < count; i++) {
+            byte id = byteBuffer.get();
+            byte sub_version = byteBuffer.get();
+            int size = byteBuffer.getInt();
+            int currentPos = byteBuffer.position();
 
-            for (int i = 0; i < count; i++) {
-                byte id = byteBuffer.get();
-                byte sub_version = byteBuffer.get();
-                int size = byteBuffer.getInt();
-                int currentPos = byteBuffer.position();
-                if (subPackets.containsKey(id)) {
-                    if(!subPackets.get(id).read(byteBuffer, this.data, sub_version)){
-                        throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + " sub-packet received");
-                    }
-                    if (byteBuffer.position() != size + currentPos) {
-                        ((Buffer)byteBuffer).position(currentPos + size);
-                    }
+            if (subPackets.containsKey(id)) {
+                try {
+                    subPackets.get(id).read(byteBuffer, this.data, sub_version);
+                } catch (Throwable th) {
+                    throw new IOException("Invalid " + subPackets.get(id).getClass().getName() + " sub-packet received", th);
                 }
-                else {
+
+                if (byteBuffer.position() != size + currentPos) {
                     ((Buffer)byteBuffer).position(currentPos + size);
-                    //byteBuffer.position(currentPos + size);//Skip unknown sub-packets...
                 }
+            } else {
+                ((Buffer)byteBuffer).position(currentPos + size);
             }
+        }
 
-            if (data.prepareAndValidate()) return this.data;
-            else return null;
-        }
-        catch (RuntimeException e){
-            e.printStackTrace();
-            throw new IOException(e.getClass().getTypeName() + " has occurred: " + e.getMessage());
-        }
+        if (data.prepareAndValidate()) return this.data;
+        else throw new IOException("no valid data");
     }
 
     /**
@@ -210,7 +211,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(KeyframeAnimation emoteData, @Nullable UUID player){
+        public Builder configureToStreamEmote(Animation emoteData, @Nullable UUID player){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("Can's send and stop emote at the same time");
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
@@ -218,7 +219,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToSaveEmote(KeyframeAnimation emoteData){
+        public Builder configureToSaveEmote(Animation emoteData){
             if(data.purpose != PacketTask.UNKNOWN)throw new IllegalArgumentException("already configured?!");
             data.purpose = PacketTask.FILE;
             data.sizeLimit = Integer.MAX_VALUE;
@@ -226,7 +227,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureEmoteTick(int tick){
+        public Builder configureEmoteTick(float tick) {
             this.data.tick = tick;
             return this;
         }
@@ -236,7 +237,7 @@ public class EmotePacket {
             return this;
         }
 
-        public Builder configureToStreamEmote(KeyframeAnimation emoteData){
+        public Builder configureToStreamEmote(Animation emoteData) {
             return configureToStreamEmote(emoteData, null);
         }
 

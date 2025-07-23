@@ -22,9 +22,3 @@ include("minecraft:neoforge")
 
 // Paper plugin
 include("paper")
-
-// Geyser ext
-include("geyser")
-
-//Velocity plugin stuff
-// include "velocity"

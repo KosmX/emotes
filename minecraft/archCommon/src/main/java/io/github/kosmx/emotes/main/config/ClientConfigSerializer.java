@@ -2,49 +2,39 @@ package io.github.kosmx.emotes.main.config;
 
 import com.google.gson.*;
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.kosmx.playerAnim.core.util.Pair;
-import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
+import it.unimi.dsi.fastutil.Pair;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.UUID;
 
-
-public class ClientConfigSerializer extends ConfigSerializer {
+public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
+    public ClientConfigSerializer() {
+        super(ClientConfig::new);
+    }
 
     @Override
-    public SerializableConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        ClientConfig config = (ClientConfig) super.deserialize(json, typeOfT, context);
-
+    public ClientConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        ClientConfig config = super.deserialize(json, typeOfT, context);
         clientDeserialize(json.getAsJsonObject(), config);
-
         return config;
     }
 
     @Override
-    public JsonElement serialize(SerializableConfig config, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(ClientConfig config, Type typeOfSrc, JsonSerializationContext context) {
         JsonObject node = super.serialize(config, typeOfSrc, context).getAsJsonObject();
-
-        if(config instanceof ClientConfig) clientSerialize((ClientConfig) config, node);
-
+        clientSerialize(config, node);
         return node;
     }
 
-    @Override
-    protected SerializableConfig newConfig() {
-        return new ClientConfig();
+    private void clientDeserialize(JsonObject node, ClientConfig config) {
+        if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config);
+        if(node.has("keys")) keyBindsDeserializer(node.get("keys"), config);
     }
 
-    private void clientDeserialize(JsonObject node, SerializableConfig sconfig) {
-        ClientConfig config = (ClientConfig) sconfig;
-        EmoteFixer emoteFixer = new EmoteFixer(config.configVersion);
-        if(node.has("fastmenu")) fastMenuDeserializer(node.get("fastmenu").getAsJsonObject(), config, emoteFixer);
-        if(node.has("keys")) keyBindsDeserializer(node.get("keys"), config, emoteFixer);
-    }
-
-    private void fastMenuDeserializer(JsonObject node, ClientConfig config, EmoteFixer fixer){
-        for(int j = 0; j != 10; j++){
+    private void fastMenuDeserializer(JsonObject node, ClientConfig config) {
+        for(int j = 0; j < config.fastMenuEmotes.length; j++){
             if (node.has(Integer.toString(j))) {
                 JsonElement subNode = node.get(Integer.toString(j));
                 // fastmenu config version check
@@ -52,34 +42,33 @@ public class ClientConfigSerializer extends ConfigSerializer {
                     // new version (with pages)
                     for (int i = 0; i != 8; i++) {
                         if (node.get(Integer.toString(j)).getAsJsonObject().has(Integer.toString(i))) {
-                            config.fastMenuEmotes[j][i] = fixer.getEmoteID(node.get(Integer.toString(j)).getAsJsonObject().get(Integer.toString(i)));
+                            config.fastMenuEmotes[j][i] = getEmoteID(node.get(Integer.toString(j)).getAsJsonObject().get(Integer.toString(i)));
                         }
                     }
                 } else {
                     // old version (without pages) to new version
-                    config.fastMenuEmotes[0][j] = fixer.getEmoteID(node.get(Integer.toString(j)));
+                    config.fastMenuEmotes[0][j] = getEmoteID(node.get(Integer.toString(j)));
                 }
             }
         }
     }
 
-    private void keyBindsDeserializer(JsonElement node, ClientConfig config, EmoteFixer fixer){
-        if(config.configVersion < 4){
-            oldKeyBindsSerializer(node.getAsJsonArray(), config, fixer);
+    private void keyBindsDeserializer(JsonElement node, ClientConfig config) {
+        if (config.configVersion < 4) {
+            oldKeyBindsSerializer(node.getAsJsonArray(), config);
         } else {
             for (Map.Entry<String, JsonElement> element : node.getAsJsonObject().entrySet()) {
                 String str = element.getValue().getAsString();
                 config.emoteKeyMap.put(UUID.fromString(element.getKey()), InputConstants.getKey(str));
-                //config.emotesWithHash.add(new Pair<>(fixer.getEmoteID(n.get("id")), n.get("key").getAsString()));
             }
         }
     }
 
-    private void oldKeyBindsSerializer(JsonArray node, ClientConfig config, EmoteFixer fixer){
+    private void oldKeyBindsSerializer(JsonArray node, ClientConfig config) {
         for(JsonElement jsonElement : node){
             JsonObject n = jsonElement.getAsJsonObject();
             String str = n.get("key").getAsString();
-            config.emoteKeyMap.add(new Pair<>(fixer.getEmoteID(n.get("id")), InputConstants.getKey(str)));
+            config.emoteKeyMap.add(Pair.of(getEmoteID(n.get("id")), InputConstants.getKey(str)));
         }
     }
 
@@ -90,7 +79,7 @@ public class ClientConfigSerializer extends ConfigSerializer {
 
     private JsonObject fastMenuSerializer(ClientConfig config){
         JsonObject node = new JsonObject();
-        for(int j = 0; j != 10; j++) {
+        for(int j = 0; j < config.fastMenuEmotes.length; j++){
             if (config.fastMenuEmotes[j] != null) {
                 JsonObject subNode = new JsonObject();
                 for (int i = 0; i != 8; i++) {
@@ -107,8 +96,16 @@ public class ClientConfigSerializer extends ConfigSerializer {
     private JsonObject keyBindsSerializer(ClientConfig config){
         JsonObject array = new JsonObject();
         for(Pair<UUID, InputConstants.Key> emote : config.emoteKeyMap){
-            array.addProperty(emote.getLeft().toString(), emote.getRight().getName());
+            array.addProperty(emote.left().toString(), emote.right().getName());
         }
         return array;
+    }
+
+    public static UUID getEmoteID(JsonElement element) {
+        try {
+            return UUID.fromString(element.getAsString());
+        } catch(Exception e) {
+            return new UUID(0, 0);
+        }
     }
 }

@@ -5,7 +5,6 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,12 +17,10 @@ import java.util.UUID;
  * Wrapper class for Emotes play network implementation
  */
 public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IServerNetworkInstance {
-    @NotNull private final ServerGamePacketListenerImpl serverGamePacketListener;
-
+    @NotNull
+    protected final ServerGamePacketListenerImpl serverGamePacketListener;
     @NotNull
     private final EmotePlayTracker emotePlayTracker = new EmotePlayTracker();
-
-
 
     public ModdedServerPlayNetwork(@NotNull ServerGamePacketListenerImpl serverGamePacketListener) {
         super();
@@ -35,15 +32,9 @@ public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IS
         return (EmotesMixinConnection) ((ServerCommonPacketListenerAccessor)serverGamePacketListener).getConnection();
     }
 
-
     @Override
     void sendEmotePacket(ByteBuffer buffer) {
         sendPlayMessage(buffer);
-    }
-
-    @Override
-    public void disconnect(String literal) {
-        serverGamePacketListener.disconnect(Component.literal(literal));
     }
 
     @Override

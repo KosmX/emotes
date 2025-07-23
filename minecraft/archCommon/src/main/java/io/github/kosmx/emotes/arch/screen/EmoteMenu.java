@@ -2,18 +2,15 @@ package io.github.kosmx.emotes.arch.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
-import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.config.ClientSerializer;
-import io.github.kosmx.emotes.server.services.InstanceService;
+import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -23,7 +20,6 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class EmoteMenu extends EmoteSubScreen {
     private static final Component TITLE = Component.translatable("emotecraft.menu");
@@ -34,9 +30,11 @@ public class EmoteMenu extends EmoteSubScreen {
     public static final Component RESET = Component.translatable("controls.reset");
 
     private static final Component KEYBIND = Component.translatable("emotecraft.options.keybind");
-    private static final Component FASTMENU = Component.translatable("emotecraft.options.fastmenu");
-    private static final Component FASTMENU2 = Component.translatable("emotecraft.options.fastmenu2");
-    private static final Component FASTMENU3 = Component.translatable("emotecraft.options.fastmenu3");
+    private static final Component FASTMENU = Component.translatable("emotecraft.options.fastmenu")
+            .append(CommonComponents.SPACE)
+            .append(Component.translatable("emotecraft.options.fastmenu2"))
+            .append(CommonComponents.SPACE)
+            .append(Component.translatable("emotecraft.options.fastmenu3"));
 
     private static final Component SURE = Component.translatable("emotecraft.sure");
     private static final Component SURE2 = Component.translatable("emotecraft.sure2");
@@ -47,8 +45,6 @@ public class EmoteMenu extends EmoteSubScreen {
     private static final Component RESET_ALL_TITLE = Component.translatable("emotecraft.resetAllKeys.title");
     private static final Component RESET_ALL_MSG = Component.translatable("emotecraft.resetAllKeys.message");
 
-    public final EmoteListener watcher;
-
     public long activeKeyTime;
     private Button setKeyButton;
     private Button resetButton;
@@ -57,9 +53,7 @@ public class EmoteMenu extends EmoteSubScreen {
     protected FastChooseWidget fastChoose;
 
     public EmoteMenu(Screen parent) {
-        super(EmoteMenu.TITLE, parent);
-        this.watcher = new EmoteListener(InstanceService.INSTANCE.getExternalEmoteDir());
-        this.watcher.load(this::addOptions);
+        super(EmoteMenu.TITLE, true, parent);
     }
 
     @Override
@@ -67,13 +61,16 @@ public class EmoteMenu extends EmoteSubScreen {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
         this.list = linearLayout.addChild(newEmoteListWidget());
+        this.list.setCompactMode(true);
         addOptions();
 
         GridLayout gridLayout = linearLayout.addChild(new GridLayout());
         gridLayout.defaultCellSetting().padding(4, 4, 4, 0);
         GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(2);
 
-        rowHelper.addChild(new StringWidget(KEYBIND, this.font), 2);
+        rowHelper.addChild(new MultiLineTextWidget(KEYBIND, this.font).setMaxWidth(
+                Button.SMALL_WIDTH * 2
+        ), 2);
 
         this.setKeyButton = rowHelper.addChild(Button.builder(InputConstants.UNKNOWN.getDisplayName(), button -> {
             if (this.list != null && this.list.getSelected() != null){
@@ -88,35 +85,33 @@ public class EmoteMenu extends EmoteSubScreen {
         );
         this.resetButton.active = false;
 
-        rowHelper.addChild(new StringWidget(FASTMENU, this.font), 2,
-                gridLayout.newCellSettings().paddingTop(Button.DEFAULT_HEIGHT)
-        );
-        rowHelper.addChild(new StringWidget(FASTMENU2, this.font), 2);
-        rowHelper.addChild(new StringWidget(FASTMENU3, this.font), 2);
+        rowHelper.addChild(new MultiLineTextWidget(FASTMENU, this.font).setMaxWidth(
+                Button.SMALL_WIDTH * 2
+        ), 2, gridLayout.newCellSettings().paddingTop(Button.DEFAULT_SPACING));
 
         this.fastChoose = rowHelper.addChild(new FastChooseWidget(0, 0, 0), 2);
     }
 
     @Override
     protected void addOptions() {
-        if (this.list != null) {
-            this.list.setEmotes(EmoteHolder.list, true);
-        }
+        if (this.list != null) this.list.setEmotes(EmoteHolder.list, true);
     }
 
     @Override
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
+        if (this.list != null) linearLayout.addChild(this.list.createBackButton());
+
         linearLayout.addChild(Button.builder(EmoteMenu.OPEN_FOLDER, button -> PlatformTools.openExternalEmotesDir())
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, button -> this.minecraft.setScreen(new ConfigScreen(this)))
+        linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
+        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, button -> this.minecraft.setScreen(new ConfigScreen(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
@@ -125,7 +120,7 @@ public class EmoteMenu extends EmoteSubScreen {
     private void resetKeyAction(Button button){
         if(resetOnlySelected) {
             if (this.list == null || this.list.getFocused() == null) return;
-            PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocused().getEmote().getUuid());
+            PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocusedEmote().getUuid());
             onPressed(this.list.getSelected());
         } else {
             this.minecraft.setScreen(new ConfirmScreen(aBoolean -> {
@@ -146,20 +141,15 @@ public class EmoteMenu extends EmoteSubScreen {
             this.fastChoose.setSize(x, x);
         }
         super.repositionElements();
-        if (this.list != null) {
-            this.list.setCompactMode(true);
-            this.list.setWidth(this.width / 3);
-            this.layout.arrangeElements();
-        }
     }
 
     @Override
-    protected void onPressed(EmoteListWidget.EmoteEntry selected) {
-        this.setKeyButton.active = this.resetButton.active = selected != null;
+    protected void onPressed(EmoteListWidget.ListEntry selected) {
+        this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteEntry;
 
-        if (selected != null) {
-            this.setKeyButton.setMessage(getKey(selected.getEmote().getUuid()).getDisplayName());
-            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(selected.getEmote().getUuid());
+        if (selected instanceof EmoteListWidget.EmoteEntry entry) {
+            this.setKeyButton.setMessage(getKey(entry.getEmote().getUuid()).getDisplayName());
+            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(entry.getEmote().getUuid());
         } else {
             this.resetOnlySelected = false;
         }
@@ -186,9 +176,6 @@ public class EmoteMenu extends EmoteSubScreen {
         if(activeKeyTime != 0){
             activeKeyTime--;
         }
-        if (this.watcher != null && this.watcher.isFilesChanged()){
-            this.watcher.load(this::addOptions);
-        }
         super.tick();
     }
 
@@ -204,10 +191,10 @@ public class EmoteMenu extends EmoteSubScreen {
         boolean bl = false;
         if (this.list != null && this.list.getFocused() != null) {
             bl = true;
-            if (!applyKey(false, this.list.getFocused().getEmote(), key)) {
+            if (!applyKey(false, this.list.getFocusedEmote(), key)) {
                 this.minecraft.setScreen(new ConfirmScreen(choice -> {
                     if (choice) {
-                        applyKey(true, this.list.getFocused().getEmote(), key);
+                        applyKey(true, this.list.getFocusedEmote(), key);
                     }
                     this.minecraft.setScreen(this);
                 }, SURE, SURE2));
@@ -246,14 +233,8 @@ public class EmoteMenu extends EmoteSubScreen {
 
     @Override
     public void removed() {
-        this.watcher.blockWhileLoading();
         super.removed();
-        ClientSerializer.INSTANCE.saveConfig();
-        try {
-            this.watcher.close();
-        } catch (Throwable th) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to close watcher!", th);
-        }
+        Serializer.INSTANCE.saveConfig();
     }
 
     @Override
@@ -286,7 +267,7 @@ public class EmoteMenu extends EmoteSubScreen {
                 element.clearEmote();
                 return true;
             } else if (list != null && list.getFocused() != null) {
-                element.setEmote(list.getFocused().getEmote());
+                element.setEmote(list.getFocusedEmote());
                 return true;
             }else{
                 return false;

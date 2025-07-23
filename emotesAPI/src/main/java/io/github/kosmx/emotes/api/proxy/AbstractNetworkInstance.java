@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.api.proxy;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
@@ -11,25 +10,13 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 /**
  * Implement this if you want to act as a proxy for EmoteX
  * This has most of the functions implemented as you might want, but you can override any.
  */
 public abstract class AbstractNetworkInstance implements INetworkInstance{
-
-    //Notable version parameters
-    protected int remoteVersion = 0;
-    protected boolean disableNBS = false;
-    protected boolean doesServerTrackEmotePlay = false;
-
-    protected int animationFormat = 2;
-
-    /*
-     * You have to implement at least one of these three functions
-     * EmoteX packet (PacketBuilder) -> ByteBuffer -> byte[]
-     */
+    private final HashMap<Byte, Byte> versions = new HashMap<>(EmotePacket.defaultVersions);
 
     /**
      * If you want to send byte array
@@ -42,8 +29,8 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * @param bytes bytes to send
      * @param target target to send message, if null, everyone in the view distance
      */
-    protected void sendMessage(byte[] bytes, @Nullable UUID target){
-        //If code here were invoked, you have made a big mistake.
+    protected void sendMessage(byte[] bytes, @Nullable UUID target) {
+        // If code here were invoked, you have made a big mistake.
         throw new UnsupportedOperationException("You should have implemented send emote feature");
     }
 
@@ -52,7 +39,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * @param byteBuffer buffer to send
      * @param target target to send message, if null, everyone in the view distance
      */
-    public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target){
+    public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
         sendMessage(safeGetBytesFromBuffer(byteBuffer), target);
     }
 
@@ -71,7 +58,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      */
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        this.sendMessage(builder.build().write(), target);    //everything is happening on the heap, there won't be any memory leak
+        this.sendMessage(builder.build().write(), target); // everything is happening on the heap, there won't be any memory leak
     }
 
     /**
@@ -80,7 +67,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * {@link #trustReceivedPlayer()} should return true as you don't have your own identifier system as alternative
      * @param bytes message
      */
-    public void receiveMessage(byte[] bytes){
+    public void receiveMessage(byte[] bytes) {
         this.receiveMessage(bytes, null);
     }
 
@@ -102,14 +89,14 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * @param bytes message
      * @param player the sender player, null if unknown
      */
-    public void receiveMessage(byte[] bytes, UUID player){
+    public void receiveMessage(byte[] bytes, UUID player) {
         this.receiveMessage(ByteBuffer.wrap(bytes), player);
     }
 
     /**
      * When the network instance disconnects...
      */
-    protected void disconnect(){
+    protected void disconnect() {
         EmotesProxyManager.disconnectInstance(this);
     }
 
@@ -119,19 +106,9 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * @param byteBuffer get the bytes from
      * @return the byte array
      */
-    public static byte[] safeGetBytesFromBuffer(ByteBuffer byteBuffer){
+    public static byte[] safeGetBytesFromBuffer(ByteBuffer byteBuffer) {
         return INetworkInstance.safeGetBytesFromBuffer(byteBuffer);
     }
-
-    /**
-     * Returns its own version number, as the modern networking (mostly) understand higher version messages.
-     * @return CommonData.networkingVersion;
-     */
-    @Override
-    public int getRemoteVersion() {
-        return CommonData.networkingVersion;
-    }
-
 
     /**
      * Default client-side version config,
@@ -140,18 +117,8 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      */
     @Override
     public void setVersions(HashMap<Byte, Byte> map) {
-        if (map.containsKey((byte) 3)) {
-            disableNBS = map.get((byte) 3) == 0;
-        }
-        if (map.containsKey((byte) 8)) {
-            remoteVersion = map.get((byte) 8); //8x8 :D
-        }
-        if (map.containsKey(PacketConfig.SERVER_TRACK_EMOTE_PLAY)) {
-            this.doesServerTrackEmotePlay = map.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
-        }
-        if (map.containsKey((byte) 0)) {
-            animationFormat = map.get((byte) 0);
-        }
+        this.versions.clear();
+        this.versions.putAll(map);
     }
 
     /**
@@ -160,38 +127,24 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      */
     @Override
     public HashMap<Byte, Byte> getRemoteVersions() {
-        HashMap<Byte, Byte> map = new HashMap<>();
-        if(disableNBS){
-            map.put(PacketConfig.NBS_CONFIG, (byte) 0);
-        }
-        if (doesServerTrackEmotePlay) {
-            map.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)1);
-        }
-        map.put(PacketConfig.ANIMATION_FORMAT, (byte)this.animationFormat);
-        return map;
+        return this.versions;
     }
 
     @Override
     public boolean isServerTrackingPlayState() {
-        return this.doesServerTrackEmotePlay;
+        return this.versions.containsKey(PacketConfig.SERVER_TRACK_EMOTE_PLAY) &&
+                this.versions.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
     }
 
     @Override
-    public void sendC2SConfig(Consumer<EmotePacket.Builder> consumer){
+    public void sendC2SConfig(Consumer<EmotePacket.Builder> consumer) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        //packetBuilder.setVersion(this.getVersions());
         packetBuilder.configureToConfigExchange(true);
 
         try {
             consumer.accept(packetBuilder);
+        } catch (Exception e){
+            CommonData.LOGGER.warn("Error while writing packet!", e);
         }
-        catch (Exception e){
-            LoggerService.INSTANCE.log(Level.WARNING, "Error while writing packet!", e);
-        }
-    }
-
-    @Override
-    public int maxDataSize() {
-        return CommonData.MAX_PACKET_SIZE;
     }
 }

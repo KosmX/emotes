@@ -35,7 +35,17 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("dev.kosmx.player-anim:player-animation-lib-forge:${properties["player_animator_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${properties["playeranimlib_version"] as String}") {
+        pomCompile(this)
+    }
+
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${properties["bendablecuboids_version"] as String}") {
+        include(this)
+        pomCompile(this)
+    }
+
+    implementation("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}") {
+        forgeRuntimeLibrary(this)
         include(this)
         pomCompile(this)
     }
@@ -50,6 +60,10 @@ dependencies {
             configuration = "transformProductionNeoForge"
         )
     ) { isTransitive = false }
+
+    // Temp fixes
+    forgeRuntimeLibrary("org.javassist:javassist:3.30.2-GA")
+    forgeRuntimeLibrary("com.zigythebird:mochafloats:1.1.2")
 }
 
 tasks.processResources {
@@ -75,7 +89,7 @@ java {
 
 tasks.shadowJar {
     configurations = listOf(shadowCommon)
-    archiveClassifier.set("")
+    archiveClassifier.set("dev-shadow")
     mergeServiceFiles()
 }
 
@@ -87,7 +101,7 @@ tasks.remapJar {
 }
 
 tasks.jar {
-    archiveClassifier.set("")
+    archiveClassifier.set("dev")
 }
 
 components.getByName<AdhocComponentWithVariants>("java") {
@@ -96,22 +110,12 @@ components.getByName<AdhocComponentWithVariants>("java") {
     }
 }
 
-tasks.register<Jar>("devJar") {
-    from(sourceSets["main"].output)
-    archiveClassifier.set("dev")
-}
-
-tasks.build {
-    dependsOn("devJar")
-}
-
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
             artifactId = "emotesNeo"
 
             // add all the jars that should be included when publishing to maven
-            artifact(tasks.named("devJar"))
             artifact(tasks.remapJar) {
                 builtBy(tasks.remapJar)
                 classifier = ""
@@ -149,9 +153,10 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${mod_version}+${minecraft_version}-forge"
+        version = "${mod_version}+${removePreRc(minecraft_version)}-forge"
 
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 
@@ -162,9 +167,10 @@ publishMods {
         projectSlug = providers.gradleProperty("curseforge_slug_forge")
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
-        minecraftVersions.add(minecraft_version)
+        minecraftVersions.add(curseforge_minecraft_version)
 
-        embeds("playeranimator")
+        requires("player-animation-library")
+        requires("bendable-cuboids")
         optional("searchables")
     }
 }

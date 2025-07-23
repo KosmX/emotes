@@ -1,71 +1,72 @@
 package io.github.kosmx.emotes.main.mixinFunctions;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranim.util.ClientUtil;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
 import net.minecraft.client.CameraType;
-import org.jetbrains.annotations.Nullable;
-import java.util.UUID;
-import java.util.function.Supplier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import org.apache.commons.lang3.NotImplementedException;
+import org.jspecify.annotations.NonNull;
 
+import java.util.UUID;
 
 public interface IPlayerEntity {
-    CameraType FPPerspective = CameraType.FIRST_PERSON;
-    Supplier<CameraType> TPBPerspective = () -> (PlatformTools.getConfig().frontAsTPPerspective.get() ? CameraType.THIRD_PERSON_FRONT : CameraType.THIRD_PERSON_BACK);
-
-    default void initEmotePerspective(EmotePlayer emotePlayer){
-        if(PlatformTools.getConfig().enablePerspective.get() && isMainPlayer() && PlatformTools.getPerspective() == FPPerspective) {
-            emotePlayer.perspective = 1;
-            PlatformTools.setPerspective(TPBPerspective.get());
+    default void initEmotePerspective() {
+        if (isMainPlayer() && PlatformTools.getConfig().enablePerspective.get() && PlatformTools.getPerspective() == CameraType.FIRST_PERSON) {
+            emotecraft$getEmote().perspective = true;
+            PlatformTools.setPerspective(PlatformTools.getConfig().getCameraType());
         }
     }
 
-    void emotecraft$playEmote(KeyframeAnimation emote, int tick, boolean isForced);
+    default void emotecraft$playEmote(Animation emote, float tick, boolean isForced) {
+        throw new NotImplementedException();
+    }
 
-    @Nullable
-    EmotePlayer emotecraft$getEmote();
+    default @NonNull EmotePlayer emotecraft$getEmote() {
+        throw new NotImplementedException();
+    }
 
-    default boolean isPlayingEmote(){
+    default boolean isPlayingEmote() {
         return EmotePlayer.isRunningEmote(this.emotecraft$getEmote());
     }
 
-    default boolean isMainPlayer(){
-        return PlatformTools.getMainPlayer() == this;
+    default boolean isMainPlayer() {
+        return ClientUtil.getClientPlayer() == this;
     }
 
     /**
      * Use this ONLY for the main player
      */
-    default void stopEmote(){
-        EmotePlayer emotePlayer = emotecraft$getEmote();
-        if(emotePlayer != null) {
-            emotePlayer.stop();
-            this.emotecraft$voidEmote();
+    default void stopEmote() {
+        emotecraft$getEmote().stop();
+    }
+
+    default void stopEmote(UUID emoteID) {
+        Animation animation = emotecraft$getEmote().getData();
+        if (animation != null &&animation.uuid().equals(emoteID)) {
+            stopEmote();
         }
     }
 
-    default void stopEmote(UUID emoteID){
-        EmotePlayer emotePlayer = emotecraft$getEmote();
-        if(emotePlayer != null && emotePlayer.getData().getUuid().equals(emoteID)){
-            emotePlayer.stop();
-            this.emotecraft$voidEmote();
-        }
+    default boolean emotecraft$isForcedEmote() {
+        throw new NotImplementedException();
     }
-
-    void emotecraft$voidEmote();
-
-    boolean emotecraft$isForcedEmote();
 
     default void emotecraft$playerEntersInvalidPose() {
         if (!isPlayingEmote() || emotecraft$isForcedEmote()) {
             return;
         }
 
-        EmotePlayer emotePlayer = emotecraft$getEmote();
-        if (emotePlayer != null && PlatformTools.getConfig().checkPose.get()) {
-            ClientEmotePlay.clientStopLocalEmote(emotePlayer.getData());
+        if (PlatformTools.getConfig().checkPose.get()) {
+            ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getData());
         }
+    }
+
+    default void emotecraft$playRawSound(SoundInstance instance) {
+        Minecraft.getInstance().getSoundManager().play(instance);
     }
 }

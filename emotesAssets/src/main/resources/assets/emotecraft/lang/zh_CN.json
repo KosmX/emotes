@@ -1,4 +1,5 @@
 {
+  "modmenu.descriptionTranslation.emotecraft": "在Minecraft中播放表情动作\n打开菜单设置你的快速选择轮\n\n你可以添加自定义表情动作，即使其他玩家没有这些动作，你也可以播放它们。\n\n特别感谢：\nKale Ko 创作了表情动作并协助了用户界面设计\nOrsond 激励了我并提供了 CollarMC  \nArchitectury 提供了 Forge 构建工具",
   "emotecraft.menu": "表情配置",
   "emotecraft.options.options": "模组选项",
   "emotecraft.options.keybind": "设置自定义按键以播放所选的表情。",
@@ -64,12 +65,13 @@
   "emotecraft.resetAllKeys.title": "重置所有表情按键绑定",
   "emotecraft.resetAllKeys.message": "你确定要重置表情按键绑定吗？",
   "emotecraft.options.export": "导出菜单",
-  "emotecraft.exportjson": "以 JSON 格式导出表情",
-  "emotecraft.exportbin": "以 .emotecraft 二进制文件导出表情",
-  "emotecraft.export.error.json": "导出 JSON 失败...",
-  "emotecraft.export.error.emotecraft": "导出 .emotecraft 失败...",
-  "emotecraft.export.done.json": "JSON 导出完毕！",
-  "emotecraft.export.done.emotecraft": ".emotecraft 导出完毕！",
+  "emotecraft.export": "导出表情动作至 .%s",
+  "emotecraft.export.error": "导出到 %s 失败...",
+  "emotecraft.export.done": "%s 导出完成！",
   "emotecraft.song_too_big_to_send": "歌曲太大，无法发送到服务器。仅发送表情...",
-  "emotecraft.cant.override.forced": "强制你播放当前表情，无法更改。"
+  "emotecraft.cant.override.forced": "强制你播放当前表情，无法更改。",
+  "emotecraft.folder": "文件夹",
+  "emotecraft.folder.main": "主要",
+  "emotecraft.reloading": "正在重新加载表情动作...",
+  "emotecraft.reloading.done": "重新加载耗时 %s 秒！"
 }

@@ -1,48 +1,42 @@
 package io.github.kosmx.emotes.common.network;
 
-
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * I can't use Minecraft's string and uuid byte reader in a bukkit plugin, I need to implement these.
  * This can still here but it can be removed if unused
  */
 public class CommonNetwork {
-    public static String readString(ByteBuffer buf) throws IOException {
+    public static String readString(ByteBuffer buf) {
         int len = buf.getInt();
-        if(len < 0){
-            throw new IOException("The received encoded string buffer length is less than zero! Weird string!");
-        }
+        if (len <= 0) return null;
         byte[] b = new byte[len];
         buf.get(b); //that is safe to use.
-
         return new String(b, StandardCharsets.UTF_8);
     }
 
-    public static void writeString(ByteBuffer buf, String str){
+    public static void writeString(ByteBuffer buf, String str) {
+        if (str == null || str.isBlank()) { // Minor optimization to avoid writing empty lines
+            buf.putInt(0);
+            return;
+        }
         byte[] b = str.getBytes(StandardCharsets.UTF_8);
         buf.putInt(b.length);
         buf.put(b);
     }
 
-    //copied from MC
-    public static String readVarString(ByteBuffer buf) throws IOException {
-        int j = readVarInt(buf);
-        if (j < 0) {
-            throw new IOException("The received encoded string buffer length is less than zero! Weird string!");
-        } else {
-            byte[] bytes = new byte[j];
-            buf.get(bytes);
-            return new String(bytes, StandardCharsets.UTF_8);
+    public static int stringSize(String str) {
+        int size = 4;
+        if (str != null && !str.isBlank()) {
+            size += str.getBytes(StandardCharsets.UTF_8).length;
         }
-    }
-    public static void writeVarString(ByteBuffer buf, String str){
-        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-        writeVarInt(buf, bytes.length);
-        buf.put(bytes);
+        return size;
     }
 
     public static UUID readUUID(ByteBuffer buf){
@@ -50,35 +44,47 @@ public class CommonNetwork {
         long b = buf.getLong();
         return new UUID(a, b); //The order is important
     }
+
     public static void writeUUID(ByteBuffer buf, UUID uuid){
         buf.putLong(uuid.getMostSignificantBits());
         buf.putLong(uuid.getLeastSignificantBits());
     }
 
-    //copied from minecraft
-    public static int readVarInt(ByteBuffer buf) {
-        int i = 0;
-        int j = 0;
-
-        byte b;
-        do {
-            b = buf.get();
-            i |= (b & 127) << j++ * 7;
-            if (j > 5) {
-                throw new RuntimeException("VarInt too big");
-            }
-        } while((b & 128) == 128);
-
-        return i;
+    public static <T> List<T> readList(ByteBuffer buf, Function<ByteBuffer, T> reader) {
+        int count = buf.getInt();
+        List<T> list = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            list.add(reader.apply(buf));
+        }
+        return list;
     }
 
-    //copied from minecraft
-    public static void writeVarInt(ByteBuffer buf, int i){
-        while((i & - 128) != 0){
-            buf.put((byte) (i & 127 | 128));
-            i >>>= 7;
+    public static <T> void writeList(ByteBuffer buf, List<T> elements, BiConsumer<ByteBuffer, T> writter) {
+        if (elements == null) {
+            buf.putInt(0);
+            return;
         }
 
-        buf.put((byte) i);
+        buf.putInt(elements.size());
+        for (T entry : elements) {
+            writter.accept(buf, entry);
+        }
+    }
+
+    public static <T> int listSize(List<T> elements, Function<T, Integer> sizer) {
+        int size = 4;
+        if (elements == null) return size;
+        for (T entry : elements) {
+            size += sizer.apply(entry);
+        }
+        return size;
+    }
+
+    public static boolean readBoolean(ByteBuffer buf) {
+        return buf.get() != 0;
+    }
+
+    public static void writeBoolean(ByteBuffer buf, boolean bool) {
+        buf.put((byte) (bool ? 1 : 0));
     }
 }

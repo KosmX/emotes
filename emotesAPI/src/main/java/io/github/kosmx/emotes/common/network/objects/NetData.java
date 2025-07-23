@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
@@ -24,15 +24,14 @@ public final class NetData {
     @Nullable
     public UUID stopEmoteID = null;
     @Nullable
-    public KeyframeAnimation emoteData = null;
-    public int tick = 0;
+    public Animation emoteData = null;
+    public float tick = 0;
     /**
      * Is the emote is valid (Not validated)
      */
     public boolean valid;
     //Never use it permanently
 
-    public boolean wasEmoteData = false;
     public boolean writeSong = true;
 
     public boolean versionsUpdated = false;
@@ -54,15 +53,10 @@ public final class NetData {
     public boolean strictSizeLimit = true;
 
     HashMap<String, Object> extraData = new HashMap<>();
-    KeyframeAnimation.AnimationBuilder emoteBuilder = null;
-
 
     public boolean prepareAndValidate(){
-        if(emoteBuilder != null) {
-            if(emoteData != null) return false;
-            if(!wasEmoteData)return false;
-            emoteBuilder.extraData.putAll(extraData);
-            emoteData = emoteBuilder.build();
+        if (emoteData != null && !this.extraData.isEmpty()) {
+            emoteData.data().data().putAll(extraData);
         }
 
         if(purpose == PacketTask.UNKNOWN)return false;

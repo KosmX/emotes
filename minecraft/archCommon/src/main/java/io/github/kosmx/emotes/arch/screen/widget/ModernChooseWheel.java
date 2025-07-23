@@ -1,22 +1,20 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import dev.kosmx.playerAnim.core.util.MathHelper;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import org.jetbrains.annotations.NotNull;
 
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
  * Stuff fo override
@@ -98,10 +96,7 @@ public class ModernChooseWheel implements IChooseWheel {
     public void render(@NotNull GuiGraphics matrices, int mouseX, int mouseY, float delta) {
         checkHovered(mouseX, mouseY);
         //widget.renderBindTexture(TEXTURE);
-        RenderSystem.setShaderColor((float) 1, (float) 1, (float) 1, (float) 1);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
+        // RenderSystem.setShaderColor((float) 1, (float) 1, (float) 1, (float) 1);
         this.drawTexture(matrices, TEXTURE, 0, 0, 0, 0, 2);
         if(this.hovered){
             FastChooseElement part = getActivePart(mouseX, mouseY);
@@ -126,10 +121,10 @@ public class ModernChooseWheel implements IChooseWheel {
      * @param s        used texture part size !NOT THE WHOLE TEXTURE IMAGE SIZE!
      */
     private void drawTexture(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int s){
-        matrices.blit(RenderType::guiTextured, t, widget.getX() + x * widget.getWidth() / 256, widget.getY() + y * widget.getHeight() / 256, u, v, s * widget.getWidth() / 2, s * widget.getHeight() / 2, s * 128, s * 128, 512, 512);
+        matrices.blit(RenderPipelines.GUI_TEXTURED, t, widget.getX() + x * widget.getWidth() / 256, widget.getY() + y * widget.getHeight() / 256, u, v, s * widget.getWidth() / 2, s * widget.getHeight() / 2, s * 128, s * 128, 512, 512);
     }
     private void drawTexture_select(GuiGraphics matrices, ResourceLocation t, int x, int y, int u, int v, int w, int h){
-        matrices.blit(RenderType::guiTextured, t, widget.getX() + x * widget.getWidth() / 512, widget.getY() + y * widget.getHeight() / 512, u, v, w * widget.getWidth() / 2, h * widget.getHeight() / 2, w * 128, h * 128, 512, 512);
+        matrices.blit(RenderPipelines.GUI_TEXTURED, t, widget.getX() + x * widget.getWidth() / 512, widget.getY() + y * widget.getHeight() / 512, u, v, w * widget.getWidth() / 2, h * widget.getHeight() / 2, w * 128, h * 128, 512, 512);
     }
 
     private void checkHovered(int mouseX, int mouseY){
@@ -149,10 +144,10 @@ public class ModernChooseWheel implements IChooseWheel {
                     if (fastMenuPage > 0) {
                         fastMenuPage -= 1;
                     } else {
-                        fastMenuPage = 9;
+                        fastMenuPage = PlatformTools.getConfig().fastMenuEmotes.length-1;
                     }
                 } else if (selectedPageButton == 1) {
-                    if (fastMenuPage < 9) {
+                    if (fastMenuPage < PlatformTools.getConfig().fastMenuEmotes.length-1) {
                         fastMenuPage += 1;
                     } else {
                         fastMenuPage = 0;
@@ -167,7 +162,7 @@ public class ModernChooseWheel implements IChooseWheel {
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         checkHovered((int) mouseX, (int) mouseY);
         if (verticalAmount < 0) {
-            if (fastMenuPage < 9) {
+            if (fastMenuPage < PlatformTools.getConfig().fastMenuEmotes.length-1) {
                 fastMenuPage++;
                 return true;
             }
@@ -236,12 +231,12 @@ public class ModernChooseWheel implements IChooseWheel {
                 int iconX = (int) (((float) (widget.getX() + widget.getWidth() / 2)) + widget.getWidth() * 0.36 * Math.sin(this.angle * 0.0174533)) - s;
                 int iconY = (int) (((float) (widget.getY() + widget.getHeight() / 2)) + widget.getHeight() * 0.36 * Math.cos(this.angle * 0.0174533)) - s;
                 //widget.renderBindTexture(identifier);
-                matrices.blit(RenderType::guiTextured, identifier, iconX, iconY, 0.0F, 0.0F, s * 2, s * 2, 256, 256, 256, 256);
+                matrices.blit(RenderPipelines.GUI_TEXTURED, identifier, iconX, iconY, 0.0F, 0.0F, s * 2, s * 2, 256, 256, 256, 256);
             }else{
                 if(PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id] != null){
                     drawCenteredText(matrices, EmoteHolder.getNonNull(PlatformTools.getConfig().fastMenuEmotes[fastMenuPage][id]).name, this.angle);
                 }else{
-                    LoggerService.INSTANCE.log(Level.WARNING, "Tried to render non-existing name");
+                    CommonData.LOGGER.warn("Tried to render non-existing name");
                 }
             }
         }
@@ -253,7 +248,7 @@ public class ModernChooseWheel implements IChooseWheel {
         public void drawCenteredText(GuiGraphics matrices, Component stringRenderable, float x, float y){
             int c = PlatformTools.getConfig().dark.get() ? 255 : 0; //:D
             float x1 = x - (float) Minecraft.getInstance().font.width(stringRenderable) / 2;
-            matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), MathHelper.colorHelper(c, c, c, 1));
+            matrices.drawString(Minecraft.getInstance().font, stringRenderable, (int) x1, (int) (y - 2), ARGB.color(255, c, c, c));
         }
 
         public void renderHover(GuiGraphics matrices, ResourceLocation t){

@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.server.services.InstanceService;
 
@@ -14,74 +14,93 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
+import java.util.function.Consumer;
 
 /**
  * Serialize Emotecraft related jsons but not animations
  */
-public class Serializer {
-    public static Serializer INSTANCE;
+public class Serializer<T extends SerializableConfig> {
+    public static Serializer<?> INSTANCE;
+
+    protected final ConfigSerializer<T> configSerializer;
+    protected final Class<T> configClass;
+    private final Consumer<GsonBuilder> consumer;
 
     public final Gson serializer;
-    private SerializableConfig config;
+    private T config;
 
-    public Serializer() {
-        GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
-        initializeSerializer(builder);
-        this.serializer = builder.create();
+    public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass) {
+        this(configSuppler, configClass, null);
     }
 
-    public void initializeSerializer(GsonBuilder builder) {
-        builder.registerTypeAdapter(SerializableConfig.class, new ConfigSerializer());
+    public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass, Consumer<GsonBuilder> consumer) {
+        this.configSerializer = configSuppler;
+        this.configClass = configClass;
+        this.consumer = consumer;
+
+        this.serializer = initializeSerializer(new GsonBuilder());
     }
 
-    public void saveConfig() {
-        if (saveConfig(this.config)) {
-            this.config = null;
+    protected Gson initializeSerializer(GsonBuilder builder) {
+        builder.registerTypeAdapter(this.configClass, this.configSerializer);
+
+        if (this.consumer != null) {
+            this.consumer.accept(builder);
         }
+
+        return builder.setPrettyPrinting().create();
     }
 
-    public boolean saveConfig(SerializableConfig config) {
+    public boolean saveConfig() {
+        return saveConfig(this.config);
+    }
+
+    public boolean saveConfig(T config) {
         try (BufferedWriter writer = Files.newBufferedWriter(InstanceService.INSTANCE.getConfigPath())) {
-            this.serializer.toJson(config, writer);
+            this.serializer.toJson(config, this.configClass, writer);
             return true;
         } catch(IOException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to save config!", e);
+            CommonData.LOGGER.error("Failed to save config!", e);
             return false;
         }
     }
 
-    public SerializableConfig readConfig() {
+    public T readConfig() {
         if (this.config == null) {
-            LoggerService.INSTANCE.log(Level.INFO, "Loading config...");
+            CommonData.LOGGER.debug("Loading config...");
             this.config = readConfig(InstanceService.INSTANCE.getConfigPath());
         }
         return this.config;
     }
 
-    protected SerializableConfig readConfig(Path path) {
+    protected T readConfig(Path path) {
         if (Files.isRegularFile(path)) {
             try (BufferedReader reader = Files.newBufferedReader(path)) {
                 return readConfig(reader);
             } catch(IOException | JsonParseException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to read config!", e);
-                LoggerService.INSTANCE.log(Level.WARNING, "If you want to regenerate the config, delete the old files!");
+                CommonData.LOGGER.warn("Failed to read config!", e);
+                CommonData.LOGGER.warn("If you want to regenerate the config, delete the old files!");
             }
         } else {
-            SerializableConfig config = readConfig((BufferedReader) null);
+            T config = readConfig((BufferedReader) null);
             saveConfig(config);
             return config;
         }
         return readConfig((BufferedReader) null);
     }
 
-    protected SerializableConfig readConfig(BufferedReader reader) throws JsonSyntaxException, JsonIOException {
-        if(reader != null){
-            SerializableConfig config = serializer.fromJson(reader, SerializableConfig.class);
-            if (config == null) throw new JsonParseException("Json is empty");
-            return config;
+    protected T readConfig(BufferedReader reader) throws JsonSyntaxException, JsonIOException {
+        if (reader != null) {
+            T config = this.serializer.fromJson(reader, this.configClass);
+
+            if (config == null) {
+                throw new JsonParseException("Json is empty");
+            } else {
+                return config;
+            }
+        } else {
+            return this.configSerializer.configSuppler.get();
         }
-        return new SerializableConfig();
     }
 
     // Static helpers

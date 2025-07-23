@@ -8,19 +8,39 @@ modId="emotecraft"
 version="${version}"
 displayName="Emotecraft"
 updateJSONURL="https://api.modrinth.com/updates/emotecraft/forge_updates.json?neoforge=include"
-displayURL="https://kosmx.gitbook.io/emotecraft/"
+displayURL="https://docs.zigythebird.com/emotecraft/gettingstarted"
 logoFile="emotecraft_mod_logo.png"
 authors="KosmX, dima_dencep"
-credits="Kale Ko, BoBkiNN"
-description="${description}"
+credits="Kale Ko, ZigyTheBird, BoBkiNN"
+description='''${description}'''
 
 [[mixins]]
 config = "emotecraft-arch.mixins.json"
 
 [[dependencies.emotecraft]]
-modId="playeranimator"
-mandatory=true
+modId = "neoforge"
+type = "required"
+versionRange = "[21.7,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.emotecraft]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.7,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.emotecraft]]
+modId="player_animation_library"
 type="required"
-versionRange="[2.0.1.1,)"
+versionRange="[1.0.4+mc1.21.7,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.emotecraft]]
+modId="bendable_cuboids"
+type="incompatible"
+versionRange="[1.0,1.0.2+mc1.21.7)"
 ordering="NONE"
 side="BOTH"

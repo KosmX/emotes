@@ -1,52 +1,60 @@
 package io.github.kosmx.emotes.main.emotePlay;
 
-import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.data.opennbs.NBS;
-import dev.kosmx.playerAnim.core.data.opennbs.SoundPlayer;
-import dev.kosmx.playerAnim.core.data.opennbs.format.Layer;
+import com.zigythebird.playeranim.animation.PlayerAnimationController;
 
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.AnimationData;
+import com.zigythebird.playeranimcore.animation.AnimationProcessor;
+import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
+import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
+import com.zigythebird.playeranimcore.enums.PlayState;
+import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.network.chat.Component;
+import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import org.jetbrains.annotations.Nullable;
-import java.util.function.Consumer;
 
-// modified keyframe animation player to play songs with animations
-public class EmotePlayer extends KeyframeAnimationPlayer {
+/**
+ * Modified keyframe animation player to play songs with animations
+ */
+public class EmotePlayer extends PlayerAnimationController {
     @Nullable
-    final SoundPlayer song;
+    private MinecraftNbsPlayer song;
 
-    /**
-     *
-     * @param emote emote to play
-     * @param noteConsumer {@link Layer.Note} consumer
-     * @param t begin playing from tick
-     */
-    public EmotePlayer(KeyframeAnimation emote, Consumer<Layer.Note> noteConsumer, int t) {
-        super(emote, t);
-        if (emote.extraData.containsKey("song")) {
-            this.song = new SoundPlayer((NBS) emote.extraData.get("song"), noteConsumer, 0);
-        }
-        else {
+    public boolean perspective = false;
+
+    public EmotePlayer(AbstractClientPlayer player) {
+        super(player, (controller, state, animSetter) -> PlayState.STOP);
+    }
+
+    @Override
+    protected void setupNewAnimation() {
+        super.setupNewAnimation();
+
+        Animation emote = getData();
+
+        if (this.song != null) this.song.stop();
+        if (emote != null && emote.data().has("song")) {
+            this.song = new MinecraftNbsPlayer(getPlayer(), emote.data().<NbsSong>get("song").orElseThrow());
+        } else {
             this.song = null;
         }
-
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        if (this.isActive()) {
-            if (SoundPlayer.isPlayingSong(this.song)) song.tick();
-        }
-    }
-
-    @Override
+    @SuppressWarnings("UnstableApiUsage")
     public void stop() {
         super.stop();
-        if(this.perspective == 1){
+        stopTriggeredAnimation();
+        this.animationQueue.clear();
+        if (this.perspective && PlatformTools.getPerspective() == PlatformTools.getConfig().getCameraType()) {
             Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+            this.perspective = false;
         }
+        if (this.song != null) this.song.stop();
     }
 
     /**
@@ -57,5 +65,24 @@ public class EmotePlayer extends KeyframeAnimationPlayer {
      */
     public static boolean isRunningEmote(@Nullable EmotePlayer emote) {
         return emote != null && emote.isActive();
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public @Nullable Animation getData() {
+        AnimationProcessor.QueuedAnimation animation = getCurrentAnimation();
+        if (animation == null) return null;
+        return animation.animation();
+    }
+
+    @Override
+    protected <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, CustomKeyFrameEvents.@Nullable CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
+        if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning()) {
+            Component nowPlaying = this.song.getNowPlaying();
+            if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
+            this.song.start();
+        }
+
+        if (this.player instanceof UnsafeRemotePlayer) return;
+        super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
     }
 }

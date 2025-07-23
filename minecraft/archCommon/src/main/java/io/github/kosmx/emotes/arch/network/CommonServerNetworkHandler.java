@@ -1,47 +1,30 @@
 package io.github.kosmx.emotes.arch.network;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
-import io.github.kosmx.emotes.arch.mixin.ServerChunkCacheAccessor;
-import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
-import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
-import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.server.network.ServerPlayerConnection;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 
-public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Player> {
-    public static CommonServerNetworkHandler instance = new CommonServerNetworkHandler();
-
-    private CommonServerNetworkHandler() {} // make ctor private for singleton class
-
-    public void init() {
-    }
-
+public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<ModdedServerPlayNetwork> {
     public void receiveMessage(byte[] bytes, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             try {
-                receiveMessage(bytes, player, getHandler(serverPlayer.connection));
+                receiveMessage(bytes, getHandler(serverPlayer.connection));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public static IServerNetworkInstance getHandler(ServerGamePacketListenerImpl handler) {
-        return ((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance();
+    public static ModdedServerPlayNetwork getHandler(ServerGamePacketListenerImpl handler) {
+        return ((EmotesMixinNetwork) handler).emotecraft$getServerNetworkInstance();
     }
 
     public void receiveStreamMessage(byte[] bytes, Player player) {
@@ -50,99 +33,53 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
         }
     }
 
-    public void receiveStreamMessage(ServerPlayer player, IServerNetworkInstance handler, ByteBuffer buf) {
-        try
-        {
-            if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreamC2S()) {
-                var packet = ((AbstractServerNetwork)handler).receiveStreamChunk(buf);
+    public void receiveStreamMessage(ServerPlayer player, ModdedServerPlayNetwork handler, ByteBuffer buf) {
+        try {
+            if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreaming()) {
+                var packet = handler.receiveStreamChunk(buf);
                 if (packet != null) {
-                    receiveMessage(packet.array(), player, handler);
+                    receiveMessage(packet.array(), handler);
                 }
             } else {
-                handler.disconnect("Emote stream is disabled on this server");
+                player.connection.disconnect(Component.literal("Emote stream is disabled on this server"));
             }
         } catch (IOException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to receive packet!", e);
+            CommonData.LOGGER.warn("Failed to receive packet!", e);
         }
     }
 
     @Override
-    protected UUID getUUIDFromPlayer(Player player) {
-        return player.getUUID();
+    protected UUID getUUIDFromPlayer(ModdedServerPlayNetwork player) {
+        return player.serverGamePacketListener.getPlayer().getUUID();
     }
 
     @Override
-    protected Player getPlayerFromUUID(UUID player) {
-        return NetworkPlatformTools.getServer().getPlayerList().getPlayer(player);
+    protected ModdedServerPlayNetwork getPlayerFromUUID(UUID player) {
+        return getPlayerNetworkInstance(NetworkPlatformTools.getServer().getPlayerList().getPlayer(player));
+    }
+
+    public ModdedServerPlayNetwork getPlayerNetworkInstance(ServerPlayer player) {
+        return ((EmotesMixinNetwork) player.connection).emotecraft$getServerNetworkInstance();
     }
 
     @Override
-    protected IServerNetworkInstance getPlayerNetworkInstance(Player sourcePlayer) {
-        if (!(sourcePlayer instanceof ServerPlayer player)) {
-            return null;
-        }
+    protected void sendForEveryoneElse(NetData data, ModdedServerPlayNetwork player) {
+        for (ServerPlayer target : PlayerTrackUtils.getTrackedBy(player.serverGamePacketListener.getPlayer())) {
+            ModdedServerPlayNetwork targetInstance = getPlayerNetworkInstance(target);
+            if (targetInstance == player) continue;
 
-        return ((EmotesMixinNetwork)player.connection).emotecraft$getServerNetworkInstance();
-    }
-
-    @Override
-    protected void sendForEveryoneElse(@Nullable NetData data, Player player) {
-        getTrackedPlayers(player).forEach(target -> {
-            if (target != player) {
-                try {
-                    if (data != null && NetworkPlatformTools.canSendPlay(target, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
-                        IServerNetworkInstance playerNetwork = getPlayerNetworkInstance(target);
-                        playerNetwork.sendMessage(new EmotePacket.Builder(data), null);
-                    }
-                } catch (IOException e) {
-                    LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);
-                }
+            if (NetworkPlatformTools.canSendPlay(target, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
+                sendForPlayer(data, player, targetInstance);
             }
-        });
-    }
-
-    @Override
-    protected void sendForPlayerInRange(NetData data, Player player, UUID target) {
-        if (!(player instanceof ServerPlayer sourcePlayer)) {
-            return;
-        }
-
-        try {
-            var targetPlayer = sourcePlayer.server.getPlayerList().getPlayer(target);
-            if (targetPlayer != null && targetPlayer.getChunkTrackingView().contains(sourcePlayer.chunkPosition())) {
-                getPlayerNetworkInstance(targetPlayer).sendMessage(new EmotePacket.Builder(data), null);
-            }
-
-        } catch (IOException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);
         }
     }
 
-    @Override
-    protected void sendForPlayer(NetData data, Player ignore, UUID target) {
-        try {
-            Player player = getPlayerFromUUID(target);
-            IServerNetworkInstance playerNetwork = getPlayerNetworkInstance(player);
-
-            EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data);
-            playerNetwork.sendMessage(packetBuilder, null);
-        } catch (IOException e) {
-            LoggerService.INSTANCE.log(Level.WARNING, "Failed to send packet!", e);
-        }
-    }
-
-    private Collection<ServerPlayer> getTrackedPlayers(Entity entity) {
-        var level = entity.level().getChunkSource();
-        if (level instanceof ServerChunkCache chunkCache) {
-            ServerChunkCacheAccessor storage = (ServerChunkCacheAccessor) chunkCache.chunkMap;
-
-            var tracker = storage.getTrackedEntity().get(entity.getId());
-            if (tracker != null) {
-                return tracker.getPlayersTracking()
-                        .stream().map(ServerPlayerConnection::getPlayer).collect(Collectors.toUnmodifiableSet());
-            }
-            return Collections.emptyList();
-        }
-        throw new IllegalArgumentException("server function called on logical client");
+    /**
+     * This is **NOT** for API usage,
+     * internal purpose only
+     * @return this
+     */
+    public static CommonServerNetworkHandler getInstance() {
+        return (CommonServerNetworkHandler) AbstractServerEmotePlay.getInstance();
     }
 }

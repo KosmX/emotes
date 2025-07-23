@@ -2,14 +2,13 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     java
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.12"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
     id("xyz.jpenilla.run-paper") version "2.3.1"
     `maven-publish`
     id("com.gradleup.shadow")
-    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
-    id("io.papermc.hangar-publish-plugin") version "0.1.2"
+    id("me.modmuss50.mod-publish-plugin")
+    id("io.papermc.hangar-publish-plugin") version "0.1.3"
 }
-
 
 base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
 version = mod_version
@@ -22,10 +21,24 @@ dependencies {
 
     compileApi(project(":emotesServer")) {
         exclude(group = "org.jetbrains", module = "annotations")
+
         exclude(module = "gson")
+        exclude(module = "slf4j-api")
+        exclude(module = "fastutil")
+        exclude(module = "netty-buffer")
+        exclude(module = "jspecify")
+        exclude(module = "guava")
+        exclude(module = "error_prone_annotations")
+        exclude(module = "netty-buffer")
     }
     compileApi(project(":emotesAssets"))
     compileApi(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
+
+    implementation("com.velocitypowered:velocity-native") {
+        version {
+            strictly("3.4.0-SNAPSHOT")
+        }
+    }
 }
 
 tasks.runServer {
@@ -35,9 +48,10 @@ tasks.runServer {
 tasks.processResources {
     inputs.property("version", version)
     inputs.property("description", mod_description)
+    inputs.property("mcversion", minecraft_version)
 
     filesMatching("paper-plugin.yml") {
-        expand("version" to version, "description" to mod_description)
+        expand("version" to version, "description" to mod_description, "mcversion" to minecraft_version)
     }
 }
 
@@ -45,6 +59,9 @@ tasks.shadowJar {
     configurations = listOf(compileApi)
     archiveClassifier.set("")
     mergeServiceFiles()
+
+    relocate("team.unnamed.mocha", "com.zigythebird.playeranim.lib.mochafloats")
+    relocate("javassist", "com.zigythebird.playeranim.lib.javassist")
 }
 
 tasks.jar {
@@ -96,7 +113,7 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.add(minecraft_version)
         displayName = mod_version
-        version = "${mod_version}+${minecraft_version}-paper"
+        version = "${mod_version}+${removePreRc(minecraft_version)}-paper"
     }
 }
 

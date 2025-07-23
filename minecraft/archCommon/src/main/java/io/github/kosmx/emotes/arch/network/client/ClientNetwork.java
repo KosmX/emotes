@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.network.client;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
 import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.common.CommonData;
@@ -25,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 /**
  * Don't forget to fire events:
@@ -63,18 +61,14 @@ public final class ClientNetwork extends AbstractNetworkInstance {
 
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        if (target != null) {
-            builder.configureTarget(target);
-        }
+        if (target != null) builder.configureTarget(target);
 
         var writer = builder.build();
-        var bytes = writer.write();
-        sendMessage(bytes, null);
+        sendMessage(writer.write(), null);
 
-        if(writer.data.emoteData != null && writer.data.emoteData.extraData.containsKey("song") && !writer.data.writeSong){
+        if (writer.data.emoteData != null && writer.data.emoteData.data().has("song") && !writer.data.writeSong) {
             PlatformTools.sendChatMessage(Component.translatable("emotecraft.song_too_big_to_send"));
         }
-
     }
 
     @Override
@@ -85,7 +79,9 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Override
     public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
         sendPlayPacket(playPacket(byteBuffer));
-        LoggerService.INSTANCE.log(Level.FINE, "Sent packet size is " + byteBuffer.remaining() + " byte(s).");
+        if (byteBuffer.remaining() >= CommonData.MAX_PACKET_SIZE) {
+            CommonData.LOGGER.error("Sent packet size is {} byte(s)!", byteBuffer.remaining());
+        }
     }
 
     @ExpectPlatform
@@ -93,7 +89,6 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     public static boolean isServerChannelOpen(ResourceLocation id) {
         throw new AssertionError();
     }
-
 
     public static void sendPlayPacket(Packet<?> packet) {
         Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(packet);
@@ -117,24 +112,20 @@ public final class ClientNetwork extends AbstractNetworkInstance {
 
     public void receiveConfigMessage(@NotNull ByteBuffer buf, @NotNull Consumer<Packet<?>> consumer) throws IOException {
         var packet = new EmotePacket.Builder().build().read(buf);
-        if (packet != null) {
-            if (packet.purpose == PacketTask.CONFIG) {
-                setVersions(packet.versions);
-                sendC2SConfig(p -> {
-                    try {
-                        consumer.accept(playPacket(p.build().write()));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                this.isConfiguredNormally = true;
-            } else if (packet.purpose == PacketTask.FILE) {
-                EmoteHolder.addEmoteToList(packet.emoteData).fromInstance = this;
-            } else {
-                LoggerService.INSTANCE.log(Level.WARNING, "Invalid emotes packet type in configuration phase: " + packet.purpose);
-            }
+        if (packet.purpose == PacketTask.CONFIG) {
+            setVersions(packet.versions);
+            sendC2SConfig(p -> {
+                try {
+                    consumer.accept(playPacket(p.build().write()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            this.isConfiguredNormally = true;
+        } else if (packet.purpose == PacketTask.FILE) {
+            EmoteHolder.addEmoteToList(packet.emoteData, this);
         } else {
-            throw new IOException("Invalid emotes packet received in config phase");
+            CommonData.LOGGER.warn("Invalid emotes packet type in configuration phase: " + packet.purpose);
         }
     }
 
@@ -145,7 +136,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Deprecated
     public void configureOnPlay(@NotNull Consumer<Packet<?>> consumer) {
         if (!this.isConfiguredNormally && isActive()) {
-            LoggerService.INSTANCE.log(Level.WARNING, "The server failed to configure the client, attempting to configure...");
+            CommonData.LOGGER.warn("The server failed to configure the client, attempting to configure...");
 
             sendC2SConfig(p -> {
                 try {
@@ -165,7 +156,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
 
     @Override
     public int maxDataSize() {
-        return CommonData.MAX_PACKET_SIZE - 16; // channel ID is 12, one extra int makes it 16 (string)
+        return super.maxDataSize() - 16; // channel ID is 12, one extra int makes it 16 (string)
     }
 
     @ExpectPlatform
@@ -180,5 +171,4 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     public static @NotNull Packet<?> streamPacket(@NotNull ByteBuffer buf) {
         return createServerboundPacket(NetworkPlatformTools.STREAM_CHANNEL_ID, buf);
     }
-    // no geyser packet from client. That is geyser plugin only feature
 }

@@ -1,16 +1,14 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import io.github.kosmx.emotes.common.network.CommonNetwork;
+import io.github.kosmx.emotes.common.network.PacketConfig;
+
 import java.nio.ByteBuffer;
-import java.util.UUID;
 
 public class StopPacket extends AbstractNetworkPacket {
-
-    public StopPacket(){
-    }
-
     @Override
     public byte getID() {
-        return 10;
+        return PacketConfig.STOP_PACKET;
     }
 
     @Override
@@ -19,20 +17,14 @@ public class StopPacket extends AbstractNetworkPacket {
     }
 
     @Override
-    public boolean read(ByteBuffer buf, NetData config, int version){
-        if(version < 1){
-            return false;
-        }
-        long msb = buf.getLong();
-        long lsb = buf.getLong();
-        config.stopEmoteID = new UUID(msb, lsb);
-        return true;
+    public void read(ByteBuffer buf, NetData config, int version) {
+        config.stopEmoteID = CommonNetwork.readUUID(buf);
     }
 
     @Override
-    public void write(ByteBuffer buf, NetData config){
-        buf.putLong(config.stopEmoteID.getMostSignificantBits());
-        buf.putLong(config.stopEmoteID.getLeastSignificantBits());
+    public void write(ByteBuffer buf, NetData config) {
+        assert config.stopEmoteID != null;
+        CommonNetwork.writeUUID(buf, config.stopEmoteID);
     }
 
     @Override
@@ -42,6 +34,6 @@ public class StopPacket extends AbstractNetworkPacket {
 
     @Override
     public int calculateSize(NetData config) {
-        return Long.BYTES*2; //16
+        return Long.BYTES * 2; // 16
     }
 }

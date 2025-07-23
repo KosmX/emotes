@@ -1,13 +1,16 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
-import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 public class FastMenuScreen extends Screen {
@@ -38,7 +41,12 @@ public class FastMenuScreen extends Screen {
 
         this.fastMenu = this.layout.addToContents(new FastMenuWidget(0, 0, 0));
 
-        this.layout.addToFooter(Button.builder(FullMenuScreen.TITLE, button -> this.minecraft.setScreen(new FullMenuScreen(this)))
+        LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
+        linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
+                .width(Button.SMALL_WIDTH)
+                .build()
+        );
+        linearLayout.addChild(Button.builder(FullMenuScreen.TITLE, button -> this.minecraft.setScreen(new FullMenuScreen(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
@@ -57,8 +65,32 @@ public class FastMenuScreen extends Screen {
     }
 
     @Override
-    protected void renderBlurredBackground() {
+    protected void renderBlurredBackground(GuiGraphics guiGraphics) {
         // no-op
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (EmotecraftClientMod.OPEN_MENU_KEY.matches(keyCode, scanCode)) {
+            onClose();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (EmotecraftClientMod.OPEN_MENU_KEY.matchesMouse(button)) {
+            onClose();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -89,8 +121,8 @@ public class FastMenuScreen extends Screen {
         @Override
         protected boolean onClick(IChooseWheel.IChooseElement element, int button){
             if(element.getEmote() != null){
-                boolean bl = element.getEmote().playEmote(PlatformTools.getMainPlayer());
-                Minecraft.getInstance().setScreen(null);
+                boolean bl = element.getEmote().playEmote();
+                if (bl) Minecraft.getInstance().setScreen(null);
                 return bl;
             }
             return false;

@@ -1,15 +1,16 @@
 package io.github.kosmx.emotes.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * static channel to access constant from everywhere in the mod.
  * Including Fabric and Bukkit code.
  */
 public class CommonData {
-    public static boolean isLoaded = false; //to detect if the mod loads twice...
-
     public static final String MOD_ID = "emotecraft";
     public static final String MOD_NAME = "Emotecraft";
-
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
     /**
      * ver 1: older versions
