@@ -11,9 +11,15 @@ public class FabricEmotesMain implements InstanceService {
         return FabricLoader.getInstance().getGameDir();
     }
 
+
+    @Override
+    public Path getConfigFolder() {
+        return FabricLoader.getInstance().getConfigDir();
+    }
+
     @Override
     public Path getConfigPath() {
-        return FabricLoader.getInstance().getConfigDir().resolve("emotecraft.json");
+        return getConfigFolder().resolve("emotecraft.json");
     }
 
     @Override

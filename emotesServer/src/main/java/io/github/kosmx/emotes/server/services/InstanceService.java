@@ -18,9 +18,8 @@ public interface InstanceService extends IEmotecraftService {
         return getGameDirectory().resolve(Serializer.getConfig().emotesDir.get());
     }
 
-    default Path getConfigPath() {
+    default Path getConfigFolder() {
         String directoryName = "config";
-
         try {
             directoryName = System.getProperty("emotecraftConfigDir", "config");
             if (directoryName.equals("pluginDefault")) {
@@ -28,13 +27,17 @@ public interface InstanceService extends IEmotecraftService {
             }
         } catch(Throwable ignore) {
         }
-
-        if (!Files.exists(getGameDirectory().resolve(directoryName))) {
+        Path configDir = getGameDirectory().resolve(directoryName);
+        if (!Files.exists(configDir)) {
             try {
-                Files.createDirectories(getGameDirectory().resolve(directoryName));
+                Files.createDirectories(configDir);
             } catch(IOException ignored) {
             }
         }
-        return getGameDirectory().resolve(directoryName).resolve("emotecraft.json");
+        return configDir;
+    }
+
+    default Path getConfigPath() {
+        return getConfigFolder().resolve("emotecraft.json");
     }
 }

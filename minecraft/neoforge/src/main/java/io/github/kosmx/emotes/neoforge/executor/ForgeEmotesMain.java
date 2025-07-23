@@ -12,9 +12,15 @@ public class ForgeEmotesMain implements InstanceService {
         return FMLLoader.getGamePath();
     }
 
+
+    @Override
+    public Path getConfigFolder() {
+        return FMLPaths.CONFIGDIR.get();
+    }
+
     @Override
     public Path getConfigPath() {
-        return FMLPaths.CONFIGDIR.get().resolve("emotecraft.json");
+        return getConfigFolder().resolve("emotecraft.json");
     }
 
     @Override
