@@ -33,7 +33,7 @@ public class SerializableConfig {
 
     // Emote whitelist configuration
     public final ConfigEntry<Boolean> enableEmoteWhitelist = new ConfigEntry<>("enableServerEmoteWhitelist", false, false, expert, true);
-    public final ConfigEntry<String> whitelistedEmotesDir = new ConfigEntry<>("emoteServerWhitelistDir", "config/emotecraft/whitelist", false, expert, true);
+    public final ConfigEntry<String> whitelistedEmotesDir = new ConfigEntry<>("emoteServerWhitelistDirectory", "config/emotecraft/whitelist", false, expert, true);
 
     // public final ConfigEntry<Boolean> autoFixEmoteStop = new ConfigEntry<>("autoFixEmoteStop", true, true, expert, false);
 
