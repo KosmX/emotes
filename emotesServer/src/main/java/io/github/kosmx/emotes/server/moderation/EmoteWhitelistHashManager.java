@@ -53,7 +53,7 @@ public class EmoteWhitelistHashManager {
 
     public static void setupWhitelistConfig(boolean doHash) {
         if (Serializer.getConfig().enableEmoteWhitelist.get()) {
-            Path whitelistDir = InstanceService.INSTANCE.getGameDirectory().resolve(Serializer.getConfig().whitelistedEmotesDir.get());
+            Path whitelistDir = InstanceService.INSTANCE.getConfigFolder().resolve(Serializer.getConfig().whitelistedEmotesDir.get());
             createWhitelistDirIfNeeded(whitelistDir);
             EmoteWhitelistHashManager hashManager = getInstance();
             Path jarHashFile = whitelistDir.resolve("emotecraft_jar_hash.txt");
@@ -62,7 +62,7 @@ public class EmoteWhitelistHashManager {
                 if (System.getProperty("os.name").toLowerCase().contains("win") && jarPath.length() > 2 && jarPath.charAt(0) == '/' && jarPath.charAt(2) == ':') {
                     jarPath = jarPath.substring(1);
                 }
-                Path jarFile = InstanceService.INSTANCE.getGameDirectory().resolve(jarPath);
+                Path jarFile = InstanceService.INSTANCE.getConfigFolder().resolve(jarPath);
                 String jarHash = computeFileCRC32(jarFile);
                 boolean refresh = false;
                 if (Files.exists(jarHashFile)) {
@@ -160,7 +160,7 @@ public class EmoteWhitelistHashManager {
 
     public static EmoteWhitelistHashManager getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new EmoteWhitelistHashManager(InstanceService.INSTANCE.getGameDirectory().resolve(Serializer.getConfig().whitelistedEmotesDir.get()));
+            INSTANCE = new EmoteWhitelistHashManager(InstanceService.INSTANCE.getConfigFolder().resolve(Serializer.getConfig().whitelistedEmotesDir.get()));
         }
         return INSTANCE;
     }
