@@ -18,6 +18,7 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -191,13 +192,12 @@ public class EmoteWhitelistHashManager {
         Set<String> foundFiles = new HashSet<>();
 
         // Load previous hashes from emoteHashes.json if exists
-        @SuppressWarnings("unchecked")
-        final Map<String, EmoteFileInfo>[] previousHashesArr = (Map<String, EmoteFileInfo>[]) new Map[]{new HashMap<>()};
+        final Map<String, EmoteFileInfo> previousHashes = new HashMap<>();
         if (Files.exists(hashesFile)) {
             try (Reader reader = Files.newBufferedReader(hashesFile)) {
                 Type type = new TypeToken<Map<String, EmoteFileInfo>>(){}.getType();
-                previousHashesArr[0] = GSON.fromJson(reader, type);
-                if (previousHashesArr[0] == null) previousHashesArr[0] = new HashMap<>();
+                Map<String, EmoteFileInfo> loaded = GSON.fromJson(reader, type);
+                if (loaded != null) previousHashes.putAll(loaded);
             } catch (Exception e) {
                 CommonData.LOGGER.warn("Failed to read previous emote hashes", e);
             }
@@ -213,7 +213,6 @@ public class EmoteWhitelistHashManager {
                         return FileVisitResult.CONTINUE;
                     }
 
-                    // Process .json and .emotecraft files
                     boolean isJson = fileName.endsWith(".json") && !fileName.equals(HASHES_FILE);
                     boolean isEmotecraft = fileName.endsWith(".emotecraft");
                     if (!isJson && !isEmotecraft) {
@@ -223,7 +222,7 @@ public class EmoteWhitelistHashManager {
                     String relFileName = whitelistDir.relativize(file).toString().replace('\\', '/');
                     foundFiles.add(relFileName);
                     long lastMod = attrs.lastModifiedTime().toMillis();
-                    EmoteFileInfo prevInfo = previousHashesArr[0].get(relFileName);
+                    EmoteFileInfo prevInfo = previousHashes.get(relFileName);
                     boolean needsUpdate = prevInfo == null || lastMod > prevInfo.lastModified;
                     if (needsUpdate) {
                         try (InputStream reader = Files.newInputStream(file)) {
@@ -246,14 +245,13 @@ public class EmoteWhitelistHashManager {
             CommonData.LOGGER.warn("Failed to walk whitelist directory", e);
         }
 
-        for (String f : previousHashesArr[0].keySet()) {
+        for (String f : previousHashes.keySet()) {
             if (!foundFiles.contains(f)) {
                 CommonData.LOGGER.info("Removed emote from whitelist (no longer present in directory): {}", f);
             }
         }
 
         save();
-        
         CommonData.LOGGER.info("{} emotes whitelisted: ", fileInfoMap.size());
         updateAllowedHashes();
     }
