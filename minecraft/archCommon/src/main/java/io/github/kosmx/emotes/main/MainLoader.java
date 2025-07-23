@@ -21,6 +21,7 @@ public class MainLoader {
         } else {
             Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
             UniversalEmoteSerializer.loadEmotes();
+            io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig();
         }
     }
 

@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.common.CommonData;
 
 import java.util.UUID;
+import io.github.kosmx.emotes.server.config.Serializer;
 
 /**
  * Handles server-side emote moderation using the whitelist system.
@@ -36,20 +37,17 @@ public class EmoteModerator {
      * @return EventResult.PASS if allowed, EventResult.FAIL if denied
      */
     private static EventResult verifyEmote(Animation emote, UUID userID) {
-        EmoteWhitelistManager whitelistManager = EmoteWhitelistManager.getInstance();
-        
         // If whitelist is not enabled, allow all emotes
-        if (!whitelistManager.isWhitelistEnabled()) {
+        if (!Serializer.getConfig().enableEmoteWhitelist.get()) {
             return EventResult.PASS;
         }
         
-        // Check if the emote is allowed
-        boolean isAllowed = whitelistManager.isEmoteAllowed(emote, userID);
-        
-        if (isAllowed) {
-            return EventResult.PASS;
-        } else {
-            return EventResult.FAIL;
-        }
+        EmoteWhitelistHashManager hashManager = EmoteWhitelistHashManager.getInstance();
+
+        // Calculate hash for the emote
+        int hash = hashManager.calculateEmoteHash(emote);
+        boolean isAllowed = hashManager.isHashAllowed(hash);
+
+        return isAllowed ? EventResult.PASS : EventResult.FAIL;
     }
 }

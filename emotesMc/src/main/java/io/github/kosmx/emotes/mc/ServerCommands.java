@@ -13,6 +13,7 @@ import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.Commands.CommandSelection;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 
@@ -110,12 +111,13 @@ public final class ServerCommands {
                         .then(literal("toggle").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.toggle", 4))
                                 .executes(context -> {
                                     try {
-                                        Class<?> configClass = Class.forName("io.github.kosmx.emotes.common.SerializableConfig");
-                                        Object config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
-                                        Object whitelistEntry = configClass.getField("enableEmoteWhitelist").get(config);
-                                        boolean currentValue = (Boolean) whitelistEntry.getClass().getMethod("get").invoke(whitelistEntry);
-                                        whitelistEntry.getClass().getMethod("set", Object.class).invoke(whitelistEntry, !currentValue);
+                                        var config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
+                                        boolean currentValue = config.enableEmoteWhitelist.get();
+                                        config.enableEmoteWhitelist.set(!currentValue);
                                         io.github.kosmx.emotes.server.config.Serializer.INSTANCE.saveConfig();
+                                        if (!currentValue) {
+                                            io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig();
+                                        }
                                         context.getSource().sendSuccess(() -> Component.literal("Emote whitelist " + (!currentValue ? "enabled" : "disabled")), true);
                                         return 0;
                                     } catch (Exception e) {
@@ -126,148 +128,38 @@ public final class ServerCommands {
                         )
                         .then(literal("reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
                                 .executes(context -> {
-                                    try {
-                                        Class<?> managerClass = Class.forName("io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager");
-                                        Object manager = managerClass.getMethod("getInstance").invoke(null);
-                                        managerClass.getMethod("loadWhitelist").invoke(manager);
+                                    var config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
+                                    if (config.enableEmoteWhitelist.get()) {
+                                        io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig();
                                         context.getSource().sendSuccess(() -> Component.literal("Whitelist reloaded"), true);
-                                        return 0;
-                                    } catch (Exception e) {
-                                        context.getSource().sendFailure(Component.literal("Failed to reload whitelist: " + e.getMessage()));
-                                        return -1;
                                     }
+                                    else {
+                                        context.getSource().sendSuccess(() -> Component.literal("Whitelist is off in the config, enable in order to allow only whitelisted emotes to be used on the server"), true);
+                                    }
+                                    
+                                    return 0;
                                 })
                         )
-                        .then(literal("add").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
-                                .then(argument("hash", StringArgumentType.word())
-                                    .executes(context -> {
-                                        try {
-                                            Class<?> managerClass = Class.forName("io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager");
-                                            Object manager = managerClass.getMethod("getInstance").invoke(null);
-                                            String hash = StringArgumentType.getString(context, "hash");
-                                            boolean result = (Boolean) managerClass.getMethod("addHashToWhitelist", String.class, String.class)
-                                                .invoke(manager, hash, null);
-                                            if (result) {
-                                                context.getSource().sendSuccess(() -> Component.literal("Added hash " + hash + " to whitelist."), true);
-                                                return 0;
-                                            } else {
-                                                context.getSource().sendFailure(Component.literal("Hash already in whitelist."));
-                                                return -1;
-                                            }
-                                        } catch (Exception e) {
-                                            context.getSource().sendFailure(Component.literal("Failed to add hash: " + e.getMessage()));
-                                            return -1;
-                                        }
-                                    })
-                                    .then(argument("label", StringArgumentType.greedyString())
-                                        .executes(context -> {
-                                            try {
-                                                Class<?> managerClass = Class.forName("io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager");
-                                                Object manager = managerClass.getMethod("getInstance").invoke(null);
-                                                String hash = StringArgumentType.getString(context, "hash");
-                                                String label = StringArgumentType.getString(context, "label");
-                                                java.nio.file.Path whitelistPath = (java.nio.file.Path) managerClass.getDeclaredMethod("getWhitelistPath").invoke(manager);
-                                                java.util.List<String> lines = java.nio.file.Files.readAllLines(whitelistPath);
-                                                for (int i = 0; i < lines.size(); i++) {
-                                                    String line = lines.get(i).trim();
-                                                    if (line.isEmpty() || line.startsWith("#")) continue;
-                                                    int hashEnd = line.indexOf(' ');
-                                                    String fileHash = (hashEnd == -1) ? line : line.substring(0, hashEnd);
-                                                    if (fileHash.equals(hash)) {
-                                                        String currentLabel = null;
-                                                        int labelIdx = line.indexOf("#");
-                                                        if (labelIdx != -1) {
-                                                            currentLabel = line.substring(labelIdx + 1).trim();
-                                                        }
-                                                        if (currentLabel != null && currentLabel.equals(label)) {
-                                                            context.getSource().sendFailure(Component.literal("Hash already in whitelist."));
-                                                            return -1;
-                                                        } else {
-                                                            // Overwrite label (preserve any leading whitespace before #)
-                                                            String newLine = hash + " # " + label;
-                                                            lines.set(i, newLine);
-                                                            java.nio.file.Files.write(whitelistPath, lines);
-                                                            context.getSource().sendSuccess(() -> Component.literal("Updated label for hash " + hash + " to: " + label), true);
-                                                            return 0;
-                                                        }
-                                                    }
-                                                }
-                                                // If not found, add as new
-                                                boolean result = (Boolean) managerClass.getMethod("addHashToWhitelist", String.class, String.class)
-                                                    .invoke(manager, hash, label);
-                                                if (result) {
-                                                    context.getSource().sendSuccess(() -> Component.literal("Added hash " + hash + " to whitelist with label: " + label), true);
-                                                    return 0;
-                                                } else {
-                                                    context.getSource().sendFailure(Component.literal("Hash already in whitelist."));
-                                                    return -1;
-                                                }
-                                            } catch (Exception e) {
-                                                context.getSource().sendFailure(Component.literal("Failed to add hash: " + e.getMessage()));
-                                                return -1;
-                                            }
-                                        })
-                                    )
-                                )
-                        )
-                        .then(literal("remove").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
-                                .then(argument("hash", StringArgumentType.word())
-                                    .executes(context -> {
-                                        try {
-                                            Class<?> managerClass = Class.forName("io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager");
-                                            Object manager = managerClass.getMethod("getInstance").invoke(null);
-                                            String hash = StringArgumentType.getString(context, "hash");
-                                            boolean result = (Boolean) managerClass.getMethod("removeHashFromWhitelist", String.class)
-                                                .invoke(manager, hash);
-                                            if (result) {
-                                                context.getSource().sendSuccess(() -> Component.literal("Removed hash " + hash + " from whitelist."), true);
-                                                return 0;
-                                            } else {
-                                                context.getSource().sendFailure(Component.literal("Hash not found in whitelist."));
-                                                return -1;
-                                            }
-                                        } catch (Exception e) {
-                                            context.getSource().sendFailure(Component.literal("Failed to remove hash: " + e.getMessage()));
-                                            return -1;
-                                        }
-                                    })
-                                    .then(argument("label", StringArgumentType.greedyString())
-                                        .executes(context -> {
-                                            // Accepts but ignores the label argument
-                                            try {
-                                                Class<?> managerClass = Class.forName("io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager");
-                                                Object manager = managerClass.getMethod("getInstance").invoke(null);
-                                                String hash = StringArgumentType.getString(context, "hash");
-                                                boolean result = (Boolean) managerClass.getMethod("removeHashFromWhitelist", String.class)
-                                                    .invoke(manager, hash);
-                                                if (result) {
-                                                    context.getSource().sendSuccess(() -> Component.literal("Removed hash " + hash + " from whitelist."), true);
-                                                    return 0;
-                                                } else {
-                                                    context.getSource().sendFailure(Component.literal("Hash not found in whitelist."));
-                                                    return -1;
-                                                }
-                                            } catch (Exception e) {
-                                                context.getSource().sendFailure(Component.literal("Failed to remove hash: " + e.getMessage()));
-                                                return -1;
-                                            }
-                                        })
-                                    )
-                                )
+                        .then(literal("force-reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
+                                .executes(context -> {
+                                    var config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
+                                    if (config.enableEmoteWhitelist.get()) {
+                                        io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig(true);
+                                        io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.forceReloadWhitelist();
+                                        context.getSource().sendSuccess(() -> Component.literal("Whitelist force-reloaded"), true);
+                                    }
+                                    else {
+                                        context.getSource().sendSuccess(() -> Component.literal("Whitelist is off in the config, enable in order to allow only whitelisted emotes to be used on the server"), true);
+                                    }
+                                    
+                                    return 0;
+                                })
                         )
                         .then(literal("status")
                                 .executes(context -> {
-                                    try {
-                                        Class<?> configClass = Class.forName("io.github.kosmx.emotes.common.SerializableConfig");
-                                        Object config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
-                                        Object whitelistEntry = configClass.getField("enableEmoteWhitelist").get(config);
-                                        boolean enabled = (Boolean) whitelistEntry.getClass().getMethod("get").invoke(whitelistEntry);
-                                        context.getSource().sendSuccess(() -> Component.literal("Emote whitelist is " + (enabled ? "enabled" : "disabled")), false);
-                                        return 0;
-                                    } catch (Exception e) {
-                                        context.getSource().sendFailure(Component.literal("Failed to check whitelist status: " + e.getMessage()));
-                                        return -1;
-                                    }
+                                    boolean enabled = io.github.kosmx.emotes.server.config.Serializer.getConfig().enableEmoteWhitelist.get();
+                                    context.getSource().sendSuccess(() -> Component.literal("Emote whitelist is " + (enabled ? "enabled" : "disabled")), false);
+                                    return 0;
                                 })
                         )
                 )
