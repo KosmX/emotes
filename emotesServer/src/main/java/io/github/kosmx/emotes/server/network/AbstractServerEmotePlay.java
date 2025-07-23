@@ -10,7 +10,6 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
 import it.unimi.dsi.fastutil.Pair;
@@ -26,7 +25,7 @@ import java.util.UUID;
 public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> extends ServerEmoteAPI {
     protected boolean doValidate() {
         // Enable validation if whitelist moderation is enabled
-        if (EmoteWhitelistManager.getInstance().isWhitelistEnabled()) {
+        if (Serializer.getConfig().enableEmoteWhitelist.get()) {
             return true;
         }
         return Serializer.getConfig().validateEmote.get();
@@ -71,11 +70,8 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      */
     @SuppressWarnings("ConstantConditions")
     protected void handleStreamEmote(NetData data, P instance) throws IOException {
-        // Debug: Print all emote properties
-        logEmoteProperties(data.emoteData);
-        
         // Run verification if: normal validation is enabled AND data is invalid, OR whitelist moderation is enabled
-        boolean shouldVerify = (!data.valid && doValidate()) || EmoteWhitelistManager.getInstance().isWhitelistEnabled();
+        boolean shouldVerify = (!data.valid && doValidate()) || Serializer.getConfig().enableEmoteWhitelist.get();
         
         if (shouldVerify) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
@@ -95,17 +91,6 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
             return;
         }
         streamEmote(data, instance, false, true);
-    }
-
-    /**
-     * Debug method to log all available emote properties
-     */
-    private void logEmoteProperties(Animation emote) {
-        CommonData.LOGGER.info("=== EMOTE PROPERTIES DEBUG ===");
-        CommonData.LOGGER.info("UUID: {}", emote.uuid());
-        CommonData.LOGGER.info("Length: {} ticks", emote.length());
-        CommonData.LOGGER.info("ContentHash: {}", EmoteWhitelistManager.getInstance().getContentHashForEmote(emote));
-        CommonData.LOGGER.info("=== END EMOTE PROPERTIES ===");
     }
     
     /**
