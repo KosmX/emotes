@@ -9,6 +9,9 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
+import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -111,12 +114,12 @@ public final class ServerCommands {
                         .then(literal("toggle").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.toggle", 4))
                                 .executes(context -> {
                                     try {
-                                        var config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
+                                        SerializableConfig config = Serializer.getConfig();
                                         boolean currentValue = config.enableEmoteWhitelist.get();
                                         config.enableEmoteWhitelist.set(!currentValue);
-                                        io.github.kosmx.emotes.server.config.Serializer.INSTANCE.saveConfig();
+                                        Serializer.INSTANCE.saveConfig();
                                         if (!currentValue) {
-                                            io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig();
+                                            EmoteWhitelistHashManager.setupWhitelistConfig();
                                         }
                                         context.getSource().sendSuccess(() -> Component.literal("Emote whitelist " + (!currentValue ? "enabled" : "disabled")), true);
                                         return 0;
@@ -128,9 +131,9 @@ public final class ServerCommands {
                         )
                         .then(literal("reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
                                 .executes(context -> {
-                                    var config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
+                                    SerializableConfig config = Serializer.getConfig();
                                     if (config.enableEmoteWhitelist.get()) {
-                                        io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig();
+                                        EmoteWhitelistHashManager.setupWhitelistConfig();
                                         context.getSource().sendSuccess(() -> Component.literal("Whitelist reloaded"), true);
                                     }
                                     else {
@@ -142,10 +145,10 @@ public final class ServerCommands {
                         )
                         .then(literal("force-reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.reload", 4))
                                 .executes(context -> {
-                                    var config = io.github.kosmx.emotes.server.config.Serializer.getConfig();
+                                    SerializableConfig config = Serializer.getConfig();
                                     if (config.enableEmoteWhitelist.get()) {
-                                        io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.setupWhitelistConfig(true);
-                                        io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager.forceReloadWhitelist();
+                                        EmoteWhitelistHashManager.setupWhitelistConfig(true);
+                                        EmoteWhitelistHashManager.forceReloadWhitelist();
                                         context.getSource().sendSuccess(() -> Component.literal("Whitelist force-reloaded"), true);
                                     }
                                     else {
@@ -157,7 +160,7 @@ public final class ServerCommands {
                         )
                         .then(literal("status")
                                 .executes(context -> {
-                                    boolean enabled = io.github.kosmx.emotes.server.config.Serializer.getConfig().enableEmoteWhitelist.get();
+                                    boolean enabled = Serializer.getConfig().enableEmoteWhitelist.get();
                                     context.getSource().sendSuccess(() -> Component.literal("Emote whitelist is " + (enabled ? "enabled" : "disabled")), false);
                                     return 0;
                                 })
