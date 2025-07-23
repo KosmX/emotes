@@ -24,11 +24,7 @@ import java.util.UUID;
  */
 public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> extends ServerEmoteAPI {
     protected boolean doValidate() {
-        // Enable validation if whitelist moderation is enabled
-        if (Serializer.getConfig().enableEmoteWhitelist.get()) {
-            return true;
-        }
-        return Serializer.getConfig().validateEmote.get();
+        return (Serializer.getConfig().enableEmoteWhitelist.get() || Serializer.getConfig().validateEmote.get());
     }
 
     protected abstract UUID getUUIDFromPlayer(P player);
@@ -69,20 +65,15 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      * @throws IOException probably not
      */
     @SuppressWarnings("ConstantConditions")
-    protected void handleStreamEmote(NetData data, P instance) throws IOException {
-        // Run verification if: normal validation is enabled AND data is invalid, OR whitelist moderation is enabled
-        boolean shouldVerify = (!data.valid && doValidate()) || Serializer.getConfig().enableEmoteWhitelist.get();
-        
-        if (shouldVerify) {
+    protected void handleStreamEmote(NetData data, P instance) throws IOException {        
+        if ((!data.valid && doValidate()) || Serializer.getConfig().enableEmoteWhitelist.get()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
-            if (result == EventResult.FAIL) {
-                // Emote verification failed - send stop message to player
+            if (result != EventResult.FAIL) {
                 EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.uuid()).configureTarget(getUUIDFromPlayer(instance)).setSizeLimit(0x100000, true);
-                if(instance != null) instance.sendMessage(stopMSG, null);
+                if(instance != null)instance.sendMessage(stopMSG, null);
                 return;
             }
         }
-        
         if (data.player != null && instance.trackPlayState()) {
             CommonData.LOGGER.warn("Player {} does not respect server-side emote tracking", instance);
         }
@@ -92,7 +83,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         }
         streamEmote(data, instance, false, true);
     }
-    
+
     /**
      * Stream emote
      * @param data   data

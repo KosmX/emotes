@@ -39,7 +39,7 @@ public class EmoteModerator {
     private static EventResult verifyEmote(Animation emote, UUID userID) {
         // If whitelist is not enabled, allow all emotes
         if (!Serializer.getConfig().enableEmoteWhitelist.get()) {
-            return EventResult.PASS;
+            return EventResult.FAIL;
         }
         
         EmoteWhitelistHashManager hashManager = EmoteWhitelistHashManager.getInstance();
@@ -48,6 +48,6 @@ public class EmoteModerator {
         int hash = hashManager.calculateEmoteHash(emote);
         boolean isAllowed = hashManager.isHashAllowed(hash);
 
-        return isAllowed ? EventResult.PASS : EventResult.FAIL;
+        return isAllowed ? EventResult.FAIL : EventResult.PASS;
     }
 }

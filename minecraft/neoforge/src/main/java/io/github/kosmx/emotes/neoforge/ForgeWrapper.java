@@ -17,15 +17,6 @@ public class ForgeWrapper {
         MainLoader.main(dist.isClient());
 
         NeoForge.EVENT_BUS.register(this);
-        
-        // Initialize emote moderation
-        try {
-            Class.forName("io.github.kosmx.emotes.server.moderation.EmoteModerator")
-                    .getMethod("initialize")
-                    .invoke(null);
-        } catch (Exception e) {
-            // Moderation module not available - this is fine for client-only builds
-        }
     }
 
     @SubscribeEvent
