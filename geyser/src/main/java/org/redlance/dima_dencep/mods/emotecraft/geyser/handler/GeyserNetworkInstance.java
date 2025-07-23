@@ -1,10 +1,10 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.handler;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.impl.event.EventResult;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>();
@@ -63,9 +62,6 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     public void receiveMessage(ByteBuffer byteBuffer, UUID player) {
         try {
             NetData data = new EmotePacket.Builder().build().read(byteBuffer);
-            if (data == null) {
-                throw new IOException("no valid data");
-            }
             if (!trustReceivedPlayer()) {
                 data.player = null;
             }
@@ -73,9 +69,9 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 throw new IOException("Didn't received any player information");
             }
 
-            LoggerService.INSTANCE.log(Level.FINE, "[emotes client] Received message: " + data);
+            CommonData.LOGGER.debug("[emotes client] Received message: {}", data);
             if (data.purpose == null) {
-                LoggerService.INSTANCE.log(Level.INFO, "Packet execution is not possible without a purpose");
+                CommonData.LOGGER.warn("Packet execution is not possible without a purpose");
                 return;
             }
 
@@ -101,7 +97,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                     this.session.showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
 
                     if (isMainPlayer(playerEntity)) {
-                        this.currentEmote = data.emoteData.getUuid();
+                        this.currentEmote = data.emoteData.get();
                     }
                 } else {
                     // this.queue.put(data.player, new QueueEntry(data.emoteData, data.tick, ClientMethods.getCurrentTick()));
@@ -132,7 +128,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 break;
 
             case UNKNOWN:
-                LoggerService.INSTANCE.log(Level.WARNING, "Packet execution is not possible unknown purpose");
+                CommonData.LOGGER.warn("Packet execution is not possible unknown purpose");
                 break;
         }
     }
@@ -148,7 +144,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
             try {
                 sendMessage(new EmotePacket.Builder().configureToSendStop(this.currentEmote), null);
             } catch (IOException e) {
-                LoggerService.INSTANCE.log(Level.WARNING, "Failed to stop animation!", e);
+                CommonData.LOGGER.warn("Failed to stop animation!", e);
             }
         }
 
@@ -159,14 +155,14 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.session.sendChat(MinecraftLocale.getLocaleString(key, this.session.locale()));
     }
 
-    public void playEmote(KeyframeAnimation animation, boolean local) {
+    public void playEmote(Animation animation, boolean local) {
         ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, 0, this.session.javaUuid());
         try {
             sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
             if (local) {
-                this.session.showEmote(this.session.getPlayerEntity(), animation.getUuid().toString());
+                this.session.showEmote(this.session.getPlayerEntity(), animation.get().toString());
             }
-            this.currentEmote = animation.getUuid();
+            this.currentEmote = animation.get();
         } catch (Throwable th) {
             throw new RuntimeException(th);
         }

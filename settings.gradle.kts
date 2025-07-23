@@ -22,3 +22,6 @@ include("minecraft:neoforge")
 
 // Paper plugin
 include("paper")
+
+// Geyser ext
+include("geyser")

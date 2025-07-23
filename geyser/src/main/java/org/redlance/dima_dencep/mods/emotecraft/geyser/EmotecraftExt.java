@@ -1,7 +1,6 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser;
 
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import io.github.kosmx.emotes.api.services.LoggerService;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -30,12 +29,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 /**
  * Some cool stuff:
  * - <a href="https://letsgoaway.dev/MarketplaceEmoteList/">MarketplaceEmoteList</a>
  */
+@SuppressWarnings("unused")
 public class EmotecraftExt implements Extension {
     private static final Map<GeyserSession, GeyserNetworkInstance> INSTANCES = new ConcurrentHashMap<>();
 
@@ -50,9 +49,9 @@ public class EmotecraftExt implements Extension {
 
     @Subscribe(postOrder = PostOrder.LAST)
     public void onPostInitialize(GeyserPostInitializeEvent event) {
-        LoggerService.INSTANCE.log(Level.INFO, "Loading emotecraft on geyser...");
-        LoggerService.INSTANCE.log(Level.WARNING, "Note that this extension does some horrible hacks on geyser.");
-        LoggerService.INSTANCE.log(Level.WARNING, "Until custom packet event is added, workarounds cannot be avoided.");
+        CommonData.LOGGER.info("Loading emotecraft on geyser...");
+        CommonData.LOGGER.warn("Note that this extension does some horrible hacks on geyser.");
+        CommonData.LOGGER.warn("Until custom packet event is added, workarounds cannot be avoided.");
 
         GayserHacks.addCustomJavaTranslator(ClientboundCustomPayloadPacket.class, (session, packet) -> {
             Key type = packet.getChannel();
@@ -68,7 +67,7 @@ public class EmotecraftExt implements Extension {
         GayserHacks.addCustomBedrockTranslator(PlayerAuthInputPacket.class, (session, packet) -> {
             GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
             if (networkInstance != null && networkInstance.isPlaying() && session.isSneaking()) {
-                LoggerService.INSTANCE.log(Level.FINE, "Stopping animation " + session.name());
+                CommonData.LOGGER.debug("Stopping animation {}", session.name());
                 networkInstance.stopEmote(session.getPlayerEntity());
             }
             return true;
@@ -82,9 +81,9 @@ public class EmotecraftExt implements Extension {
     private void onMinecraftRegisterPayload(GeyserSession session, Key type, byte[] bytes) {
         Set<Key> channels = DinnerboneProtocolUtils.readChannels(Unpooled.wrappedBuffer(bytes));
 
-        LoggerService.INSTANCE.log(Level.FINE, "Server listening channels: " + channels);
+        CommonData.LOGGER.debug("Server listening channels: {}", channels);
         if (channels.contains(EmotecraftExt.EMOTECAFT_EMOTE_TYPE)) {
-            LoggerService.INSTANCE.log(Level.FINE, "Has emotecraft!");
+            CommonData.LOGGER.debug("Has emotecraft!");
 
             ByteBuf byteBuf = Unpooled.buffer();
             DinnerboneProtocolUtils.writeChannels(byteBuf, Collections.singleton(EmotecraftExt.EMOTECAFT_EMOTE_TYPE));
@@ -97,8 +96,8 @@ public class EmotecraftExt implements Extension {
     private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
         if (!networkInstance.isHandShaked()) {
-            LoggerService.INSTANCE.log(Level.FINE, "Configuring emotecraft...");
-            networkInstance.sendC2SConfig(); // If we are in the config state, the server is the first to send a packet and we reply to it
+            CommonData.LOGGER.debug("Configuring emotecraft...");
+            networkInstance.sendC2SConfig(); // If we are in the config state, the server is the first to send a packet, and we reply to it
             networkInstance.setHandShaked(true);
         }
         networkInstance.receiveMessage(bytes);
@@ -119,7 +118,7 @@ public class EmotecraftExt implements Extension {
     public void onEmote(ClientEmoteEvent event) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get((GeyserSession) event.connection());
         if (networkInstance != null && networkInstance.isHandShaked()) {
-            CompletableFuture<KeyframeAnimation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
+            CompletableFuture<Animation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
 
             if (animation.isDone() && !animation.isCompletedExceptionally()) {
                 networkInstance.playEmote(animation.join(), false);

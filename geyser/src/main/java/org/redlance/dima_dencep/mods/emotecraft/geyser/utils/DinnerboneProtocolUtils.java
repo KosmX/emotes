@@ -5,13 +5,12 @@
 
 package org.redlance.dima_dencep.mods.emotecraft.geyser.utils;
 
-import io.github.kosmx.emotes.api.services.LoggerService;
+import io.github.kosmx.emotes.common.CommonData;
 import io.netty.buffer.ByteBuf;
 import net.kyori.adventure.key.Key;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * Protocol utilities for communicating over Dinnerbone's protocol.
@@ -53,7 +52,7 @@ public class DinnerboneProtocolUtils {
         try {
             channels.add(Key.key(channel));
         } catch (Exception e) {
-            LoggerService.INSTANCE.log(Level.SEVERE, "Invalid channel: '" + channel + "'!", e);
+            CommonData.LOGGER.error("Invalid channel: '{}'!", channel, e);
         } finally {
             builder.setLength(0);
         }
