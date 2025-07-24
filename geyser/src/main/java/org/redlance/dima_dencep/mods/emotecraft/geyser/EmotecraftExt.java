@@ -16,17 +16,16 @@ import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.util.MinecraftKey;
+import org.geysermc.mcprotocollib.protocol.data.ProtocolState;
 import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundCustomPayloadPacket;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserHacks;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserSessionUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
 
-import java.util.Collections;
-
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,7 +38,10 @@ public class EmotecraftExt implements Extension {
     private static final Map<GeyserSession, GeyserNetworkInstance> INSTANCES = new ConcurrentHashMap<>();
 
     public static final Key MINECRAFT_REGISTER_TYPE = MinecraftKey.key("register");
+
     public static final Key EMOTECAFT_EMOTE_TYPE = Key.key(CommonData.MOD_ID, CommonData.playEmoteID);
+    public static final Key EMOTECAFT_STREAM_TYPE = Key.key(CommonData.MOD_ID, CommonData.emoteStreamID);
+    private static final Set<Key> EMOTECRAFT_CHANNELS = Set.of(EMOTECAFT_EMOTE_TYPE, EMOTECAFT_STREAM_TYPE);
 
     private static EmotecraftExt instance;
 
@@ -86,8 +88,17 @@ public class EmotecraftExt implements Extension {
             CommonData.LOGGER.debug("Has emotecraft!");
 
             ByteBuf byteBuf = Unpooled.buffer();
-            DinnerboneProtocolUtils.writeChannels(byteBuf, Collections.singleton(EmotecraftExt.EMOTECAFT_EMOTE_TYPE));
+            DinnerboneProtocolUtils.writeChannels(byteBuf, EMOTECRAFT_CHANNELS);
             session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
+
+            if (GayserSessionUtils.getProtocol(session).getOutboundState() == ProtocolState.GAME) {
+                GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
+
+                if (!networkInstance.isHandShaked()) {
+                    CommonData.LOGGER.warn("The server failed to configure the client, attempting to configure...");
+                    networkInstance.sendC2SConfig();
+                }
+            }
         } else {
             // Online-emotes integration?
         }
@@ -96,8 +107,10 @@ public class EmotecraftExt implements Extension {
     private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
         if (!networkInstance.isHandShaked()) {
-            CommonData.LOGGER.debug("Configuring emotecraft...");
-            networkInstance.sendC2SConfig(); // If we are in the config state, the server is the first to send a packet, and we reply to it
+            if (GayserSessionUtils.getProtocol(session).getOutboundState() == ProtocolState.CONFIGURATION) {
+                CommonData.LOGGER.debug("Configuring emotecraft...");
+                networkInstance.sendC2SConfig();
+            }
             networkInstance.setHandShaked(true);
         }
         networkInstance.receiveMessage(bytes);
