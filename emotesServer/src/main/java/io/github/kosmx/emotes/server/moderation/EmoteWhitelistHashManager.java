@@ -177,7 +177,7 @@ public class EmoteWhitelistHashManager {
             }
         }
 
-        CommonData.LOGGER.info("{} emotes whitelisted: ", fileInfoMap.size());
+        CommonData.LOGGER.info("{} emotes whitelisted", fileInfoMap.size());
         
         allowedHashes.clear();
         for (EmoteFileInfo info : fileInfoMap.values()) {
