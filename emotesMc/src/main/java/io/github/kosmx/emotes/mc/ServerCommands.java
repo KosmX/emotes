@@ -39,7 +39,7 @@ public final class ServerCommands {
             "emotes.stop.forced",
             "emotes.play.showhidden",
             "emotes.reload",
-            "emotes.whitelist.toggle",
+            "emotes.whitelist.set",
             "emotes.whitelist.reload"
     );
 
@@ -112,7 +112,7 @@ public final class ServerCommands {
                 ))
                 .then(literal("whitelist").requires(ctx -> isDedicated)
                         .then(literal("set")
-                            .requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.toggle", 4))
+                            .requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.whitelist.set", 4))
                             .then(argument("enabled", BoolArgumentType.bool())
                                 .executes(context -> {
                                     try {
