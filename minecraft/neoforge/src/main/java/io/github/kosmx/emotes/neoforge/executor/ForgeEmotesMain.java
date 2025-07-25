@@ -19,11 +19,6 @@ public class ForgeEmotesMain implements InstanceService {
     }
 
     @Override
-    public Path getConfigPath() {
-        return getConfigFolder().resolve("emotecraft.json");
-    }
-
-    @Override
     public boolean isActive() {
         return true;
     }
