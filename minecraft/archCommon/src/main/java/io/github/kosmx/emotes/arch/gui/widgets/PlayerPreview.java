@@ -13,6 +13,7 @@ import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.RemotePlayer;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -55,7 +56,6 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
             ));
         }
 
-        guiGraphics.nextStratum();
         try {
             int scale = this.renderBackround ? getHeight() / 3 : getHeight() / 2;
             InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.player);
@@ -93,5 +93,10 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
 
     public RemotePlayer getPlayer() {
         return this.player;
+    }
+
+    @Override
+    public void playDownSound(SoundManager handler) {
+        // no-op
     }
 }
