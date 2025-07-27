@@ -40,7 +40,6 @@ dependencies {
     }
 
     modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${properties["bendablecuboids_version"] as String}") {
-        include(this)
         pomCompile(this)
     }
 
@@ -156,7 +155,7 @@ publishMods {
         version = "${mod_version}+${removePreRc(minecraft_version)}-forge"
 
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        optional("bendable-cuboids")
         optional("searchables")
     }
 
@@ -170,7 +169,7 @@ publishMods {
         minecraftVersions.add(curseforge_minecraft_version)
 
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        optional("bendable-cuboids")
         optional("searchables")
     }
 }
