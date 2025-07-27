@@ -16,6 +16,7 @@ import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
 
 public class PlayerPreview extends AbstractWidget implements LayoutElement {
     private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_OUT_QUART.buildTransformer(null);
@@ -33,7 +34,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         setAlpha(0.0F);
     }
 
-    public void playAnimation(Animation animation, boolean check) {
+    public void playAnimation(@Nullable Animation animation, boolean check) {
         if (check && animation != null) {
             EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
             if (animation.equals(emotePlayer.getData())) {
@@ -56,7 +57,8 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
 
         guiGraphics.nextStratum();
         try {
-            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, getHeight() / 3), 0.0625F, mouseX, mouseY, this.player);
+            int scale = this.renderBackround ? getHeight() / 3 : getHeight() / 2;
+            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.player);
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to render entity preview!", th);
         }
@@ -75,7 +77,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        if (this.visible && this.player != null && this.player.isPlayingEmote()) {
+        if (this.visible && (this.player != null && this.player.isPlayingEmote() || !this.renderBackround)) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
 

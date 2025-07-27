@@ -6,7 +6,9 @@ import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
-import io.github.kosmx.emotes.arch.screen.widget.IChooseWheel;
+import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
+import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
+import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.gui.components.Button;
@@ -21,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class EmoteMenu extends EmoteSubScreen {
+public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     private static final Component TITLE = Component.translatable("emotecraft.menu");
 
     public static final Component OPEN_FOLDER = Component.translatable("emotecraft.openFolder");
@@ -50,7 +52,7 @@ public class EmoteMenu extends EmoteSubScreen {
     private Button resetButton;
     private boolean resetOnlySelected;
 
-    protected FastChooseWidget fastChoose;
+    protected AbstractFastChooseWidget fastChoose;
 
     public EmoteMenu(Screen parent) {
         super(EmoteMenu.TITLE, true, parent);
@@ -89,7 +91,7 @@ public class EmoteMenu extends EmoteSubScreen {
                 Button.SMALL_WIDTH * 2
         ), 2, gridLayout.newCellSettings().paddingTop(Button.DEFAULT_SPACING));
 
-        this.fastChoose = rowHelper.addChild(new FastChooseWidget(0, 0, 0), 2);
+        this.fastChoose = rowHelper.addChild(new PreviewFastChooseWidget(this, 0, 0, 0), 2);
     }
 
     @Override
@@ -177,6 +179,9 @@ public class EmoteMenu extends EmoteSubScreen {
             activeKeyTime--;
         }
         super.tick();
+        if (this.fastChoose != null) {
+            this.fastChoose.tick();
+        }
     }
 
     @Override
@@ -250,38 +255,32 @@ public class EmoteMenu extends EmoteSubScreen {
         return super.keyPressed(keyCode, scanCode, mod);
     }
 
-    protected class FastChooseWidget extends AbstractFastChooseWidget {
-        public FastChooseWidget(int x, int y, int size) {
-            super(x, y, size);
-        }
+    @Override
+    public boolean isValidClickButton(int button){
+        return (button == 0 || button == 1) && activeKeyTime == 0;
+    }
 
-        @Override
-        protected boolean isValidClickButton(int button){
-            return (button == 0 || button == 1) && activeKeyTime == 0;
-        }
-
-        @Override
-        protected boolean onClick(IChooseWheel.IChooseElement element, int button){
-            if(activeKeyTime != 0) return false;
-            if(button == 1){
-                element.clearEmote();
-                return true;
-            } else if (list != null && list.getFocused() != null) {
-                element.setEmote(list.getFocusedEmote());
-                return true;
-            }else{
-                return false;
-            }
-        }
-
-        @Override
-        protected boolean doHoverPart(IChooseWheel.IChooseElement part){
-            return activeKeyTime == 0;
-        }
-
-        @Override
-        protected boolean doesShowInvalid() {
+    @Override
+    public boolean onClick(IChooseElement element, int button) {
+        if (activeKeyTime != 0) return false;
+        if (button == 1) {
+            element.clearEmote();
             return true;
+        } else if (list != null && list.getFocused() != null) {
+            element.setEmote(list.getFocusedEmote());
+            return true;
+        }else{
+            return false;
         }
+    }
+
+    @Override
+    public boolean doHoverPart(IChooseElement part){
+        return activeKeyTime == 0;
+    }
+
+    @Override
+    public boolean doesShowInvalid() {
+        return true;
     }
 }
