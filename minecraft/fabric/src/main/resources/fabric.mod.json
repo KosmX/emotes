@@ -23,7 +23,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.kosmx.emotes.fabric.FabricWrapper"
+      "io.github.kosmx.emotes.fabric.EmotecraftFabricMod"
     ],
     "client": [
       "io.github.kosmx.emotes.fabric.EmotecraftClientFabricMod"

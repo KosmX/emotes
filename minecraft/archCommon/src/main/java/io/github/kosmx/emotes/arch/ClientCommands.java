@@ -26,7 +26,7 @@ import static net.minecraft.commands.Commands.literal;
 public class ClientCommands {
     public static final Component FORCED = Component.translatable("emotecraft.cant.override.forced");
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","unused"})
     public static <T> void register(CommandDispatcher<T> dispatcher, CommandBuildContext registryAccess) {
         dispatcher.register((LiteralArgumentBuilder<T>) literal("emotes-client")
                 .then(literal("play")

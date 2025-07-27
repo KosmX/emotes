@@ -33,17 +33,12 @@ subprojects {
             }
         }
         maven("https://maven.neoforged.net/releases")
+        mavenLocal()
     }
 
     tasks.withType(JavaCompile::class).configureEach {
-        val targetVersion = properties["java_version"] as String
-        sourceCompatibility = targetVersion
-        targetCompatibility = targetVersion
-
+        options.release = (properties["java_version"] as String).toInt()
         options.encoding = "UTF-8"
-
-        //options.compilerArgs << "-Xlint:unchecked"
-        //options.deprecation = true	//deprecated warning on compile
     }
 
     repositories {

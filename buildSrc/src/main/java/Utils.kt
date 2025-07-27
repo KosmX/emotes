@@ -156,6 +156,11 @@ fun MavenPublication.withCustomPom(name: String, desc: String) {
                 this.name = "KosmX"
                 email = "kosmx.mc@gmail.com"
             }
+            developer {
+                id = "dima_dencep"
+                this.name = "dima_dencep"
+                email = "dima_dencep@redlance.org"
+            }
         }
 
         licenses {
