@@ -6,6 +6,8 @@
   "mixins": [
     "ConnectionHandlerMixin",
     "EntityTrackerAccessor",
+    "InventoryScreenMixin",
+    "PictureInPictureRendererMixin",
     "PlayerAnimationProcessorMixin",
     "ServerChunkCacheAccessor",
     "ServerCommonPacketListenerAccessor",
