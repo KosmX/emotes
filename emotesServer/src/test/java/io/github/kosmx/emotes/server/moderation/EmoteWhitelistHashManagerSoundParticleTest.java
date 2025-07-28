@@ -6,6 +6,7 @@ import com.zigythebird.playeranimcore.animation.keyframe.BoneAnimation;
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.ParticleKeyframeData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.SoundKeyframeData;
+import com.zigythebird.playeranimcore.animation.keyframe.event.data.CustomInstructionKeyframeData;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import it.unimi.dsi.fastutil.Pair;
@@ -23,8 +24,12 @@ public class EmoteWhitelistHashManagerSoundParticleTest {
                 20,
                 Animation.LoopType.PLAY_ONCE,
                 Collections.emptyMap(),
-                UniversalAnimLoader.NO_KEYFRAMES,
-                sound == null ? new HashMap<>() : Map.of("0", List.of(sound)),
+                new Animation.Keyframes(
+                        sound == null ? new SoundKeyframeData[0] : new SoundKeyframeData[]{sound},
+                        new ParticleKeyframeData[0],
+                        new CustomInstructionKeyframeData[0]
+                ),
+                new HashMap<>(),
                 new HashMap<>()
         );
     }
@@ -35,9 +40,13 @@ public class EmoteWhitelistHashManagerSoundParticleTest {
                 20,
                 Animation.LoopType.PLAY_ONCE,
                 Collections.emptyMap(),
-                UniversalAnimLoader.NO_KEYFRAMES,
+                new Animation.Keyframes(
+                        new SoundKeyframeData[0],
+                        particle == null ? new ParticleKeyframeData[0] : new ParticleKeyframeData[]{particle},
+                        new CustomInstructionKeyframeData[0]
+                ),
                 new HashMap<>(),
-                particle == null ? new HashMap<>() : Map.of("0", List.of(particle))
+                new HashMap<>()
         );
     }
 
