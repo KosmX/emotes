@@ -55,7 +55,6 @@ dependencies {
     }
 
     modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${properties["bendablecuboids_version"] as String}") {
-        include(this)
         pomCompile(this)
     }
 
@@ -154,7 +153,7 @@ publishing {
 
 publishMods {
     modLoaders.add("fabric")
-    modLoaders.add("quilt")
+    // modLoaders.add("quilt")
     file.set(tasks.remapJar.get().archiveFile)
     type = ReleaseType.of(releaseType)
     changelog = changes
@@ -175,7 +174,7 @@ publishMods {
 
         requires("fabric-api")
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        optional("bendable-cuboids")
         optional("searchables")
         optional("fabric-permissions-api")
     }
@@ -191,7 +190,7 @@ publishMods {
 
         requires("fabric-api")
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        optional("bendable-cuboids")
         optional("searchables")
     }
 }

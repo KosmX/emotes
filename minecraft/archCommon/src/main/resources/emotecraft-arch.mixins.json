@@ -9,8 +9,7 @@
     "PlayerAnimationProcessorMixin",
     "ServerChunkCacheAccessor",
     "ServerCommonPacketListenerAccessor",
-    "ServerPlayNetworkMixin",
-    "ServerPlayTrackerMixin"
+    "ServerPlayNetworkMixin"
   ],
   "client": [
     "EmotePlayerMixin",

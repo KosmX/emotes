@@ -25,9 +25,7 @@ public final class PlatformTools {
 
     public static @Nullable AbstractClientPlayer getPlayerFromUUID(UUID uuid) {
         ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) {
-            return null;
-        }
+        if (level == null) return null;
         return (AbstractClientPlayer) level.getPlayerByUUID(uuid);
     }
 
@@ -54,10 +52,6 @@ public final class PlatformTools {
 
     public static void setPerspective(CameraType p) {
         Minecraft.getInstance().options.setCameraType(p);
-    }
-
-    public static void sendChatMessage(Component msg) {
-        Minecraft.getInstance().gui.getChat().addMessage(msg);
     }
 
     public static void addToast(Component title, Component message) {

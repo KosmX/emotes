@@ -5,7 +5,6 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.MainLoader;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -24,13 +23,15 @@ public class EmotecraftClientMod {
             "key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding"
     );
 
+    private static int tick = 0;
+
     protected void onInitializeClient() {
         EmotecraftClientMod.loadEmotes();
         ClientPacketManager.init(); // initialize proxy service
     }
 
     protected void onClientTick(Minecraft minecraft) {
-        MainLoader.tick();
+        if (tick++ % 21 == 20) ClientEmotePlay.checkQueue();
 
         if (OPEN_MENU_KEY.consumeClick()) {
             if(PlatformTools.getConfig().alwaysOpenEmoteScreen.get() || minecraft.player == minecraft.getCameraEntity()) {
@@ -53,5 +54,9 @@ public class EmotecraftClientMod {
                     CommonData.LOGGER.error("Failed to reload emotes!", th);
                     return null;
                 });
+    }
+
+    public static int getTick() {
+        return tick;
     }
 }

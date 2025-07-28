@@ -43,6 +43,7 @@ public final class ServerCommands {
             "emotes.whitelist.reload"
     );
 
+    @SuppressWarnings("unused")
     public static <T> void register(CommandDispatcher<T> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
         register(dispatcher, environment == CommandSelection.DEDICATED);
     }
