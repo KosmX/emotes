@@ -12,7 +12,6 @@ public class ForgeEmotesMain implements InstanceService {
         return FMLLoader.getGamePath();
     }
 
-
     @Override
     public Path getConfigFolder() {
         return FMLPaths.CONFIGDIR.get();

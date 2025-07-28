@@ -60,30 +60,28 @@ public class EmoteWhitelistHashManager {
             if (!Files.exists(whitelistDir)) {
                 Files.createDirectories(whitelistDir);
                 CommonData.LOGGER.info("Created whitelist emotes directory: {}", whitelistDir.toAbsolutePath());
-                // Add all internal emotes to the whitelist directory
+                // Add all internal emotes to the whitelist directory using the same pattern as UniversalEmoteSerializer
                 List<String> copiedEmotes = new ArrayList<>();
-                try {
-                    String[] internalEmotes = {
-                        "waving", "clap", "crying", "point", "here", "palm", "backflip",
-                        "roblox_potion_dance", "kazotsky_kick", "twerk", "club_penguin_dance"
-                    };
-                    for (String emoteName : internalEmotes) {
-                        String jsonPath = "/assets/" + CommonData.MOD_ID + "/emotes/" + emoteName + ".json";
-                        try (InputStream emoteStream = EmoteWhitelistHashManager.class.getResourceAsStream(jsonPath)) {
-                            if (emoteStream != null) {
-                                Path targetFile = whitelistDir.resolve(emoteName + ".json");
-                                Files.copy(emoteStream, targetFile);
-                                copiedEmotes.add(emoteName);
-                            } else {
-                                CommonData.LOGGER.warn("Internal emote resource not found: {}", jsonPath);
-                            }
+                String[] internalEmotes = {
+                    "waving", "clap", "crying", "point", "here", "palm", "backflip",
+                    "roblox_potion_dance", "kazotsky_kick", "twerk", "club_penguin_dance"
+                };
+                for (String emoteName : internalEmotes) {
+                    String jsonPath = "/assets/" + CommonData.MOD_ID + "/emotes/" + emoteName + ".json";
+                    try (InputStream emoteStream = UniversalEmoteSerializer.class.getResourceAsStream(jsonPath)) {
+                        if (emoteStream != null) {
+                            Path targetFile = whitelistDir.resolve(emoteName + ".json");
+                            Files.copy(emoteStream, targetFile);
+                            copiedEmotes.add(emoteName);
+                        } else {
+                            CommonData.LOGGER.warn("Internal emote resource not found: {}", jsonPath);
                         }
+                    } catch (Exception e) {
+                        CommonData.LOGGER.warn("Failed to copy internal emote {} to whitelist directory", emoteName, e);
                     }
-                    if (!copiedEmotes.isEmpty()) {
-                        CommonData.LOGGER.info("Added internal emotes to whitelist directory: {}", String.join(", ", copiedEmotes));
-                    }
-                } catch (Exception e) {
-                    CommonData.LOGGER.warn("Failed to copy internal emotes to whitelist directory", e);
+                }
+                if (!copiedEmotes.isEmpty()) {
+                    CommonData.LOGGER.info("Added internal emotes to whitelist directory: {}", String.join(", ", copiedEmotes));
                 }
             }
         } catch (IOException e) {
@@ -184,7 +182,6 @@ public class EmoteWhitelistHashManager {
             allowedHashes.add(info.hash);
         }
     }
-
 
     public int calculateEmoteHash(Animation emote) {
         int hash = emote.boneAnimations().hashCode();

@@ -11,7 +11,6 @@ public class FabricEmotesMain implements InstanceService {
         return FabricLoader.getInstance().getGameDir();
     }
 
-
     @Override
     public Path getConfigFolder() {
         return FabricLoader.getInstance().getConfigDir();
