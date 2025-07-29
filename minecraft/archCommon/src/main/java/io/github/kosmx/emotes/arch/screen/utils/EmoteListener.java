@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.text.DecimalFormat;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 public class EmoteListener extends PackSelectionScreen.Watcher {
@@ -33,11 +34,8 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
         }
     }
 
-    public void load(Runnable onComplete) {
-        if (this.loader != null) {
-            this.loader.cancel(true);
-        }
-
+    public void load(Runnable onComplete, Executor executor) {
+        if (this.loader != null) this.loader.cancel(true);
         PlatformTools.addToast(Component.translatable("emotecraft.reloading"));
 
         Stopwatch stopwatch = Stopwatch.createStarted();
@@ -45,7 +43,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
                 .thenRun(() -> PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
                         FORMAT.format((double) stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000D)
                 )))
-                .thenRun(onComplete);
+                .thenRunAsync(onComplete, executor);
     }
 
     public boolean isLoading() {
