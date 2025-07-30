@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.TransparentButton;
+import io.github.kosmx.emotes.arch.screen.widget.preview.PlayerChooseElement;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -64,6 +65,12 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     public abstract void tick();
+
+    public void removed() {
+        for (AbstractWidget widget : this.elements) {
+            if (widget instanceof IChooseElement element) element.removed();
+        }
+    }
 
     @Override
     public @NotNull List<AbstractWidget> children() {

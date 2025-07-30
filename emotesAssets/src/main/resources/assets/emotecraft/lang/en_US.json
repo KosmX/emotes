@@ -10,6 +10,7 @@
   "emotecraft.sure2": "Another emote already has this keybind.\nDo you want to overwrite that emote with this?",
   "emotecraft.otherconfig.category.general": "Basic Options",
   "emotecraft.otherconfig.category.expert": "Expert Options",
+  "emotecraft.otherconfig.category.legacy": "Legacy Options",
   "emotecraft.otherconfig": "Other Options",
   "emotecraft.otherconfig.debug": "Debug",
   "emotecraft.otherconfig.validate": "Validate Emotes",

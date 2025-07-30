@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.ResourceLocation;
 
 import java.time.Duration;
@@ -29,7 +30,8 @@ public class PlayerChooseElement extends PlayerPreview implements IChooseElement
         this.parent = parent;
         this.angle = angle;
         this.id = num;
-        setAlpha(1.0F);
+
+        super.tick();
     }
 
     @Override
@@ -59,7 +61,12 @@ public class PlayerChooseElement extends PlayerPreview implements IChooseElement
                 setTooltip(Tooltip.create(emoteHolder.name));
                 setTooltipDelay(Duration.ZERO);
             }
-        }
+        } else setTooltip(null);
+    }
+
+    @Override
+    public void removed() {
+        this.player.stopEmote();
     }
 
     @Override
@@ -94,8 +101,8 @@ public class PlayerChooseElement extends PlayerPreview implements IChooseElement
     @Override
     public void tick() {
         EmoteHolder holder = getEmote();
-        if (holder != null) playAnimation(holder.getEmote(), true);
-        super.tick();
+        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true);
+        if (updated || isHoveredOrFocused()) super.tick();
     }
 
     @Override
@@ -138,5 +145,10 @@ public class PlayerChooseElement extends PlayerPreview implements IChooseElement
                 drawTexture(widget, matrices, texture, 512, 0, 256, 256, 384, 1, 1);// 7
                 break;
         }
+    }
+
+    @Override
+    public void playDownSound(SoundManager handler) {
+        playButtonClickSound(handler);
     }
 }

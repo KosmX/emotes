@@ -240,6 +240,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     public void removed() {
         super.removed();
         Serializer.INSTANCE.saveConfig();
+        if (this.fastChoose != null) this.fastChoose.removed();
     }
 
     @Override

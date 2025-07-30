@@ -67,6 +67,12 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     }
 
     @Override
+    public void removed() {
+        super.removed();
+        if (this.fastMenu != null) this.fastMenu.removed();
+    }
+
+    @Override
     protected void renderBlurredBackground(GuiGraphics guiGraphics) {
         // no-op
     }

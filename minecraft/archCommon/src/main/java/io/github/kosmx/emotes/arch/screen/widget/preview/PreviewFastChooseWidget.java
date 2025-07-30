@@ -48,7 +48,7 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
     @Override
     public void tick() {
         for (AbstractWidget widget : this.elements) {
-            if (widget.isHoveredOrFocused() && widget instanceof PlayerChooseElement preview) preview.tick();
+            if (widget instanceof PlayerChooseElement preview) preview.tick();
         }
     }
 

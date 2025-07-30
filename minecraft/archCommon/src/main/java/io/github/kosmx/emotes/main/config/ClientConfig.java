@@ -8,13 +8,15 @@ import net.minecraft.client.CameraType;
 import java.util.UUID;
 
 public class ClientConfig extends SerializableConfig {
+    /**
+     * Wheel settings
+     */
+    public final ConfigEntry<Boolean> dark = new ConfigEntry<>("dark", false, false, legacy);
+    public final ConfigEntry<Boolean> oldChooseWheel = new ConfigEntry<>("oldChooseWheel", false, false, legacy);
+    public final ConfigEntry<Boolean> showIconsIfPossible = new ConfigEntry<>("showIconsIfPossible", false, false, legacy);
 
-    public final ConfigEntry<Boolean> dark = new ConfigEntry<>("dark", false, false, basics);
-
-    public final ConfigEntry<Boolean> oldChooseWheel = new ConfigEntry<>("oldChooseWheel", false, false, basics);
     public final ConfigEntry<Boolean> enablePerspective = new ConfigEntry<>("perspective", true, false, basics);
     public final ConfigEntry<Boolean> frontAsTPPerspective = new ConfigEntry<>("default3rdPersonFront", false, false, basics);
-    public final ConfigEntry<Boolean> showIconsIfPossible = new ConfigEntry<>("showIconsIfPossible", false, false, basics);
     public final ConfigEntry<Boolean> checkPose = new ConfigEntry<>("checkPose", true, true, expert);
 
     public final ConfigEntry<Boolean> alwaysOpenEmoteScreen = new ConfigEntry<>("alwaysOpenScreen", false, true, basics);
@@ -53,13 +55,13 @@ public class ClientConfig extends SerializableConfig {
     // public final ConfigEntry<Boolean> neverRemoveBadIcon = new ConfigEntry<>("neverRemoveBadIcon", false, expert, true);
     public final ConfigEntry<Boolean> exportBuiltin = new ConfigEntry<>("exportBuiltin", false, expert, true);
 
-
-
     //------------------------ Client-only overrides ------------------------//
 
-    //This will override default values before loading the config file.
-    public ClientConfig(){
-        loadEmotesServerSide.set(false);
+    /**
+     * This will override default values before loading the config file.
+     */
+    public ClientConfig() {
+        this.loadEmotesServerSide.set(false);
     }
 
     //------------------------ Advanced config stuff ------------------------//

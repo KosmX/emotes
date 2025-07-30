@@ -11,4 +11,6 @@ public interface IChooseElement extends GuiEventListener, Renderable {
     EmoteHolder getEmote();
     void clearEmote();
     void setEmote(EmoteHolder emote);
+
+    void removed();
 }
