@@ -123,8 +123,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
     public Iterable<EmoteHolder> getEmptyEmotes() {
         Collection<EmoteHolder> empties = new LinkedList<>();
-        for(Pair<UUID, InputConstants.Key> pair : PlatformTools.getConfig().emoteKeyMap){
-            if(!EmoteHolder.list.containsKey(pair.left())){
+        for(Pair<UUID, InputConstants.Key> pair : PlatformTools.getConfig().emoteKeyMap) {
+            if (!EmoteHolder.list.containsKey(pair.left())) {
                 empties.add(new EmoteHolder.Empty(pair.left()));
             }
         }

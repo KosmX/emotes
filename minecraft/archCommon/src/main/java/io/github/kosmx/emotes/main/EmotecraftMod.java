@@ -11,7 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
-public class EmotecraftMod {
+public abstract class EmotecraftMod {
     protected void onInitialize(boolean isClient) {
         if (isClient) {
             Serializer.INSTANCE = new Serializer<>(new ClientConfigSerializer(), ClientConfig.class);
