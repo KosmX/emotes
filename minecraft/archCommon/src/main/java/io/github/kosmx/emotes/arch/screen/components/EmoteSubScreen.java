@@ -218,7 +218,6 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void onFilesDrop(List<Path> paths) {
         for (Path path : paths) {
             try (Stream<Path> stream = Files.walk(path)) {
