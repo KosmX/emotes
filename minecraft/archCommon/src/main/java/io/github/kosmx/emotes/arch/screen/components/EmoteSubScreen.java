@@ -69,7 +69,7 @@ public abstract class EmoteSubScreen extends Screen {
     public void added() {
         if (this.watcher == null) {
             this.watcher = EmoteListener.create(InstanceService.INSTANCE.getExternalEmoteDir());
-            if (this.reloadOnOpen && this.watcher != null) this.watcher.load(this::addOptions);
+            if (this.reloadOnOpen && this.watcher != null) this.watcher.load(this::addOptions, this.minecraft);
         }
         super.added();
     }
@@ -158,7 +158,7 @@ public abstract class EmoteSubScreen extends Screen {
         if (this.watcher != null) {
             try {
                 if (this.watcher.pollForChanges()) {
-                    this.watcher.load(this::addOptions);
+                    this.watcher.load(this::addOptions, this.minecraft);
                 }
             } catch (IOException ex) {
                 CommonData.LOGGER.warn("Failed to poll for directory changes, stopping", ex);

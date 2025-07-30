@@ -130,7 +130,7 @@ public class UniversalEmoteSerializer {
             List<Animation> emotes = UniversalEmoteSerializer.readData(stream, name + ".json");
 
             for (Animation emote : emotes) {
-                emote.data().put("isBuiltin", true);
+                emote.data().put(EmoteSerializer.BUILT_IN_KEY, true);
 
                 InputStream iconStream = UniversalEmoteSerializer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
                 if(iconStream != null) {
