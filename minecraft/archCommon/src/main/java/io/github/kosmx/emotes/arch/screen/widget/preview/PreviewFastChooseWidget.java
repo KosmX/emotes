@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
     protected static final ResourceLocation LIGHT_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_light_new.png");
-    protected static final ResourceLocation DARK_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_light_new.png");
+    protected static final ResourceLocation DARK_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_dark_new.png");
 
     public PreviewFastChooseWidget(FastChooseController controller, int x, int y, int size) {
         super(controller, x, y, size, Component.empty());
