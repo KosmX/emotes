@@ -55,6 +55,7 @@ dependencies {
     }
 
     modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${properties["bendablecuboids_version"] as String}") {
+        isTransitive = false
         pomCompile(this)
     }
 
