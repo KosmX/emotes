@@ -26,6 +26,7 @@ Official project (only download the mod from here):
 | 1.21.1    | 2.4.x      |
 | 1.21.4    | 2.5.x      |
 | 1.21.5    | 2.6.x      |
+| 1.21.7    | 3.0.x      |
 
 ## Development
 

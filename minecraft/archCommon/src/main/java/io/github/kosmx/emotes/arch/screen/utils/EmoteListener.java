@@ -4,13 +4,16 @@ import com.google.common.base.Stopwatch;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.common.CommonData;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.text.DecimalFormat;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +37,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
         }
     }
 
-    public void load(Runnable onComplete, Executor executor) {
+    public void load(Runnable onComplete, @NotNull Executor executor) {
         if (this.loader != null) this.loader.cancel(true);
         PlatformTools.addToast(Component.translatable("emotecraft.reloading"));
 
@@ -43,7 +46,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
                 .thenRun(() -> PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
                         FORMAT.format((double) stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000D)
                 )))
-                .thenRunAsync(onComplete, executor);
+                .thenRunAsync(onComplete, Objects.requireNonNullElseGet(executor, Minecraft::getInstance));
     }
 
     public boolean isLoading() {
