@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
+import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseCircleElement;
 import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseElement;
 import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseSquareElement;
 import io.github.kosmx.emotes.mc.McUtils;
@@ -24,14 +25,25 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
         super(controller, x, y, size, Component.empty());
 
         GameProfile profile = Minecraft.getInstance().getGameProfile();
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 0, -1, -1));
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 1, 0, -1));
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 2, 1, -1));
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 3, -1, 0));
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 4, 1, 0));
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 5, -1, 1));
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 6, 0, 1));
-        this.elements.add(new PlayerChooseSquareElement(this, profile, 7, 1, 1));
+        if (PlatformTools.getConfig().oldChooseWheel.get()) {
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 0, 0F));
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 1, 45F));
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 2, 90F));
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 3, 135F));
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 4, 180f));
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 5, 225F));
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 6, 270F));
+            this.elements.add(new PlayerChooseCircleElement(this, profile, 7, 315F));
+        } else {
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 0, -1, -1));
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 1, 0, -1));
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 2, 1, -1));
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 3, -1, 0));
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 4, 1, 0));
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 5, -1, 1));
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 6, 0, 1));
+            this.elements.add(new PlayerChooseSquareElement(this, profile, 7, 1, 1));
+        }
     }
 
     @Override

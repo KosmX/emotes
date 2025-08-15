@@ -32,28 +32,28 @@ public class PlayerChooseCircleElement extends PlayerChooseElement {
 
         switch (this.id) {
             case 0:
-                drawTexture(this, matrices, texture, 512, 0, 256, 0, 384, 2, 1); // 0
+                drawTexture(parent, matrices, texture, 512, 0, 256, 0, 384, 2, 1); // 0
                 break;
             case 1:
-                drawTexture(this, matrices, texture, 512, 256, 256, 384, 384, 1, 1); // 1
+                drawTexture(parent, matrices, texture, 512, 256, 256, 384, 384, 1, 1); // 1
                 break;
             case 2:
-                drawTexture(this, matrices, texture, 512, 256, 0, 384, 0, 1, 2); // 2
+                drawTexture(parent, matrices, texture, 512, 256, 0, 384, 0, 1, 2); // 2
                 break;
             case 3:
-                drawTexture(this, matrices, texture, 512, 256, 0, 384, 256, 1, 1); // 3
+                drawTexture(parent, matrices, texture, 512, 256, 0, 384, 256, 1, 1); // 3
                 break;
             case 4:
-                drawTexture(this, matrices, texture, 512, 0, 0, 0, 256, 2, 1); // 4
+                drawTexture(parent, matrices, texture, 512, 0, 0, 0, 256, 2, 1); // 4
                 break;
             case 5:
-                drawTexture(this, matrices, texture, 512, 0, 0, 256, 256, 1, 1); // 5
+                drawTexture(parent, matrices, texture, 512, 0, 0, 256, 256, 1, 1); // 5
                 break;
             case 6:
-                drawTexture(this, matrices, texture, 512, 0, 0, 256, 0, 1, 2);// 6
+                drawTexture(parent, matrices, texture, 512, 0, 0, 256, 0, 1, 2);// 6
                 break;
             case 7:
-                drawTexture(this, matrices, texture, 512, 0, 256, 256, 384, 1, 1);// 7
+                drawTexture(parent, matrices, texture, 512, 0, 256, 256, 384, 1, 1);// 7
                 break;
         }
     }
