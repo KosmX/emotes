@@ -63,7 +63,7 @@ dependencies {
 
     // Temp fixes
     forgeRuntimeLibrary("org.javassist:javassist:3.30.2-GA")
-    forgeRuntimeLibrary("com.zigythebird:mochafloats:1.1.2")
+    forgeRuntimeLibrary("com.zigythebird:mochafloats:1.1.3")
 }
 
 tasks.processResources {
