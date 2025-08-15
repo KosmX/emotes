@@ -4,6 +4,8 @@ import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
+import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseElement;
+import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseSquareElement;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,21 +17,21 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
-    protected static final ResourceLocation LIGHT_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_light_new.png");
-    protected static final ResourceLocation DARK_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_dark_new.png");
+    public static final ResourceLocation LIGHT_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_light_new.png");
+    public static final ResourceLocation DARK_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_dark_new.png");
 
     public PreviewFastChooseWidget(FastChooseController controller, int x, int y, int size) {
         super(controller, x, y, size, Component.empty());
 
         GameProfile profile = Minecraft.getInstance().getGameProfile();
-        this.elements.add(new PlayerChooseElement(this, profile, 0, 0F));
-        this.elements.add(new PlayerChooseElement(this, profile, 1, 45F));
-        this.elements.add(new PlayerChooseElement(this, profile, 2, 90F));
-        this.elements.add(new PlayerChooseElement(this, profile, 3, 135F));
-        this.elements.add(new PlayerChooseElement(this, profile, 4, 180f));
-        this.elements.add(new PlayerChooseElement(this, profile, 5, 225F));
-        this.elements.add(new PlayerChooseElement(this, profile, 6, 270F));
-        this.elements.add(new PlayerChooseElement(this, profile, 7, 315F));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 0, -1, -1));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 1, 0, -1));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 2, 1, -1));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 3, -1, 0));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 4, 1, 0));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 5, -1, 1));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 6, 0, 1));
+        this.elements.add(new PlayerChooseSquareElement(this, profile, 7, 1, 1));
     }
 
     @Override

@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.TransparentButton;
-import io.github.kosmx.emotes.arch.screen.widget.preview.PlayerChooseElement;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
