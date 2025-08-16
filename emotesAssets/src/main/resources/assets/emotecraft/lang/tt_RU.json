@@ -56,5 +56,6 @@
   "emotecraft.resetAllKeys.message": "Сез чыннан да барлык төймәләр билгеләнүләрен ташлатырга телисезме?",
   "emotecraft.options.export": "Экспорт менюсы",
   "emotecraft.song_too_big_to_send": "Серверга җибәрү өчен җыр артык зур. Эмоция генә җибәрү...",
-  "emotecraft.cant.override.forced": "Сез хәзерге эмоцияне кулланырга мәҗбүр; бу үзгәртелә алмый."
+  "emotecraft.cant.override.forced": "Сез хәзерге эмоцияне кулланырга мәҗбүр; бу үзгәртелә алмый.",
+  "emotecraft.folder": "Папка"
 }
