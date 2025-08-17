@@ -128,9 +128,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     }
 
-    public void filter(ISearchEngine engine, boolean excludeFolders, String search) {
+    public void filter(ISearchEngine engine, boolean isSearchActive, String search) {
         clearEntries();
-        engine.filter(getEmotes(excludeFolders).stream(), search).forEach(this::addEntry);
+        engine.filter(getEmotes(isSearchActive).stream(), search).forEach(this::addEntry);
         refreshScrollAmount();
     }
 
@@ -152,8 +152,10 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return empties;
     }
 
-    public List<ListEntry> getEmotes(boolean excludeFolders) {
-        List<ListEntry> emotes = this.mainFolder.getEmotes(excludeFolders);
+    public List<ListEntry> getEmotes(boolean isSearchActive) {
+        List<ListEntry> emotes = new ArrayList<>();
+        this.mainFolder.collectEmotes(isSearchActive, emotes);
+
         emotes.sort(ListEntry::compareTo);
         return Collections.unmodifiableList(emotes);
     }
@@ -238,7 +240,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             return name.getString().toLowerCase().contains(string.toLowerCase());
         }
 
-        protected abstract List<ListEntry> getEmotes(boolean excludeFolders);
+        protected abstract void collectEmotes(boolean isSearchActive, List<ListEntry> collection);
 
         @Override
         public abstract boolean equals(Object obj);
@@ -296,8 +298,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        protected List<ListEntry> getEmotes(boolean excludeFolders) {
-            return Collections.singletonList(this);
+        protected void collectEmotes(boolean excludeFolders, List<ListEntry> collection) {
+            collection.add(this);
         }
 
         @Override
@@ -337,33 +339,26 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, left, top, 0.0F, 0.0F, 32, 32, 32, 32);
         }
 
-        public boolean isInvalid() {
-            return StringUtils.isBlank(this.name.getString());
-        }
-
         @Override
-        protected List<ListEntry> getEmotes(boolean excludeFolders) {
-            List<ListEntry> emotes = new ArrayList<>();
-            if (excludeFolders) {
+        protected void collectEmotes(boolean isSearchActive, List<ListEntry> collection) {
+            if (this.next == null || !this.entries.containsValue(this.next)) {
                 for (var entry : this.entries.values()) {
-                    if (entry instanceof FolderEntry) {
-                        emotes.addAll(entry.getEmotes(true));
+                    if (entry instanceof FolderEntry folder) {
+                        boolean isInvalid = StringUtils.isBlank(this.name.getString());
+                        if (!isInvalid) collection.add(folder);
+
+                        if (isSearchActive || isInvalid) {
+                            for (var folderEntry : folder.entries.values()) {
+                                folderEntry.collectEmotes(isSearchActive, collection);
+                            }
+                        }
                     } else {
-                        emotes.add(entry);
-                    }
-                }
-            } else if (this.next == null || !this.entries.containsValue(this.next)) {
-                for (var entry : this.entries.values()) {
-                    if (entry instanceof FolderEntry folder && folder.isInvalid()) {
-                        emotes.addAll(entry.getEmotes(false));
-                    } else {
-                        emotes.add(entry);
+                        entry.collectEmotes(isSearchActive, collection);
                     }
                 }
             } else {
-                emotes.addAll(this.next.getEmotes(false));
+                this.next.collectEmotes(isSearchActive, collection);
             }
-            return emotes;
         }
 
         public boolean setLastFolder(FolderEntry folder) {
@@ -373,9 +368,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                     return true;
                 }
                 return this.next.setLastFolder(folder);
-            } else {
-                return setSelectedFolder(folder);
             }
+            return setSelectedFolder(folder);
         }
 
         public boolean setSelectedFolder(FolderEntry folder) {
