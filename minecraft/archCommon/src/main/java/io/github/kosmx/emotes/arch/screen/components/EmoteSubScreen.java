@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.components;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
@@ -200,7 +201,16 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     public void onClose() {
+        if (this.watcher != null && this.watcher.isLoading()) {
+            PlatformTools.addToast(EmoteListener.RELOADING_WAIT);
+            return;
+        }
         this.minecraft.setScreen(this.lastScreen);
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return this.watcher == null || !this.watcher.isLoading();
     }
 
     @Override

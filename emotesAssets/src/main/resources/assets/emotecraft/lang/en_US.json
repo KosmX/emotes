@@ -73,5 +73,6 @@
   "emotecraft.folder": "Folder",
   "emotecraft.folder.main": "main",
   "emotecraft.reloading": "Reloading emotes...",
-  "emotecraft.reloading.done": "Reloading took %s seconds!"
+  "emotecraft.reloading.done": "Reloading took %s seconds!",
+  "emotecraft.reloading.wait": "Please wait for the animations to reload!"
 }
