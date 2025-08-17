@@ -26,17 +26,28 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
-    private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
+    private static final List<Component> LAST_OPENED_PATH = new CopyOnWriteArrayList<>();
 
+    private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
     private FolderEntry lastClickedFolder;
     private boolean compactMode;
-    private Button backButton;
+
+    private final Button backButton = Button.builder(McUtils.BACK, button -> {
+        setLastFolder(null);
+        if (this.lastClickedFolder == null) {
+            setScrollAmount(0);
+        } else {
+            centerScrollOn(this.lastClickedFolder);
+        }
+    }).width(Button.DEFAULT_HEIGHT).build();
 
     public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
         super(minecraft, width, height, y, itemHeight, minecraft.font.lineHeight);
         this.centerListVertically = false;
+        this.backButton.active = false;
     }
 
     @Override
@@ -107,6 +118,14 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             }
         }
         filter(VanillaSearch.INSTANCE, false, "");
+
+        for (Component folderName : LAST_OPENED_PATH) {
+            FolderEntry child = Objects.requireNonNullElse(this.lastClickedFolder, this.mainFolder).getFolder(folderName);
+            if (child == null) break;
+
+            this.lastClickedFolder = child;
+            setLastFolder(child);
+        }
     }
 
     public void filter(ISearchEngine engine, boolean excludeFolders, String search) {
@@ -174,9 +193,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
     public boolean setLastFolder(FolderEntry folder) {
         if (this.mainFolder.setLastFolder(folder)) {
-            if (this.backButton != null) {
-                this.backButton.active = this.mainFolder.next != null;
-            }
+            this.backButton.active = this.mainFolder.next != null;
+            EmoteListWidget.LAST_OPENED_PATH.clear();
+            updateLastOpenedPath(this.mainFolder.next);
             return true;
         }
         return false;
@@ -367,16 +386,21 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             return false;
         }
 
-        public FolderEntry getOrCreateFolder(Component name) {
+        @Nullable
+        public FolderEntry getFolder(Component name) {
             for (ListEntry entry : this.entries) {
-                if (entry instanceof FolderEntry folder) {
-                    if (folder.name.equals(name)) {
-                        return folder;
-                    }
+                if (entry instanceof FolderEntry folder && folder.name.equals(name)) {
+                    return folder;
                 }
             }
-            FolderEntry folder = new FolderEntry(name);
-            this.entries.add(folder);
+            return null;
+        }
+
+        public FolderEntry getOrCreateFolder(Component name) {
+            FolderEntry folder = getFolder(name);
+            if (folder == null) {
+                this.entries.add(folder = new FolderEntry(name));
+            }
             return folder;
         }
 
@@ -414,17 +438,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     }
 
-    public Button createBackButton() {
-        this.backButton = Button.builder(McUtils.BACK, button -> {
-            setLastFolder(null);
-            if (this.lastClickedFolder == null) {
-                setScrollAmount(0);
-            } else {
-                centerScrollOn(this.lastClickedFolder);
-            }
-        }).width(Button.DEFAULT_HEIGHT).build();
+    private static void updateLastOpenedPath(@Nullable FolderEntry folder) {
+        if (folder == null) return;
+        EmoteListWidget.LAST_OPENED_PATH.add(folder.name);
+        if (folder.next != null) updateLastOpenedPath(folder.next);
+    }
 
-        this.backButton.active = false;
+    public Button createBackButton() {
         return this.backButton;
     }
 }
