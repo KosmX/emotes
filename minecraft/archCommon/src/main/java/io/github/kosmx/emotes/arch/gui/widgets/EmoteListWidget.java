@@ -29,6 +29,8 @@ import java.util.*;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
+
+    private FolderEntry lastClickedFolder;
     private boolean compactMode;
     private Button backButton;
 
@@ -164,7 +166,10 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     @Override
     public void setSelected(@Nullable EmoteListWidget.ListEntry selected) {
         super.setSelected(selected);
-        if (selected instanceof FolderEntry folder) setLastFolder(folder);
+        if (selected instanceof FolderEntry folder) {
+            this.lastClickedFolder = folder;
+            setLastFolder(folder);
+        }
     }
 
     public boolean setLastFolder(FolderEntry folder) {
@@ -410,9 +415,14 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public Button createBackButton() {
-        this.backButton = Button.builder(McUtils.BACK, button -> setLastFolder(null))
-                .width(Button.DEFAULT_HEIGHT)
-                .build();
+        this.backButton = Button.builder(McUtils.BACK, button -> {
+            setLastFolder(null);
+            if (this.lastClickedFolder == null) {
+                setScrollAmount(0);
+            } else {
+                centerScrollOn(this.lastClickedFolder);
+            }
+        }).width(Button.DEFAULT_HEIGHT).build();
 
         this.backButton.active = false;
         return this.backButton;
