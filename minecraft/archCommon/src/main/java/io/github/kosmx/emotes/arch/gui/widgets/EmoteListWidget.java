@@ -107,24 +107,24 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         this.mainFolder.entries.clear();
         for (EmoteHolder emoteHolder : list) {
             if (emoteHolder.folder.isEmpty()) {
-                this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
             } else {
-                createFoldersTree(emoteHolder.folder).entries.add(new EmoteEntry(emoteHolder));
+                createFoldersTree(emoteHolder.folder).entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
             }
         }
         if (showInvalid) {
             for (EmoteHolder emoteHolder : getEmptyEmotes()) {
-                this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
             }
         }
         filter(VanillaSearch.INSTANCE, false, "");
 
         for (Component folderName : LAST_OPENED_PATH) {
-            FolderEntry child = Objects.requireNonNullElse(this.lastClickedFolder, this.mainFolder).getFolder(folderName);
-            if (child == null) break;
-
-            this.lastClickedFolder = child;
-            setLastFolder(child);
+            ListEntry child = Objects.requireNonNullElse(this.lastClickedFolder, this.mainFolder).entries.get(folderName);
+            if (child instanceof FolderEntry folder) {
+                this.lastClickedFolder = folder;
+                setLastFolder(folder);
+            } else break;
         }
     }
 
@@ -325,7 +325,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public static final ResourceLocation FOLDER_OPEN = McUtils.newIdentifier("textures/folder_open.png");
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
-        private final List<ListEntry> entries = new ArrayList<>();
+        private final Map<Component, ListEntry> entries = new HashMap<>();
         private FolderEntry next;
 
         public FolderEntry(@NotNull Component name) {
@@ -345,15 +345,15 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         protected List<ListEntry> getEmotes(boolean excludeFolders) {
             List<ListEntry> emotes = new ArrayList<>();
             if (excludeFolders) {
-                for (var entry : this.entries) {
+                for (var entry : this.entries.values()) {
                     if (entry instanceof FolderEntry) {
                         emotes.addAll(entry.getEmotes(true));
                     } else {
                         emotes.add(entry);
                     }
                 }
-            } else if (this.next == null || !this.entries.contains(this.next)) {
-                for (var entry : this.entries) {
+            } else if (this.next == null || !this.entries.containsValue(this.next)) {
+                for (var entry : this.entries.values()) {
                     if (entry instanceof FolderEntry folder && folder.isInvalid()) {
                         emotes.addAll(entry.getEmotes(false));
                     } else {
@@ -379,29 +379,15 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         public boolean setSelectedFolder(FolderEntry folder) {
-            if (this.entries.contains(folder) || folder == null) {
+            if (folder == null || this.entries.containsValue(folder)) {
                 this.next = folder;
                 return true;
             }
             return false;
         }
 
-        @Nullable
-        public FolderEntry getFolder(Component name) {
-            for (ListEntry entry : this.entries) {
-                if (entry instanceof FolderEntry folder && folder.name.equals(name)) {
-                    return folder;
-                }
-            }
-            return null;
-        }
-
         public FolderEntry getOrCreateFolder(Component name) {
-            FolderEntry folder = getFolder(name);
-            if (folder == null) {
-                this.entries.add(folder = new FolderEntry(name));
-            }
-            return folder;
+            return (FolderEntry) this.entries.computeIfAbsent(name, FolderEntry::new);
         }
 
         @Override
