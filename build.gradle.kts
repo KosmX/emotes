@@ -98,7 +98,9 @@ publishMods {
     }
 }
 
-val ds = publishWebhook {
+publishWebhook {
+    mustRunAfter(":publishMods")
+    dependsOn(":publishMods")
     username = "Emotecraft Updates"
     content = "ping"
     url = providers.environmentVariable("DISCORD_WEBHOOK")
@@ -123,10 +125,6 @@ val ds = publishWebhook {
         nextRow()
         +CustomPublishResult("$HANGAR_LOGO Hangar (Paper)", hangarLink)
     }
-}
-
-tasks.named("publishMods") {
-    finalizedBy(ds)
 }
 
 @Suppress("UnstableApiUsage")
