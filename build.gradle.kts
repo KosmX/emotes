@@ -106,7 +106,8 @@ val ds = publishWebhook {
         nextRow()
         +project(":minecraft:neoforge").publishResult("curseforge")
         +project(":minecraft:fabric").publishResult("curseforge")
-        val hangarProjectName = providers.gradleProperty("hangarProjectName").getOrElse("dima_dencep/emotecraft")
+        val hangarProjectName = providers.gradleProperty("hangarProjectName")
+            .getOrElse("dima_dencep/emotecraft")
         val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
         val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
         nextRow()
