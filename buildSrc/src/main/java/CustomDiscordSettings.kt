@@ -5,17 +5,17 @@ import org.gradle.api.file.RegularFileProperty
 
 class DownloadLinks {
     val rows = mutableListOf<List<ICustomPublishResult>>()
-    private val _row = mutableListOf<ICustomPublishResult>()
+    private val currentRow = mutableListOf<ICustomPublishResult>()
 
     fun nextRow() {
-        if (_row.isEmpty()) return
-        val rws = _row.chunked(5)
+        if (currentRow.isEmpty()) return
+        val rws = currentRow.chunked(5)
         rows.addAll(rws)
-        _row.clear()
+        currentRow.clear()
     }
 
     fun add(result: ICustomPublishResult) {
-        _row.add(result)
+        currentRow.add(result)
     }
 
     operator fun CustomPublishResult.unaryPlus() {
