@@ -1,6 +1,7 @@
 import me.modmuss50.mpp.PublishResult
 import me.modmuss50.mpp.platforms.discord.DiscordAPI
 import org.gradle.api.file.RegularFileProperty
+import java.time.format.DateTimeFormatter
 
 
 class DownloadLinks {
@@ -41,6 +42,10 @@ class EmbedBuilder {
     var type: String? = null
     var description: String? = null
     var url: String? = null
+
+    /**
+     * ISO8601 timestamp
+     */
     var timestamp: String? = null
     var color: Int? = null
 
@@ -55,6 +60,14 @@ class EmbedBuilder {
     fun thumbnail(url: String) {
         this.thumbnail = DiscordAPI.EmbedThumbnail(url = url)
     }
+
+    fun timestamp(ms: Long?) {
+        timestamp = ms?.let {
+            val inst = java.time.Instant.ofEpochMilli(ms)
+            DateTimeFormatter.ISO_INSTANT.format(inst)
+        }
+    }
+
     fun build(): DiscordAPI.Embed =
         DiscordAPI.Embed(
             title = title,

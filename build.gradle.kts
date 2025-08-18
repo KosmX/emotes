@@ -96,6 +96,7 @@ val ds = publishWebhook {
         title = "Emotecraft $mod_version for Minecraft $minecraft_version is out!"
         description = "Changes:  \n$changelog"
         thumbnail("https://raw.githubusercontent.com/KosmX/emotes/d97b2df4ab59bbd2740f30497e96f92cb643b2df/emotesAssets/src/main/resources/emotecraft_mod_logo.png")
+        timestamp(System.currentTimeMillis())
     }
     links {
         +project(":minecraft:neoforge").publishResult("modrinth")
