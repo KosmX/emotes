@@ -1,5 +1,6 @@
 import me.modmuss50.mpp.PublishResult
 import java.io.File
+import java.io.FileNotFoundException
 
 const val CF_ICON = "💥"
 const val MODRINTH_ICON = "🐸"
@@ -26,7 +27,12 @@ class CustomPublishResult(override val title: String, override val link: String)
 
 class LatePublishResult(val file: File) : ICustomPublishResult {
     val loaded by lazy {
-        val p = PublishResult.fromJson(file.readText())
+        val p = try {
+            PublishResult.fromJson(file.readText())
+        } catch (e: FileNotFoundException) {
+            throw IllegalStateException("Missing publish result file. " +
+                    "Possibly some publish task is failed", e)
+        }
         CustomPublishResult.from(p)
     }
     override val title: String
