@@ -3,7 +3,7 @@ import me.modmuss50.mpp.ReleaseType
 plugins {
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
-    id("com.gradleup.shadow") version "9.0.1" apply false
+    id("com.gradleup.shadow") version "9.0.2" apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
 
