@@ -4,8 +4,8 @@ import org.gradle.api.file.RegularFileProperty
 
 
 class DownloadLinks {
-    val rows = mutableListOf<List<CustomPublishResult>>()
-    private val _row = mutableListOf<CustomPublishResult>()
+    val rows = mutableListOf<List<ICustomPublishResult>>()
+    private val _row = mutableListOf<ICustomPublishResult>()
 
     fun nextRow() {
         if (_row.isEmpty()) return
@@ -23,12 +23,12 @@ class DownloadLinks {
     }
 
     operator fun RegularFileProperty.unaryPlus() {
-        val pr = PublishResult.fromJson(this.get().asFile.readText())
-        _row.add(CustomPublishResult.from(pr))
+        val file = this.get().asFile
+        _row.add(LatePublishResult(file))
     }
 }
 
-fun CustomPublishResult.createButton(): DiscordAPI.ButtonComponent {
+fun ICustomPublishResult.createButton(): DiscordAPI.ButtonComponent {
     return DiscordAPI.ButtonComponent(title, link)
 }
 
