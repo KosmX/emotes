@@ -14,17 +14,21 @@ class DownloadLinks {
         _row.clear()
     }
 
+    fun add(result: ICustomPublishResult) {
+        _row.add(result)
+    }
+
     operator fun CustomPublishResult.unaryPlus() {
-        _row.add(this)
+        add(this)
     }
 
     operator fun PublishResult.unaryPlus() {
-        _row.add(CustomPublishResult.from(this))
+        add(CustomPublishResult.from(this))
     }
 
     operator fun RegularFileProperty.unaryPlus() {
         val file = this.get().asFile
-        _row.add(LatePublishResult(file))
+        add(LatePublishResult(file))
     }
 }
 
