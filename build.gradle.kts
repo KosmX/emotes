@@ -106,8 +106,10 @@ val ds = publishWebhook {
     }
 }
 
-tasks.named("publishMods").configure {
-    dependsOn(ds.get())
+allprojects {
+    tasks.matching { it.name == "publishMods" }.configureEach {
+        finalizedBy(ds)
+    }
 }
 
 @Suppress("UnstableApiUsage")
