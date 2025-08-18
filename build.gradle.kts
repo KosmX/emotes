@@ -85,8 +85,7 @@ val ds = publishWebhook {
         if (explicit) return@onlyIf true
 
         val mods = gradle.taskGraph.allTasks.filter { it.name == "publishMods" }
-        mods.isNotEmpty()
-                && mods.all { it.state.failure == null}
+        mods.isNotEmpty() && mods.all { it.state.failure == null}
     }
     username = "Emotecraft Updates"
     content = "<@&926902263941849118>"
