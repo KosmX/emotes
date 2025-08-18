@@ -5,7 +5,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import kotlin.collections.chunked
 
 abstract class PublishDiscordTask : DefaultTask() {
 
