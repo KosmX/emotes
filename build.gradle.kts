@@ -126,7 +126,7 @@ val ds = publishWebhook {
 }
 
 tasks.named("publishMods") {
-    dependsOn(ds)
+    finalizedBy(ds)
 }
 
 @Suppress("UnstableApiUsage")
