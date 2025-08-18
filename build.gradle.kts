@@ -90,7 +90,7 @@ val ds = publishWebhook {
         }
     }
     username = "Emotecraft Updates"
-    content = "ping"
+    content = "<@&926902263941849118>"
     url = providers.environmentVariable("DISCORD_WEBHOOK")
     val changelog = changes.replace("<br>", "  \n")
     embed {
