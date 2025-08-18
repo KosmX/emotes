@@ -5,6 +5,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import kotlin.collections.chunked
 
 abstract class PublishDiscordTask : DefaultTask() {
 
@@ -49,11 +50,15 @@ abstract class PublishDiscordTask : DefaultTask() {
     fun publish() {
         validate()
         val dl = links.get()
-        val components = dl.results.map { it.createButton() }
+        val components = dl.results.map { it.createButton() }.ifEmpty { null }
         val wh = DiscordAPI.Webhook(content.get(),
             username.get(),
             embeds = embeds.get().map { it.build() },
-            components = components
+            components = components?.chunked(5)?.map {
+                DiscordAPI.ActionRow(
+                    components = it,
+                )
+            }
         )
         DiscordAPI.executeWebhook(url.get(), wh)
     }
