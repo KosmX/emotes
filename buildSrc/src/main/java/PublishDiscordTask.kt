@@ -61,7 +61,11 @@ abstract class PublishDiscordTask : DefaultTask() {
             embeds = embeds.get().map { it.build() },
             components = components.ifEmpty { null }
         )
-        DiscordAPI.executeWebhook(url.get(), wh)
+        try {
+            DiscordAPI.executeWebhook(url.get(), wh)
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to post a webhook", e)
+        }
     }
 
     private fun validate() {

@@ -32,6 +32,6 @@ class LatePublishResult(val file: File) : ICustomPublishResult {
     override val title: String
         get() = loaded.title
     override val link: String
-        get() = loaded.title
+        get() = loaded.link
 
 }

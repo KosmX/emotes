@@ -80,6 +80,15 @@ publishMods {
 }
 
 val ds = publishWebhook {
+    onlyIf {
+        val explicit = gradle.startParameter.taskNames.contains(name)
+        if (explicit) return@onlyIf true
+
+        val mods = gradle.taskGraph.allTasks.filter { it.name == "publishMods" }
+        mods.isNotEmpty()
+                && mods.all { it.state.failure == null && !it.state.skipped }
+                && mods.any { it.state.didWork }
+    }
     username = "Emotecraft Updates"
     content = "<@&926902263941849118>"
     url = providers.environmentVariable("DISCORD_WEBHOOK")
