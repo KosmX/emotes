@@ -1,0 +1,69 @@
+import me.modmuss50.mpp.platforms.discord.DiscordAPI
+import org.gradle.api.DefaultTask
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
+
+abstract class PublishDiscordTask : DefaultTask() {
+
+    @get:Input
+    @get:Optional
+    abstract val content: Property<String>
+
+    @get:Input
+    abstract val url: Property<String>
+
+    @get:Input
+    @get:Optional
+    abstract val username: Property<String>
+
+    @get:Input
+    @get:Optional
+    abstract val embeds: ListProperty<EmbedBuilder>
+
+    @get:Input
+    @get:Optional
+    abstract val links: Property<DownloadLinks>
+
+    init {
+        embeds.convention(emptyList())
+        links.convention(DownloadLinks())
+        group = "publishing"
+    }
+
+    fun embed(block: EmbedBuilder.() -> Unit) {
+        val e = EmbedBuilder()
+        e.block()
+        embeds.add(e)
+    }
+
+    fun links(block: DownloadLinks.() -> Unit) {
+        val l = DownloadLinks()
+        l.block()
+        links.set(l)
+    }
+
+    @TaskAction
+    fun publish() {
+        validate()
+        val dl = links.get()
+        val components = dl.results.map { it.createButton() }
+        val wh = DiscordAPI.Webhook(content.get(),
+            username.get(),
+            embeds = embeds.get().map { it.build() },
+            components = components
+        )
+        DiscordAPI.executeWebhook(url.get(), wh)
+    }
+
+    private fun validate() {
+        require(url.orNull?.isNotBlank() == true) {
+            "Missing webhook URL"
+        }
+        require(content.isPresent || embeds.get().isNotEmpty()) {
+            "Message must contain at least message or embed"
+        }
+    }
+}

@@ -98,6 +98,31 @@ publishMods {
     }
 }
 
+val ds = publishWebhook {
+    username = "Emotecraft Updates"
+    content = "ping"
+    url = providers.environmentVariable("DISCORD_WEBHOOK")
+    val changelog = changes.replace("<br>", "  \n")
+    embed {
+        color = kotlin.random.Random.nextInt(0x000000, 0x1000000)
+        title = "Emotecraft $mod_version for Minecraft $minecraft_version is out!"
+        description = changelog
+        thumbnail("https://cdn.discordapp.com/attachments/808081607712833570/1406929053302263819/IMG_20250818_141339_525.jpg?ex=68a44049&is=68a2eec9&hm=f46b30350bcac6727fdeef5526de902a286033bba54058e961c81d4d53974969&")
+    }
+    links {
+        +project(":minecraft:neoforge").publishResult("modrinth")
+        +project(":minecraft:fabric").publishResult("modrinth")
+        +project(":minecraft:neoforge").publishResult("curseforge")
+        +project(":minecraft:fabric").publishResult("curseforge")
+        +project(":paper").publishResult("modrinth")
+        +CustomPublishResult("Test", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    }
+}
+
+tasks.named("publishMods") {
+    dependsOn(ds)
+}
+
 @Suppress("UnstableApiUsage")
 fun Project.publishResult(platformName: String): RegularFileProperty {
     return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
