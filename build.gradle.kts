@@ -79,7 +79,7 @@ publishMods {
     }
 }
 
-publishWebhook {
+val ds = publishWebhook {
     username = "Emotecraft Updates"
     content = "<@&926902263941849118>"
     url = providers.environmentVariable("DISCORD_WEBHOOK")
@@ -106,12 +106,8 @@ publishWebhook {
     }
 }
 
-gradle.taskGraph.whenReady { ->
-    val publishModsTasks = allTasks.filter { it.name == "publishMods" }
-    if (publishModsTasks.isNotEmpty()) {
-        val lastPublishMods = publishModsTasks.last()
-        lastPublishMods.finalizedBy(tasks.named("publishDiscord"))
-    }
+tasks.named("publishMods").configure {
+    dependsOn(ds.get())
 }
 
 @Suppress("UnstableApiUsage")
