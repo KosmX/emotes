@@ -4,7 +4,7 @@ plugins {
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
     id("com.gradleup.shadow") version "9.0.2" apply false
-    id("me.modmuss50.mod-publish-plugin")
+    id("me.modmuss50.mod-publish-plugin") // version defined in buildSrc
 }
 
 subprojects {
