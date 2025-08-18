@@ -4,19 +4,27 @@ import org.gradle.api.file.RegularFileProperty
 
 
 class DownloadLinks {
-    val results = mutableSetOf<CustomPublishResult>()
+    val rows = mutableListOf<List<CustomPublishResult>>()
+    private val _row = mutableListOf<CustomPublishResult>()
+
+    fun nextRow() {
+        if (_row.isEmpty()) return
+        val rws = _row.chunked(5)
+        rows.addAll(rws)
+        _row.clear()
+    }
 
     operator fun CustomPublishResult.unaryPlus() {
-        results.add(this)
+        _row.add(this)
     }
 
     operator fun PublishResult.unaryPlus() {
-        results.add(CustomPublishResult.from(this))
+        _row.add(CustomPublishResult.from(this))
     }
 
     operator fun RegularFileProperty.unaryPlus() {
         val pr = PublishResult.fromJson(this.get().asFile.readText())
-        results.add(CustomPublishResult.from(pr))
+        _row.add(CustomPublishResult.from(pr))
     }
 }
 

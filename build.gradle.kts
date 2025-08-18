@@ -112,10 +112,16 @@ val ds = publishWebhook {
     links {
         +project(":minecraft:neoforge").publishResult("modrinth")
         +project(":minecraft:fabric").publishResult("modrinth")
+        val paper = project(":paper")
+        +paper.publishResult("modrinth")
+        nextRow()
         +project(":minecraft:neoforge").publishResult("curseforge")
         +project(":minecraft:fabric").publishResult("curseforge")
-        +project(":paper").publishResult("modrinth")
-        +CustomPublishResult("Test", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+        val hangarProjectName = providers.gradleProperty("hangarProjectName").getOrElse("dima_dencep/emotecraft")
+        val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
+        val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
+        nextRow()
+        +CustomPublishResult("$HANGAR_LOGO Hangar (Paper)", hangarLink)
     }
 }
 

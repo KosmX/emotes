@@ -50,15 +50,17 @@ abstract class PublishDiscordTask : DefaultTask() {
     fun publish() {
         validate()
         val dl = links.get()
-        val components = dl.results.map { it.createButton() }.ifEmpty { null }
+
+        val components = mutableListOf<DiscordAPI.Component>()
+        dl.nextRow() // complete current row
+        for (row in dl.rows) {
+            val rc = row.map { it.createButton() }
+            components.add(DiscordAPI.ActionRow(rc))
+        }
         val wh = DiscordAPI.Webhook(content.get(),
             username.get(),
             embeds = embeds.get().map { it.build() },
-            components = components?.chunked(5)?.map {
-                DiscordAPI.ActionRow(
-                    components = it,
-                )
-            }
+            components = components.ifEmpty { null }
         )
         DiscordAPI.executeWebhook(url.get(), wh)
     }
