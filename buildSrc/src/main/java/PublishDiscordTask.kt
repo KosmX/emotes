@@ -68,7 +68,7 @@ abstract class PublishDiscordTask : DefaultTask() {
         }
     }
 
-    private fun validate() {
+    fun validate() {
         require(url.orNull?.isNotBlank() == true) {
             "Missing webhook URL"
         }

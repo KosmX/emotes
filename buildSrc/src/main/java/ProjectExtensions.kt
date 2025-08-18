@@ -57,5 +57,6 @@ val Project.archives_base_name
 fun Project.publishWebhook(name: String = "publishDiscord", block: PublishDiscordTask.() -> Unit): TaskProvider<PublishDiscordTask> {
     return tasks.register<PublishDiscordTask>(name) {
         block()
+        validate()
     }
 }
