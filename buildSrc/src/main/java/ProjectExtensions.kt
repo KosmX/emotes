@@ -1,5 +1,4 @@
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.internal.extensions.core.extra
 import org.gradle.kotlin.dsl.register
