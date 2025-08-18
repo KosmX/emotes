@@ -99,7 +99,15 @@ publishMods {
 }
 
 val ds = publishWebhook {
-    mustRunAfter(":publishMods")
+    onlyIf {
+        if (gradle.startParameter.taskNames.contains(name)) { // manual call
+            true
+        } else {
+            val publishMods = tasks.named("publishMods").get()
+            val state = publishMods.state
+            state.failure == null && state.skipped.not() && state.upToDate.not()
+        }
+    }
     username = "Emotecraft Updates"
     content = "ping"
     url = providers.environmentVariable("DISCORD_WEBHOOK")
@@ -127,7 +135,7 @@ val ds = publishWebhook {
 }
 
 tasks.named("publishMods") {
-    dependsOn(ds)
+    finalizedBy(ds)
 }
 
 @Suppress("UnstableApiUsage")
