@@ -2,7 +2,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.modmuss50.mpp.PublishResult
 import me.modmuss50.mpp.platforms.discord.DiscordAPI
+import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.internal.configuration.problems.PropertyTrace
 import java.time.format.DateTimeFormatter
 
 
@@ -37,6 +39,10 @@ class DownloadLinks {
     fun RegularFileProperty.emoji(emoji: Emoji?): LatePublishResult {
         val file = this.get().asFile
         return LatePublishResult(file, emoji)
+    }
+
+    fun Project.from(project: String, platform: String, emoji: Emoji? = null) {
+        add(project(project).publishResult(platform).emoji(emoji))
     }
 }
 

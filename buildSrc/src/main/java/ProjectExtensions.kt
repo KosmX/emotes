@@ -1,4 +1,5 @@
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.internal.extensions.core.extra
 import org.gradle.kotlin.dsl.register
@@ -58,4 +59,8 @@ fun Project.publishDiscord(name: String = "publishDiscord", block: PublishDiscor
         block()
         validate()
     }
+}
+
+fun Project.publishResult(platformName: String): RegularFileProperty {
+    return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
 }

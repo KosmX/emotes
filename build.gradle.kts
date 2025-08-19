@@ -99,13 +99,13 @@ val ds = publishDiscord {
         timestamp(System.currentTimeMillis())
     }
     links {
-        +project(":minecraft:neoforge").publishResult("modrinth").emoji(MODRINTH_EMOJI)
-        +project(":minecraft:fabric").publishResult("modrinth").emoji(MODRINTH_EMOJI)
+        +project(":minecraft:neoforge").publishResult("modrinth")
+        +project(":minecraft:fabric").publishResult("modrinth")
         val paper = project(":paper")
-        +paper.publishResult("modrinth").emoji(MODRINTH_EMOJI)
+        +paper.publishResult("modrinth")
         nextRow()
-        +project(":minecraft:neoforge").publishResult("curseforge").emoji(CURSEFORGE_EMOJI)
-        +project(":minecraft:fabric").publishResult("curseforge").emoji(CURSEFORGE_EMOJI)
+        +project(":minecraft:neoforge").publishResult("curseforge")
+        +project(":minecraft:fabric").publishResult("curseforge")
         val hangarProjectName = providers.gradleProperty("hangarProjectName")
             .getOrElse("dima_dencep/emotecraft")
         val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
@@ -121,7 +121,3 @@ allprojects {
     }
 }
 
-@Suppress("UnstableApiUsage")
-fun Project.publishResult(platformName: String): RegularFileProperty {
-    return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
-}

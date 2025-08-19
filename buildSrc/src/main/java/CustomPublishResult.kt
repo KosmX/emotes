@@ -6,6 +6,15 @@ val CURSEFORGE_EMOJI = Emoji("curseforge", "1136405235187847198")
 val MODRINTH_EMOJI = Emoji("modrinth", "1136404935374798878")
 val HANGAR_EMOJI = Emoji("hangar", "1407105220122509514")
 
+fun Emoji.Companion.fromPlatform(platform: String): Emoji? {
+    return when (platform) {
+        "modrinth" -> MODRINTH_EMOJI
+        "curseforge" -> CURSEFORGE_EMOJI
+        "hangar" -> HANGAR_EMOJI
+        else -> null
+    }
+}
+
 interface ICustomPublishResult {
     val title: String
     val link: String
@@ -17,17 +26,12 @@ class CustomPublishResult(override val title: String,
                           override val emoji: Emoji? = null) : ICustomPublishResult {
     companion object {
         fun from(result: PublishResult): CustomPublishResult {
-            val emoji = when (result.type) {
-                "modrinth" -> MODRINTH_EMOJI
-                "curseforge" -> CURSEFORGE_EMOJI
-                else -> null
-            }
-            return CustomPublishResult(result.title, result.link, emoji)
+            return CustomPublishResult(result.title, result.link, Emoji.fromPlatform(result.type))
         }
     }
 }
 
-class LatePublishResult(val file: File, override val emoji: Emoji? = null) : ICustomPublishResult {
+class LatePublishResult(val file: File, private val emojiOverride: Emoji? = null) : ICustomPublishResult {
     val loaded by lazy {
         val p = try {
             PublishResult.fromJson(file.readText())
@@ -41,5 +45,7 @@ class LatePublishResult(val file: File, override val emoji: Emoji? = null) : ICu
         get() = loaded.title
     override val link: String
         get() = loaded.link
+    override val emoji: Emoji?
+        get() = emojiOverride ?: loaded.emoji
 
 }
