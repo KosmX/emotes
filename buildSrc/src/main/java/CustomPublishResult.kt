@@ -4,7 +4,7 @@ import java.io.FileNotFoundException
 
 val CURSEFORGE_EMOJI = Emoji("curseforge", "1136405235187847198")
 val MODRINTH_EMOJI = Emoji("modrinth", "1136404935374798878")
-val HANGAR_EMOJI = Emoji("hangar", "1407105220122509514")
+val HANGAR_EMOJI = Emoji("hangar", "1407387843931672647")
 
 fun Emoji.Companion.fromPlatform(platform: String): Emoji? {
     return when (platform) {
