@@ -1,3 +1,5 @@
+import java.util.Locale
+
 plugins {
     `maven-publish`
 }
@@ -7,7 +9,7 @@ version = mod_version
 tasks.withType<Copy> {
     eachFile {
         rename {
-            it.lowercase()
+            it.lowercase(Locale.getDefault())
         }
         //Rename every file to lowercase. This is essential for the translations to work
         //Possibly creates other problems on other operating systems
