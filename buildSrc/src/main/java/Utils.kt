@@ -12,14 +12,13 @@ import org.gradle.kotlin.dsl.maven
 import org.w3c.dom.Element
 
 
-fun asCurseForgeVersion(full: String, release: String?): String {
+fun asCurseForgeVersion(full: String, release: String): String {
     if ("w" in full) { // snapshots
-        if (release == null) throw IllegalArgumentException("Version is snapshot but no release provided")
         return "$release-Snapshot" // release is unknown for snapshot, so use argument
-    } else if ("-" in full) { // rc and pre
-        val majorMinorPatch = full.split("-").first() // extract release
+    } else if ("-" in release) { // rc and pre
+        val majorMinorPatch = release.split("-").first() // extract release
         return "$majorMinorPatch-Snapshot"
-    } else return full // release version
+    } else return release // release version
 }
 
 /**
