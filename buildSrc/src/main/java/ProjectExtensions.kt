@@ -1,6 +1,8 @@
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.internal.extensions.core.extra
-
+import org.gradle.kotlin.dsl.register
 
 val ENV: Map<String, String> by lazy { System.getenv() }
 
@@ -50,3 +52,14 @@ var Project.releaseType
 
 val Project.archives_base_name
     get() = properties["archives_base_name"] as String
+
+fun Project.publishDiscord(name: String = "publishDiscord", block: PublishDiscordTask.() -> Unit): TaskProvider<PublishDiscordTask> {
+    return tasks.register<PublishDiscordTask>(name) {
+        block()
+        validate()
+    }
+}
+
+fun Project.publishResult(platformName: String): RegularFileProperty {
+    return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
+}
