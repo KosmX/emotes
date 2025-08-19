@@ -4,13 +4,13 @@ plugins {
 
 version = mod_version
 
+// Rename every file to lowercase. This is essential for the translations to work
+// Possibly creates other problems on other operating systems
 tasks.processResources {
     filesMatching("assets/lang/*.json") {
-        rename {
-            // Rename every file to lowercase. This is essential for the translations to work
-            // Possibly creates other problems on other operating systems
-            it.lowercase()
-        }
+        val segments = relativePath.segments
+        val newSegments = segments.dropLast(1) + segments.last().lowercase()
+        relativePath = RelativePath(true, *newSegments.toTypedArray())
     }
 }
 
