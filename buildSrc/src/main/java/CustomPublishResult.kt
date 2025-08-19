@@ -4,7 +4,7 @@ import java.io.FileNotFoundException
 
 const val CF_ICON = "💥"
 const val MODRINTH_ICON = "🐸"
-const val HANGAR_LOGO = "🚪"
+const val HANGAR_ICON = "🚪"
 
 interface ICustomPublishResult {
     val title: String

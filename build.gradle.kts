@@ -111,7 +111,7 @@ val ds = publishWebhook {
         val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
         val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
         nextRow()
-        +CustomPublishResult("$HANGAR_LOGO Hangar (Paper)", hangarLink)
+        +CustomPublishResult("$HANGAR_ICON Hangar (Paper)", hangarLink)
     }
 }
 
