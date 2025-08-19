@@ -4,7 +4,6 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.internal.extensions.core.extra
 import org.gradle.kotlin.dsl.register
 
-
 val ENV: Map<String, String> by lazy { System.getenv() }
 
 var Project.isRelease: Boolean

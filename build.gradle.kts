@@ -87,9 +87,11 @@ val ds = publishDiscord {
         val mods = gradle.taskGraph.allTasks.filter { it.name == "publishMods" }
         mods.isNotEmpty() && mods.all { it.state.failure == null}
     }
+
     username = "Emotecraft Updates"
     content = "<@&926902263941849118>"
     url = providers.environmentVariable("DISCORD_WEBHOOK")
+
     val changelog = changes.replace("<br>", "  \n")
     embed {
         color = kotlin.random.Random.nextInt(0x000000, 0x1000000)
@@ -98,14 +100,18 @@ val ds = publishDiscord {
         thumbnail("https://raw.githubusercontent.com/KosmX/emotes/d97b2df4ab59bbd2740f30497e96f92cb643b2df/emotesAssets/src/main/resources/emotecraft_mod_logo.png")
         timestamp(System.currentTimeMillis())
     }
+
     links {
         from(":minecraft:neoforge", "modrinth")
         from(":minecraft:fabric", "modrinth")
+
         val paper = project(":paper")
         from(paper, "modrinth")
         nextRow()
+
         from(":minecraft:neoforge", "curseforge")
         from(":minecraft:fabric", "curseforge")
+
         val hangarProjectName = providers.gradleProperty("hangarProjectName")
             .getOrElse("dima_dencep/emotecraft")
         val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
@@ -120,4 +126,3 @@ allprojects {
         finalizedBy(ds)
     }
 }
-

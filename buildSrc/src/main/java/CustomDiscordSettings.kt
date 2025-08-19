@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import java.time.format.DateTimeFormatter
 
-
 class DownloadLinks {
     val rows = mutableListOf<List<ICustomPublishResult>>()
     private val currentRow = mutableListOf<ICustomPublishResult>()
@@ -140,5 +139,3 @@ class EmbedBuilder {
             fields = fields
         )
 }
-
-
