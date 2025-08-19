@@ -26,10 +26,16 @@ class DownloadLinks {
         return LatePublishResult(file, emoji)
     }
 
+    /**
+     * Adds publish result for [platform] from mod-publish-plugin in [project]
+     */
     fun Project.from(project: String, platform: String, emoji: Emoji? = null) {
-        add(project(project).publishResult(platform).emoji(emoji))
+        from(project(project), platform, emoji)
     }
 
+    /**
+     * Adds publish result for [platform] from mod-publish-plugin in [project]
+     */
     fun from(project: Project, platform: String, emoji: Emoji? = null) {
         add(project.publishResult(platform).emoji(emoji))
     }
