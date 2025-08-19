@@ -2,9 +2,9 @@ import me.modmuss50.mpp.PublishResult
 import java.io.File
 import java.io.FileNotFoundException
 
-const val CURSEFORGE_ICON = "💥"
-const val MODRINTH_ICON = "🐸"
-const val HANGAR_ICON = "🚪"
+const val CURSEFORGE_ICON = "<:curseforge:1136405235187847198>"
+const val MODRINTH_ICON = "<:modrinth:1136404935374798878>"
+const val HANGAR_ICON = "<:hangar:1407105220122509514>"
 
 interface ICustomPublishResult {
     val title: String
