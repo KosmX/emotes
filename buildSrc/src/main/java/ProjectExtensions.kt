@@ -53,7 +53,7 @@ var Project.releaseType
 val Project.archives_base_name
     get() = properties["archives_base_name"] as String
 
-fun Project.publishWebhook(name: String = "publishDiscord", block: PublishDiscordTask.() -> Unit): TaskProvider<PublishDiscordTask> {
+fun Project.publishDiscord(name: String = "publishDiscord", block: PublishDiscordTask.() -> Unit): TaskProvider<PublishDiscordTask> {
     return tasks.register<PublishDiscordTask>(name) {
         block()
         validate()

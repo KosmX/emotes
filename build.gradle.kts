@@ -79,7 +79,7 @@ publishMods {
     }
 }
 
-val ds = publishWebhook {
+val ds = publishDiscord {
     onlyIf {
         val explicit = gradle.startParameter.taskNames.contains(name)
         if (explicit) return@onlyIf true
