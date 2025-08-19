@@ -1,3 +1,5 @@
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import me.modmuss50.mpp.PublishResult
 import me.modmuss50.mpp.platforms.discord.DiscordAPI
 import org.gradle.api.file.RegularFileProperty
@@ -19,7 +21,7 @@ class DownloadLinks {
         currentRow.add(result)
     }
 
-    operator fun CustomPublishResult.unaryPlus() {
+    operator fun ICustomPublishResult.unaryPlus() {
         add(this)
     }
 
@@ -31,10 +33,58 @@ class DownloadLinks {
         val file = this.get().asFile
         add(LatePublishResult(file))
     }
+
+    fun RegularFileProperty.emoji(emoji: Emoji?): LatePublishResult {
+        val file = this.get().asFile
+        return LatePublishResult(file, emoji)
+    }
 }
 
-fun ICustomPublishResult.createButton(): DiscordAPI.ButtonComponent {
-    return DiscordAPI.ButtonComponent(title, link)
+fun ICustomPublishResult.createButton(): ButtonComponent {
+    return ButtonComponent(title, link, emoji)
+}
+
+@Serializable
+data class Webhook(
+    val content: String? = null,
+    val username: String? = null,
+    @SerialName("avatar_url")
+    val avatarUrl: String? = null,
+    val tts: Boolean? = null,
+    val embeds: List<DiscordAPI.Embed>? = null,
+    val components: List<Component>? = null,
+    val flags: Int? = null,
+    @SerialName("thread_name")
+    val threadName: String? = null,
+)
+
+@Serializable
+sealed class Component {
+    protected abstract val type: Int
+}
+
+@Serializable
+data class ActionRow(
+    val components: List<Component>? = null,
+) : Component() {
+    override val type: Int = 1
+}
+
+@Serializable
+data class Emoji(
+    val name: String,
+    val id: String
+)
+
+@Serializable
+data class ButtonComponent(
+    val label: String? = null,
+    val url: String? = null,
+    val emoji: Emoji? = null,
+) : Component() {
+    override val type: Int = 2
+    @Suppress("unused")
+    val style: Int = 5 // link
 }
 
 class EmbedBuilder {

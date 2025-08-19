@@ -2,30 +2,32 @@ import me.modmuss50.mpp.PublishResult
 import java.io.File
 import java.io.FileNotFoundException
 
-const val CURSEFORGE_ICON = "<:curseforge:1136405235187847198>"
-const val MODRINTH_ICON = "<:modrinth:1136404935374798878>"
-const val HANGAR_ICON = "<:hangar:1407105220122509514>"
+val CURSEFORGE_EMOJI = Emoji("curseforge", "1136405235187847198")
+val MODRINTH_EMOJI = Emoji("modrinth", "1136404935374798878")
+val HANGAR_EMOJI = Emoji("hangar", "1407105220122509514")
 
 interface ICustomPublishResult {
     val title: String
     val link: String
+    val emoji: Emoji?
 }
 
-class CustomPublishResult(override val title: String, override val link: String) : ICustomPublishResult {
+class CustomPublishResult(override val title: String,
+                          override val link: String,
+                          override val emoji: Emoji? = null) : ICustomPublishResult {
     companion object {
         fun from(result: PublishResult): CustomPublishResult {
-            val prefix = when (result.type) {
-                "modrinth" -> MODRINTH_ICON
-                "curseforge" -> CURSEFORGE_ICON
+            val emoji = when (result.type) {
+                "modrinth" -> MODRINTH_EMOJI
+                "curseforge" -> CURSEFORGE_EMOJI
                 else -> null
             }
-            val title = prefix?.let { it+" "+result.title } ?: result.title
-            return CustomPublishResult(title, result.link)
+            return CustomPublishResult(result.title, result.link, emoji)
         }
     }
 }
 
-class LatePublishResult(val file: File) : ICustomPublishResult {
+class LatePublishResult(val file: File, override val emoji: Emoji? = null) : ICustomPublishResult {
     val loaded by lazy {
         val p = try {
             PublishResult.fromJson(file.readText())

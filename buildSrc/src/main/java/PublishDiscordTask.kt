@@ -1,4 +1,6 @@
-import me.modmuss50.mpp.platforms.discord.DiscordAPI
+import me.modmuss50.mpp.HttpUtils
+import me.modmuss50.mpp.platforms.discord.DiscordAPI.json
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -9,6 +11,8 @@ import org.gradle.work.DisableCachingByDefault
 
 @DisableCachingByDefault
 abstract class PublishDiscordTask : DefaultTask() {
+    private val httpUtils = HttpUtils()
+    private val headers: Map<String, String> = mapOf("Content-Type" to "application/json")
 
     @get:Input
     @get:Optional
@@ -52,19 +56,20 @@ abstract class PublishDiscordTask : DefaultTask() {
         validate()
         val dl = links.get()
 
-        val components = mutableListOf<DiscordAPI.Component>()
+        val components = mutableListOf<Component>()
         dl.nextRow() // complete current row
         for (row in dl.rows) {
             val rc = row.map { it.createButton() }
-            components.add(DiscordAPI.ActionRow(rc))
+            components.add(ActionRow(rc))
         }
-        val wh = DiscordAPI.Webhook(content.get(),
+        val wh = Webhook(content.get(),
             username.get(),
             embeds = embeds.get().map { it.build() },
             components = components.ifEmpty { null }
         )
         try {
-            DiscordAPI.executeWebhook(url.get(), wh)
+            val body = json.encodeToString(wh).toRequestBody()
+            httpUtils.post<String>(url.get(), body, headers)
         } catch (e: Exception) {
             throw RuntimeException("Failed to post a webhook", e)
         }
