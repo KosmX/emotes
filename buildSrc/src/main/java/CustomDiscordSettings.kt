@@ -1,10 +1,8 @@
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import me.modmuss50.mpp.PublishResult
 import me.modmuss50.mpp.platforms.discord.DiscordAPI
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.internal.configuration.problems.PropertyTrace
 import java.time.format.DateTimeFormatter
 
 
@@ -23,19 +21,6 @@ class DownloadLinks {
         currentRow.add(result)
     }
 
-    operator fun ICustomPublishResult.unaryPlus() {
-        add(this)
-    }
-
-    operator fun PublishResult.unaryPlus() {
-        add(CustomPublishResult.from(this))
-    }
-
-    operator fun RegularFileProperty.unaryPlus() {
-        val file = this.get().asFile
-        add(LatePublishResult(file))
-    }
-
     fun RegularFileProperty.emoji(emoji: Emoji?): LatePublishResult {
         val file = this.get().asFile
         return LatePublishResult(file, emoji)
@@ -43,6 +28,14 @@ class DownloadLinks {
 
     fun Project.from(project: String, platform: String, emoji: Emoji? = null) {
         add(project(project).publishResult(platform).emoji(emoji))
+    }
+
+    fun from(project: Project, platform: String, emoji: Emoji? = null) {
+        add(project.publishResult(platform).emoji(emoji))
+    }
+
+    fun custom(title: String, link: String, emoji: Emoji?) {
+        add(CustomPublishResult(title, link, emoji))
     }
 }
 

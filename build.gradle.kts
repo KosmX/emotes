@@ -99,19 +99,19 @@ val ds = publishDiscord {
         timestamp(System.currentTimeMillis())
     }
     links {
-        +project(":minecraft:neoforge").publishResult("modrinth")
-        +project(":minecraft:fabric").publishResult("modrinth")
+        from(":minecraft:neoforge", "modrinth")
+        from(":minecraft:fabric", "modrinth")
         val paper = project(":paper")
-        +paper.publishResult("modrinth")
+        from(paper, "modrinth")
         nextRow()
-        +project(":minecraft:neoforge").publishResult("curseforge")
-        +project(":minecraft:fabric").publishResult("curseforge")
+        from(":minecraft:neoforge", "curseforge")
+        from(":minecraft:fabric", "curseforge")
         val hangarProjectName = providers.gradleProperty("hangarProjectName")
             .getOrElse("dima_dencep/emotecraft")
         val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
         val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
         nextRow()
-        +CustomPublishResult("Hangar (Paper)", hangarLink, HANGAR_EMOJI)
+        custom("Hangar (Paper)", hangarLink, HANGAR_EMOJI)
     }
 }
 
