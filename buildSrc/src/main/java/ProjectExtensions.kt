@@ -1,3 +1,4 @@
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.TaskProvider
@@ -28,8 +29,13 @@ val Project.version_base
 val Project.minecraft_version
     get() = properties["minecraft_version"] as String
 
-val Project.curseforge_minecraft_version: String
-    get() = asCurseForgeVersion(minecraft_version, properties["minecraft_release_version"] as? String)
+val Project.release_minecraft_versions: List<String>
+    get() = (properties["minecraft_release_versions"] as String).split(",")
+
+val Project.curseforge_minecraft_versions: List<String>
+    get() = release_minecraft_versions.stream()
+        .map { asCurseForgeVersion(minecraft_version, it) }
+        .toList()
 
 val Project.parchment_version
     get() = properties["parchment_version"] as String
@@ -42,6 +48,9 @@ val Project.fabric_loader_version
 
 val Project.neoforge_version
     get() = properties["neoforge_version"] as String
+
+val Project.java_version: JavaVersion
+    get() = JavaVersion.toVersion(properties["java_version"] as String)
 
 /**
  * Can be `stable`, `beta`, `alpha`

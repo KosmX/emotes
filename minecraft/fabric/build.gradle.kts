@@ -169,7 +169,7 @@ publishMods {
         announcementTitle = "Modrinth (Fabric)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
-        minecraftVersions.add(minecraft_version)
+        minecraftVersions.addAll(release_minecraft_versions)
         displayName = mod_version
         version = "${mod_version}+${removePreRc(minecraft_version)}-fabric"
 
@@ -187,7 +187,11 @@ publishMods {
         projectSlug = providers.gradleProperty("curseforge_slug_fabric")
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
-        minecraftVersions.add(curseforge_minecraft_version)
+        minecraftVersions.addAll(curseforge_minecraft_versions)
+
+        javaVersions.add(project.java_version)
+        clientRequired = true
+        serverRequired = true
 
         requires("fabric-api")
         requires("player-animation-library")

@@ -15,10 +15,10 @@ import org.w3c.dom.Element
 fun asCurseForgeVersion(full: String, release: String?): String {
     if ("w" in full) { // snapshots
         if (release == null) throw IllegalArgumentException("Version is snapshot but no release provided")
-        return release+"-Snapshot" // release is unknown for snapshot, so use argument
+        return "$release-Snapshot" // release is unknown for snapshot, so use argument
     } else if ("-" in full) { // rc and pre
         val majorMinorPatch = full.split("-").first() // extract release
-        return majorMinorPatch+"-Snapshot"
+        return "$majorMinorPatch-Snapshot"
     } else return full // release version
 }
 

@@ -37,7 +37,7 @@ subprojects {
     }
 
     tasks.withType(JavaCompile::class).configureEach {
-        options.release = (properties["java_version"] as String).toInt()
+        options.release = project.java_version.majorVersion.toInt()
         options.encoding = "UTF-8"
     }
 
