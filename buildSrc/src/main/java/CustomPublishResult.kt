@@ -2,7 +2,7 @@ import me.modmuss50.mpp.PublishResult
 import java.io.File
 import java.io.FileNotFoundException
 
-const val CF_ICON = "💥"
+const val CURSEFORGE_ICON = "💥"
 const val MODRINTH_ICON = "🐸"
 const val HANGAR_ICON = "🚪"
 
@@ -16,7 +16,7 @@ class CustomPublishResult(override val title: String, override val link: String)
         fun from(result: PublishResult): CustomPublishResult {
             val prefix = when (result.type) {
                 "modrinth" -> MODRINTH_ICON
-                "curseforge" -> CF_ICON
+                "curseforge" -> CURSEFORGE_ICON
                 else -> null
             }
             val title = prefix?.let { it+" "+result.title } ?: result.title
