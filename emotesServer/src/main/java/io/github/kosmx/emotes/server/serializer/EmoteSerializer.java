@@ -100,7 +100,7 @@ public class EmoteSerializer {
         }
     }
 
-    private static String getBaseName(String fileName) {
+    protected static String getBaseName(String fileName) {
         int i = fileName.lastIndexOf('.');
         if (i > 0) {
             fileName = fileName.substring(0, i);

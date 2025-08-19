@@ -67,6 +67,12 @@ public class UniversalEmoteSerializer {
                 .findFirst();
     }
 
+    public static ISerializer findBestSerializer() throws EmoteSerializerException{
+        return UniversalEmoteSerializer.getSerializers()
+                .max(Comparator.comparingInt(t -> t.onlyEmoteFile() ? 0 : 1))
+                .orElseThrow(() -> new EmoteSerializerException("No writer has been found!", null));
+    }
+
     /**
      * Write emote into an OStream
      * @param stream output stream
@@ -74,12 +80,8 @@ public class UniversalEmoteSerializer {
      * @param fileName target format.
      * @throws EmoteSerializerException this is a dangerous task, can go wrong
      */
-    public static void writeKeyframeAnimation(OutputStream stream, Animation emote, String fileName) throws EmoteSerializerException{
-        UniversalEmoteSerializer.getSerializers()
-                .filter(serializer -> serializer.canRead(fileName))
-                .findFirst()
-                .orElseThrow(() -> new EmoteSerializerException("No writer has been found for format!", fileName))
-                .write(emote, stream, fileName);
+    public static void writeKeyframeAnimation(OutputStream stream, Animation emote, String fileName) throws EmoteSerializerException {
+        UniversalEmoteSerializer.findBestSerializer().write(emote, stream, fileName);
     }
 
     public static Stream<ISerializer> getSerializers() {

@@ -8,8 +8,8 @@ import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
+import io.github.kosmx.emotes.server.serializer.EmoteWriter;
 import io.github.kosmx.emotes.server.services.InstanceService;
-import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -233,12 +233,14 @@ public abstract class EmoteSubScreen extends Screen {
             try (Stream<Path> stream = Files.walk(path)) {
                 stream.forEach(emote -> {
                     List<Animation> animations = EmoteSerializer.serializeExternalEmote(emote);
-                    if (animations.isEmpty()/* || animations.getFirst().animationFormat != AnimationFormat.BINARY*/) return;
+                    if (animations.isEmpty()) return;
 
-                    try {
-                        Util.copyBetweenDirs(emote.getParent(), InstanceService.INSTANCE.getExternalEmoteDir(), emote);
-                    } catch (Throwable th) {
-                        CommonData.LOGGER.warn("Failed to move animation!", th);
+                    for (Animation animation : animations) {
+                        try {
+                            EmoteWriter.writeAnimationInBestFormat(animation, InstanceService.INSTANCE.getExternalEmoteDir());
+                        } catch (Throwable th) {
+                            CommonData.LOGGER.warn("Failed to move animation!", th);
+                        }
                     }
                 });
             } catch (Throwable th) {
