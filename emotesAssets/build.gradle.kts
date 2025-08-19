@@ -9,9 +9,8 @@ version = mod_version
 tasks.withType<Copy> {
     eachFile {
         println("Renaming ${this.file.name} to ${file.name.lowercase(Locale.getDefault())}")
-        rename {
-            it.lowercase(Locale.getDefault())
-        }
+        val lowered = file.name.lowercase()
+        relativePath = RelativePath(true, lowered)
         //Rename every file to lowercase. This is essential for the translations to work
         //Possibly creates other problems on other operating systems
     }
