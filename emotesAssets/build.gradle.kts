@@ -5,7 +5,7 @@ plugins {
 version = mod_version
 
 tasks.processResources {
-    eachFile {
+    filesMatching("assets/lang/*.json") {
         rename {
             // Rename every file to lowercase. This is essential for the translations to work
             // Possibly creates other problems on other operating systems
