@@ -31,41 +31,41 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
     // Fabric API
-    modImplementation(fabricApi.module("fabric-command-api-v2", properties["fabric_api_version"] as String))
-    modImplementation(fabricApi.module("fabric-networking-api-v1", properties["fabric_api_version"] as String))
-    modImplementation(fabricApi.module("fabric-key-binding-api-v1", properties["fabric_api_version"] as String))
-    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", properties["fabric_api_version"] as String))
+    modImplementation(fabricApi.module("fabric-command-api-v2", project["fabric_api_version"]))
+    modImplementation(fabricApi.module("fabric-networking-api-v1", project["fabric_api_version"]))
+    modImplementation(fabricApi.module("fabric-key-binding-api-v1", project["fabric_api_version"]))
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", project["fabric_api_version"]))
 
     commonModule(project(":emotesAPI")) { isTransitive = false }
     commonModule(project(":emotesServer")) { isTransitive = false }
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", properties["fabric_api_version"] as String))
-    modImplementation("com.terraformersmc:modmenu:${properties["modmenu_version"] as String}") {
+    modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", project["fabric_api_version"]))
+    modImplementation("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    modImplementation("me.lucko:fabric-permissions-api:${properties["fabric_permissions_api"] as String}") {
+    modImplementation("me.lucko:fabric-permissions-api:${project["fabric_permissions_api"]}") {
         pomCompile(this)
     }
 
-    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibFabric:${properties["playeranimlib_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibFabric:${project["playeranimlib_version"]}") {
         pomCompile(this)
     }
 
-    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${properties["bendablecuboids_version"] as String}") {
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${project["bendablecuboids_version"]}") {
         isTransitive = false
         pomCompile(this)
     }
 
-    implementation("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}") {
+    implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
         include(this)
         pomCompile(this)
     }
 
     // Third-party
-    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${properties["searchables_version"] as String}") {
+    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
         isTransitive = false
     }
 

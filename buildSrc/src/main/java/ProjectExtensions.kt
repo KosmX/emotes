@@ -7,6 +7,9 @@ import org.gradle.kotlin.dsl.register
 
 val ENV: Map<String, String> by lazy { System.getenv() }
 
+operator fun Project.get(name: String): String =
+    properties[name] as String
+
 var Project.isRelease: Boolean
     get() = rootProject.extra.get("isRelease") as Boolean
     set(v) = rootProject.extra.set("isRelease", v)

@@ -35,16 +35,16 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${properties["playeranimlib_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${project["playeranimlib_version"]}") {
         pomCompile(this)
     }
 
-    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${properties["bendablecuboids_version"] as String}") {
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${project["bendablecuboids_version"]}") {
         isTransitive = false
         pomCompile(this)
     }
 
-    implementation("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}") {
+    implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
         forgeRuntimeLibrary(this)
         include(this)
         pomCompile(this)

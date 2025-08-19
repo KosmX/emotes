@@ -14,11 +14,11 @@ dependencies {
     implementation(project(":emotesServer"))
     api(project(path = ":emotesMc", configuration = "namedElements"))
 
-    modApi("com.zigythebird.playeranim:PlayerAnimationLibCommon:${properties["playeranimlib_version"] as String}")
-    implementation("com.zigythebird.playeranim:PlayerAnimationLibCore:${properties["playeranimlib_version"] as String}")
+    modApi("com.zigythebird.playeranim:PlayerAnimationLibCommon:${project["playeranimlib_version"]}")
+    implementation("com.zigythebird.playeranim:PlayerAnimationLibCore:${project["playeranimlib_version"]}")
 
     // Third-party
-    compileOnly("com.blamejared.searchables:Searchables-common-${minecraft_version}:${properties["searchables_version"] as String}") {
+    compileOnly("com.blamejared.searchables:Searchables-common-${minecraft_version}:${project["searchables_version"]}") {
         isTransitive = false
     }
 
