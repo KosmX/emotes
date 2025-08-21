@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main;
 
+import io.github.kosmx.emotes.arch.network.CommonServerNetworkHandler;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.executor.EmoteInstance;
 import io.github.kosmx.emotes.main.config.ClientSerializer;
@@ -35,6 +36,7 @@ public class MainLoader {
             MainClientInit.init();
         }else UniversalEmoteSerializer.loadEmotes();
 
+        CommonServerNetworkHandler.init();
     }
 
 

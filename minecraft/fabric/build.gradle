@@ -27,13 +27,19 @@ configurations {
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+
+    // Fabric API
+    modImplementation(fabricApi.module("fabric-command-api-v2", rootProject.fabric_api_version))
+    modImplementation(fabricApi.module("fabric-networking-api-v1", rootProject.fabric_api_version))
+    modImplementation(fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api_version))
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api_version))
 
     commonModule(project(':executor')) {transitive false}
     commonModule(project(':emotesAPI')) {transitive false}
     commonModule(project(':emotesServer')) {transitive false}
     commonModule(project(':emotesAssets')) {transitive false}
 
+    modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", rootProject.fabric_api_version))
     modImplementation("com.terraformersmc:modmenu:${rootProject.modmenu_version}") {
         exclude group: "net.fabricmc.fabric-api"
     }

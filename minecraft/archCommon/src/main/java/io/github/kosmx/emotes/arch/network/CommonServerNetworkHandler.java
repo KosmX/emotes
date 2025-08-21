@@ -28,7 +28,8 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Pl
 
     private CommonServerNetworkHandler() {} // make ctor private for singleton class
 
-    public void init() {
+    public static void init() {
+        // no-op
     }
 
     public void receiveMessage(byte[] bytes, Player player) {
