@@ -44,6 +44,11 @@ dependencies {
         pomCompile(this)
     }
 
+    modRuntimeOnly("org.redlance.dima_dencep.mods:TranslationFallbacksNeo:${project["translationfallbacks_version"]}") {
+        include(this)
+        pomCompile(this)
+    }
+
     implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
         forgeRuntimeLibrary(this)
         include(this)

@@ -64,6 +64,11 @@ dependencies {
         pomCompile(this)
     }
 
+    modRuntimeOnly("org.redlance.dima_dencep.mods:TranslationFallbacksFabric:${project["translationfallbacks_version"]}") {
+        include(this)
+        pomCompile(this)
+    }
+
     // Third-party
     modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
         isTransitive = false

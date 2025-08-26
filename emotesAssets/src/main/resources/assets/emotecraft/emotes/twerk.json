@@ -1,8 +1,12 @@
 {
     "version": 3,
-    "name": "Twerk",
+    "name": {
+      "translate": "emotecraft.emote.twerk.name"
+    },
     "author": "3APA3EH",
-    "description": "Twerk dance",
+    "description": {
+      "translate": "emotecraft.emote.twerk.description"
+    },
     "uuid": "87e8adf4-0000-0000-0000-000000000000",
     "emote": {
         "endTick": 14,
