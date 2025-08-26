@@ -1,7 +1,11 @@
 {
-    "name": "Face palm",
+    "name": {
+      "translate": "emotecraft.emote.palm.name"
+    },
     "author": "KosmX",
-    "description": "Whyyy",
+    "description": {
+      "translate": "emotecraft.emote.palm.description"
+    },
     "uuid": "0de63fbe-2f20-44e0-8969-479b76ceeb6b",
     "emote":{
         "isLoop": "false",

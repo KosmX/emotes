@@ -41,14 +41,13 @@
     "fabric-key-binding-api-v1": "*",
     "fabric-lifecycle-events-v1": "*",
     "minecraft": ">=1.21.7",
-    "player_animation_library": ">=1.0.5+mc1.21.7",
+    "player_animation_library": ">=1.0.7+mc1.21.7",
     "fabricloader": ">=0.17.2"
   },
   "breaks": {
-    "bendable_cuboids": "<1.0.3+mc1.21.7",
+    "bendable_cuboids": "<1.0.5+mc1.21.7",
     "grimac": "*",
-    "packetevents": "*",
-    "proxchat": "*"
+    "packetevents": "*"
   },
   "custom": {
     "modmenu": {

@@ -1,8 +1,12 @@
 {
     "version": 3,
-    "name": "Club penguin",
+    "name": {
+      "translate": "emotecraft.emote.club_penguin_dance.name"
+    },
     "author": "3APA3EH",
-    "description": "Joyful penguin dance of happiness!",
+    "description": {
+      "translate": "emotecraft.emote.club_penguin_dance.description"
+    },
     "uuid": "ffdcfa49-0000-0000-0000-000000000000",
     "emote": {
         "endTick": 152,

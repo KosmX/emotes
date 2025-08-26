@@ -1,7 +1,11 @@
 {
-    "name": "Clap",
+    "name": {
+      "translate": "emotecraft.emote.clap.name"
+    },
     "author": "KosmX",
-    "description": "clap clap clap",
+    "description": {
+      "translate": "emotecraft.emote.clap.description"
+    },
     "uuid": "96506a5e-a69c-4a18-9add-d43dfd272fa6",
     "emote":{
         "isLoop": "false",

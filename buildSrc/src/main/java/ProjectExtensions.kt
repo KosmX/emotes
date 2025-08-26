@@ -1,8 +1,14 @@
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.internal.extensions.core.extra
-
+import org.gradle.kotlin.dsl.register
 
 val ENV: Map<String, String> by lazy { System.getenv() }
+
+operator fun Project.get(name: String): String =
+    properties[name] as String
 
 var Project.isRelease: Boolean
     get() = rootProject.extra.get("isRelease") as Boolean
@@ -26,8 +32,13 @@ val Project.version_base
 val Project.minecraft_version
     get() = properties["minecraft_version"] as String
 
-val Project.curseforge_minecraft_version: String
-    get() = asCurseForgeVersion(minecraft_version, properties["minecraft_release_version"] as? String)
+val Project.release_minecraft_versions: List<String>
+    get() = (properties["minecraft_release_versions"] as String).split(",")
+
+val Project.curseforge_minecraft_versions: List<String>
+    get() = release_minecraft_versions.stream()
+        .map { asCurseForgeVersion(minecraft_version, it) }
+        .toList()
 
 val Project.parchment_version
     get() = properties["parchment_version"] as String
@@ -41,6 +52,9 @@ val Project.fabric_loader_version
 val Project.neoforge_version
     get() = properties["neoforge_version"] as String
 
+val Project.java_version: JavaVersion
+    get() = JavaVersion.toVersion(properties["java_version"] as String)
+
 /**
  * Can be `stable`, `beta`, `alpha`
  */
@@ -50,3 +64,14 @@ var Project.releaseType
 
 val Project.archives_base_name
     get() = properties["archives_base_name"] as String
+
+fun Project.publishDiscord(name: String = "publishDiscord", block: PublishDiscordTask.() -> Unit): TaskProvider<PublishDiscordTask> {
+    return tasks.register<PublishDiscordTask>(name) {
+        block()
+        validate()
+    }
+}
+
+fun Project.publishResult(platformName: String): RegularFileProperty {
+    return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
+}

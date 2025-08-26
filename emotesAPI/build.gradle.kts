@@ -7,8 +7,8 @@ plugins {
 version = mod_version
 
 dependencies {
-    api("com.zigythebird.playeranim:PlayerAnimationLibCore:${properties["playeranimlib_version"] as String}")
-    api("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}")
+    api("com.zigythebird.playeranim:PlayerAnimationLibCore:${project["playeranimlib_version"]}")
+    api("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}")
     implementation("com.google.code.gson:gson:2.11.0") // gson for MC 1.21.4
     api("org.jetbrains:annotations:24.0.1")
 
@@ -19,12 +19,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-tasks.compileJava {
-    sourceCompatibility = "21"
-    targetCompatibility = "21"
-    options.release.set(21) //Build on JDK 1.8
 }
 
 //-------- publishing --------

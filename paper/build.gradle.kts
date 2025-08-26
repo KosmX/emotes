@@ -111,7 +111,7 @@ publishMods {
         announcementTitle = "Modrinth (Paper)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
-        minecraftVersions.add(minecraft_version)
+        minecraftVersions.addAll(release_minecraft_versions)
         displayName = mod_version
         version = "${mod_version}+${removePreRc(minecraft_version)}-paper"
     }
@@ -131,7 +131,7 @@ hangarPublish.publications.register("plugin") {
     changelog = changes
     platforms.register("PAPER") {
         jar = tasks.shadowJar.flatMap { it.archiveFile }
-        platformVersions = listOf(minecraft_version)
+        platformVersions = release_minecraft_versions
     }
 }
 

@@ -26,15 +26,28 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
+    private static final List<Component> LAST_OPENED_PATH = new CopyOnWriteArrayList<>();
+
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
+    private FolderEntry lastClickedFolder;
     private boolean compactMode;
-    private Button backButton;
+
+    private final Button backButton = Button.builder(McUtils.BACK, button -> {
+        setLastFolder(null);
+        if (this.lastClickedFolder == null) {
+            setScrollAmount(0);
+        } else {
+            centerScrollOn(this.lastClickedFolder);
+        }
+    }).width(Button.DEFAULT_HEIGHT).build();
 
     public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
         super(minecraft, width, height, y, itemHeight, minecraft.font.lineHeight);
         this.centerListVertically = false;
+        this.backButton.active = false;
     }
 
     @Override
@@ -94,22 +107,30 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         this.mainFolder.entries.clear();
         for (EmoteHolder emoteHolder : list) {
             if (emoteHolder.folder.isEmpty()) {
-                this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
             } else {
-                createFoldersTree(emoteHolder.folder).entries.add(new EmoteEntry(emoteHolder));
+                createFoldersTree(emoteHolder.folder).entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
             }
         }
         if (showInvalid) {
             for (EmoteHolder emoteHolder : getEmptyEmotes()) {
-                this.mainFolder.entries.add(new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
             }
         }
         filter(VanillaSearch.INSTANCE, false, "");
+
+        for (Component folderName : LAST_OPENED_PATH) {
+            ListEntry child = Objects.requireNonNullElse(this.lastClickedFolder, this.mainFolder).entries.get(folderName);
+            if (child instanceof FolderEntry folder) {
+                this.lastClickedFolder = folder;
+                setLastFolder(folder);
+            } else break;
+        }
     }
 
-    public void filter(ISearchEngine engine, boolean excludeFolders, String search) {
+    public void filter(ISearchEngine engine, boolean isSearchActive, String search) {
         clearEntries();
-        engine.filter(getEmotes(excludeFolders).stream(), search).forEach(this::addEntry);
+        engine.filter(getEmotes(isSearchActive).stream(), search).forEach(this::addEntry);
         refreshScrollAmount();
     }
 
@@ -131,8 +152,10 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return empties;
     }
 
-    public List<ListEntry> getEmotes(boolean excludeFolders) {
-        List<ListEntry> emotes = this.mainFolder.getEmotes(excludeFolders);
+    public List<ListEntry> getEmotes(boolean isSearchActive) {
+        List<ListEntry> emotes = new ArrayList<>();
+        this.mainFolder.collectEmotes(isSearchActive, emotes);
+
         emotes.sort(ListEntry::compareTo);
         return Collections.unmodifiableList(emotes);
     }
@@ -164,14 +187,17 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     @Override
     public void setSelected(@Nullable EmoteListWidget.ListEntry selected) {
         super.setSelected(selected);
-        if (selected instanceof FolderEntry folder) setLastFolder(folder);
+        if (selected instanceof FolderEntry folder) {
+            this.lastClickedFolder = folder;
+            setLastFolder(folder);
+        }
     }
 
     public boolean setLastFolder(FolderEntry folder) {
         if (this.mainFolder.setLastFolder(folder)) {
-            if (this.backButton != null) {
-                this.backButton.active = this.mainFolder.next != null;
-            }
+            this.backButton.active = this.mainFolder.next != null;
+            EmoteListWidget.LAST_OPENED_PATH.clear();
+            updateLastOpenedPath(this.mainFolder.next);
             return true;
         }
         return false;
@@ -214,7 +240,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             return name.getString().toLowerCase().contains(string.toLowerCase());
         }
 
-        protected abstract List<ListEntry> getEmotes(boolean excludeFolders);
+        protected abstract void collectEmotes(boolean isSearchActive, List<ListEntry> collection);
 
         @Override
         public abstract boolean equals(Object obj);
@@ -272,8 +298,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        protected List<ListEntry> getEmotes(boolean excludeFolders) {
-            return Collections.singletonList(this);
+        protected void collectEmotes(boolean excludeFolders, List<ListEntry> collection) {
+            collection.add(this);
         }
 
         @Override
@@ -301,7 +327,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public static final ResourceLocation FOLDER_OPEN = McUtils.newIdentifier("textures/folder_open.png");
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
-        private final List<ListEntry> entries = new ArrayList<>();
+        private final Map<Component, ListEntry> entries = new HashMap<>();
         private FolderEntry next;
 
         public FolderEntry(@NotNull Component name) {
@@ -313,33 +339,26 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, left, top, 0.0F, 0.0F, 32, 32, 32, 32);
         }
 
-        public boolean isInvalid() {
-            return StringUtils.isBlank(this.name.getString());
-        }
-
         @Override
-        protected List<ListEntry> getEmotes(boolean excludeFolders) {
-            List<ListEntry> emotes = new ArrayList<>();
-            if (excludeFolders) {
-                for (var entry : this.entries) {
-                    if (entry instanceof FolderEntry) {
-                        emotes.addAll(entry.getEmotes(true));
+        protected void collectEmotes(boolean isSearchActive, List<ListEntry> collection) {
+            if (this.next == null || !this.entries.containsValue(this.next)) {
+                for (var entry : this.entries.values()) {
+                    if (entry instanceof FolderEntry folder) {
+                        boolean isInvalid = StringUtils.isBlank(this.name.getString());
+                        if (!isInvalid) collection.add(folder);
+
+                        if (isSearchActive || isInvalid) {
+                            for (var folderEntry : folder.entries.values()) {
+                                folderEntry.collectEmotes(isSearchActive, collection);
+                            }
+                        }
                     } else {
-                        emotes.add(entry);
-                    }
-                }
-            } else if (this.next == null || !this.entries.contains(this.next)) {
-                for (var entry : this.entries) {
-                    if (entry instanceof FolderEntry folder && folder.isInvalid()) {
-                        emotes.addAll(entry.getEmotes(false));
-                    } else {
-                        emotes.add(entry);
+                        entry.collectEmotes(isSearchActive, collection);
                     }
                 }
             } else {
-                emotes.addAll(this.next.getEmotes(false));
+                this.next.collectEmotes(isSearchActive, collection);
             }
-            return emotes;
         }
 
         public boolean setLastFolder(FolderEntry folder) {
@@ -349,13 +368,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                     return true;
                 }
                 return this.next.setLastFolder(folder);
-            } else {
-                return setSelectedFolder(folder);
             }
+            return setSelectedFolder(folder);
         }
 
         public boolean setSelectedFolder(FolderEntry folder) {
-            if (this.entries.contains(folder) || folder == null) {
+            if (folder == null || this.entries.containsValue(folder)) {
                 this.next = folder;
                 return true;
             }
@@ -363,16 +381,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         public FolderEntry getOrCreateFolder(Component name) {
-            for (ListEntry entry : this.entries) {
-                if (entry instanceof FolderEntry folder) {
-                    if (folder.name.equals(name)) {
-                        return folder;
-                    }
-                }
-            }
-            FolderEntry folder = new FolderEntry(name);
-            this.entries.add(folder);
-            return folder;
+            return (FolderEntry) this.entries.computeIfAbsent(name, FolderEntry::new);
         }
 
         @Override
@@ -409,12 +418,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     }
 
-    public Button createBackButton() {
-        this.backButton = Button.builder(McUtils.BACK, button -> setLastFolder(null))
-                .width(Button.DEFAULT_HEIGHT)
-                .build();
+    private static void updateLastOpenedPath(@Nullable FolderEntry folder) {
+        if (folder == null) return;
+        EmoteListWidget.LAST_OPENED_PATH.add(folder.name);
+        if (folder.next != null) updateLastOpenedPath(folder.next);
+    }
 
-        this.backButton.active = false;
+    public Button createBackButton() {
         return this.backButton;
     }
 }
