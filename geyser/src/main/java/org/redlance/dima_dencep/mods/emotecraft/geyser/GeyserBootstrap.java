@@ -8,13 +8,14 @@ import org.objectweb.asm.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 import static org.objectweb.asm.Opcodes.*;
 
+/**
+ * Used to run Emotecraft in a dev environment.
+ */
 public class GeyserBootstrap {
     static {
         System.setProperty("java.awt.headless", "true");
@@ -34,7 +35,6 @@ public class GeyserBootstrap {
     private static void patchClass(Class<?> nearClass, String name, UnaryOperator<byte[]> patcher) throws ReflectiveOperationException, IOException {
         try (InputStream is = Objects.requireNonNull(nearClass.getClassLoader().getResourceAsStream(name))) {
             byte[] bytecode = patcher.apply(is.readAllBytes());
-            Files.write(Path.of(name.replace("/", "")), bytecode);
             MethodHandles.privateLookupIn(nearClass, MethodHandles.lookup()).defineClass(bytecode);
         }
     }
