@@ -17,7 +17,6 @@ configurations.api.configure { extendsFrom(compileApi) }
 dependencies {
     compileOnly("org.geysermc.geyser:core:${properties["geyser_version"] as String}")
     implementation("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}")
-    implementation("org.ow2.asm:asm:9.8")
 
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesAPI")) {
