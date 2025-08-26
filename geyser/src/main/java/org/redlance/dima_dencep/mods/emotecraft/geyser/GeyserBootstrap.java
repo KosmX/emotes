@@ -1,73 +1,41 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser;
 
 import io.github.kosmx.emotes.common.CommonData;
+import org.geysermc.geyser.extension.GeyserExtensionContainer;
+import org.geysermc.geyser.platform.standalone.GeyserStandaloneBootstrap;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 import static org.objectweb.asm.Opcodes.*;
 
-public class GeyserBootstrap extends ClassLoader {
+public class GeyserBootstrap {
     static {
         System.setProperty("java.awt.headless", "true");
     }
 
-    public GeyserBootstrap(ClassLoader parent) {
-        super(parent);
+    public static void main(String[] args) throws ReflectiveOperationException, IOException {
+        patchClass(GeyserExtensionContainer.class, "org/geysermc/geyser/extension/GeyserExtensionLoader.class", bytes -> {
+            ClassReader reader = new ClassReader(bytes);
+            ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            ClassVisitor transformer = new GeyserExtensionLoaderClassVisitor(writer);
+            reader.accept(transformer, ClassReader.EXPAND_FRAMES);
+            return writer.toByteArray();
+        });
+        GeyserStandaloneBootstrap.main(args);
     }
 
-    public static void main(String[] args) throws ReflectiveOperationException {
-        GeyserBootstrap loader = new GeyserBootstrap(GeyserBootstrap.class.getClassLoader());
-        Thread.currentThread().setContextClassLoader(loader);
-
-        Class<?> bootstrapClass = loader.loadClass("org.geysermc.geyser.platform.standalone.GeyserStandaloneBootstrap");
-        Method main = bootstrapClass.getMethod("main", String[].class);
-        main.invoke(null, (Object) args);
-    }
-
-    @Override
-    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        if (name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("sun.") || name.startsWith("jdk.") || name.startsWith("org.apache.logging.") || name.startsWith("com.sun.") || name.startsWith("org.slf4j.")) {
-            return super.loadClass(name, resolve);
-        }
-
-        synchronized (getClassLoadingLock(name)) {
-            Class<?> c = findLoadedClass(name);
-            if (c != null) return c;
-
-            try {
-                byte[] classBytes = loadClassBytes(name);
-
-                if (name.equals("org.geysermc.geyser.extension.GeyserExtensionLoader")) {
-                    CommonData.LOGGER.info("Transforming {}", name);
-                    ClassReader reader = new ClassReader(classBytes);
-                    ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-                    ClassVisitor transformer = new GeyserExtensionLoaderClassVisitor(writer);
-                    reader.accept(transformer, ClassReader.EXPAND_FRAMES);
-                    classBytes = writer.toByteArray();
-                }
-
-                c = defineClass(name, classBytes, 0, classBytes.length);
-
-                if (resolve) resolveClass(c);
-                return c;
-            } catch (ClassNotFoundException | IOException e) {
-                return super.loadClass(name, resolve);
-            } catch (Exception e) {
-                throw new ClassNotFoundException("Failed to load or transform " + name, e);
-            }
-        }
-    }
-
-    private byte[] loadClassBytes(String name) throws IOException, ClassNotFoundException {
-        String resourceName = name.replace('.', '/') + ".class";
-        try (InputStream is = getParent().getResourceAsStream(resourceName)) {
-            if (is == null) {
-                throw new ClassNotFoundException("Resource not found by bootstrap loader: " + resourceName);
-            }
-            return is.readAllBytes();
+    private static void patchClass(Class<?> nearClass, String name, UnaryOperator<byte[]> patcher) throws ReflectiveOperationException, IOException {
+        try (InputStream is = Objects.requireNonNull(nearClass.getClassLoader().getResourceAsStream(name))) {
+            byte[] bytecode = patcher.apply(is.readAllBytes());
+            Files.write(Path.of(name.replace("/", "")), bytecode);
+            MethodHandles.privateLookupIn(nearClass, MethodHandles.lookup()).defineClass(bytecode);
         }
     }
 
