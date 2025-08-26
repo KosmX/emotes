@@ -1,6 +1,9 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery;
 
 import javassist.*;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.MethodInfo;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 import org.cloudburstmc.protocol.bedrock.packet.StartGamePacket;
@@ -29,11 +32,19 @@ public class GeyserSessionPatch {
             CtClass protocolProviderInterface = pool.get("org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ProtocolProvider");
             cc.addInterface(protocolProviderInterface);
 
-            String methodSrc = """
+            CtMethod ctMethod = CtNewMethod.make("""
                 public org.geysermc.mcprotocollib.protocol.MinecraftProtocol ec$getProtocol() {
                     return this.protocol;
-                }""";
-            cc.addMethod(CtNewMethod.make(methodSrc, cc));
+                }""", cc
+            );
+
+            MethodInfo methodInfo = ctMethod.getMethodInfo();
+            ConstPool cp = methodInfo.getConstPool();
+            AnnotationsAttribute attr = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
+            attr.addAnnotation(new javassist.bytecode.annotation.Annotation(Override.class.getName(), cp));
+            methodInfo.addAttribute(attr);
+
+            cc.addMethod(ctMethod);
 
             CtMethod startGameMethod = cc.getDeclaredMethod("startGame");
             startGameMethod.instrument(new ExprEditor() {
