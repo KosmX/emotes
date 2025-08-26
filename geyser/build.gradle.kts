@@ -1,8 +1,11 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
     java
     `maven-publish`
     id("com.gradleup.shadow")
     id("xyz.wagyourtail.jvmdowngrader")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
@@ -78,3 +81,16 @@ publishing {
     }
 }
 
+publishMods {
+    file.set(tasks.downgradeJar.get().archiveFile) // Java 17
+    // additionalFiles.from(tasks.shadowJar.get().archiveFile) // Java 21
+
+    type = ReleaseType.of(releaseType)
+    changelog = changes
+    dryRun = gradle.startParameter.isDryRun
+
+    github {
+        accessToken = providers.environmentVariable("GH_TOKEN")
+        parent(rootProject.tasks.named("publishGithub"))
+    }
+}

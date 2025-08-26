@@ -5,12 +5,15 @@ import java.io.FileNotFoundException
 val CURSEFORGE_EMOJI = Emoji("curseforge", "1136405235187847198")
 val MODRINTH_EMOJI = Emoji("modrinth", "1136404935374798878")
 val HANGAR_EMOJI = Emoji("hangar", "1407387843931672647")
+val GITHUB_EMOJI = Emoji("github", "1136406913542795364")
+val GEYSER_EMOJI = Emoji("geyser", "1409806511508815922")
 
 fun Emoji.Companion.fromPlatform(platform: String): Emoji? {
     return when (platform) {
         "modrinth" -> MODRINTH_EMOJI
         "curseforge" -> CURSEFORGE_EMOJI
         "hangar" -> HANGAR_EMOJI
+        "github" -> GITHUB_EMOJI
         else -> null
     }
 }
@@ -31,7 +34,7 @@ class CustomPublishResult(override val title: String,
     }
 }
 
-class LatePublishResult(val file: File, private val emojiOverride: Emoji? = null) : ICustomPublishResult {
+class LatePublishResult(val file: File, private val emojiOverride: Emoji? = null, private val titleOverride: String? = null) : ICustomPublishResult {
     val loaded by lazy {
         val p = try {
             PublishResult.fromJson(file.readText())
@@ -42,7 +45,7 @@ class LatePublishResult(val file: File, private val emojiOverride: Emoji? = null
         CustomPublishResult.from(p)
     }
     override val title: String
-        get() = loaded.title
+        get() = titleOverride ?: loaded.title
     override val link: String
         get() = loaded.link
     override val emoji: Emoji?
