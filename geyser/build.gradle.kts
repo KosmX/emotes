@@ -22,7 +22,15 @@ dependencies {
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesAPI")) {
         exclude(group = "org.jetbrains", module = "annotations")
+
         exclude(module = "gson")
+        exclude(module = "slf4j-api")
+        exclude(module = "fastutil")
+        exclude(module = "netty-buffer")
+        exclude(module = "jspecify")
+        exclude(module = "guava")
+        exclude(module = "error_prone_annotations")
+        exclude(module = "netty-buffer")
     }
 }
 
