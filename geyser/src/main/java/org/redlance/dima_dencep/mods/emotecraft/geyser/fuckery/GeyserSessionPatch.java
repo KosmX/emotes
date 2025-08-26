@@ -33,7 +33,7 @@ public class GeyserSessionPatch {
             cc.addInterface(protocolProviderInterface);
 
             CtMethod ctMethod = CtNewMethod.make("""
-                public org.geysermc.mcprotocollib.protocol.MinecraftProtocol ec$getProtocol() {
+                public org.geysermc.mcprotocollib.protocol.MinecraftProtocol ec$protocol() {
                     return this.protocol;
                 }""", cc
             );
