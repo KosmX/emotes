@@ -23,7 +23,7 @@ dependencies {
     }
 
     modCompileOnly("maven.modrinth:entity-model-features:emqHnxMo")
-    modCompileOnly("maven.modrinth:entitytexturefeatures:441qELLe")
+    modCompileOnly("maven.modrinth:entitytexturefeatures:hmRY8v2W")
 }
 
 java {
