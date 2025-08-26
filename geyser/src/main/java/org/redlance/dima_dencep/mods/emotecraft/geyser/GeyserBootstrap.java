@@ -4,12 +4,9 @@ import io.github.kosmx.emotes.common.CommonData;
 import org.geysermc.geyser.extension.GeyserExtensionContainer;
 import org.geysermc.geyser.platform.standalone.GeyserStandaloneBootstrap;
 import org.objectweb.asm.*;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GeyserSessionPatch;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.invoke.MethodHandles;
-import java.util.Objects;
-import java.util.function.UnaryOperator;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -22,7 +19,7 @@ public class GeyserBootstrap {
     }
 
     public static void main(String[] args) throws ReflectiveOperationException, IOException {
-        patchClass(GeyserExtensionContainer.class, "org/geysermc/geyser/extension/GeyserExtensionLoader.class", bytes -> {
+        GeyserSessionPatch.patchClass(GeyserExtensionContainer.class, "org/geysermc/geyser/extension/GeyserExtensionLoader.class", bytes -> {
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             ClassVisitor transformer = new GeyserExtensionLoaderClassVisitor(writer);
@@ -30,13 +27,6 @@ public class GeyserBootstrap {
             return writer.toByteArray();
         });
         GeyserStandaloneBootstrap.main(args);
-    }
-
-    private static void patchClass(Class<?> nearClass, String name, UnaryOperator<byte[]> patcher) throws ReflectiveOperationException, IOException {
-        try (InputStream is = Objects.requireNonNull(nearClass.getClassLoader().getResourceAsStream(name))) {
-            byte[] bytecode = patcher.apply(is.readAllBytes());
-            MethodHandles.privateLookupIn(nearClass, MethodHandles.lookup()).defineClass(bytecode);
-        }
     }
 
     private static class GeyserExtensionLoaderClassVisitor extends ClassVisitor {

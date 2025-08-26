@@ -15,16 +15,19 @@ import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.session.GeyserSession;
+import org.geysermc.geyser.session.PendingMicrosoftAuthentication;
 import org.geysermc.geyser.util.MinecraftKey;
 import org.geysermc.mcprotocollib.protocol.data.ProtocolState;
 import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundCustomPayloadPacket;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserHacks;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserSessionUtils;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GeyserSessionPatch;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ProtocolProvider;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +38,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @SuppressWarnings("unused")
 public class EmotecraftExt implements Extension {
+    static {
+        try {
+            GeyserSessionPatch.patchClass(PendingMicrosoftAuthentication.class, "org/geysermc/geyser/session/GeyserSession.class", GeyserSessionPatch::patch);
+        } catch (ReflectiveOperationException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final Map<GeyserSession, GeyserNetworkInstance> INSTANCES = new ConcurrentHashMap<>();
 
     public static final Key MINECRAFT_REGISTER_TYPE = MinecraftKey.key("register");
@@ -91,7 +102,7 @@ public class EmotecraftExt implements Extension {
             DinnerboneProtocolUtils.writeChannels(byteBuf, EMOTECRAFT_CHANNELS);
             session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
 
-            if (GayserSessionUtils.getProtocol(session).getOutboundState() == ProtocolState.GAME) {
+            if (((ProtocolProvider) session).ec$state() == ProtocolState.GAME) {
                 GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
 
                 if (!networkInstance.isHandShaked()) {
@@ -107,7 +118,7 @@ public class EmotecraftExt implements Extension {
     private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
         if (!networkInstance.isHandShaked()) {
-            if (GayserSessionUtils.getProtocol(session).getOutboundState() == ProtocolState.CONFIGURATION) {
+            if (((ProtocolProvider) session).ec$state() == ProtocolState.CONFIGURATION) {
                 CommonData.LOGGER.debug("Configuring emotecraft...");
                 networkInstance.sendC2SConfig();
             }
