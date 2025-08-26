@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.network.fabric;
 
-import io.github.kosmx.emotes.fabric.FabricWrapper;
+import io.github.kosmx.emotes.fabric.EmotecraftFabricMod;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +18,6 @@ public class NetworkPlatformToolsImpl {
     }
 
     public static MinecraftServer getServer() {
-        return FabricWrapper.SERVER_INSTANCE;
+        return EmotecraftFabricMod.SERVER_INSTANCE;
     }
 }

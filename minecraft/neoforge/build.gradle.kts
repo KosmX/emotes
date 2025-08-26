@@ -35,16 +35,21 @@ dependencies {
     commonModule(project(":emotesAssets")) { isTransitive = false }
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
-    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${properties["playeranimlib_version"] as String}") {
+    modImplementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:${project["playeranimlib_version"]}") {
         pomCompile(this)
     }
 
-    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${properties["bendablecuboids_version"] as String}") {
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${project["bendablecuboids_version"]}") {
+        isTransitive = false
+        pomCompile(this)
+    }
+
+    modRuntimeOnly("org.redlance.dima_dencep.mods:TranslationFallbacksNeo:${project["translationfallbacks_version"]}") {
         include(this)
         pomCompile(this)
     }
 
-    implementation("net.raphimc:NoteBlockLib:${properties["noteblocklib_version"] as String}") {
+    implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
         forgeRuntimeLibrary(this)
         include(this)
         pomCompile(this)
@@ -63,7 +68,7 @@ dependencies {
 
     // Temp fixes
     forgeRuntimeLibrary("org.javassist:javassist:3.30.2-GA")
-    forgeRuntimeLibrary("com.zigythebird:mochafloats:1.1.2")
+    forgeRuntimeLibrary("com.zigythebird:mochafloats:1.1.4")
 }
 
 tasks.processResources {
@@ -151,12 +156,12 @@ publishMods {
         announcementTitle = "Modrinth (NeoForge)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
-        minecraftVersions.add(minecraft_version)
+        minecraftVersions.addAll(release_minecraft_versions)
         displayName = mod_version
         version = "${mod_version}+${removePreRc(minecraft_version)}-forge"
 
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        optional("bendable-cuboids")
         optional("searchables")
     }
 
@@ -167,10 +172,14 @@ publishMods {
         projectSlug = providers.gradleProperty("curseforge_slug_forge")
         changelogType = "markdown"
         displayName = base.archivesName.get() + "-$mod_version"
-        minecraftVersions.add(curseforge_minecraft_version)
+        minecraftVersions.addAll(curseforge_minecraft_versions)
+
+        javaVersions.add(project.java_version)
+        clientRequired = true
+        serverRequired = true
 
         requires("player-animation-library")
-        requires("bendable-cuboids")
+        optional("bendable-cuboids")
         optional("searchables")
     }
 }

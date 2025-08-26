@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
  */
 public class EmoteSerializer {
     public static final String FOLDER_PATH_KEY = "folderpath";
+    public static final String BUILT_IN_KEY = "isBuiltin";
     public static final String FILENAME_KEY = "fileName";
 
     public static void serializeEmotes(UUIDMap<Animation> emotes, Path externalEmotes) {
@@ -57,10 +59,12 @@ public class EmoteSerializer {
         try (InputStream reader = Files.newInputStream(file)) {
             List<Animation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
             for (Animation emote : emotes) { // Avoid lambda
+                ExtraAnimationData data = emote.data();
                 if (folderPath != null && !folderPath.isBlank()) {
-                    emote.data().put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
+                    data.put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
                 }
-                emote.data().put(EmoteSerializer.FILENAME_KEY, fileName);
+                data.put(EmoteSerializer.FILENAME_KEY, fileName);
+                data.data().remove(EmoteSerializer.BUILT_IN_KEY);
             }
 
             Path icon = file.getParent().resolve(baseFileName + ".png");
@@ -96,7 +100,7 @@ public class EmoteSerializer {
         }
     }
 
-    private static String getBaseName(String fileName) {
+    protected static String getBaseName(String fileName) {
         int i = fileName.lastIndexOf('.');
         if (i > 0) {
             fileName = fileName.substring(0, i);

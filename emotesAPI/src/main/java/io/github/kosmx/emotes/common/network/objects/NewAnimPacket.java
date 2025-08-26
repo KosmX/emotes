@@ -22,7 +22,7 @@ public class NewAnimPacket extends AbstractNetworkPacket {
     @Override
     public void read(ByteBuffer buf, NetData config, int version) throws IOException {
         config.tick = buf.getFloat();
-        config.emoteData = AnimationBinary.read(Unpooled.wrappedBuffer(buf));
+        config.emoteData = AnimationBinary.read(Unpooled.wrappedBuffer(buf), version);
         config.valid = true; // TODO
     }
 
@@ -33,7 +33,7 @@ public class NewAnimPacket extends AbstractNetworkPacket {
 
         ByteBuf tempNettyBuf = Unpooled.buffer();
         try {
-            AnimationBinary.write(tempNettyBuf, config.emoteData);
+            AnimationBinary.write(tempNettyBuf, getVer(config.versions), config.emoteData);
             buf.put(tempNettyBuf.array(), 0, tempNettyBuf.readableBytes());
         } finally {
             tempNettyBuf.release();
@@ -50,7 +50,7 @@ public class NewAnimPacket extends AbstractNetworkPacket {
         if (config.emoteData == null || !config.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT)) return 0;
         ByteBuf byteBuf = Unpooled.buffer();
         try {
-            AnimationBinary.write(byteBuf, config.emoteData);
+            AnimationBinary.write(byteBuf, getVer(config.versions), config.emoteData);
             return byteBuf.readableBytes() + 4;
         } finally {
             byteBuf.release();

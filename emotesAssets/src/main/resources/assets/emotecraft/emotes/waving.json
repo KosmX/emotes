@@ -1,7 +1,11 @@
 {
-	"name": "Waving",
+	"name": {
+      "translate": "emotecraft.emote.waving.name"
+    },
 	"author": "KosmX",
-	"description": "Like say Hi!",
+	"description": {
+      "translate": "emotecraft.emote.waving.description"
+    },
 	"uuid": "33b912f8-0aa0-45e6-a2d4-9b5677e6f35c",
 	"emote":{
 		"beginTick":12,

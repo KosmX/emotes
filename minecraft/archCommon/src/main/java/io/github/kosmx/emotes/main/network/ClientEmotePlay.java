@@ -7,11 +7,11 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteAPI;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import io.github.kosmx.emotes.main.MainLoader;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
@@ -106,7 +106,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                     ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUUID());
                     player.stopEmote(data.stopEmoteID);
                     if (player.isMainPlayer() && !data.isForced) {
-                        PlatformTools.sendChatMessage(Component.translatable("emotecraft.blockedEmote"));
+                        PlatformTools.addToast(Component.translatable("emotecraft.blockedEmote"));
                     }
                 } else {
                     QUEUE.remove(data.player);
@@ -134,7 +134,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 playerEntity.emotecraft$playEmote(emoteData, tick, isForced);
             }
             else {
-                QUEUE.put(player, new QueueEntry(emoteData, tick, MainLoader.getTick()));
+                QUEUE.put(player, new QueueEntry(emoteData, tick, EmotecraftClientMod.getTick()));
             }
         }
     }
@@ -152,7 +152,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         if (QUEUE.containsKey(uuid)) {
             QueueEntry entry = QUEUE.get(uuid);
             Animation emoteData = entry.emoteData;
-            float tick = entry.beginTick - entry.receivedTick + MainLoader.getTick();
+            float tick = entry.beginTick - entry.receivedTick + EmotecraftClientMod.getTick();
             QUEUE.remove(uuid);
             if (!emoteData.isPlayingAt(tick)) return null;
             return Pair.of(emoteData, tick);
@@ -164,11 +164,11 @@ public class ClientEmotePlay extends ClientEmoteAPI {
      * Call this periodically to keep the queue clean
      */
     public static void checkQueue(){
-        int currentTick = MainLoader.getTick();
+        int currentTick = EmotecraftClientMod.getTick();
         QUEUE.forEach((uuid, entry) -> {
             if(!entry.emoteData.isPlayingAt(entry.beginTick + currentTick)
                     && entry.beginTick + currentTick > 0
-                    || MainLoader.getTick() - entry.receivedTick > 24000){
+                    || EmotecraftClientMod.getTick() - entry.receivedTick > 24000){
                 QUEUE.remove(uuid);
             }
         });

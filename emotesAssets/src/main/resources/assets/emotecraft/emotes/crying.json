@@ -1,7 +1,11 @@
 {
-    "name": "Crying",
+    "name": {
+      "translate": "emotecraft.emote.crying.name"
+    },
     "author": "KosmX",
-    "description": "weep",
+    "description": {
+      "translate": "emotecraft.emote.crying.description"
+    },
     "uuid": "a2969c42-520f-4c5c-a024-a7d0a2b7b4d1",
     "emote":{
         "isLoop": "false",

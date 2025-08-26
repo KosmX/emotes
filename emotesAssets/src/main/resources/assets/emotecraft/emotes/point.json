@@ -1,7 +1,11 @@
 {
-    "name": "Point",
+    "name": {
+      "translate": "emotecraft.emote.point.name"
+    },
     "author": "KosmX",
-    "description": "This way",
+    "description": {
+      "translate": "emotecraft.emote.point.description"
+    },
     "uuid": "931b2bda-a25e-4e55-957a-88c46f5e9a7b",
     "emote":{
         "isLoop": "false",

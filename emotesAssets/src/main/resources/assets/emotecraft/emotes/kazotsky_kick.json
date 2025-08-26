@@ -1,7 +1,11 @@
 {
-    "name": "kazotsky kick",
+    "name": {
+      "translate": "emotecraft.emote.kazotsky_kick.name"
+    },
     "author": "Wah0o",
-    "description": "cheap kazotsky kick",
+    "description": {
+      "translate": "emotecraft.emote.kazotsky_kick.description"
+    },
     "uuid": "01a53a42-2fd2-418c-8e46-e4ee1ff9ee6a",
     "emote":{
         "isLoop": "true",

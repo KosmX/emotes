@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -68,9 +69,9 @@ public class EmoteHolder implements Supplier<UUID> {
     @SuppressWarnings("unchecked")
     public EmoteHolder(Animation emote) {
         this.emote = emote;
-        this.name = McUtils.fromJson(emote.data().getRaw("name"), RegistryAccess.EMPTY);
-        this.description = McUtils.fromJson(emote.data().getRaw("description"), RegistryAccess.EMPTY);
-        this.author = McUtils.fromJson(emote.data().getRaw("author"), RegistryAccess.EMPTY);
+        this.name = emote.data().get("name").map(McUtils::fromJson).orElseThrow();
+        this.description = emote.data().get("description").map(McUtils::fromJson).orElse(CommonComponents.EMPTY);
+        this.author = emote.data().get("author").map(McUtils::fromJson).orElse(CommonComponents.EMPTY);
         this.folder = computeFolderPath((String) emote.data().getRaw(EmoteSerializer.FOLDER_PATH_KEY));
         this.bages = computeBages((List<String>) emote.data().getRaw("bages"));
 
@@ -87,7 +88,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     private static List<Component> computeBages(List<String> bages) {
-        if (bages == null) return Collections.emptyList();
+        if (bages == null || bages.isEmpty()) return Collections.emptyList();
         List<Component> components = new ArrayList<>(bages.size());
         for (String element : bages) {
             try {

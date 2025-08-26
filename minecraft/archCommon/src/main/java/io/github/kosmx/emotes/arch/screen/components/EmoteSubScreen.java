@@ -1,14 +1,15 @@
 package io.github.kosmx.emotes.arch.screen.components;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
+import io.github.kosmx.emotes.server.serializer.EmoteWriter;
 import io.github.kosmx.emotes.server.services.InstanceService;
-import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -69,7 +70,7 @@ public abstract class EmoteSubScreen extends Screen {
     public void added() {
         if (this.watcher == null) {
             this.watcher = EmoteListener.create(InstanceService.INSTANCE.getExternalEmoteDir());
-            if (this.reloadOnOpen && this.watcher != null) this.watcher.load(this::addOptions);
+            if (this.reloadOnOpen && this.watcher != null) this.watcher.load(this::addOptions, this.minecraft);
         }
         super.added();
     }
@@ -158,7 +159,7 @@ public abstract class EmoteSubScreen extends Screen {
         if (this.watcher != null) {
             try {
                 if (this.watcher.pollForChanges()) {
-                    this.watcher.load(this::addOptions);
+                    this.watcher.load(this::addOptions, this.minecraft);
                 }
             } catch (IOException ex) {
                 CommonData.LOGGER.warn("Failed to poll for directory changes, stopping", ex);
@@ -200,7 +201,16 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     public void onClose() {
+        if (this.watcher != null && this.watcher.isLoading()) {
+            PlatformTools.addToast(EmoteListener.RELOADING_WAIT);
+            return;
+        }
         this.minecraft.setScreen(this.lastScreen);
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return this.watcher == null || !this.watcher.isLoading();
     }
 
     @Override
@@ -218,18 +228,19 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void onFilesDrop(List<Path> paths) {
         for (Path path : paths) {
             try (Stream<Path> stream = Files.walk(path)) {
                 stream.forEach(emote -> {
                     List<Animation> animations = EmoteSerializer.serializeExternalEmote(emote);
-                    if (animations.isEmpty()/* || animations.getFirst().animationFormat != AnimationFormat.BINARY*/) return;
+                    if (animations.isEmpty()) return;
 
-                    try {
-                        Util.copyBetweenDirs(emote.getParent(), InstanceService.INSTANCE.getExternalEmoteDir(), emote);
-                    } catch (Throwable th) {
-                        CommonData.LOGGER.warn("Failed to move animation!", th);
+                    for (Animation animation : animations) {
+                        try {
+                            EmoteWriter.writeAnimationInBestFormat(animation, InstanceService.INSTANCE.getExternalEmoteDir());
+                        } catch (Throwable th) {
+                            CommonData.LOGGER.warn("Failed to move animation!", th);
+                        }
                     }
                 });
             } catch (Throwable th) {

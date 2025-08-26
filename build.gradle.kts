@@ -4,8 +4,8 @@ plugins {
     id("xyz.wagyourtail.jvmdowngrader") version("1.2.2") apply false
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
-    id("com.gradleup.shadow") version "8.3.8" apply false
-    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
+    id("com.gradleup.shadow") version "9.0.2" apply false
+    id("me.modmuss50.mod-publish-plugin") // version defined in buildSrc
 }
 
 subprojects {
@@ -41,7 +41,7 @@ subprojects {
     }
 
     tasks.withType(JavaCompile::class).configureEach {
-        options.release = (properties["java_version"] as String).toInt()
+        options.release = project.java_version.majorVersion.toInt()
         options.encoding = "UTF-8"
     }
 
@@ -81,28 +81,52 @@ publishMods {
         displayName = "Emotecraft-${mod_version}"
         allowEmptyFiles = true
     }
+}
 
-    discord {
-        style {
-            look = "MODERN"
-            color = "#%06X".format(kotlin.random.Random.nextInt(0x000000, 0x1000000))
-            link = "BUTTON"
-        }
+val ds = publishDiscord {
+    onlyIf {
+        val explicit = gradle.startParameter.taskNames.contains(name)
+        if (explicit) return@onlyIf true
 
-        webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK")
-        username = "Emotecraft Updates"
-        val changelog = changes.replace("<br>", "  \n")
-        content = "# Emotecraft $mod_version for Minecraft $minecraft_version is out!\n### Changes:  \n$changelog"
-        publishResults.setFrom(
-            project(":minecraft:neoforge").publishResult("modrinth"),
-            project(":minecraft:fabric").publishResult("modrinth"),
-            project(":minecraft:neoforge").publishResult("curseforge"),
-            project(":minecraft:fabric").publishResult("curseforge"),
-            project(":paper").publishResult("modrinth"))
+        val mods = gradle.taskGraph.allTasks.filter { it.name == "publishMods" }
+        mods.isNotEmpty() && mods.all { it.state.failure == null}
+    }
+
+    username = "Emotecraft Updates"
+    content = "<@&926902263941849118>"
+    url = providers.environmentVariable("DISCORD_WEBHOOK")
+
+    val changelog = changes.replace("<br>", "  \n")
+    embed {
+        color = kotlin.random.Random.nextInt(0x000000, 0x1000000)
+        title = "Emotecraft $mod_version for Minecraft $minecraft_version is out!"
+        description = "Changes:  \n$changelog"
+        thumbnail("https://raw.githubusercontent.com/KosmX/emotes/d97b2df4ab59bbd2740f30497e96f92cb643b2df/emotesAssets/src/main/resources/emotecraft_mod_logo.png")
+        timestamp(System.currentTimeMillis())
+    }
+
+    links {
+        from(":minecraft:neoforge", "modrinth")
+        from(":minecraft:fabric", "modrinth")
+
+        val paper = project(":paper")
+        from(paper, "modrinth")
+        nextRow()
+
+        from(":minecraft:neoforge", "curseforge")
+        from(":minecraft:fabric", "curseforge")
+
+        val hangarProjectName = providers.gradleProperty("hangarProjectName")
+            .getOrElse("dima_dencep/emotecraft")
+        val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
+        val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
+        nextRow()
+        custom("Hangar (Paper)", hangarLink, HANGAR_EMOJI)
     }
 }
 
-@Suppress("UnstableApiUsage")
-fun Project.publishResult(platformName: String): RegularFileProperty {
-    return tasks.withType(me.modmuss50.mpp.PublishModTask::class.java).first { it.platform.name == platformName }.result
+allprojects {
+    tasks.matching { it.name == "publishMods" }.configureEach {
+        finalizedBy(ds)
+    }
 }
