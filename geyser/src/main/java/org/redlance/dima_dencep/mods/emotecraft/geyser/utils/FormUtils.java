@@ -32,7 +32,7 @@ public class FormUtils {
 
             if (animation.data().getRaw("author") instanceof String rawAuthor) {
                 String author = EmotecraftLocale.getLocaleString(MessageTranslator.convertMessage(AUTHOR, locale), locale);
-                name = String.format("%s\n(%s %s)", name, author, MessageTranslator.convertMessageLenient(rawAuthor, locale));
+                name = String.format("%s\n(%s%s)", name, author, MessageTranslator.convertMessageLenient(rawAuthor, locale));
             }
 
             return name;
