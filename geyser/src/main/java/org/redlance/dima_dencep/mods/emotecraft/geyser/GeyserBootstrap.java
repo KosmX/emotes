@@ -37,7 +37,7 @@ public class GeyserBootstrap {
                         org.geysermc.geyser.extension.GeyserExtensionDescription description = org.geysermc.geyser.extension.GeyserExtensionDescription.fromYaml(reader);
                         reader.close();
 
-                        java.nio.file.Path path = java.nio.file.Path.of(".", new String[0]);
+                        java.nio.file.Path path = this.extensionsDirectory.resolve(description.id());
                         org.geysermc.geyser.api.event.EventBus eventBus = org.geysermc.geyser.GeyserImpl.getInstance().eventBus();
                         org.geysermc.geyser.extension.event.GeyserExtensionEventBus extensionEventBus = new org.geysermc.geyser.extension.event.GeyserExtensionEventBus(eventBus, extension);
                         org.geysermc.geyser.extension.GeyserExtensionContainer container = this.setup(extension, description, path, extensionEventBus);

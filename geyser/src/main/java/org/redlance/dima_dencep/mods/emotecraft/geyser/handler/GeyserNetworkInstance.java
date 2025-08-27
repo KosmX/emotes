@@ -8,28 +8,31 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
+import io.github.kosmx.emotes.common.tools.UUIDMap;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.session.GeyserSession;
-import org.geysermc.geyser.text.MinecraftLocale;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.Nullable;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>();
-    private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
+    // private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
+    private final UUIDMap<Animation> animations = new UUIDMap<>();
     private final GeyserSession session;
 
     private UUID currentEmote;
-    private boolean isHandShaked;
+    private ConnectionType connectionType = ConnectionType.NONE;
 
     public GeyserNetworkInstance(GeyserSession session) {
         this.session = session;
@@ -99,9 +102,9 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                     if (isMainPlayer(playerEntity)) {
                         this.currentEmote = data.emoteData.get();
                     }
-                } else {
+                } /*else {
                     // this.queue.put(data.player, new QueueEntry(data.emoteData, data.tick, ClientMethods.getCurrentTick()));
-                }
+                }*/
                 break;
 
             case STOP:
@@ -116,7 +119,8 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                         sendChatMessage("emotecraft.blockedEmote");
                     }
                 } else {
-                    this.queue.remove(data.player);
+                    // this.queue.remove(data.player);
+                    CommonData.LOGGER.warn("Queue is not supported!");
                 }
                 break;
             case CONFIG:
@@ -124,7 +128,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 break;
 
             case FILE:
-                // TODO add bedrock form
+                this.animations.add(data.emoteData);
                 break;
 
             case UNKNOWN:
@@ -133,12 +137,33 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         }
     }
 
+    public void showForm() {
+        SimpleForm.Builder builder = SimpleForm.builder()
+                .translator(EmotecraftLocale::getLocaleString, this.session.locale())
+                .title(CommonData.MOD_NAME);
+        if (this.connectionType.translation != null) builder.content(this.connectionType.translation);
+
+        for (Animation animation : UniversalEmoteSerializer.getLoadedEmotes().values()) {
+            builder.button(FormUtils.createButtonComponent(animation, this.session.locale()));
+        }
+        for (Animation animation : this.animations.values()) {
+            builder.button(FormUtils.createButtonComponent(animation, this.session.locale()));
+        }
+
+        SimpleForm simpleForm = builder.validResultHandler((form, response) -> {
+            UUID emoteId = FormUtils.extractAnimationFromButton(response.clickedButton());
+            Animation animation = this.animations.getOrDefault(emoteId, UniversalEmoteSerializer.getEmote(emoteId));
+            if (animation != null) playEmote(animation, true);
+        }).build();
+        this.session.sendForm(simpleForm);
+    }
+
     public void stopEmote() {
         stopEmote(this.session.getPlayerEntity());
     }
 
     public void stopEmote(PlayerEntity player) {
-        this.session.showEmote(player, "idk");
+        this.session.showEmote(player, "");
 
         if (isMainPlayer(player) && this.currentEmote != null) {
             try {
@@ -152,7 +177,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void sendChatMessage(String key) {
-        this.session.sendChat(MinecraftLocale.getLocaleString(key, this.session.locale()));
+        this.session.sendMessage(EmotecraftLocale.getLocaleString(key, this.session.locale()));
     }
 
     public void playEmote(Animation animation, boolean local) {
@@ -160,7 +185,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         try {
             sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
             if (local) {
-                this.session.showEmote(this.session.getPlayerEntity(), animation.get().toString());
+                this.session.showEmote(this.session.getPlayerEntity(), "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
             }
             this.currentEmote = animation.get();
         } catch (Throwable th) {
@@ -204,15 +229,26 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         });
     }
 
-    public void setHandShaked(boolean is) {
-        this.isHandShaked = is;
+    public void setConnectionType(ConnectionType type) {
+        this.connectionType = type;
     }
 
-    public boolean isHandShaked() {
-        return this.isHandShaked;
+    public ConnectionType getConnectionType() {
+        return this.connectionType;
     }
 
     public boolean isPlaying() {
         return this.currentEmote != null;
+    }
+
+    @Override
+    public void disconnect() {
+        if (this.currentEmote != null) {
+            stopEmote();
+            this.currentEmote = null;
+        }
+        this.connectionType = ConnectionType.NONE;
+        this.animations.clear();
+        this.versions.clear();
     }
 }

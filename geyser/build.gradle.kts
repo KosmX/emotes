@@ -19,7 +19,7 @@ dependencies {
     implementation("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}")
 
     compileApi(project(":emotesAssets"))
-    compileApi(project(":emotesAPI")) {
+    compileApi(project(":emotesServer")) {
         exclude(group = "org.jetbrains", module = "annotations")
 
         exclude(module = "gson")

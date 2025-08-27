@@ -2,6 +2,10 @@ package org.redlance.dima_dencep.mods.emotecraft.geyser;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.server.config.ConfigSerializer;
+import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.kyori.adventure.key.Key;
@@ -9,9 +13,11 @@ import org.cloudburstmc.protocol.bedrock.packet.EmoteListPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.geysermc.event.PostOrder;
 import org.geysermc.event.subscribe.Subscribe;
+import org.geysermc.geyser.api.command.Command;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
+import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCommandsEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.session.GeyserSession;
@@ -23,6 +29,7 @@ import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.Serverbound
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserHacks;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GeyserSessionPatch;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ProtocolProvider;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.ConnectionType;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
@@ -66,6 +73,9 @@ public class EmotecraftExt implements Extension {
         CommonData.LOGGER.warn("Note that this extension does some horrible hacks on geyser.");
         CommonData.LOGGER.warn("Until custom packet event is added, workarounds cannot be avoided.");
 
+        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
+        UniversalEmoteSerializer.loadEmotes();
+
         GayserHacks.addCustomJavaTranslator(ClientboundCustomPayloadPacket.class, (session, packet) -> {
             Key type = packet.getChannel();
             if (CommonData.MOD_ID.equals(type.namespace())) { // Any emotecraft payload
@@ -105,24 +115,24 @@ public class EmotecraftExt implements Extension {
             if (((ProtocolProvider) session).ec$state() == ProtocolState.GAME) {
                 GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
 
-                if (!networkInstance.isHandShaked()) {
+                if (networkInstance.getConnectionType() == ConnectionType.NONE) {
                     CommonData.LOGGER.warn("The server failed to configure the client, attempting to configure...");
                     networkInstance.sendC2SConfig();
                 }
             }
-        } else {
+        } /*else {
             // Online-emotes integration?
-        }
+        }*/
     }
 
     private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
-        if (!networkInstance.isHandShaked()) {
+        if (networkInstance.getConnectionType() == ConnectionType.NONE) {
             if (((ProtocolProvider) session).ec$state() == ProtocolState.CONFIGURATION) {
                 CommonData.LOGGER.debug("Configuring emotecraft...");
                 networkInstance.sendC2SConfig();
             }
-            networkInstance.setHandShaked(true);
+            networkInstance.setConnectionType(ConnectionType.BACKEND);
         }
         networkInstance.receiveMessage(bytes);
     }
@@ -135,13 +145,30 @@ public class EmotecraftExt implements Extension {
 
     @Subscribe
     public void onSessionDisconnect(SessionDisconnectEvent event) {
-        EmotecraftExt.INSTANCES.remove((GeyserSession) event.connection());
+        GeyserNetworkInstance instance = EmotecraftExt.INSTANCES.remove((GeyserSession) event.connection());
+        if (instance != null) instance.disconnect();
+    }
+
+    @Subscribe
+    public void onDefineCommands(GeyserDefineCommandsEvent event) {
+        event.register(Command.builder(this)
+                .name(rootCommand())
+                .bedrockOnly(true)
+                .source(GeyserSession.class)
+                .aliases(List.of("emotes", "form"))
+                .description("Emotecraft command")
+                .playerOnly(true)
+                .executor((source, cmd, args) ->
+                        EmotecraftExt.INSTANCES.get((GeyserSession) source).showForm()
+                )
+                .build()
+        );
     }
 
     @Subscribe(postOrder = PostOrder.FIRST, ignoreCancelled = true)
     public void onEmote(ClientEmoteEvent event) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get((GeyserSession) event.connection());
-        if (networkInstance != null && networkInstance.isHandShaked()) {
+        if (networkInstance != null && networkInstance.getConnectionType() != ConnectionType.NONE) {
             CompletableFuture<Animation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
 
             if (animation.isDone() && !animation.isCompletedExceptionally()) {
