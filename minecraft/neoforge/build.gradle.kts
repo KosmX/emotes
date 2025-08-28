@@ -93,6 +93,7 @@ java {
 }
 
 tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.WARN
     configurations = listOf(shadowCommon)
     archiveClassifier.set("dev-shadow")
     mergeServiceFiles()

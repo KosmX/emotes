@@ -109,6 +109,7 @@ java {
 // If you remove this task, sources will not be generated.
 
 tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.WARN
     configurations = listOf(shadowCommon)
     archiveClassifier.set("dev-shadow")
     mergeServiceFiles()

@@ -56,6 +56,7 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.WARN
     configurations = listOf(compileApi)
     archiveClassifier.set("")
     mergeServiceFiles()
