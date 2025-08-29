@@ -1,7 +1,11 @@
 {
-    "name": "Over here",
+    "name": {
+      "translate": "emotecraft.emote.here.name"
+    },
     "author": "KosmX",
-    "description": "Hey I'm here",
+    "description": {
+      "translate": "emotecraft.emote.here.description"
+    },
     "uuid": "3045b335-12ca-4ddb-aca5-0aef450a5e4c",
     "emote":{
         "isLoop": "false",

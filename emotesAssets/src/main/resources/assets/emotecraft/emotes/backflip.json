@@ -1,7 +1,11 @@
 {
-    "name": "Back Flip",
+    "name": {
+      "translate": "emotecraft.emote.backflip.name"
+    },
     "author": "Kale Ko",
-    "description": "Makes You Do A Back Flip",
+    "description": {
+      "translate": "emotecraft.emote.backflip.description"
+    },
     "uuid": "ebfb1e69-330a-4970-8bca-f5625c90681a",
     "emote":{
         "isLoop": "false",

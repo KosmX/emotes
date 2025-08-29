@@ -19,6 +19,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 public class EmoteListener extends PackSelectionScreen.Watcher {
+    public static final Component RELOADING_WAIT = Component.translatable("emotecraft.reloading.wait");
+    public static final Component RELOADING = Component.translatable("emotecraft.reloading");
+
     private static final DecimalFormat FORMAT = new DecimalFormat("#0.000");
 
     private CompletableFuture<?> loader;
@@ -39,7 +42,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
 
     public void load(Runnable onComplete, @NotNull Executor executor) {
         if (this.loader != null) this.loader.cancel(true);
-        PlatformTools.addToast(Component.translatable("emotecraft.reloading"));
+        PlatformTools.addToast(EmoteListener.RELOADING);
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         this.loader = EmotecraftClientMod.loadEmotes()
@@ -50,7 +53,7 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
     }
 
     public boolean isLoading() {
-        return this.loader != null && !this.loader.isDone();
+        return this.loader != null && !this.loader.isDone() && !this.loader.isCompletedExceptionally();
     }
 
     @Override
