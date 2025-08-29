@@ -18,6 +18,6 @@ dependencies {
     modImplementation "dev.kosmx.player-anim:player-animation-lib:${rootProject.player_animator_version}"
     modImplementation "dev.kosmx.player-anim:anim-core:${rootProject.player_animator_version}"
 
-    modCompileOnly("maven.modrinth:entity-model-features:n0dDeW4R")
-    modCompileOnly("maven.modrinth:entitytexturefeatures:441qELLe")
+    modCompileOnly("maven.modrinth:entity-model-features:7qgqhB3h")
+    modCompileOnly("maven.modrinth:entitytexturefeatures:etb76zSi")
 }
