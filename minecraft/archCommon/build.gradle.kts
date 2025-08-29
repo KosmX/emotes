@@ -22,8 +22,8 @@ dependencies {
         isTransitive = false
     }
 
-    modCompileOnly("maven.modrinth:entity-model-features:n0dDeW4R")
-    modCompileOnly("maven.modrinth:entitytexturefeatures:441qELLe")
+    modCompileOnly("maven.modrinth:entity-model-features:gFSG1gQn")
+    modCompileOnly("maven.modrinth:entitytexturefeatures:WqN420Mb")
 }
 
 java {
