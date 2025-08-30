@@ -79,7 +79,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
     @Override
     public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
         sendPlayPacket(playPacket(byteBuffer));
-        if (byteBuffer.remaining() >= CommonData.MAX_PACKET_SIZE) {
+        if (byteBuffer.remaining() >= maxDataSize()) {
             CommonData.LOGGER.error("Sent packet size is {} byte(s)!", byteBuffer.remaining());
         }
     }

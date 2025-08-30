@@ -64,7 +64,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Mo
 
     @Override
     protected void sendForEveryoneElse(NetData data, ModdedServerPlayNetwork player) {
-        for (ServerPlayer target : PlayerTrackUtils.getTrackedBy(player.serverGamePacketListener.getPlayer())) {
+        for (ServerPlayer target : NetworkPlatformTools.getTrackedBy(player.serverGamePacketListener.getPlayer())) {
             ModdedServerPlayNetwork targetInstance = getPlayerNetworkInstance(target);
             if (targetInstance == player) continue;
 
