@@ -4,7 +4,6 @@ import com.zigythebird.playeranim.animation.PlayerAnimationController;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.AnimationData;
-import com.zigythebird.playeranimcore.animation.AnimationProcessor;
 import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
 import com.zigythebird.playeranimcore.enums.PlayState;
@@ -34,11 +33,11 @@ public class EmotePlayer extends PlayerAnimationController {
     protected void setupNewAnimation() {
         super.setupNewAnimation();
 
-        Animation emote = getData();
+        Animation emote = getCurrentAnimationInstance();
 
         if (this.song != null) this.song.stop();
         if (emote != null && emote.data().has("song")) {
-            this.song = new MinecraftNbsPlayer(getPlayer(), emote.data().<NbsSong>get("song").orElseThrow());
+            this.song = new MinecraftNbsPlayer(this, emote.data().<NbsSong>get("song").orElseThrow());
         } else {
             this.song = null;
         }
@@ -65,13 +64,6 @@ public class EmotePlayer extends PlayerAnimationController {
      */
     public static boolean isRunningEmote(@Nullable EmotePlayer emote) {
         return emote != null && emote.isActive();
-    }
-
-    @SuppressWarnings("UnstableApiUsage")
-    public @Nullable Animation getData() {
-        AnimationProcessor.QueuedAnimation animation = getCurrentAnimation();
-        if (animation == null) return null;
-        return animation.animation();
     }
 
     @Override

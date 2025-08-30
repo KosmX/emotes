@@ -46,7 +46,7 @@ public interface IPlayerEntity {
     }
 
     default void stopEmote(UUID emoteID) {
-        Animation animation = emotecraft$getEmote().getData();
+        Animation animation = emotecraft$getEmote().getCurrentAnimationInstance();
         if (animation != null &&animation.uuid().equals(emoteID)) {
             stopEmote();
         }
@@ -62,7 +62,7 @@ public interface IPlayerEntity {
         }
 
         if (PlatformTools.getConfig().checkPose.get()) {
-            ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getData());
+            ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getCurrentAnimationInstance());
         }
     }
 

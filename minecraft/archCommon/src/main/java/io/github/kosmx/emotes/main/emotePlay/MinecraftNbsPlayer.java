@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main.emotePlay;
 
+import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import io.github.kosmx.emotes.common.nbsplayer.NbsPlayer;
 import net.minecraft.client.Minecraft;
@@ -14,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
 public class MinecraftNbsPlayer extends NbsPlayer {
     protected final AbstractClientPlayer player;
 
-    public MinecraftNbsPlayer(AbstractClientPlayer player, Song song) {
-        super(song);
-        this.player = player;
+    public MinecraftNbsPlayer(PlayerAnimationController controller, Song song) {
+        super(song, controller);
+        this.player = controller.getPlayer();
     }
 
     @Override
@@ -27,13 +28,13 @@ public class MinecraftNbsPlayer extends NbsPlayer {
 
     @Override
     protected boolean preTick() {
-        if (this.player instanceof UnsafeRemotePlayer) return true;
+        if (this.player instanceof UnsafeRemotePlayer) return super.preTick();
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != this.player.level()) {
             stop();
             return false;
         }
-        return !mc.isPaused();
+        return !mc.isPaused() && super.preTick();
     }
 
     public @Nullable Component getNowPlaying() {

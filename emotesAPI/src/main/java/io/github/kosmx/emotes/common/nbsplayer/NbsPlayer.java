@@ -1,9 +1,12 @@
 package io.github.kosmx.emotes.common.nbsplayer;
 
+import com.zigythebird.playeranimcore.animation.AnimationController;
+import com.zigythebird.playeranimcore.enums.State;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.Song;
 import net.raphimc.noteblocklib.player.SongPlayer;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -14,11 +17,15 @@ public abstract class NbsPlayer extends SongPlayer {
             Thread.ofVirtual().name("Emotecraft-NBSplayer-", 0).factory()
     );
 
+    @Nullable
+    protected final AnimationController controller;
+
     protected int loopCount = 0;
     private boolean firstSongPlayed;
 
-    public NbsPlayer(Song song) {
+    public NbsPlayer(Song song, @Nullable AnimationController controller) {
         super(song);
+        this.controller = controller;
         setCustomScheduler(EXECUTOR);
     }
 
@@ -26,6 +33,17 @@ public abstract class NbsPlayer extends SongPlayer {
     protected void playNotes(List<Note> notes) {
         this.firstSongPlayed = true;
         for (Note note : notes) playNote(note);
+    }
+
+    @Override
+    protected boolean preTick() {
+        if (this.controller == null) return true;
+
+        if (!this.controller.isActive()) {
+            stop();
+            return false;
+        }
+        return this.controller.getAnimationState() == State.RUNNING;
     }
 
     protected abstract void playNote(Note note);

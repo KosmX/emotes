@@ -50,11 +50,6 @@ public abstract class EmoteSubScreen extends Screen {
     @Nullable
     protected EditBox searchBox;
 
-    @Deprecated(forRemoval = true)
-    protected EmoteSubScreen(Component title, Screen lastScreen) {
-        this(title, false, lastScreen);
-    }
-
     protected EmoteSubScreen(Component title, boolean reloadOnOpen, Screen lastScreen) {
         this(title, reloadOnOpen, ISearchEngine.getInstance(), lastScreen);
     }

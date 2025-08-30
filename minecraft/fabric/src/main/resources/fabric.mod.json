@@ -41,7 +41,7 @@
     "fabric-key-binding-api-v1": "*",
     "fabric-lifecycle-events-v1": "*",
     "minecraft": ">=1.21.7",
-    "player_animation_library": ">=1.0.7+mc1.21.7",
+    "player_animation_library": ">=1.0.8+mc1.21.7",
     "fabricloader": ">=0.17.2"
   },
   "breaks": {

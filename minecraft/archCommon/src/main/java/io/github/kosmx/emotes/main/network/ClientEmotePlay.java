@@ -63,7 +63,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     public static boolean clientStopLocalEmote() {
         if (ClientUtil.getClientPlayer().isPlayingEmote()) {
-            return clientStopLocalEmote(ClientUtil.getClientPlayer().emotecraft$getEmote().getData());
+            return clientStopLocalEmote(ClientUtil.getClientPlayer().emotecraft$getEmote().getCurrentAnimationInstance());
         }
         return false;
     }

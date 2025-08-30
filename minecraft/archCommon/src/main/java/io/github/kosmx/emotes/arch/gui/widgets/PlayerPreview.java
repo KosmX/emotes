@@ -37,7 +37,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     public void playAnimation(Animation animation, boolean check) {
         if (check && animation != null) {
             EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
-            if (animation.equals(emotePlayer.getData())) {
+            if (animation.equals(emotePlayer.getCurrentAnimationInstance())) {
                 return;
             }
         }
