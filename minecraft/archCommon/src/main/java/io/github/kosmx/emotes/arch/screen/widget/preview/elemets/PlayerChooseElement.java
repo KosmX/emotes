@@ -26,6 +26,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         this.parent = parent;
         this.id = id;
 
+        super.pause(true);
         super.tick();
     }
 
@@ -93,7 +94,8 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     @Override
     public void tick() {
         EmoteHolder holder = getEmote();
-        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true);
+        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true, 1.5F);
+        super.pause(!isHoveredOrFocused());
         if (updated || isHoveredOrFocused()) super.tick();
     }
 

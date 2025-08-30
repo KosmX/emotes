@@ -38,7 +38,7 @@ public class EmotePlayer extends PlayerAnimationController {
 
         if (this.song != null) this.song.stop();
         if (emote != null && emote.data().has("song")) {
-            this.song = new MinecraftNbsPlayer(getPlayer(), emote.data().<NbsSong>get("song").orElseThrow());
+            this.song = new MinecraftNbsPlayer(this, emote.data().<NbsSong>get("song").orElseThrow());
         } else {
             this.song = null;
         }
@@ -84,5 +84,17 @@ public class EmotePlayer extends PlayerAnimationController {
 
         if (this.player instanceof UnsafeRemotePlayer) return;
         super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
+    }
+
+    @Override
+    public void pause() {
+        super.pause();
+        if (this.song != null) this.song.setPaused(true);
+    }
+
+    @Override
+    public void unpause() {
+        super.unpause();
+        if (this.song != null) this.song.setPaused(false);
     }
 }

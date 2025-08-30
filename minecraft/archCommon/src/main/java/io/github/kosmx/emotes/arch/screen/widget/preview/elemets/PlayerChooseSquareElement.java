@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.util.CommonColors;
 
 public class PlayerChooseSquareElement extends PlayerChooseElement {
     protected final int dx;
@@ -26,7 +25,13 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     }
 
     @Override
+    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        guiGraphics.fill(getX(), getY(), getRight(), getBottom(), 2130706432);
+        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
     protected void renderHover(GuiGraphics guiGraphics) {
-        guiGraphics.fill(getX(), getY(), getRight(), getBottom(), CommonColors.GREEN);
+        // no-op
     }
 }

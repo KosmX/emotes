@@ -21,11 +21,13 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
     public static final ResourceLocation LIGHT_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_light_new.png");
     public static final ResourceLocation DARK_TEXTURE = McUtils.newIdentifier("textures/gui/fastchoose_dark_new.png");
 
+    protected final boolean oldChooseWheel = PlatformTools.getConfig().oldChooseWheel.get();
+
     public PreviewFastChooseWidget(FastChooseController controller, int x, int y, int size) {
         super(controller, x, y, size, Component.empty());
 
         GameProfile profile = Minecraft.getInstance().getGameProfile();
-        if (PlatformTools.getConfig().oldChooseWheel.get()) {
+        if (this.oldChooseWheel) {
             this.elements.add(new PlayerChooseCircleElement(this, profile, 0, 0F));
             this.elements.add(new PlayerChooseCircleElement(this, profile, 1, 45F));
             this.elements.add(new PlayerChooseCircleElement(this, profile, 2, 90F));
@@ -48,7 +50,7 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (PlatformTools.getConfig().oldChooseWheel.get()) {
+        if (this.oldChooseWheel) {
             drawTexture(this, guiGraphics, PlatformTools.getConfig().dark.get() ? DARK_TEXTURE : LIGHT_TEXTURE, 256, 0, 0, 0, 0, 2, 2);
         }
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
