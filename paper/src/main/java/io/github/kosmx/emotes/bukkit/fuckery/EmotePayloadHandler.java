@@ -36,30 +36,32 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+        if (in.readableBytes() == 0 || !ctx.channel().isActive()) {
+            out.add(in.retain());
+            return;
+        }
+
         Connection connection = (Connection) ctx.pipeline().get("packet_handler");
 
         int readerIndex = in.readerIndex();
-        try {
-            FriendlyByteBuf buf = new FriendlyByteBuf(in);
-            if (buf.readVarInt() == PAYLOAD_ID) {
-                if (PLAY_PAYLOAD.equals(buf.readResourceLocation())) {
+        FriendlyByteBuf buf = new FriendlyByteBuf(in);
 
-                    int i = buf.readableBytes();
-                    if (i <= 0 || i > CommonData.MAX_PACKET_SIZE) {
-                        throw new IllegalArgumentException("Payload may not be larger than " + CommonData.MAX_PACKET_SIZE + " bytes");
-                    }
+        if (buf.readVarInt() == PAYLOAD_ID) {
+            if (PLAY_PAYLOAD.equals(buf.readResourceLocation())) {
 
-                    byte[] data = new byte[i];
-                    buf.readBytes(data);
-
-                    Player player = connection.getPlayer().getBukkitEntity();
-                    ServerSideEmotePlay.getInstance().registerPlayer(player); // Force register
-                    ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, player, data);
-                    return;
+                int i = buf.readableBytes();
+                if (i <= 0 || i > CommonData.MAX_PACKET_SIZE) {
+                    throw new IllegalArgumentException("Payload may not be larger than " + CommonData.MAX_PACKET_SIZE + " bytes");
                 }
+
+                byte[] data = new byte[i];
+                buf.readBytes(data);
+
+                Player player = connection.getPlayer().getBukkitEntity();
+                ServerSideEmotePlay.getInstance().registerPlayer(player); // Force register
+                ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, player, data);
+                return;
             }
-        } catch (IndexOutOfBoundsException ex) {
-            CommonData.LOGGER.warn("Failed to decode!", ex);
         }
 
         in.readerIndex(readerIndex);
