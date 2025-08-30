@@ -27,7 +27,7 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void onLoad() {
-        try { // Trying to increase the packet limit since the paper server is crap and severely limited
+        try { // Trying to increase the packet limit since the paper server is shit and severely limited
             StreamCodecUtils.replaceFallback(StreamCodecUtils.getThis(ServerboundCustomPayloadPacket.STREAM_CODEC),
                     (id) -> DiscardedPayload.codec(id, CommonData.MAX_PACKET_SIZE)
             );
@@ -53,18 +53,18 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
     @Override
     public void onEnable() {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EMOTE_PACKET);
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance()::receivePluginMessage);
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance());
         getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
-        getLogger().info("Loading Emotecraft as a bukkit plugin...");
+        CommonData.LOGGER.info("Loading Emotecraft as a paper plugin...");
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EMOTE_PACKET);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void afterInitChannel(@NotNull Channel channel) {
-        channel.pipeline().addBefore("decoder", BukkitWrapper.EMOTE_PACKET, EmotePayloadHandler.INSTANCE);
+        channel.pipeline().addAfter("splitter", BukkitWrapper.EMOTE_PACKET, EmotePayloadHandler.INSTANCE);
     }
 }
