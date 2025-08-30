@@ -54,13 +54,6 @@ public interface INetworkInstance {
     }
 
     /**
-     * Does this server allow emote streams from client. This can allow larger/longer emotes but can be abused
-     */
-    default boolean allowEmoteStreaming() {
-        return false;
-    }
-
-    /**
      * The Proxy controller ask you to send the message,
      * only if {@link #isActive()} is true
      * @param builder packet builder

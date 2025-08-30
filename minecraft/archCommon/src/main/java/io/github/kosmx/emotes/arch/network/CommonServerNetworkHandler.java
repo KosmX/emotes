@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.arch.network;
 
-import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import net.minecraft.network.chat.Component;
@@ -33,19 +32,9 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Mo
         }
     }
 
+    @SuppressWarnings("unused")
     public void receiveStreamMessage(ServerPlayer player, ModdedServerPlayNetwork handler, ByteBuffer buf) {
-        try {
-            if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreaming()) {
-                var packet = handler.receiveStreamChunk(buf);
-                if (packet != null) {
-                    receiveMessage(packet.array(), handler);
-                }
-            } else {
-                player.connection.disconnect(Component.literal("Emote stream is disabled on this server"));
-            }
-        } catch (IOException e) {
-            CommonData.LOGGER.warn("Failed to receive packet!", e);
-        }
+        player.connection.disconnect(Component.literal("This server does not support streaming!"));
     }
 
     @Override

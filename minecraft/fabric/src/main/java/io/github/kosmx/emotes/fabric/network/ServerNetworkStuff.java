@@ -20,15 +20,11 @@ public final class ServerNetworkStuff {
         // Config networking
 
         ServerConfigurationConnectionEvents.CONFIGURE.register((handler, server) -> {
-
-            if (ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.EMOTE_CHANNEL_ID) &&
-                    ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.STREAM_CHANNEL_ID)) {
-
+            if (ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.EMOTE_CHANNEL_ID)) {
                 handler.addTask(new ConfigTask());
-            } else {
+            } else { // No disconnect, vanilla clients can connect
                 CommonData.LOGGER.debug("Client doesn't support emotes, ignoring");
             }
-            // No disconnect, vanilla clients can connect
         });
 
         ServerConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (buf, context) -> {
@@ -37,9 +33,10 @@ public final class ServerNetworkStuff {
                 if (message.purpose != PacketTask.CONFIG) throw new IOException("Wrong packet type for config task");
 
                 ((EmotesMixinConnection) ((ServerCommonPacketListenerAccessor) context.networkHandler()).getConnection()).emotecraft$setVersions(message.versions);
-                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer ->
-                        context.responseSender().sendPacket(NetworkPlatformTools.playPacket(buffer))
-                );
+                UniversalEmoteSerializer.preparePackets(message.versions)
+                        .map(EmotePacketPayload::playPacket)
+                        .forEach(context.responseSender()::sendPacket);
+
                 context.networkHandler().completeTask(ConfigTask.TYPE); // And, we're done here
             } catch (IOException e) {
                 CommonData.LOGGER.error("", e);

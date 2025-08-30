@@ -2,17 +2,11 @@ package io.github.kosmx.emotes.arch.network;
 
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 public abstract class AbstractServerNetwork implements INetworkInstance {
-    @NotNull
-    protected final EmoteStreamHelper streamHelper = new ServerStreamHelper();
-
     @NotNull
     protected abstract EmotesMixinConnection getServerConnection();
 
@@ -26,15 +20,6 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
         getServerConnection().emotecraft$setVersions(map);
     }
 
-    abstract void sendEmotePacket(ByteBuffer buffer);
-
-    abstract void sendStreamPacket(ByteBuffer buffer);
-
-    @Override
-    public boolean isActive() {
-        return false;
-    }
-
     @Override
     public boolean isServerTrackingPlayState() {
         return true; // MC server does track this
@@ -43,26 +28,5 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
     @Override
     public int maxDataSize() {
         return CommonData.MAX_PACKET_SIZE - 16; // channel ID is 12, one extra int makes it 16 (string)
-    }
-
-    public @Nullable ByteBuffer receiveStreamChunk(ByteBuffer buffer) {
-        return streamHelper.receiveStream(buffer);
-    }
-
-    protected class ServerStreamHelper extends EmoteStreamHelper {
-        @Override
-        protected int getMaxPacketSize() {
-            return maxDataSize();
-        }
-
-        @Override
-        protected void sendPlayPacket(ByteBuffer buffer) {
-            sendEmotePacket(buffer);
-        }
-
-        @Override
-        protected void sendStreamChunk(ByteBuffer buffer) {
-            sendStreamPacket(buffer);
-        }
     }
 }

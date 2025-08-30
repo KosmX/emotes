@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.arch.network;
 
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -33,33 +32,18 @@ public class ModdedServerPlayNetwork extends AbstractServerNetwork implements IS
     }
 
     @Override
-    void sendEmotePacket(ByteBuffer buffer) {
-        sendPlayMessage(buffer);
-    }
-
-    @Override
-    void sendStreamPacket(ByteBuffer buffer) {
-        serverGamePacketListener.send(NetworkPlatformTools.streamPacket(buffer));
-    }
-
-    @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
         sendPlayMessage(builder.setVersion(getRemoteVersions()).build().write());
     }
 
     public void sendPlayMessage(ByteBuffer bytes) {
-        serverGamePacketListener.send(NetworkPlatformTools.playPacket(bytes));
+        this.serverGamePacketListener.send(NetworkPlatformTools.playPacket(bytes));
     }
 
-    public void sendPlayStream(ByteBuffer bytes) {
-        if (getRemoteVersions().getOrDefault(PacketConfig.ALLOW_EMOTE_STREAM, (byte)1) != 0) {
-            streamHelper.sendMessage(bytes);
-        } else {
-            sendPlayMessage(bytes);
-        }
+    @Override
+    public boolean isActive() {
+        return true; // TODO
     }
-
-    // TODO isActive
 
     @Override
     public EmotePlayTracker getEmoteTracker() {
