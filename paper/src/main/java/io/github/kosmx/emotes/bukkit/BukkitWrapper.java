@@ -60,9 +60,7 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
     }
 
     @Override
-    public void onDisable() {
-        throw new UnsupportedOperationException("Emotecraft does not support disabling, ignore this error when shutting down the server...");
-    }
+    public void onDisable() {}
 
     @Override
     public void afterInitChannel(@NotNull Channel channel) {
