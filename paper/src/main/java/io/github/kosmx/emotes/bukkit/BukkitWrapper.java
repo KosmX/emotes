@@ -65,6 +65,8 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
         Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, EMOTE_PACKET);
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EMOTE_PACKET);
         HandlerList.unregisterAll(ServerSideEmotePlay.getInstance());
+
+        CommonData.LOGGER.warn("Emotecraft does not support disabling by PlugMan and similar plugins");
     }
 
     @Override
