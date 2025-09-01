@@ -17,6 +17,7 @@ import net.kyori.adventure.key.Key;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +61,11 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
     }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, EMOTE_PACKET);
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EMOTE_PACKET);
+        HandlerList.unregisterAll(ServerSideEmotePlay.getInstance());
+    }
 
     @Override
     public void afterInitChannel(@NotNull Channel channel) {
