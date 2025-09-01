@@ -48,6 +48,8 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
                 ServerCommands.register(event.registrar().getDispatcher(), true)
         );
+
+        CommonData.LOGGER.info("Loading Emotecraft as a paper plugin...");
     }
 
     @Override
@@ -55,12 +57,11 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EMOTE_PACKET);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance());
         getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
-        CommonData.LOGGER.info("Loading Emotecraft as a paper plugin...");
     }
 
     @Override
     public void onDisable() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Emotecraft does not support disabling, ignore this error when shutting down the server...");
     }
 
     @Override
