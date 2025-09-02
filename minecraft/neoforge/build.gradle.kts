@@ -109,10 +109,8 @@ tasks.jar {
     archiveClassifier.set("dev")
 }
 
-components.getByName<AdhocComponentWithVariants>("java") {
-    withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) {
-        skip()
-    }
+shadow {
+    addShadowVariantIntoJavaComponent = false
 }
 
 publishing {

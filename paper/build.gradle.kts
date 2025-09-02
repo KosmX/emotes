@@ -77,6 +77,10 @@ java {
     withSourcesJar()
 }
 
+shadow {
+    addShadowVariantIntoJavaComponent = false
+}
+
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
