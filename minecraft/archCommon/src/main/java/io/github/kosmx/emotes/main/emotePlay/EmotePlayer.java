@@ -68,13 +68,17 @@ public class EmotePlayer extends PlayerAnimationController {
 
     @Override
     protected <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, CustomKeyFrameEvents.@Nullable CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
+        if (this.player instanceof UnsafeRemotePlayer) return;
+        super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
+    }
+
+    @Override
+    protected void applyCustomPivotPoints() {
         if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning()) {
             Component nowPlaying = this.song.getNowPlaying();
             if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
             this.song.start();
         }
-
-        if (this.player instanceof UnsafeRemotePlayer) return;
-        super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
+        super.applyCustomPivotPoints();
     }
 }
