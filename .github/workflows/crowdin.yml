@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        branch: [dev, 1.21.5, 1.21.4, 1.21.1]
+        branch: [dev, 1.21.5, 1.21.4]
 
     steps:
     - name: Checkout
@@ -25,10 +25,13 @@ jobs:
     - name: crowdin action
       uses: crowdin/github-action@v2
       with:
-        upload_translations: true
+        upload_sources: ${{ matrix.branch == 'dev' }}
+        upload_translations: ${{ matrix.branch == 'dev' }}
         download_translations: true
+        skip_untranslated_strings: true
+        skip_untranslated_files: true
 
-        crowdin_branch_name: ${{ matrix.branch }}
+        # crowdin_branch_name: ${{ matrix.branch }}
         localization_branch_name: l10n_${{ matrix.branch }}
         pull_request_base_branch_name: ${{ matrix.branch }}
         skip_ref_checkout: true
