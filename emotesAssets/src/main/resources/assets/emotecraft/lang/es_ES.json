@@ -1,4 +1,5 @@
 {
+  "emotecraft.menu": "Configurar emotes",
   "emotecraft.options.options": "Opciones del Mod",
   "emotecraft.options.keybind": "Establece una tecla para reproducir el emote seleccionado.",
   "emotecraft.options.fastmenu": "Seleccione un emote, luego haga click en él.",
@@ -29,6 +30,8 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "Solo activo cuando la perspectiva en 3ra persona está habilitada.",
   "emotecraft.otherconfig.enableNSFW": "Permitir NSFW Emotes",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work)\n\nPermite contenido potencialmente inapropiado.\n\nPuede contener desnudez, sexualidad intensa, violencia u otro tema potencialmente perturbador.",
+  "emotecraft.otherconfig.checkPose": "Revisar pose",
+  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft detendrá el emote si realizas una pose incorrecta (desactivar esta opción puede impedir que el emote se detenga al agacharte)",
   "emotecraft.otherconfig.alwaysValidateEmote": "Siempre Validar Los Emotes Recibidos",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Opción del lado del cliente; no afectará al servidor interno.\n\nDe forma predeterminada, la validación del lado del cliente solo ocurre cuando se recibe un emote de un proxy que no es de confianza.\nUse esto para hacer siempre la validación del lado del cliente.",
   "emotecraft.otherconfig.default3rdPersonFront": "Usar Vista Frontal para 3ra Persona",

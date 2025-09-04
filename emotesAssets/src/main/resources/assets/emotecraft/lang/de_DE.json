@@ -30,6 +30,7 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "Nur aktiv wenn Er-Perspektive auch aktiviert ist",
   "emotecraft.otherconfig.enableNSFW": "Erlaube NSFW Emotes abzuspielen",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) unangemessene Inhalte\n\nEnhält möglicherweise sexuelle, gewalttätige oder verstörende Inhalte.",
+  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft stoppt den Emote wenn du in die falsche Pose gerätst (das Deaktivieren zerstört vielleicht das Anhalten des Emotes wenn du anfängst dich zu ducken)",
   "emotecraft.otherconfig.alwaysValidateEmote": "Empfangene Emotes immer validieren",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Client-option, hat keine Auswirkungen auf integrierten Server (Singleplayer) \n\nStandardmäßig wird nur eine Überprüfung bei nicht Vertrauenswürdigen Proxys durchgeführt. Hiermit lässt sich immer eine Überprüfung durchführen",
   "emotecraft.otherconfig.default3rdPersonFront": "Nutze Frontansicht statt Rückenansicht beim abspielen von Emotes",

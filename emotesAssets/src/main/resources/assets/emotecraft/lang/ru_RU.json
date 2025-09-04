@@ -64,13 +64,6 @@
   "emotecraft.resetAllKeys.title": "Сбросить все привязки клавиш для эмоций",
   "emotecraft.resetAllKeys.message": "Вы действительно хотите сбросить все привязки клавиш для эмоций?",
   "emotecraft.options.export": "Меню экспорта",
-  "emotecraft.export": "Экспортировать эмоции в .%s",
-  "emotecraft.export.error": "Не удалось экспортировать в %s...",
-  "emotecraft.export.done": "Успешный экспорт в %s!",
   "emotecraft.song_too_big_to_send": "Размер песни слишком большой, отправка на сервер невозможна. Будет отправлена только эмоция",
-  "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено.",
-  "emotecraft.folder": "Каталог",
-  "emotecraft.folder.main": "основ.",
-  "emotecraft.reloading": "Перезагрузка эмоций...",
-  "emotecraft.reloading.done": "Перезагрузка заняла %s секунд!"
+  "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено."
 }
