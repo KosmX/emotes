@@ -1,4 +1,5 @@
 {
+  "emotecraft.menu": "İfade Yapılandırması",
   "emotecraft.options.options": "Mod seçenekleri",
   "emotecraft.options.keybind": "Seçili ifadeyi oynatmak için özel bir tuş ayarla",
   "emotecraft.options.fastmenu": "Bir ifade seçtikten sonra şuna bas",
@@ -28,6 +29,7 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "Sadece 3. bakış açısı açıkken aktif.",
   "emotecraft.otherconfig.enableNSFW": "NSFW ifadelerinin oynatılmasına izin ver",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (İş İçin Güvenli Değil) uygunsuz içerik\n\nÇıplaklık, yoğun cinsellik, şiddet veya rahatsız edici olabilecek diğer konuları içerebilir.",
+  "emotecraft.otherconfig.checkPose": "Pozu Kontrol Et",
   "emotecraft.otherconfig.alwaysValidateEmote": "Alınan ifadeleri her zaman doğrula",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "İstemci tarafı seçeneği; dahili sunucuyu etkilemez.\n\nVarsayılan olarak istemci tarafı doğrulama yalnızca güvenilmeyen bir proxy'den ifade alındığında gerçekleşir.\nHer zaman istemci tarafı doğrulaması yapmak için bunu kullanın.",
   "emotecraft.otherconfig.default3rdPersonFront": "3. Şahıs İçin Önden Görünüşü Uygula",
@@ -44,6 +46,7 @@
   "category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Yapımcı: ",
   "emotecraft.config": "İfadeleri yapılandır",
+  "emotecraft.blockedEmote": "Bu ifadeyi kullanmanıza izin verilmiyor.",
   "emotecraft.resetConfig.title": "Emotecraft ayarlarını sıfırla",
   "emotecraft.resetConfig.message": "Emotecraft ayarlarını sıfırlamayı cidden istiyor musun?",
   "emotecraft.resetAllKeys.title": "Tüm kısayolları sıfırla",
