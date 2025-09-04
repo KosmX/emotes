@@ -64,13 +64,6 @@
   "emotecraft.resetAllKeys.title": "Redefinir todos os atalhos de emotes",
   "emotecraft.resetAllKeys.message": "Você quer mesmo redefinir todos os atalhos de emotes?",
   "emotecraft.options.export": "Menu de exportação",
-  "emotecraft.export": "Exportar Emoções em .%s",
-  "emotecraft.export.error": "Falha ao exportar para %s...",
-  "emotecraft.export.done": "Exportação %s foi concluída!",
   "emotecraft.song_too_big_to_send": "A música é muito grande, não foi possível enviá-la ao servidor. Enviando apenas o emote",
-  "emotecraft.cant.override.forced": "Você é forçado a jogar o emote atual, ele não pode ser alterado.",
-  "emotecraft.folder": "Pasta",
-  "emotecraft.folder.main": "principal",
-  "emotecraft.reloading": "Recarregando reações...",
-  "emotecraft.reloading.done": "Recarregamento levou %s segundos!"
+  "emotecraft.cant.override.forced": "Você é forçado a jogar o emote atual, ele não pode ser alterado."
 }

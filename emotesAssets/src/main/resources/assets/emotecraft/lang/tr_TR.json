@@ -1,5 +1,4 @@
 {
-  "modmenu.descriptionTranslation.emotecraft": "Minecraft'ta ifadeleri kullanın\nHızlı seçim için tekerleğinizi ayalaryın\n\nÖzel ifadeler ekleyebilir ve bunlar hiç kimsede olmasa bile siz kullanabilirsiniz!\n\nÖzel Teşekkürler:\n- İfade oluşturduğu ve UI tasarımını yaptığı için Kale Ko'ya teşekkürler\n\ndima_dencep ve ZigyTheBird tarafından",
   "emotecraft.menu": "İfade Yapılandırması",
   "emotecraft.options.options": "Mod seçenekleri",
   "emotecraft.options.keybind": "Seçili ifadeyi oynatmak için özel bir tuş ayarla",
@@ -53,12 +52,6 @@
   "emotecraft.resetAllKeys.title": "Tüm kısayolları sıfırla",
   "emotecraft.resetAllKeys.message": "Tüm kısayolları sıfırlamak istediğine emin miisn?",
   "emotecraft.options.export": "Dışa Aktarma Menüsü",
-  "emotecraft.export.error": "%s'ye aktarım başarısız oldu...",
-  "emotecraft.export.done": "%s dışa aktarma tamamlandı!",
   "emotecraft.song_too_big_to_send": "Ses sunucuda kullanmak için çok büyük, sadece ifade oynatılıyor...",
-  "emotecraft.cant.override.forced": "Mevcut ifadeyi oynatmak zorundasın! Bu değiştirilemez.",
-  "emotecraft.folder": "Dosya",
-  "emotecraft.folder.main": "ana",
-  "emotecraft.reloading": "Emojiler yeniden yükleniyor...",
-  "emotecraft.reloading.done": "Yeniden yükleme %s saniye sürdü!"
+  "emotecraft.cant.override.forced": "Mevcut ifadeyi oynatmak zorundasın! Bu değiştirilemez."
 }
