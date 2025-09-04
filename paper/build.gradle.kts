@@ -33,12 +33,6 @@ dependencies {
     }
     compileApi(project(":emotesAssets"))
     compileApi(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
-
-    implementation("com.velocitypowered:velocity-native") {
-        version {
-            strictly("3.4.0-SNAPSHOT")
-        }
-    }
 }
 
 tasks.runServer {
