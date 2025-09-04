@@ -1,4 +1,5 @@
 {
+  "modmenu.descriptionTranslation.emotecraft": "Воспроизводите эмоции в Minecraft\nОткройте меню, чтобы настроить колесо быстрого выбора.\n\nВы можете добавлять собственные эмоции и использовать их, даже если у других их нет!\n\nОсобая благодарность:\n- Kale Ko за создание эмоций и помощь в разработке интерфейса.\n\nРазрабатывается dima_dencep и ZigyTheBird",
   "emotecraft.menu": "Настройка эмоций",
   "emotecraft.options.options": "Настройки модификации",
   "emotecraft.options.keybind": "Выберите клавишу, чтобы воспроизвести выбранную эмоцию",
@@ -73,6 +74,7 @@
   "emotecraft.folder.main": "основ.",
   "emotecraft.reloading": "Перезагрузка эмоций...",
   "emotecraft.reloading.done": "Перезагрузка заняла %s секунд!",
+  "emotecraft.reloading.wait": "Пожалуйста, подождите, пока анимации перезагрузятся!",
   "emotecraft.emote.waving.name": "Махать рукой",
   "emotecraft.emote.waving.description": "Как будто говоришь Привет!",
   "emotecraft.emote.twerk.name": "Тверк",
