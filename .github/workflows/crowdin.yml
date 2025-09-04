@@ -29,9 +29,8 @@ jobs:
         upload_sources: ${{ matrix.branch == 'dev' }}
         upload_translations: ${{ matrix.branch == 'dev' }}
         download_translations: true
-        skip_untranslated_strings: true
 
-        # crowdin_branch_name: ${{ matrix.branch }}
+        crowdin_branch_name: "dev"
         localization_branch_name: l10n_${{ matrix.branch }}
         pull_request_base_branch_name: ${{ matrix.branch }}
         skip_ref_checkout: true
