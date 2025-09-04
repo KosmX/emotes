@@ -24,7 +24,7 @@ jobs:
     - name: crowdin action
       uses: crowdin/github-action@v2
       with:
-        upload_translations: true
+        upload_translations: ${{ matrix.branch == 'dev' }}
         download_translations: true
         push_translations: true
         create_pull_request: true
