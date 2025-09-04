@@ -30,8 +30,8 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "Активна только при включенном виде от третьего лица.",
   "emotecraft.otherconfig.enableNSFW": "Разрешить воспроизведение NSFW-эмоций",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) - неприемлимый контент.\n\nМожет содержать обнажённые изображения, сцены сексуального характера, сцены насилия или другие потенциально неприятные/отталкивающие вещи.",
-  "emotecraft.otherconfig.checkPose": "Проверять позу",
-  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft остановит эмоцию, если вы попадёте в неправильную позу (отключение этого конфига может сломать остановку эмоций при переключении)",
+  "emotecraft.otherconfig.checkPose": "Проверить позу",
+  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft остановит эмоцию, если вы попадёте в неправильную позу (отключение этого может сломать остановку эмоций на Shift)",
   "emotecraft.otherconfig.alwaysValidateEmote": "Всегда проверять полученные эмоции",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Опция на стороне клиента, не повлияет на локальный сервер\n\nПо умолчанию проверка на стороне клиента происходит только при получении эмоции от ненадежного прокси.\nИспользуйте это, чтобы всегда выполнять проверку на стороне клиента",
   "emotecraft.otherconfig.default3rdPersonFront": "Использовать вид спереди вместо вида сзади при воспроизведении эмоций",
@@ -64,12 +64,6 @@
   "emotecraft.resetAllKeys.title": "Сбросить все привязки клавиш для эмоций",
   "emotecraft.resetAllKeys.message": "Вы действительно хотите сбросить все привязки клавиш для эмоций?",
   "emotecraft.options.export": "Меню экспорта",
-  "emotecraft.exportjson": "Экспортировать эмоции в формат JSON",
-  "emotecraft.exportbin": "Экспортировать эмоции в формат Emotecraft",
-  "emotecraft.export.error.json": "Не удалось экспортировать в JSON",
-  "emotecraft.export.error.emotecraft": "Не удалось экспортировать в формат Emotecraft",
-  "emotecraft.export.done.json": "Успешный экспорт в формат JSON!",
-  "emotecraft.export.done.emotecraft": "Успешный экспорт в формат Emotecraft!",
   "emotecraft.song_too_big_to_send": "Размер песни слишком большой, отправка на сервер невозможна. Будет отправлена только эмоция",
   "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено."
 }

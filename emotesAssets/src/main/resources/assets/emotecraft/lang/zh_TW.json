@@ -57,12 +57,6 @@
   "emotecraft.resetAllKeys.title": "重置所有表情按鍵綁定",
   "emotecraft.resetAllKeys.message": "你確定要重置所有表情綁定的按鍵嗎？",
   "emotecraft.options.export": "輸出UI",
-  "emotecraft.exportjson": "以 JSON 檔案輸出此表情",
-  "emotecraft.exportbin": "輸出成 .emotecraft 的二進制文件",
-  "emotecraft.export.error.json": "JSON 檔案輸出失敗…",
-  "emotecraft.export.error.emotecraft": ".emotecraft 檔案輸出失敗…",
-  "emotecraft.export.done.json": "JSON 檔案輸出完畢！",
-  "emotecraft.export.done.emotecraft": ".emotecraft 檔案輸出完畢！",
   "emotecraft.song_too_big_to_send": "歌曲檔案的容量太大，無法發送至伺服器。僅發送表情…",
   "emotecraft.cant.override.forced": "你被迫和播放當前的表情，因為此表情暫時無法更改。"
 }

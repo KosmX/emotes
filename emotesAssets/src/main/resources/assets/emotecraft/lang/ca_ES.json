@@ -59,12 +59,6 @@
   "emotecraft.resetAllKeys.title": "Restableix totes les vinculacions de tecles emote",
   "emotecraft.resetAllKeys.message": "Esteu segur que voleu restablir els lligams de tecla emote?",
   "emotecraft.options.export": "Menú d'exportació",
-  "emotecraft.exportjson": "Exporta els emotes en JSON",
-  "emotecraft.exportbin": "Exporta els emotes al binari .emotecraft",
-  "emotecraft.export.error.json": "Ha fallat l'exportació al JSON...",
-  "emotecraft.export.error.emotecraft": "Ha fallat l'exportació a .emotecraft...",
-  "emotecraft.export.done.json": "S'ha realitzat l'exportació JSON!",
-  "emotecraft.export.done.emotecraft": "S'ha fet l'exportació de .emotecraft!",
   "emotecraft.song_too_big_to_send": "La cançó és massa gran per a enviar-la al servidor. S'està enviant només l'emote...",
   "emotecraft.cant.override.forced": "Estàs obligat a tocar l'emote actual, no es pot canviar."
 }
