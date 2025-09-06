@@ -1,8 +1,6 @@
 package io.github.kosmx.emotes.arch.mixin;
 
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
-import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;

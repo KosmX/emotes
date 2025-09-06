@@ -13,6 +13,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -126,7 +127,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     static void receivePlayPacket(Animation emoteData, UUID player, float tick, boolean isForced) {
         AbstractClientPlayer playerEntity = PlatformTools.getPlayerFromUUID(player);
-        if(isEmoteAllowed(emoteData, player)) {
+        if (!isEmoteAllowed(emoteData, player)) {
             EventResult result = ClientEmoteEvents.EMOTE_VERIFICATION.invoker().verify(emoteData, player);
             if (result == EventResult.FAIL) return;
             if (playerEntity != null) {
@@ -140,9 +141,8 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     public static boolean isEmoteAllowed(Animation emoteData, UUID player) {
-        return (PlatformTools.getConfig().enablePlayerSafety.get() || !PlatformTools.isPlayerBlocked(player));
+        return PlatformTools.getConfig().enablePlayerSafety.get() || !Minecraft.getInstance().isBlocked(player);
     }
-
 
     /**
      * @param uuid get emote for this player
