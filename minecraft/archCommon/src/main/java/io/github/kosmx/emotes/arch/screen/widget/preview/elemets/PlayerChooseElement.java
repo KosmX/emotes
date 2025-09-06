@@ -39,19 +39,18 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         updateRectangle();
         if (isHoveredOrFocused()) renderHover(guiGraphics);
 
-        Optional<ResourceLocation> icon = Optional.ofNullable(getEmote()).map(EmoteHolder::getIconIdentifier);
+        EmoteHolder emoteHolder = getEmote();
+        Optional<ResourceLocation> icon = Optional.ofNullable(emoteHolder).map(EmoteHolder::getIconIdentifier);
+
         if (PlatformTools.getConfig().showIconsIfPossible.get() && icon.isPresent()) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
         } else {
             super.renderWidget(guiGraphics, getX() + (getWidth() / 2), getY() + (getHeight() / 2), partialTick);
         }
 
-        if (isHoveredOrFocused() && hasEmote()) {
-            EmoteHolder emoteHolder = getEmote();
-            if (emoteHolder != null) {
-                setTooltip(Tooltip.create(emoteHolder.name));
-                setTooltipDelay(Duration.ZERO);
-            }
+        if (isHoveredOrFocused() && emoteHolder != null) {
+            setTooltip(Tooltip.create(emoteHolder.name));
+            setTooltipDelay(Duration.ZERO);
         } else setTooltip(null);
     }
 
