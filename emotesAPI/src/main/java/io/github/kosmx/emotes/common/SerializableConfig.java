@@ -6,12 +6,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class SerializableConfig {
-    public final ArrayList<ConfigEntry<?>> basics = new ArrayList<>();
-    public final ArrayList<ConfigEntry<?>> expert = new ArrayList<>();
-    /**
-     * Mainly for client options
-     */
-    public final ArrayList<ConfigEntry<?>> legacy = new ArrayList<>();
+    public final List<ConfigEntry<?>> basics = new ArrayList<>();
+    public final List<ConfigEntry<?>> expert = new ArrayList<>();
 
     /**
      * changelog
@@ -40,7 +36,6 @@ public class SerializableConfig {
     public void iterate(Consumer<ConfigEntry<?>> consumer) {
         this.basics.forEach(consumer);
         this.expert.forEach(consumer);
-        this.legacy.forEach(consumer);
     }
 
     public SerializableConfig() {

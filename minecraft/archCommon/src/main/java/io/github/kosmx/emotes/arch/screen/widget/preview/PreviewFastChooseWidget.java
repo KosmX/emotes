@@ -2,10 +2,10 @@ package io.github.kosmx.emotes.arch.screen.widget.preview;
 
 import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
 import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseCircleElement;
-import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseElement;
 import io.github.kosmx.emotes.arch.screen.widget.preview.elemets.PlayerChooseSquareElement;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
@@ -64,7 +64,7 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
     @Override
     public void tick() {
         for (AbstractWidget widget : this.elements) {
-            if (widget instanceof PlayerChooseElement preview) preview.tick();
+            if (widget instanceof PlayerPreview preview) preview.tick();
         }
     }
 

@@ -5,9 +5,14 @@ import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.tools.BiMap;
 import net.minecraft.client.CameraType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class ClientConfig extends SerializableConfig {
+    public final List<ConfigEntry<?>> legacy = new ArrayList<>();
+
     /**
      * Wheel settings
      */
@@ -62,6 +67,12 @@ public class ClientConfig extends SerializableConfig {
      */
     public ClientConfig() {
         this.loadEmotesServerSide.set(false);
+    }
+
+    @Override
+    public void iterate(Consumer<ConfigEntry<?>> consumer) {
+        super.iterate(consumer);
+        this.legacy.forEach(consumer);
     }
 
     //------------------------ Advanced config stuff ------------------------//
