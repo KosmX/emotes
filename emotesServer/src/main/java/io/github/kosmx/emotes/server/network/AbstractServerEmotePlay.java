@@ -39,6 +39,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         );
     }
 
+    @SuppressWarnings("deprecation")
     public void receiveMessage(NetData data, P instance) throws IOException {
         CommonData.LOGGER.trace("[emotes server] Received data from: {} data: {}", instance, data);
         switch (data.purpose){
@@ -155,7 +156,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         } catch(IOException e) {
             CommonData.LOGGER.error("Failed to send config to client!", e);
         }
-        if(instance.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
+        if (instance.getRemoteVersions().getOrDefault(PacketConfig.HEADER_PACKET, (byte)0) >= 0) {
             UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).forEach(buffer ->
                     instance.sendMessage(buffer, null)
             );

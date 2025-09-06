@@ -68,7 +68,6 @@ dependencies {
 
     // Temp fixes
     forgeRuntimeLibrary("org.javassist:javassist:3.30.2-GA")
-    forgeRuntimeLibrary("com.zigythebird:mochafloats:1.1.4")
 }
 
 tasks.processResources {
@@ -110,10 +109,8 @@ tasks.jar {
     archiveClassifier.set("dev")
 }
 
-components.getByName<AdhocComponentWithVariants>("java") {
-    withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) {
-        skip()
-    }
+shadow {
+    addShadowVariantIntoJavaComponent = false
 }
 
 publishing {

@@ -16,6 +16,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(value = CommonData.MOD_ID, dist = Dist.CLIENT)
@@ -44,7 +45,7 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
     @SubscribeEvent
     @SuppressWarnings("deprecation")
     public void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
-        ClientNetwork.INSTANCE.configureOnPlay(event.getConnection()::send);
+        ClientNetwork.INSTANCE.configureOnPlay(ClientPacketDistributor::sendToServer);
     }
 
     public void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {

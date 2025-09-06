@@ -1,5 +1,10 @@
 accessWidener v2 named
-
+# Gui
 accessible class net/minecraft/client/gui/screens/packs/PackSelectionScreen$Watcher
 extendable class net/minecraft/client/OptionInstance$ValueSet
 extendable class net/minecraft/client/OptionInstance$SliderableValueSet
+
+# NeoForge network
+accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
+accessible field net/minecraft/server/level/ChunkMap$TrackedEntity seenBy Ljava/util/Set;

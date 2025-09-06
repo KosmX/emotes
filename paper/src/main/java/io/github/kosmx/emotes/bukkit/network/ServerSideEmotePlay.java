@@ -10,17 +10,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNetworkInstance> implements Listener {
+public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNetworkInstance> implements PluginMessageListener, Listener {
     private static final BukkitWrapper PLUGIN = BukkitWrapper.getPlugin(BukkitWrapper.class);
 
     private final HashMap<UUID, BukkitNetworkInstance> players = new HashMap<>();
 
-    public void receivePluginMessage(String channel, Player player, byte[] message) {
+    @Override
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message) {
         if (channel.equals(BukkitWrapper.EMOTE_PACKET)) {
             BukkitNetworkInstance playerNetwork = this.players.get(player.getUniqueId());
             if (playerNetwork != null) { // Let the common server logic process the message

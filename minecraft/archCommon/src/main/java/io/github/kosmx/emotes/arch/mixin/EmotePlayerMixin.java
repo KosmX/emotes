@@ -73,7 +73,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
                 }
                 if(!this.isMainPlayer() && ClientUtil.getClientPlayer() != null && ClientUtil.getClientPlayer().isPlayingEmote()){
                     IPlayerEntity playerEntity = ClientUtil.getClientPlayer();
-                    ClientEmotePlay.clientRepeatLocalEmote(playerEntity.emotecraft$getEmote().getData(), playerEntity.emotecraft$getEmote().getAnimationTicks(), this.getUUID());
+                    ClientEmotePlay.clientRepeatLocalEmote(playerEntity.emotecraft$getEmote().getCurrentAnimationInstance(), playerEntity.emotecraft$getEmote().getAnimationTicks(), this.getUUID());
                 }
             }
         }
@@ -84,7 +84,7 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
             }
 
             if (!EmoteHolder.canRunEmote((AbstractClientPlayer) (Object) this)) {
-                ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getData());
+                ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getCurrentAnimationInstance());
             }
         }
     }

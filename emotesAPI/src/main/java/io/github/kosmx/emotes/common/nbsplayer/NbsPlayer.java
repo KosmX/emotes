@@ -19,6 +19,7 @@ public abstract class NbsPlayer extends SongPlayer {
 
     @Nullable
     protected final AnimationController controller;
+
     protected int loopCount = 0;
     private boolean firstSongPlayed;
 

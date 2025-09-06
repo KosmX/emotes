@@ -37,7 +37,6 @@ public class ClientNetworkInstance {
                 ClientNetwork.INSTANCE.configureOnPlay(sender::sendPacket);
             }
         });
-        // ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ClientNetwork.INSTANCE.configureOnPlay(sender::sendPacket));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientNetwork.INSTANCE.disconnect());
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID,
@@ -46,7 +45,7 @@ public class ClientNetworkInstance {
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (buf, context) -> {
             try {
-                ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), null);
+                ClientNetwork.INSTANCE.receiveStreamMessage(buf.bytes(), context.responseSender()::sendPacket);
             } catch (IOException e) {
                 CommonData.LOGGER.error("", e);
             }

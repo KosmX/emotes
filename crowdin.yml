@@ -21,7 +21,6 @@ files: [
   # Source files filter
   # e.g. "/resources/en/*.json"
   #
-  "upload_sources" : true,
   "source" : "/lang/en_US.json",
 
   #

@@ -4,7 +4,6 @@ import com.zigythebird.playeranim.animation.PlayerAnimationController;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.AnimationData;
-import com.zigythebird.playeranimcore.animation.AnimationProcessor;
 import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
 import com.zigythebird.playeranimcore.enums.PlayState;
@@ -34,7 +33,7 @@ public class EmotePlayer extends PlayerAnimationController {
     protected void setupNewAnimation() {
         super.setupNewAnimation();
 
-        Animation emote = getData();
+        Animation emote = getCurrentAnimationInstance();
 
         if (this.song != null) this.song.stop();
         if (emote != null && emote.data().has("song")) {
@@ -67,23 +66,20 @@ public class EmotePlayer extends PlayerAnimationController {
         return emote != null && emote.isActive();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
-    public @Nullable Animation getData() {
-        AnimationProcessor.QueuedAnimation animation = getCurrentAnimation();
-        if (animation == null) return null;
-        return animation.animation();
+    @Override
+    protected <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, CustomKeyFrameEvents.@Nullable CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
+        if (this.player instanceof UnsafeRemotePlayer) return;
+        super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
     }
 
     @Override
-    protected <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, CustomKeyFrameEvents.@Nullable CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
+    protected void applyCustomPivotPoints() {
         if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning()) {
             Component nowPlaying = this.song.getNowPlaying();
             if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
             this.song.start();
         }
-
-        if (this.player instanceof UnsafeRemotePlayer) return;
-        super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
+        super.applyCustomPivotPoints();
     }
 
     @Override

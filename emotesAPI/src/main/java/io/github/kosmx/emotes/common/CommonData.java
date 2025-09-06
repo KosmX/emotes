@@ -43,7 +43,7 @@ public class CommonData {
      * Data sent here is going to be unwrapped and sent to playEmote channel handler.
      * <p>
      * Servers may completely ignore this channel in play state.
-     * see {@link io.github.kosmx.emotes.common.network.PacketConfig#ALLOW_EMOTE_STREAM}
+     * see {@link io.github.kosmx.emotes.common.network.PacketConfig}
      */
     public static final String emoteStreamID = "stream";
 

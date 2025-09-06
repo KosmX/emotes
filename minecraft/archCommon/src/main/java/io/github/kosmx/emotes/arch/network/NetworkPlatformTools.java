@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.network;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -13,10 +14,11 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
+import java.util.Collection;
 
 public final class NetworkPlatformTools {
-    public static final CustomPacketPayload.Type<EmotePacketPayload> EMOTE_CHANNEL_ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CommonData.MOD_ID, CommonData.playEmoteID));
-    public static final CustomPacketPayload.Type<EmotePacketPayload> STREAM_CHANNEL_ID = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CommonData.MOD_ID, CommonData.emoteStreamID));
+    public static final CustomPacketPayload.Type<EmotePacketPayload> EMOTE_CHANNEL_ID = new CustomPacketPayload.Type<>(McUtils.newIdentifier(CommonData.playEmoteID));
+    public static final CustomPacketPayload.Type<EmotePacketPayload> STREAM_CHANNEL_ID = new CustomPacketPayload.Type<>(McUtils.newIdentifier(CommonData.emoteStreamID));
 
     @ExpectPlatform
     @Contract // contract to fix flow analysis.
@@ -27,6 +29,12 @@ public final class NetworkPlatformTools {
     @ExpectPlatform
     @Contract
     public static boolean canSendConfig(ServerConfigurationPacketListenerImpl player, ResourceLocation channel) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    @Contract
+    public static Collection<ServerPlayer> getTrackedBy(ServerPlayer player) {
         throw new AssertionError();
     }
 
