@@ -5,8 +5,6 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ConnectionHandlerMixin",
-    "InventoryScreenMixin",
-    "PictureInPictureRendererMixin",
     "PlayerAnimationProcessorMixin",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin"

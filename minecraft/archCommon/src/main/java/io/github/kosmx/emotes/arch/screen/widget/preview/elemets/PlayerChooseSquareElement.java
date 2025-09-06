@@ -9,7 +9,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     protected final int dy;
 
     public PlayerChooseSquareElement(AbstractFastChooseWidget parent, GameProfile profile, int id, int dx, int dy) {
-        super(parent, profile, id);
+        super(parent/*, profile*/, id);
         this.dx = dx;
         this.dy = dy;
     }
@@ -25,7 +25,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.fill(getX(), getY(), getRight(), getBottom(), 2130706432);
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
     }

@@ -1,39 +1,41 @@
 package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
-import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class PlayerChooseElement extends PlayerPreview implements IChooseElement {
+public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview*/ implements IChooseElement {
     protected final AbstractFastChooseWidget parent;
     protected final int id;
 
-    public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
-        super(profile, 0, 0, 0, 0, false);
+    public PlayerChooseElement(AbstractFastChooseWidget parent/*, GameProfile profile*/, int id) {
+        super(0, 0, 0, 0, Component.empty());
 
         this.parent = parent;
         this.id = id;
 
-        super.pause(true);
-        super.tick();
+        // super.pause(true);
+        // super.tick();
     }
 
     protected abstract void updateRectangle();
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.isHovered = this.isHovered && this.parent.controller.doHoverPart(this);
 
         updateRectangle();
@@ -42,10 +44,16 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         EmoteHolder emoteHolder = getEmote();
         Optional<ResourceLocation> icon = Optional.ofNullable(emoteHolder).map(EmoteHolder::getIconIdentifier);
 
-        if (PlatformTools.getConfig().showIconsIfPossible.get() && icon.isPresent()) {
+        /*if (PlatformTools.getConfig().showIconsIfPossible.get() && icon.isPresent()) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
         } else {
             super.renderWidget(guiGraphics, getX() + (getWidth() / 2), getY() + (getHeight() / 2), partialTick);
+        }*/
+
+        if (icon.isPresent()) {
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
+        } else if (getEmote() != null) {
+            renderScrollingString(guiGraphics, Minecraft.getInstance().font, getEmote().name, getX(), getY(), getX() + getWidth(), getY() + getHeight(), -1);
         }
 
         if (isHoveredOrFocused() && emoteHolder != null) {
@@ -58,7 +66,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     @Override
     public void removed() {
-        this.player.stopEmote();
+        // this.player.stopEmote();
     }
 
     @Override
@@ -90,13 +98,13 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         PlatformTools.getConfig().fastMenuEmotes[parent.getCurrentPage()][id] = emote == null ? null : emote.getUuid();
     }
 
-    @Override
+    /*@Override
     public void tick() {
         EmoteHolder holder = getEmote();
         boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true, 1.5F);
         super.pause(!isHoveredOrFocused());
         if (updated || isHoveredOrFocused()) super.tick();
-    }
+    }*/
 
     @Override
     protected boolean isValidClickButton(int button) {
@@ -114,5 +122,10 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     @Override
     public void playDownSound(SoundManager handler) {
         playButtonClickSound(handler);
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+        defaultButtonNarrationText(narrationElementOutput);
     }
 }
