@@ -71,9 +71,7 @@ public class ExportMenu extends Screen {
 
         for (EmoteHolder emoteHolder : EmoteHolder.list) {
             Animation emote = emoteHolder.getEmote();
-            if (emote.data().has(EmoteSerializer.BUILT_IN_KEY) && !PlatformTools.getConfig().exportBuiltin.get()) {
-                continue;
-            }
+            if (emote.data().has(EmoteSerializer.BUILT_IN_KEY)) continue;
 
             CommonData.LOGGER.debug("Saving {} into {}", emoteHolder.name.getString(), format.getExtension());
             try {

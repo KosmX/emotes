@@ -42,10 +42,6 @@ public final class PlatformTools {
         return (ClientConfig) Serializer.getConfig();
     }
 
-    public static boolean isPlayerBlocked(UUID uuid) {
-        return Minecraft.getInstance().isBlocked(uuid);
-    }
-
     public static CameraType getPerspective() {
         return Minecraft.getInstance().options.getCameraType();
     }
