@@ -13,7 +13,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     protected final int dx;
     protected final int dy;
 
-    private boolean isAnimFinished;
+    private boolean isAnimFinishing;
 
     public PlayerChooseSquareElement(AbstractFastChooseWidget parent, GameProfile profile, int id, int dx, int dy) {
         super(parent/*, profile*/, id);
@@ -25,7 +25,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     protected void updateRectangle() {
         float progress = this.parent instanceof PreviewFastChooseWidget widget ? widget.getAnimTime() : 0.0F;
         float easedProgress = 1.0F - EASING_TRANSFORMER.get(progress);
-        this.isAnimFinished = easedProgress == 1.0F;
+        this.isAnimFinishing = easedProgress > 0.9F;
 
         int s = this.parent.globalPadding();
         float distance = this.parent.getWidth() * 0.36f * easedProgress;
@@ -38,7 +38,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.fill(getX(), getY(), getRight(), getBottom(), 2130706432);
-        super.renderWidget(guiGraphics, this.isAnimFinished ? mouseX : 0, this.isAnimFinished ? mouseY : 0, partialTick);
+        super.renderWidget(guiGraphics, this.isAnimFinishing ? mouseX : 0, this.isAnimFinishing ? mouseY : 0, partialTick);
     }
 
     @Override

@@ -71,7 +71,7 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
             if (widget instanceof PlayerPreview preview) preview.tick();
         }
         if (this.animated) {
-            this.animTime = Math.max(0.0F, this.animTime - 0.1F);
+            this.animTime = Math.max(0.0F, this.animTime - 0.15F);
         }
     }
 
