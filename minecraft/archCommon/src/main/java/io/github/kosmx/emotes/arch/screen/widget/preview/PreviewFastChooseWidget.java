@@ -23,8 +23,12 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
 
     protected final boolean oldChooseWheel = PlatformTools.getConfig().oldChooseWheel.get();
 
-    public PreviewFastChooseWidget(FastChooseController controller, int x, int y, int size) {
+    private final boolean animated;
+    private float animTime = 1.0F;
+
+    public PreviewFastChooseWidget(FastChooseController controller, boolean animated, int x, int y, int size) {
         super(controller, x, y, size, Component.empty());
+        this.animated = animated;
 
         GameProfile profile = Minecraft.getInstance().getGameProfile();
         if (this.oldChooseWheel) {
@@ -66,9 +70,16 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
         for (AbstractWidget widget : this.elements) {
             if (widget instanceof PlayerPreview preview) preview.tick();
         }
+        if (this.animated) {
+            this.animTime = Math.max(0.0F, this.animTime - 0.1F);
+        }
     }
 
     public static void drawTexture(LayoutElement widget, GuiGraphics matrices, ResourceLocation texture, int size, int x, int y, int u, int v, int w, int h) {
         matrices.blit(RenderPipelines.GUI_TEXTURED, texture, widget.getX() + x * widget.getWidth() / size, widget.getY() + y * widget.getHeight() / size, u, v, w * widget.getWidth() / 2, h * widget.getHeight() / 2, w * 128, h * 128, 512, 512);
+    }
+
+    public float getAnimTime() {
+        return this.animated ? this.animTime : 0.0F;
     }
 }

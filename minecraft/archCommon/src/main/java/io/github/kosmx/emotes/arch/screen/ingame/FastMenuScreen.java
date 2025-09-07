@@ -41,7 +41,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
             this.layout.addTitleHeader(FastMenuScreen.WARN_NO_EMOTECRAFT, this.font);
         }
 
-        this.fastMenu = this.layout.addToContents(new PreviewFastChooseWidget(this, 0, 0, 0));
+        this.fastMenu = this.layout.addToContents(new PreviewFastChooseWidget(this, true, 0, 0, 0));
 
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())

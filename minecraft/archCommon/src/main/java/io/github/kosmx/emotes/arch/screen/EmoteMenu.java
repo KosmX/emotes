@@ -91,7 +91,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
                 Button.SMALL_WIDTH * 2
         ), 2, gridLayout.newCellSettings().paddingTop(Button.DEFAULT_SPACING));
 
-        this.fastChoose = rowHelper.addChild(new PreviewFastChooseWidget(this, 0, 0, 0), 2);
+        this.fastChoose = rowHelper.addChild(new PreviewFastChooseWidget(this, false, 0, 0, 0), 2);
     }
 
     @Override
