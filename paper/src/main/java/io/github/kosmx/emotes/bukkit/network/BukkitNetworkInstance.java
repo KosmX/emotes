@@ -5,8 +5,8 @@ import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class BukkitNetworkInstance extends AbstractNetworkInstance implements IServerNetworkInstance {

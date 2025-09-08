@@ -10,8 +10,8 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ public interface IPlayerEntity {
         throw new NotImplementedException();
     }
 
-    default @NonNull EmotePlayer emotecraft$getEmote() {
+    default @NotNull EmotePlayer emotecraft$getEmote() {
         throw new NotImplementedException();
     }
 
