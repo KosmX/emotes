@@ -10,6 +10,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.util.UUID;
@@ -22,7 +23,7 @@ public interface IPlayerEntity {
         }
     }
 
-    default void emotecraft$playEmote(Animation emote, float tick, boolean isForced) {
+    default void emotecraft$playEmote(@Nullable Animation emote, float tick, boolean isForced) {
         throw new NotImplementedException();
     }
 

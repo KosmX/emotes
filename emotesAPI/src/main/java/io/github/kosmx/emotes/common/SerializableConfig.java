@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class SerializableConfig {
-    public final ArrayList<ConfigEntry<?>> basics = new ArrayList<>();
-    public final ArrayList<ConfigEntry<?>> expert = new ArrayList<>();
+    public final List<ConfigEntry<?>> basics = new ArrayList<>();
+    public final List<ConfigEntry<?>> expert = new ArrayList<>();
 
     /**
      * changelog
@@ -34,20 +34,12 @@ public class SerializableConfig {
     // public final ConfigEntry<Boolean> autoFixEmoteStop = new ConfigEntry<>("autoFixEmoteStop", true, true, expert, false);
 
     public void iterate(Consumer<ConfigEntry<?>> consumer) {
-        basics.forEach(consumer);
-        expert.forEach(consumer);
-    }
-
-    public void iterateGeneral(Consumer<ConfigEntry<?>> consumer) {
-        basics.forEach(consumer);
-    }
-
-    public void iterateExpert(Consumer<ConfigEntry<?>> consumer) {
-        expert.forEach(consumer);
+        this.basics.forEach(consumer);
+        this.expert.forEach(consumer);
     }
 
     public SerializableConfig() {
-        loadEmotesServerSide.set(true);
+        this.loadEmotesServerSide.set(true);
     }
 
     public static class ConfigEntry<T> {

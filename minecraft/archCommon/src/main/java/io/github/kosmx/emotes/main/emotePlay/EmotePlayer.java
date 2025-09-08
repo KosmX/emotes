@@ -81,4 +81,16 @@ public class EmotePlayer extends PlayerAnimationController {
         }
         super.applyCustomPivotPoints();
     }
+
+    @Override
+    public void pause() {
+        super.pause();
+        if (this.song != null) this.song.setPaused(true);
+    }
+
+    @Override
+    public void unpause() {
+        super.unpause();
+        if (this.song != null) this.song.setPaused(false);
+    }
 }
