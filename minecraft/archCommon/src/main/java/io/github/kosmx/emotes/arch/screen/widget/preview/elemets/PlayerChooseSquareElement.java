@@ -5,7 +5,14 @@ import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
+
+import static net.minecraft.client.gui.components.AbstractSelectionList.INWORLD_MENU_LIST_BACKGROUND;
+import static net.minecraft.client.gui.components.AbstractSelectionList.MENU_LIST_BACKGROUND;
 
 public class PlayerChooseSquareElement extends PlayerChooseElement {
     private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_IN_CIRC.buildTransformer(null);
@@ -37,12 +44,14 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.fill(getX(), getY(), getRight(), getBottom(), 2130706432);
+        ResourceLocation texture = Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND : INWORLD_MENU_LIST_BACKGROUND;
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), getRight(), getBottom(), getWidth(), getHeight(), 32, 32);
+
         super.renderWidget(guiGraphics, this.isAnimFinishing ? mouseX : 0, this.isAnimFinishing ? mouseY : 0, partialTick);
     }
 
     @Override
     protected void renderHover(GuiGraphics guiGraphics) {
-        // no-op
+        guiGraphics.fill(getX(), getY(), getRight(), getBottom(), ARGB.color(128, 66, 66, 66));
     }
 }
