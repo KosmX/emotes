@@ -7,6 +7,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import traben.entity_model_features.models.animation.EMFAnimationEntityContext;
+import traben.entity_model_features.models.animation.state.EMFEntityRenderState;
 import traben.entity_model_features.utils.EMFEntity;
 
 @Pseudo
@@ -17,7 +18,11 @@ public class EMFAnimationEntityContextMixin {
     private static boolean pauseAnimationsWhenEmoting(Operation<Boolean> original) {
         // use public getter rather than @Shadow as they can't (require = 0) to fail silently
         // works for EMF 3.0.0+ which is MC 1.20+
-        EMFEntity entity = EMFAnimationEntityContext.getEmfState().emfEntity();
+        EMFEntityRenderState state = EMFAnimationEntityContext.getEmfState();
+        if (state == null) {
+            return true;
+        }
+        EMFEntity entity = state.emfEntity();
         if (entity == null || entity instanceof UnsafeRemotePlayer) {
             return true;
         }
