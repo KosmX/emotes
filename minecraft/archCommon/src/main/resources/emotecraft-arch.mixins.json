@@ -15,8 +15,7 @@
     "KeyEventMixin",
     "LivingEntityRendererMixin",
     "PlayerMixin",
-    "SoundEngineMixin",
-    "emf.EMFAnimationEntityContextMixin"
+    "SoundEngineMixin"
   ],
   "server": [],
   "injectors": {

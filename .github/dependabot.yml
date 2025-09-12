@@ -11,4 +11,3 @@ updates:
   ignore:
   - dependency-name: com.google.code.gson:gson
   - dependency-name: org.jetbrains:annotations
-  - dependency-name: maven.modrinth
