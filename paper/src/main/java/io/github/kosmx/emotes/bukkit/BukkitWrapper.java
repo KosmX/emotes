@@ -8,8 +8,8 @@ import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.mc.ServerCommands;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
-import io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager;
 import io.netty.channel.Channel;
 import io.papermc.paper.network.ChannelInitializeListener;
 import io.papermc.paper.network.ChannelInitializeListenerHolder;
@@ -41,7 +41,7 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
 
         Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class); //it does register itself
         UniversalEmoteSerializer.loadEmotes();
-        EmoteWhitelistHashManager.setupWhitelistConfig(true);
+        EmoteWhitelistManager.setupWhitelistConfig(true);
 
         for (String permission : ServerCommands.PERMISSIONS) {
             Bukkit.getPluginManager().addPermission(new Permission(permission));

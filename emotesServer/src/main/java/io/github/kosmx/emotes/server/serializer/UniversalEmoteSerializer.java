@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager;
 import io.github.kosmx.emotes.server.serializer.type.*;
 
 import io.github.kosmx.emotes.server.services.InstanceService;
@@ -94,17 +95,7 @@ public class UniversalEmoteSerializer {
         SERVER_EMOTES.clear();
         HIDDEN_SERVER_EMOTES.clear();
 
-        serializeInternalJson("waving");
-        serializeInternalJson("clap");
-        serializeInternalJson("crying");
-        serializeInternalJson("point");
-        serializeInternalJson("here");
-        serializeInternalJson("palm");
-        serializeInternalJson("backflip");
-        serializeInternalJson("roblox_potion_dance");
-        serializeInternalJson("kazotsky_kick");
-        serializeInternalJson("twerk");
-        serializeInternalJson("club_penguin_dance");
+        serializeInternalJsons();
 
         Path path = InstanceService.INSTANCE.getExternalEmoteDir();
         if (!Files.isDirectory(path)) {
@@ -124,10 +115,25 @@ public class UniversalEmoteSerializer {
         return UniversalEmoteSerializer.getLoadedEmotes();
     }
 
-    private static void serializeInternalJson(String name){
+    private static void serializeInternalJsons() {
         if (!Serializer.getConfig().loadBuiltinEmotes.get()) {
             return;
         }
+
+        serializeInternalJson("waving");
+        serializeInternalJson("clap");
+        serializeInternalJson("crying");
+        serializeInternalJson("point");
+        serializeInternalJson("here");
+        serializeInternalJson("palm");
+        serializeInternalJson("backflip");
+        serializeInternalJson("roblox_potion_dance");
+        serializeInternalJson("kazotsky_kick");
+        serializeInternalJson("twerk");
+        serializeInternalJson("club_penguin_dance");
+    }
+
+    private static void serializeInternalJson(String name){
         try (InputStream stream = UniversalEmoteSerializer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json")) {
             List<Animation> emotes = UniversalEmoteSerializer.readData(stream, name + ".json");
 
@@ -142,6 +148,7 @@ public class UniversalEmoteSerializer {
             }
 
             HIDDEN_SERVER_EMOTES.addAll(emotes);
+            EmoteWhitelistManager.addEmotesToAllowedHashes(emotes);
         } catch (EmoteSerializerException | IOException e) {
             CommonData.LOGGER.warn("Failed to load built-in emote!", e);
         }
@@ -158,7 +165,7 @@ public class UniversalEmoteSerializer {
     }
 
     /**
-     * Returns a copy of the list of all loaded emotes
+     * Returns a copy of all loaded emotes
      * @return all server-side loaded emotes
      */
     public static UUIDMap<Animation> getLoadedEmotes() {

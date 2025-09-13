@@ -6,7 +6,6 @@ import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.SoundKeyframeData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.ParticleKeyframeData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.CustomInstructionKeyframeData;
-import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import java.util.Collections;
 import java.util.HashMap;
 import it.unimi.dsi.fastutil.Pair;
@@ -51,9 +50,9 @@ public class EmoteWhitelistHashManagerTest {
     @DisplayName("calculateEmoteHash returns consistent hash for same emote")
     public void testConsistentHash() {
         Pair<Animation, Animation> emotes = RandomEmoteData.generateEmotes();
-        EmoteWhitelistHashManager manager = new EmoteWhitelistHashManager(null);
-        int hash1 = manager.calculateEmoteHash(emotes.left());
-        int hash2 = manager.calculateEmoteHash(emotes.left());
+        
+        int hash1 = EmoteWhitelistManager.calculateEmoteHash(emotes.left());
+        int hash2 = EmoteWhitelistManager.calculateEmoteHash(emotes.left());
         Assertions.assertEquals(hash1, hash2, "Hash should be consistent for the same emote");
     }
 
@@ -61,9 +60,9 @@ public class EmoteWhitelistHashManagerTest {
     @DisplayName("calculateEmoteHash returns different hashes for different emotes")
     public void testDifferentHash() {
         Pair<Animation, Animation> emotes = RandomEmoteData.generateDifferentEmotes();
-        EmoteWhitelistHashManager manager = new EmoteWhitelistHashManager(null);
-        int hash1 = manager.calculateEmoteHash(emotes.left());
-        int hash2 = manager.calculateEmoteHash(emotes.right());
+        
+        int hash1 = EmoteWhitelistManager.calculateEmoteHash(emotes.left());
+        int hash2 = EmoteWhitelistManager.calculateEmoteHash(emotes.right());
         Assertions.assertNotEquals(hash1, hash2, "Different emotes should have different hashes");
     }
 
@@ -72,9 +71,9 @@ public class EmoteWhitelistHashManagerTest {
     public void testDifferentSounds() {
         SoundKeyframeData sound1 = new SoundKeyframeData(0f, "soundA");
         SoundKeyframeData sound2 = new SoundKeyframeData(0f, "soundB");
-        EmoteWhitelistHashManager manager = new EmoteWhitelistHashManager(null);
-        int hash1 = manager.calculateEmoteHash(makeAnimationWithSound(sound1));
-        int hash2 = manager.calculateEmoteHash(makeAnimationWithSound(sound2));
+        
+        int hash1 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithSound(sound1));
+        int hash2 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithSound(sound2));
         Assertions.assertNotEquals(hash1, hash2, "Different sounds should produce different hashes");
     }
 
@@ -83,29 +82,29 @@ public class EmoteWhitelistHashManagerTest {
     public void testDifferentParticles() {
         ParticleKeyframeData particle1 = new ParticleKeyframeData(0f, "particleA", "idA", "paramA");
         ParticleKeyframeData particle2 = new ParticleKeyframeData(0f, "particleB", "idB", "paramB");
-        EmoteWhitelistHashManager manager = new EmoteWhitelistHashManager(null);
-        int hash1 = manager.calculateEmoteHash(makeAnimationWithParticle(particle1));
-        int hash2 = manager.calculateEmoteHash(makeAnimationWithParticle(particle2));
+        
+        int hash1 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithParticle(particle1));
+        int hash2 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithParticle(particle2));
         Assertions.assertNotEquals(hash1, hash2, "Different particles should produce different hashes");
     }
 
     @Test
     @DisplayName("Adding a sound changes the hash")
     public void testAddingSoundChangesHash() {
-        EmoteWhitelistHashManager manager = new EmoteWhitelistHashManager(null);
-        int hash1 = manager.calculateEmoteHash(makeAnimationWithSound(null));
+        
+        int hash1 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithSound(null));
         SoundKeyframeData sound = new SoundKeyframeData(0f, "soundA");
-        int hash2 = manager.calculateEmoteHash(makeAnimationWithSound(sound));
+        int hash2 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithSound(sound));
         Assertions.assertNotEquals(hash1, hash2, "Adding a sound should change the hash");
     }
 
     @Test
     @DisplayName("Adding a particle changes the hash")
     public void testAddingParticleChangesHash() {
-        EmoteWhitelistHashManager manager = new EmoteWhitelistHashManager(null);
-        int hash1 = manager.calculateEmoteHash(makeAnimationWithParticle(null));
+        
+        int hash1 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithParticle(null));
         ParticleKeyframeData particle = new ParticleKeyframeData(0f, "particleA", "idA", "paramA");
-        int hash2 = manager.calculateEmoteHash(makeAnimationWithParticle(particle));
+        int hash2 = EmoteWhitelistManager.calculateEmoteHash(makeAnimationWithParticle(particle));
         Assertions.assertNotEquals(hash1, hash2, "Adding a particle should change the hash");
     }
 }

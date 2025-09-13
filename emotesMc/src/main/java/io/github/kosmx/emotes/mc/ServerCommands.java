@@ -11,7 +11,7 @@ import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.moderation.EmoteWhitelistHashManager;
+import io.github.kosmx.emotes.server.moderation.EmoteWhitelistManager;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -122,7 +122,7 @@ public final class ServerCommands {
                                         config.enableEmoteWhitelist.set(enabled);
                                         Serializer.INSTANCE.saveConfig();
                                         if (enabled) {
-                                            EmoteWhitelistHashManager.setupWhitelistConfig(true);
+                                            EmoteWhitelistManager.setupWhitelistConfig(true);
                                         }
                                         context.getSource().sendSuccess(() -> Component.literal("Emote whitelist " + (enabled ? "enabled" : "disabled")), true);
                                         return 0;
@@ -137,7 +137,7 @@ public final class ServerCommands {
                                 .executes(context -> {
                                     SerializableConfig config = Serializer.getConfig();
                                     if (config.enableEmoteWhitelist.get()) {
-                                        EmoteWhitelistHashManager.setupWhitelistConfig(true);
+                                        EmoteWhitelistManager.setupWhitelistConfig(true);
                                         context.getSource().sendSuccess(() -> Component.literal("Whitelist reloaded"), true);
                                     }
                                     else {
@@ -151,8 +151,7 @@ public final class ServerCommands {
                                 .executes(context -> {
                                     SerializableConfig config = Serializer.getConfig();
                                     if (config.enableEmoteWhitelist.get()) {
-                                        EmoteWhitelistHashManager.setupWhitelistConfig(false);
-                                        EmoteWhitelistHashManager.forceReloadWhitelist();
+                                        EmoteWhitelistManager.setupWhitelistConfig(false);
                                         context.getSource().sendSuccess(() -> Component.literal("Whitelist force-reloaded"), true);
                                     }
                                     else {
