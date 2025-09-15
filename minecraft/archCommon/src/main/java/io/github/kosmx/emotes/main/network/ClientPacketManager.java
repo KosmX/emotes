@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.main.network;
 
-import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
 import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
@@ -38,10 +37,7 @@ public final class ClientPacketManager extends EmotesProxyManager {
     }
 
     public static void send(EmotePacket.Builder packetBuilder, UUID target){
-        if (ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder) == EventResult.FAIL) {
-            CommonData.LOGGER.warn("Sending the packet has been canceled by the event!");
-            return; // Deny
-        }
+        ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder);
         if(!defaultNetwork.isActive() || useAlwaysAlt()){
             for(INetworkInstance network:networkInstances){
                 if(network.isActive()){

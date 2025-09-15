@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.api.events.client;
 
 import com.zigythebird.playeranimcore.event.Event;
-import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 
 /**
@@ -11,16 +10,11 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 public class ClientNetworkEvents {
     /**
      * Used to manipulate the packet before sending it
-     * <p>
-     * Return with {@link EventResult#PASS} if you want to continue sending, and {@link EventResult#FAIL} if otherwise
      */
     public static final Event<PacketSendEvent> PACKET_SEND = new Event<>(listeners -> packet -> {
         for (PacketSendEvent listener : listeners) {
-            if (listener.onPacketSend(packet) == EventResult.FAIL) {
-                return EventResult.FAIL;
-            }
+            listener.onPacketSend(packet);
         }
-        return EventResult.PASS;
     });
 
     @FunctionalInterface
@@ -29,6 +23,6 @@ public class ClientNetworkEvents {
          * Used to manipulate the packet before sending it
          * @param packet Emote packet
          */
-        EventResult onPacketSend(EmotePacket.Builder packet);
+        void onPacketSend(EmotePacket.Builder packet);
     }
 }
