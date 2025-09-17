@@ -82,19 +82,19 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     }*/
 
-    @Override
-    protected void renderSelection(GuiGraphics guiGraphics, ListEntry entry, int unknown) {
+    /*@Override
+    protected void renderSelection(GuiGraphics guiGraphics, ListEntry entry, int outerColor) {
         if (this.compactMode && scrollbarVisible()) {
-            int o = getRowLeft() - 2;
-            int p = getRight() - 6 - 1;
-            int q = o - 2;
-            int r = p + entry.getHeight() + 2;
-            guiGraphics.fill(o, q, p, r, unknown);
-            guiGraphics.fill(o + 1, q + 1, p - 1, r - 1, -16777216);
+            int j = entry.getX() - 2;
+            int k = entry.getY() - 6 - 1;
+            int l = j + entry.getWidth() - 2;
+            int m = k + entry.getHeight() + 2;
+            guiGraphics.fill(j, k, l, m, outerColor);
+            guiGraphics.fill(j + 1, k + 1, l - 1, m - 1, -16777216);
         } else {
-            super.renderSelection(guiGraphics, entry, unknown);
+            super.renderSelection(guiGraphics, entry, outerColor);
         }
-    }
+    }*/
 
     @Override
     protected void renderItem(GuiGraphics guiGraphics, int i, int j, float f, ListEntry entry) {
