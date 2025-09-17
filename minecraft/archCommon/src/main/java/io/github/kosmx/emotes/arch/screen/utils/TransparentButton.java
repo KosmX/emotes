@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
 
@@ -22,14 +23,14 @@ public class TransparentButton extends AbstractButton {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        int i = ARGB.color(this.alpha, this.active ? -1 : -6250336);
-        this.renderString(guiGraphics, Minecraft.getInstance().font, i);
+    public void onPress(InputWithModifiers inputWithModifiers) {
+        this.onPress.accept(this);
     }
 
     @Override
-    public void onPress() {
-        this.onPress.accept(this);
+    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        int i = ARGB.color(this.alpha, this.active ? -1 : -6250336);
+        this.renderString(guiGraphics, Minecraft.getInstance().font, i);
     }
 
     @Override

@@ -10,10 +10,13 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.AbortableIterationConsumer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.EmptyLevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.entity.EntityTypeTest;
@@ -47,12 +50,7 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
     }
 
     @Override
-    public @NotNull BlockPos getSharedSpawnPos() {
-        return BlockPos.ZERO;
-    }
-
-    @Override
-    public float getSharedSpawnAngle() {
+    public int getBrightness(LightLayer lightType, BlockPos blockPos) {
         return 0;
     }
 
@@ -121,6 +119,11 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
     @Override
     public @NotNull BlockState getBlockState(BlockPos pos) {
         return Blocks.VOID_AIR.defaultBlockState();
+    }
+
+    @Override
+    public @NotNull ChunkAccess getChunk(BlockPos pos) {
+        return new EmptyLevelChunk(this, ChunkPos.ZERO, Holder.direct(null));
     }
 
     @Override

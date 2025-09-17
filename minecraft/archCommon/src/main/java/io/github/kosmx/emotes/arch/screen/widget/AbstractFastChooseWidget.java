@@ -12,6 +12,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -108,9 +109,9 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        super.mouseClicked(mouseX, mouseY, button);
-        return ContainerEventHandler.super.mouseClicked(mouseX, mouseY, button);
+    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+        super.mouseClicked(event, bl);
+        return ContainerEventHandler.super.mouseClicked(event, bl);
     }
 
     protected void onForwardButton(TransparentButton button) {
@@ -158,15 +159,15 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        super.mouseReleased(mouseX, mouseY, button);
-        return ContainerEventHandler.super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        super.mouseReleased(event);
+        return ContainerEventHandler.super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-        return ContainerEventHandler.super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    public boolean mouseDragged(MouseButtonEvent event, double d, double e) {
+        super.mouseDragged(event, d, e);
+        return ContainerEventHandler.super.mouseDragged(event, d, e);
     }
 
     @Override

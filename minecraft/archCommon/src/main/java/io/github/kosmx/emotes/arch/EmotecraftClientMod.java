@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
@@ -16,11 +17,13 @@ import org.lwjgl.glfw.GLFW;
 import java.util.concurrent.CompletableFuture;
 
 public class EmotecraftClientMod {
+    protected static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(McUtils.newIdentifier("keybinding")); // key.category.emotecraft.keybinding
+
     public static final KeyMapping OPEN_MENU_KEY = new KeyMapping(
-            "key.emotecraft.fastchoose", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B, "category.emotecraft.keybinding"
+            "key.emotecraft.fastchoose", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B, KEYBIND_CATEGORY
     );
     public static final KeyMapping STOP_EMOTE_KEY = new KeyMapping(
-            "key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.emotecraft.keybinding"
+            "key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, KEYBIND_CATEGORY
     );
 
     private static int tick = 0;

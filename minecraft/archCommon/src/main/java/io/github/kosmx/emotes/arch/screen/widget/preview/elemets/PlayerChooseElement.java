@@ -9,6 +9,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -107,14 +109,14 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
     }*/
 
     @Override
-    protected boolean isValidClickButton(int button) {
+    protected boolean isValidClickButton(MouseButtonInfo button) {
         return this.parent.controller.isValidClickButton(button);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) {
-            return this.parent.controller.onClick(this, button);
+    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+        if (super.mouseClicked(event, bl)) {
+            return this.parent.controller.onClick(this, event, bl);
         }
         return false;
     }

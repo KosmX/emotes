@@ -21,4 +21,4 @@ include("minecraft:fabric")
 include("minecraft:neoforge")
 
 // Paper plugin
-include("paper")
+// include("paper")
