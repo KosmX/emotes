@@ -1,6 +1,8 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
@@ -82,6 +84,10 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
 
         if (this.animTime > 0.0F) {
             setAlpha(1.0F - EASING_TRANSFORMER.get(this.animTime));
+        }
+
+        if (isHovered()) {
+            guiGraphics.requestCursor(isActive() && this.player.isPlayingEmote() ? CursorTypes.RESIZE_ALL : CursorType.DEFAULT);
         }
     }
 

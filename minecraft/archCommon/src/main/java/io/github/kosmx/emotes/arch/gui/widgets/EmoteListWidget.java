@@ -2,6 +2,8 @@ package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
@@ -207,6 +209,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             int maxX = getContentRight() - (compactMode && scrollbarVisible() ? 7 : 0);
             matrices.enableScissor(getX() - 1, getY() - 1, maxX, getY() + getHeight() + 1);
             if (hovered) {
+                matrices.requestCursor(isFocused() ? CursorType.DEFAULT : CursorTypes.POINTING_HAND);
                 matrices.fill(getContentX() - 1, getContentY() - 1, maxX, getContentBottom() + 1, ARGB.color(128, 66, 66, 66));
             }
             int maxBadgesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (getContentX() + 31);

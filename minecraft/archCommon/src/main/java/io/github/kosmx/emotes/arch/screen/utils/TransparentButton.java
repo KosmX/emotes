@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -31,6 +32,9 @@ public class TransparentButton extends AbstractButton {
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         int i = ARGB.color(this.alpha, this.active ? -1 : -6250336);
         this.renderString(guiGraphics, Minecraft.getInstance().font, i);
+        if (this.isHovered()) {
+            guiGraphics.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+        }
     }
 
     @Override

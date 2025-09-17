@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
@@ -38,10 +39,10 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        this.isHovered = this.isHovered && this.parent.controller.doHoverPart(this);
+        boolean doHoverPart = this.parent.controller.doHoverPart(this);
 
         updateRectangle();
-        if (isHoveredOrFocused()) renderHover(guiGraphics);
+        if (isHoveredOrFocused() && doHoverPart) renderHover(guiGraphics);
 
         EmoteHolder emoteHolder = getEmote();
         Optional<ResourceLocation> icon = Optional.ofNullable(emoteHolder).map(EmoteHolder::getIconIdentifier);
@@ -62,6 +63,10 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
             setTooltip(Tooltip.create(emoteHolder.name));
             setTooltipDelay(Duration.ZERO);
         } else setTooltip(null);
+
+        if (isHovered()) {
+            guiGraphics.requestCursor(isActive() && doHoverPart ? emoteHolder != null ? CursorTypes.POINTING_HAND : CursorTypes.RESIZE_ALL : CursorTypes.NOT_ALLOWED);
+        }
     }
 
     protected abstract void renderHover(GuiGraphics guiGraphics);
