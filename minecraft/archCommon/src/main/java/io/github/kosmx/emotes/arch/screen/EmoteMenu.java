@@ -150,6 +150,8 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
 
     @Override
     protected void onPressed(EmoteListWidget.ListEntry selected) {
+        if (this.resetButton == null) return;
+
         this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteEntry;
 
         if (selected instanceof EmoteListWidget.EmoteEntry entry) {
