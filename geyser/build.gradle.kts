@@ -15,8 +15,12 @@ val compileApi = configurations.register("compileApi").get()
 configurations.api.configure { extendsFrom(compileApi) }
 
 dependencies {
-    compileOnly("org.geysermc.geyser:core:${properties["geyser_version"] as String}")
-    implementation("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}")
+//    compileOnly("org.geysermc.geyser:core:${properties["geyser_version"] as String}")
+//    implementation("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}")
+
+    //Until it gets merged
+    compileOnly("com.github.ZigyTheBird.Geyser:api:51a5bec5dc")
+    compileOnly("com.github.ZigyTheBird.Geyser:core:51a5bec5dc")
 
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesServer")) {

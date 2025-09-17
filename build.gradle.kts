@@ -37,6 +37,9 @@ subprojects {
         maven("https://repo.opencollab.dev/main/") {
             name = "Geyser"
         }
+        maven("https://jitpack.io") {
+            name = "jitpack"
+        }
         mavenLocal()
     }
 

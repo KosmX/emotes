@@ -17,7 +17,9 @@ import org.geysermc.geyser.api.command.Command;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
+import org.geysermc.geyser.api.event.bedrock.SessionLoginEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCommandsEvent;
+import org.geysermc.geyser.api.event.lifecycle.GeyserDefineEntityPropertiesEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.session.GeyserSession;
@@ -31,6 +33,9 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GeyserSessionPatc
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ProtocolProvider;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.ConnectionType;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.pal.animation.GeyserEmotePlayer;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.pal.api.PlayerAnimationAccess;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.pal.api.PlayerAnimationFactory;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
 
@@ -38,6 +43,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Some cool stuff:
@@ -57,9 +63,9 @@ public class EmotecraftExt implements Extension {
 
     public static final Key MINECRAFT_REGISTER_TYPE = MinecraftKey.key("register");
 
-    public static final Key EMOTECAFT_EMOTE_TYPE = Key.key(CommonData.MOD_ID, CommonData.playEmoteID);
-    public static final Key EMOTECAFT_STREAM_TYPE = Key.key(CommonData.MOD_ID, CommonData.emoteStreamID);
-    private static final Set<Key> EMOTECRAFT_CHANNELS = Set.of(EMOTECAFT_EMOTE_TYPE, EMOTECAFT_STREAM_TYPE);
+    public static final Key EMOTECRAFT_EMOTE_TYPE = Key.key(CommonData.MOD_ID, CommonData.playEmoteID);
+    public static final Key EMOTECRAFT_STREAM_TYPE = Key.key(CommonData.MOD_ID, CommonData.emoteStreamID);
+    private static final Set<Key> EMOTECRAFT_CHANNELS = Set.of(EMOTECRAFT_EMOTE_TYPE, EMOTECRAFT_STREAM_TYPE);
 
     private static EmotecraftExt instance;
 
@@ -99,13 +105,15 @@ public class EmotecraftExt implements Extension {
             BedrockEmoteLoader.preloadEmotes(packet.getPieceIds()); // Preload emotes
             return true;
         });
+
+        PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory("emotecraft:factory", 1000, GeyserEmotePlayer::new);
     }
 
     private void onMinecraftRegisterPayload(GeyserSession session, Key type, byte[] bytes) {
         Set<Key> channels = DinnerboneProtocolUtils.readChannels(Unpooled.wrappedBuffer(bytes));
 
         CommonData.LOGGER.debug("Server listening channels: {}", channels);
-        if (channels.contains(EmotecraftExt.EMOTECAFT_EMOTE_TYPE)) {
+        if (channels.contains(EmotecraftExt.EMOTECRAFT_EMOTE_TYPE)) {
             CommonData.LOGGER.debug("Has emotecraft!");
 
             ByteBuf byteBuf = Unpooled.buffer();
@@ -135,6 +143,32 @@ public class EmotecraftExt implements Extension {
             networkInstance.setConnectionType(ConnectionType.BACKEND);
         }
         networkInstance.receiveMessage(bytes);
+    }
+
+    @Subscribe
+    public void onGeyserDefineEntityProperties(GeyserDefineEntityPropertiesEvent event) {
+        if (event.entityIdentifier().equals("minecraft:player")) {
+            //TODO I am retarded and forgot that I need to register these PER BONE so like right_arm_x_scale or smth
+            addProperty("x", event);
+            addProperty("y", event);
+            addProperty("z", event);
+            addProperty("x_rot", event);
+            addProperty("y_rot", event);
+            addProperty("z_rot", event);
+            addProperty("x_scale", event);
+            addProperty("y_scale", event);
+            addProperty("z_scale", event);
+        }
+    }
+
+    @Subscribe
+    public void onLogin(SessionLoginEvent event) {
+        if (event.connection() instanceof GeyserSession session) {
+            session.getTickEventLoop().scheduleAtFixedRate(() -> {
+                session.getEntityCache().forEachPlayerEntity(player ->
+                        PlayerAnimationAccess.getPlayerAnimProcessor(player).handleAnimations(0, true));
+            }, 50000000, 5, TimeUnit.NANOSECONDS);
+        }
     }
 
     @Subscribe
@@ -188,6 +222,11 @@ public class EmotecraftExt implements Extension {
             }
             event.setCancelled(true);
         }
+    }
+
+    public static void addProperty(String name, GeyserDefineEntityPropertiesEvent event) {
+        event.registerFloatProperty("pal:" + name, Float.MIN_VALUE, Float.MAX_VALUE, name.contains("scale") ? 1 : 0);
+        event.registerBooleanProperty("pal:is_active_" + name);
     }
 
     public static EmotecraftExt getInstance() {

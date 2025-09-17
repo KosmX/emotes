@@ -16,6 +16,8 @@ import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.Nullable;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.pal.animation.GeyserEmotePlayer;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.pal.api.PlayerAnimationAccess;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
 
@@ -57,7 +59,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     @Override
     protected void sendMessage(byte[] bytes, @Nullable UUID target) {
         this.session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(
-                EmotecraftExt.EMOTECAFT_EMOTE_TYPE, bytes
+                EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, bytes
         ));
     }
 
@@ -97,7 +99,8 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, data.player);
 
                     //playerEntity.emotecraft$playEmote(data.emoteData, data.tick, data.isForced);
-                    this.session.showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
+                    ((GeyserEmotePlayer)PlayerAnimationAccess.getPlayerAnimationLayer(playerEntity, "emotecraft:factory"))
+                            .triggerAnimation(data.emoteData);
 
                     if (isMainPlayer(playerEntity)) {
                         this.currentEmote = data.emoteData.get();
