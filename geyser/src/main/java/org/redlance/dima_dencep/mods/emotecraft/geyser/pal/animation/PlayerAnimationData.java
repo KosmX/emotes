@@ -1,8 +1,8 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.pal.animation;
 
-import com.zigythebird.geyser_pal.api.PlayerAnimationAccess;
 import com.zigythebird.playeranimcore.animation.AnimationData;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.pal.api.PlayerAnimationAccess;
 
 public class PlayerAnimationData extends AnimationData {
     private final PlayerEntity player;

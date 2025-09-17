@@ -1,9 +1,7 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.pal.animation;
 
 import com.zigythebird.playeranimcore.animation.AnimationController;
-import com.zigythebird.playeranimcore.animation.AnimationProcessor;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
-import com.zigythebird.playeranimcore.animation.RawAnimation;
 import com.zigythebird.playeranimcore.animation.layered.modifier.AbstractFadeModifier;
 import com.zigythebird.playeranimcore.bones.AdvancedPlayerAnimBone;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
@@ -11,12 +9,10 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.pal.api.PlayerAnimationAccess;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 public class PlayerAnimationController extends AnimationController {
     //Bone pivot point positions used to apply custom pivot point translations.

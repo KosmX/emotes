@@ -1,7 +1,6 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.pal.animation;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +13,7 @@ import java.util.Optional;
  * Cache class for holding loaded {@link Animation Animations}
  */
 public class PlayerAnimResources {
-	private static final Map<String, Animation> ANIMATIONS = new Object2ObjectOpenHashMap<>();
+	private static final Map<String, Animation> ANIMATIONS = new HashMap<>();
 
 	/**
 	 * Get an animation from the registry, using Identifier(mod_id, animation_name) as the key.
