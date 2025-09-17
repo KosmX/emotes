@@ -83,16 +83,16 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     @Override
-    protected void renderSelection(@NotNull GuiGraphics guiGraphics, int i, int j, int k, int l, int m) {
+    protected void renderSelection(@NotNull GuiGraphics guiGraphics, int top, int width, int height, int outerColor, int innerColor) {
         if (this.compactMode && scrollbarVisible()) {
             int o = getRowLeft() - 2;
             int p = getRight() - 6 - 1;
-            int q = i - 2;
-            int r = i + k + 2;
-            guiGraphics.fill(o, q, p, r, l);
-            guiGraphics.fill(o + 1, q + 1, p - 1, r - 1, m);
+            int q = top - 2;
+            int r = top + height + 2;
+            guiGraphics.fill(o, q, p, r, outerColor);
+            guiGraphics.fill(o + 1, q + 1, p - 1, r - 1, innerColor);
         } else {
-            super.renderSelection(guiGraphics, i, j, k, l, m);
+            super.renderSelection(guiGraphics, top, width, height, outerColor, innerColor);
         }
     }
 
