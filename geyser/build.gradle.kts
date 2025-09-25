@@ -19,8 +19,8 @@ dependencies {
 //    implementation("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}")
 
     //Until it gets merged
-    compileOnly("com.github.ZigyTheBird.Geyser:api:51a5bec5dc")
     compileOnly("com.github.ZigyTheBird.Geyser:core:51a5bec5dc")
+    implementation("com.github.ZigyTheBird.Geyser:standalone:51a5bec5dc")
 
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesServer")) {
