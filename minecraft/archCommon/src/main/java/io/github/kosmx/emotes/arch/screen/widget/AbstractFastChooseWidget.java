@@ -50,7 +50,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(text);
 
-        int buttonPadding = Math.max((18 + textWidth) / 2 + 2, globalPadding() / 2);
+        int buttonPadding = Math.max((18 + textWidth) / 2 + 2, globalPadding());
         this.forwardButton.setPosition(centerX - this.forwardButton.getWidth() / 2 + buttonPadding, centerY - this.forwardButton.getHeight() / 2);
         this.backButton.setPosition(centerX - this.backButton.getWidth() / 2 - buttonPadding, centerY - this.backButton.getHeight() / 2);
 
