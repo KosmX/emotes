@@ -35,9 +35,9 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
         this.isAnimFinishing = easedProgress > 0.9F;
 
         int s = this.parent.globalPadding();
-        float distance = this.parent.getWidth() * 0.36f * easedProgress;
-        int iconX = (int) (parent.getX() + parent.getWidth() / 2f + this.dx * distance) - s;
-        int iconY = (int) (parent.getY() + parent.getHeight() / 2f + this.dy * distance) - s;
+        float distance = (s * 3) * easedProgress;
+        int iconX = Math.round(parent.getX() + parent.getWidth() / 2F + this.dx * distance) - s;
+        int iconY = Math.round(parent.getY() + parent.getHeight() / 2F + this.dy * distance) - s;
 
         setRectangle(s * 2, s * 2, iconX, iconY);
     }

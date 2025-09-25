@@ -34,7 +34,8 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     @Override
     public void init() {
         if (ClientPacketManager.isRemoteAvailable()) {
-            //this.layout.addTitleHeader(getTitle(), this.font); TODO Do we want this?
+            // this.layout.addTitleHeader(getTitle(), this.font); TODO Do we want this?
+            this.layout.setHeaderHeight(0);
         } else if (ClientPacketManager.isAvailableProxy()) {
             this.layout.addTitleHeader(FastMenuScreen.WARN_ONLY_PROXY, this.font);
         } else {
@@ -60,7 +61,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     @Override
     protected void repositionElements() {
         if (this.fastMenu != null) {
-            int size = (int) Math.min(this.width * 0.8, this.height * 0.8);
+            int size = Math.round(Math.min(this.width * 0.8F, (this.height -  this.layout.getHeaderHeight()) * 0.8F));
             this.fastMenu.setSize(size, size);
         }
         this.layout.arrangeElements();

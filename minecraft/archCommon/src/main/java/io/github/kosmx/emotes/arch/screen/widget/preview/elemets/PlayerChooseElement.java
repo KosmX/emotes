@@ -53,7 +53,7 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
         if (icon.isPresent()) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
         } else if (getEmote() != null) {
-            renderScrollingString(guiGraphics, Minecraft.getInstance().font, getEmote().name, getX(), getY(), getX() + getWidth(), getY() + getHeight(), -1);
+            renderScrollingString(guiGraphics, Minecraft.getInstance().font, getEmote().name, getX(), getY(), getRight(), getBottom(), -1);
         }
 
         if (isHoveredOrFocused() && emoteHolder != null) {

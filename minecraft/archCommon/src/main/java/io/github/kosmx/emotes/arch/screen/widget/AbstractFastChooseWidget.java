@@ -28,8 +28,8 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     private GuiEventListener focused;
     private boolean isDragging;
 
-    protected final TransparentButton forwardButton = new TransparentButton(15, 15, McUtils.FORWARD, this::onForwardButton);
-    protected final TransparentButton backButton = new TransparentButton(15, 15, McUtils.BACK, this::onBackButton);
+    protected final TransparentButton forwardButton = new TransparentButton(18, 18, McUtils.FORWARD, this::onForwardButton);
+    protected final TransparentButton backButton = new TransparentButton(18, 18, McUtils.BACK, this::onBackButton);
 
     private int currentPage;
 
@@ -46,13 +46,15 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         int centerX = getX() + getWidth() / 2;
         int centerY = getY() + getHeight() / 2;
 
-        this.forwardButton.setPosition((centerX - this.forwardButton.getWidth() / 2) + globalPadding(), centerY - this.forwardButton.getHeight() / 2);
-        this.backButton.setPosition((centerX - this.forwardButton.getWidth() / 2) - globalPadding(), centerY - this.forwardButton.getHeight() / 2);
-
         Component text = Component.literal(String.valueOf(this.currentPage + 1));
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(text);
-        guiGraphics.drawString(font, text, centerX - (textWidth / 2), centerY - (font.lineHeight / 3), -1);
+
+        int buttonPadding = Math.max((18 + textWidth) / 2 + 2, globalPadding() / 2);
+        this.forwardButton.setPosition(centerX - this.forwardButton.getWidth() / 2 + buttonPadding, centerY - this.forwardButton.getHeight() / 2);
+        this.backButton.setPosition(centerX - this.backButton.getWidth() / 2 - buttonPadding, centerY - this.backButton.getHeight() / 2);
+
+        guiGraphics.drawString(font, text, centerX - (textWidth / 2), centerY - (font.lineHeight / 2), -1);
 
         for (Renderable renderable : this.elements) {
             renderable.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -60,7 +62,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     public int globalPadding() {
-        return getWidth() / 8;
+        return Math.min(getWidth() / 8, getHeight() / 8);
     }
 
     public abstract void tick();
