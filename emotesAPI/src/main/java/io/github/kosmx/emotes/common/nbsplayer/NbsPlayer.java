@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.common.nbsplayer;
 
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.enums.State;
+import io.github.kosmx.emotes.common.CommonData;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.model.Note;
 import net.raphimc.noteblocklib.model.Song;
@@ -36,7 +37,7 @@ public abstract class NbsPlayer extends SongPlayer {
     }
 
     @Override
-    protected boolean preTick() {
+    protected boolean shouldTick() {
         if (this.controller == null) return true;
 
         if (!this.controller.isActive()) {
@@ -49,7 +50,9 @@ public abstract class NbsPlayer extends SongPlayer {
     protected abstract void playNote(Note note);
 
     @Override
-    protected void onFinished() {
+    protected void onSongFinished() {
+        super.onSongFinished();
+
         if (getSong() instanceof NbsSong nbsSong) {
             if (nbsSong.isLoop() && (this.loopCount < nbsSong.getMaxLoopCount() || nbsSong.getMaxLoopCount() == 0)) {
                 this.loopCount++;
@@ -60,5 +63,11 @@ public abstract class NbsPlayer extends SongPlayer {
 
     public boolean isFirstSongPlayed() {
         return this.firstSongPlayed;
+    }
+
+    @Override
+    protected void onTickException(Throwable e) {
+        CommonData.LOGGER.warn("An error occurred while playing nbs!", e);
+        stop();
     }
 }
