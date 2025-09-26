@@ -23,7 +23,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     private boolean isAnimFinishing;
 
     public PlayerChooseSquareElement(AbstractFastChooseWidget parent, GameProfile profile, int id, int dx, int dy) {
-        super(parent/*, profile*/, id);
+        super(parent, profile, id);
         this.dx = dx;
         this.dy = dy;
     }

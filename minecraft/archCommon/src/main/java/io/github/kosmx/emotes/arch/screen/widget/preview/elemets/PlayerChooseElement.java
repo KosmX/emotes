@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
+import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
@@ -22,7 +23,7 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
     protected final AbstractFastChooseWidget parent;
     protected final int id;
 
-    public PlayerChooseElement(AbstractFastChooseWidget parent/*, GameProfile profile*/, int id) {
+    public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
         super(0, 0, 0, 0, Component.empty());
 
         this.parent = parent;
