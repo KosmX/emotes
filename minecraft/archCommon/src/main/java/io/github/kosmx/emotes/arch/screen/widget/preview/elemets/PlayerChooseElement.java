@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
@@ -25,7 +26,7 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
     protected final AbstractFastChooseWidget parent;
     protected final int id;
 
-    public PlayerChooseElement(AbstractFastChooseWidget parent/*, GameProfile profile*/, int id) {
+    public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
         super(0, 0, 0, 0, Component.empty());
 
         this.parent = parent;
@@ -56,7 +57,7 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
         if (icon.isPresent()) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
         } else if (getEmote() != null) {
-            renderScrollingString(guiGraphics, Minecraft.getInstance().font, getEmote().name, getX(), getY(), getX() + getWidth(), getY() + getHeight(), -1);
+            renderScrollingString(guiGraphics, Minecraft.getInstance().font, getEmote().name, getX(), getY(), getRight(), getBottom(), -1);
         }
 
         if (isHoveredOrFocused() && emoteHolder != null) {

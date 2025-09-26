@@ -127,7 +127,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     static void receivePlayPacket(Animation emoteData, UUID player, float tick, boolean isForced) {
         AbstractClientPlayer playerEntity = PlatformTools.getPlayerFromUUID(player);
-        if (!isEmoteAllowed(emoteData, player)) {
+        if (isEmoteAllowed(emoteData, player)) {
             EventResult result = ClientEmoteEvents.EMOTE_VERIFICATION.invoker().verify(emoteData, player);
             if (result == EventResult.FAIL) return;
             if (playerEntity != null) {
@@ -140,8 +140,9 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         }
     }
 
+    @SuppressWarnings("unused")
     public static boolean isEmoteAllowed(Animation emoteData, UUID player) {
-        return PlatformTools.getConfig().enablePlayerSafety.get() || !Minecraft.getInstance().isBlocked(player);
+        return !PlatformTools.getConfig().enablePlayerSafety.get() || !Minecraft.getInstance().isBlocked(player);
     }
 
     /**

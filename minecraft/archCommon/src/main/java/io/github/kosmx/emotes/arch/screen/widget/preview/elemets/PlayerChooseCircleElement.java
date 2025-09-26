@@ -18,7 +18,7 @@ public class PlayerChooseCircleElement extends PlayerChooseElement {
     protected final float angle;
 
     public PlayerChooseCircleElement(AbstractFastChooseWidget parent, GameProfile profile, int id, float angle) {
-        super(parent/*, profile*/, id);
+        super(parent, profile, id);
         this.angle = angle;
     }
 

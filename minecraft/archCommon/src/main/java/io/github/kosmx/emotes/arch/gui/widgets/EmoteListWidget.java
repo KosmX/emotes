@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
 import io.github.kosmx.emotes.arch.screen.utils.BageUtils;
+import io.github.kosmx.emotes.arch.screen.utils.PageButton;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
 import it.unimi.dsi.fastutil.Pair;
@@ -17,6 +18,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookPage;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -37,14 +39,14 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     private FolderEntry lastClickedFolder;
     private boolean compactMode;
 
-    private final Button backButton = Button.builder(McUtils.BACK, button -> {
+    private final PageButton backButton = new PageButton(Button.DEFAULT_HEIGHT, Button.DEFAULT_HEIGHT, RecipeBookPage.PAGE_BACKWARD_SPRITES, true, button -> {
         setLastFolder(null);
         if (this.lastClickedFolder == null) {
             setScrollAmount(0);
         } else {
             centerScrollOn(this.lastClickedFolder);
         }
-    }).width(Button.DEFAULT_HEIGHT).build();
+    });
 
     public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
         super(minecraft, width, height, y, itemHeight);
@@ -468,7 +470,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         if (folder.next != null) updateLastOpenedPath(folder.next);
     }
 
-    public Button createBackButton() {
+    public PageButton createBackButton() {
         return this.backButton;
     }
 }
