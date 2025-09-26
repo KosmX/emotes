@@ -1,10 +1,12 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.util.ARGB;
@@ -55,6 +57,10 @@ public class PageButton extends AbstractButton {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.sprites.get(this.active, this.active && isHoveredOrFocused()), x, y,
                 width, height, ARGB.white(this.alpha)
         );
+
+        if (this.isHovered()) {
+            guiGraphics.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+        }
     }
 
     @Override
@@ -63,7 +69,7 @@ public class PageButton extends AbstractButton {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers inputWithModifiers) {
         this.onPress.accept(this);
     }
 
