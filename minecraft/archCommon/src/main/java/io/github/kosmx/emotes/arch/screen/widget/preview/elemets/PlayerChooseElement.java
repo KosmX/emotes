@@ -12,7 +12,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.ResourceLocation;
 
 import java.time.Duration;
@@ -24,7 +24,7 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
     protected final int id;
 
     public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
-        super(0, 0, 0, 0, Component.empty());
+        super(0, 0, 0, 0, CommonComponents.EMPTY);
 
         this.parent = parent;
         this.id = id;
