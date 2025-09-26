@@ -14,9 +14,6 @@ public class McUtils {
     public static final Component MOD_NAME = Component.literal(CommonData.MOD_NAME);
     public static final Component SLASH = Component.literal("/");
 
-    public static final Component FORWARD = Component.literal(">").withStyle(style -> style.withBold(true));
-    public static final Component BACK = Component.literal("<").withStyle(style -> style.withBold(true));
-
     public static Component fromJson(String json, HolderLookup.Provider registries) {
         if (json == null || json.isBlank()) return Component.empty();
 

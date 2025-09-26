@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.arch.screen.utils.TransparentButton;
-import io.github.kosmx.emotes.mc.McUtils;
+import io.github.kosmx.emotes.arch.screen.utils.PageButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
@@ -12,6 +11,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookPage;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +28,8 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     private GuiEventListener focused;
     private boolean isDragging;
 
-    protected final TransparentButton forwardButton = new TransparentButton(18, 18, McUtils.FORWARD, this::onForwardButton);
-    protected final TransparentButton backButton = new TransparentButton(18, 18, McUtils.BACK, this::onBackButton);
+    protected final PageButton forwardButton = new PageButton(RecipeBookPage.PAGE_FORWARD_SPRITES, false, this::onForwardButton);
+    protected final PageButton backButton = new PageButton(RecipeBookPage.PAGE_BACKWARD_SPRITES, false, this::onBackButton);
 
     private int currentPage;
 
@@ -50,7 +50,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(text);
 
-        int buttonPadding = Math.max((18 + textWidth) / 2 + 2, globalPadding());
+        int buttonPadding = Math.max((PageButton.PAGE_BUTTON_WIDTH + textWidth) / 2 + 2, globalPadding());
         this.forwardButton.setPosition(centerX - this.forwardButton.getWidth() / 2 + buttonPadding, centerY - this.forwardButton.getHeight() / 2);
         this.backButton.setPosition(centerX - this.backButton.getWidth() / 2 - buttonPadding, centerY - this.backButton.getHeight() / 2);
 
@@ -115,7 +115,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         return ContainerEventHandler.super.mouseClicked(mouseX, mouseY, button);
     }
 
-    protected void onForwardButton(TransparentButton button) {
+    protected void onForwardButton(PageButton button) {
         if (this.currentPage < PlatformTools.getConfig().fastMenuEmotes.length - 1) {
             this.currentPage += 1;
         } else {
@@ -123,7 +123,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         }
     }
 
-    protected void onBackButton(TransparentButton button) {
+    protected void onBackButton(PageButton button) {
         if (this.currentPage > 0) {
             this.currentPage -= 1;
         } else {
