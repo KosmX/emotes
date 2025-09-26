@@ -16,7 +16,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +30,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     protected float animTime = 1.0F;
 
     public PlayerPreview(GameProfile profile, int x, int y, int width, int height, boolean renderBackround) {
-        super(x, y, width, height, Component.empty());
+        super(x, y, width, height, CommonComponents.EMPTY);
 
         this.player = new UnsafeRemotePlayer(null, profile);
         this.renderBackround = renderBackround;

@@ -17,6 +17,7 @@ import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +35,6 @@ import java.util.stream.Stream;
  * Use to create your list of emotes. (dima_dencep uses it)
  */
 public abstract class EmoteSubScreen extends Screen {
-    private static final Component SEARCH = Component.translatable("gui.recipebook.search_hint");
-
     protected final boolean reloadOnOpen;
     protected final ISearchEngine searchEngine;
     protected Screen lastScreen;
@@ -81,10 +80,10 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addTitle() {
-        this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
+        this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, RecipeBookComponent.SEARCH_HINT,
                 () -> Objects.requireNonNull(this.list).getEmotes(isSearchActive())
         ));
-        this.searchBox.setHint(SEARCH);
+        this.searchBox.setHint(RecipeBookComponent.SEARCH_HINT);
         this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, isSearchActive(), string));
     }
 
