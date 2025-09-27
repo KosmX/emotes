@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
@@ -62,13 +63,16 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.pose().pushMatrix();
-        guiGraphics.enableScissor(getX(), getY(), getRight(), getBottom());
 
         if (this.renderBackround) {
-            guiGraphics.fill(getX(), getY(), getRight(), getBottom(), ARGB.colorFromFloat(
-                    Mth.lerp(this.alpha, 0.0F, 0.5F), 0.0F, 0.0F, 0.0F
+            float alpha = Mth.lerp(this.alpha, 0.0F, 0.5F);
+            guiGraphics.fill(getX() + 1, getY() + 1, getRight() - 1, getBottom() - 1, ARGB.colorFromFloat(
+                    alpha, 0.0F, 0.0F, 0.0F
             ));
+            WidgetOutliner.renderOutline(guiGraphics, this, ARGB.white(alpha));
         }
+
+        guiGraphics.enableScissor(getX(), getY(), getRight(), getBottom());
 
         try {
             int scale = this.renderBackround ? getHeight() / 3 : getHeight() / 2;
