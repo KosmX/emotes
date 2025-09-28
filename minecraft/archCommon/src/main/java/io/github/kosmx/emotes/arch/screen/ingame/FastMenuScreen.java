@@ -61,7 +61,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     @Override
     protected void repositionElements() {
         if (this.fastMenu != null) {
-            int size = Math.round(Math.min(this.width * 0.8F, (this.height -  this.layout.getHeaderHeight()) * 0.8F));
+            int size = Math.round(Math.min(this.width * 0.8F, (this.height - this.layout.getHeaderHeight()) * 0.8F));
             this.fastMenu.setSize(size, size);
         }
         this.layout.arrangeElements();
