@@ -4,9 +4,11 @@ import com.zigythebird.playeranim.animation.PlayerAnimationController;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.AnimationData;
+import com.zigythebird.playeranimcore.animation.RawAnimation;
 import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
 import com.zigythebird.playeranimcore.enums.PlayState;
+import com.zigythebird.playeranimcore.enums.State;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import net.minecraft.client.CameraType;
@@ -24,9 +26,17 @@ public class EmotePlayer extends PlayerAnimationController {
     private MinecraftNbsPlayer song;
 
     public boolean perspective = false;
+    public boolean muteNbs = false;
 
     public EmotePlayer(AbstractClientPlayer player) {
         super(player, (controller, state, animSetter) -> PlayState.STOP);
+    }
+
+    @Override
+    protected void setAnimation(RawAnimation rawAnimation, float startAnimFrom) {
+        State state = getAnimationState();
+        super.setAnimation(rawAnimation, startAnimFrom);
+        this.animationState = state;
     }
 
     @Override
@@ -74,9 +84,10 @@ public class EmotePlayer extends PlayerAnimationController {
 
     @Override
     protected void applyCustomPivotPoints() {
-        if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning()) {
+        if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning() && !this.muteNbs) {
             Component nowPlaying = this.song.getNowPlaying();
             if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(nowPlaying);
+            this.song.setPaused(getAnimationState() == State.PAUSED);
             this.song.start();
         }
         super.applyCustomPivotPoints();

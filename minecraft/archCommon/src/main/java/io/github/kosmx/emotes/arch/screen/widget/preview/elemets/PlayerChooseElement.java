@@ -9,10 +9,8 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.resources.ResourceLocation;
 
 import java.time.Duration;
-import java.util.Optional;
 import java.util.UUID;
 
 public abstract class PlayerChooseElement extends PlayerPreview implements IChooseElement {
@@ -21,12 +19,12 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
         super(profile, 0, 0, 0, 0, false);
+        this.player.emotecraft$getEmote().muteNbs = true;
 
         this.parent = parent;
         this.id = id;
 
-        super.pause(true);
-        super.tick();
+        tick();
     }
 
     protected abstract void updateRectangle();
@@ -57,7 +55,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     @Override
     public void removed() {
-        // this.player.stopEmote();
+        this.player.stopEmote();
     }
 
     @Override
@@ -92,8 +90,10 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     @Override
     public void tick() {
         EmoteHolder holder = getEmote();
-        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true, 1.5F);
-        super.pause(!isHoveredOrFocused());
+
+        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true, previewTick);
+
+        super.pause(!updated && !isHoveredOrFocused());
         if (updated || isHoveredOrFocused()) super.tick();
     }
 
