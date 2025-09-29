@@ -62,7 +62,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     public int globalPadding() {
-        return Math.round(Math.min(getWidth() / 6.9F, getHeight() / 6.9F));
+        return Math.min(getWidth() / 8, getHeight() / 8);
     }
 
     public abstract void tick();

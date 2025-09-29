@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -42,7 +43,9 @@ public class FastMenuScreen extends Screen implements FastChooseController {
             this.layout.addTitleHeader(FastMenuScreen.WARN_NO_EMOTECRAFT, this.font);
         }
 
-        this.fastMenu = this.layout.addToContents(new PreviewFastChooseWidget(this, true, 0, 0, 0));
+        this.fastMenu = this.layout.addToContents(new PreviewFastChooseWidget(this, true, 0, 0, 512),
+                LayoutSettings::alignVerticallyMiddle
+        );
 
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
@@ -61,8 +64,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     @Override
     protected void repositionElements() {
         if (this.fastMenu != null) {
-            int size = Math.round(Math.min(this.width * 0.8F, (this.height - this.layout.getHeaderHeight()) * 0.8F));
-            this.fastMenu.setSize(size, size);
+            this.fastMenu.setSize(Math.min(Math.round(Math.min(this.width * 0.8F, (this.height - this.layout.getHeaderHeight()) * 0.8F)), 512));
         }
         this.layout.arrangeElements();
     }

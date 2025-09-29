@@ -92,7 +92,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
                 Button.SMALL_WIDTH * 2
         ), 2, gridLayout.newCellSettings().paddingTop(Button.DEFAULT_SPACING));
 
-        this.fastChoose = rowHelper.addChild(new PreviewFastChooseWidget(this, false, 0, 0, 0), 2,
+        this.fastChoose = rowHelper.addChild(new PreviewFastChooseWidget(this, false, 0, 0, 256), 2,
                 rowHelper.newCellSettings().alignHorizontallyCenter().paddingTop(Button.DEFAULT_SPACING / 2)
         );
     }
@@ -142,7 +142,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     @Override
     protected void repositionElements() {
         if (this.fastChoose != null) {
-            this.fastChoose.setSize(Math.round(Math.min(this.width / 2.5F, this.height / 2.3F)));
+            this.fastChoose.setSize(Math.min(Math.round(Math.min(this.width / 2.5F, this.height / 2.3F)), 256));
         }
         super.repositionElements();
     }
