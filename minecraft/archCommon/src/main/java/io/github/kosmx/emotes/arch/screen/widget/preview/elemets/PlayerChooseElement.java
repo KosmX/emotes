@@ -1,6 +1,8 @@
 package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
 import com.mojang.authlib.GameProfile;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
@@ -91,10 +93,29 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     public void tick() {
         EmoteHolder holder = getEmote();
 
-        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true, previewTick);
+        float previewTick = holder == null ? 1.0F : calculatePreviewTick(holder.getEmote());
+        boolean shouldPlayAgain = holder == null || holder.getEmote().loopType().shouldPlayAgain(null, holder.getEmote());
+        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), shouldPlayAgain ? Animation.LoopType.DEFAULT : Animation.LoopType.LOOP, true, previewTick);
 
         super.pause(!updated && !isHoveredOrFocused());
         if (updated || isHoveredOrFocused()) super.tick();
+    }
+
+    protected static float calculatePreviewTick(Animation animation) {
+        ExtraAnimationData data = animation.data();
+
+        if (data.has("previewTick")) {
+            return (float) data.getRaw("previewTick");
+        }
+
+        if (animation.loopType().shouldPlayAgain(null, animation)) {
+            float returnToTick = animation.loopType().restartFromTick(null, animation);
+            if (returnToTick > 0.0F) {
+                return (animation.length() - returnToTick) / 2F;
+            }
+        }
+
+        return animation.length() / 2F;
     }
 
     @Override
@@ -112,6 +133,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     @Override
     public void playDownSound(SoundManager handler) {
+        if (!this.parent.controller.doHoverPart(this)) return;
         playButtonClickSound(handler);
     }
 }

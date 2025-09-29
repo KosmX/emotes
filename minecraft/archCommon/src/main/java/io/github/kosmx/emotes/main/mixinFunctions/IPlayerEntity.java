@@ -10,6 +10,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,11 @@ public interface IPlayerEntity {
     }
 
     default void emotecraft$playEmote(@Nullable Animation emote, float tick, boolean isForced) {
+        emotecraft$playEmote(emote, Animation.LoopType.DEFAULT, tick, isForced);
+    }
+
+    @ApiStatus.Internal
+    default void emotecraft$playEmote(@Nullable Animation emote, Animation.LoopType loopType, float tick, boolean isForced) {
         throw new NotImplementedException();
     }
 

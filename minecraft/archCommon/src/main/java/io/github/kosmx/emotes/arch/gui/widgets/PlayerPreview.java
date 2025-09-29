@@ -36,18 +36,18 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         setAlpha(0.0F);
     }
 
-    public boolean playAnimation(@Nullable Animation animation, boolean check) {
-        return playAnimation(animation, check, 0);
+    public boolean playAnimation(@Nullable Animation animation, Animation.LoopType loopType, boolean check) {
+        return playAnimation(animation, loopType, check, 0);
     }
 
-    public boolean playAnimation(@Nullable Animation animation, boolean check, float tick) {
+    public boolean playAnimation(@Nullable Animation animation, Animation.LoopType loopType, boolean check, float tick) {
         if (check && animation != null) {
             EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
             if (animation.equals(emotePlayer.getCurrentAnimationInstance())) {
                 return false;
             }
         }
-        this.player.emotecraft$playEmote(animation, tick, check);
+        this.player.emotecraft$playEmote(animation, loopType, tick, check);
         return true;
     }
 

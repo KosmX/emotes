@@ -12,6 +12,7 @@
 		"endTick":45,
 		"stopTick":50,
 		"degrees":true,
+		"previewTick": 10,
 		"moves":[
 			{
 				"tick":0,
