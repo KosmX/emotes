@@ -55,7 +55,7 @@
   "emotecraft.openFolder": "Öffne Emote-Ordner",
   "emotecraft.otherconfig.quark": "Aktiviere Quark Emote Kompatibilität",
   "emotecraft.otherconfig.quark.tooltip": "Der Quark Emote Support ist sehr instabil, und noch nicht komplett implementiert.\nEs wird nicht empfohlen diesen zu aktivieren, da es zu unerwarteten Problemen oder sogar\neinem Absturz führen kann",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Ersteller: ",
   "emotecraft.config": "Konfiguriere Emotes",
   "emotecraft.blockedEmote": "Du kannst dieses Emote nicht abspielen",

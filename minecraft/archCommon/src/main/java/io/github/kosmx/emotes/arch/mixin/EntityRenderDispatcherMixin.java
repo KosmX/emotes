@@ -1,7 +1,10 @@
 package io.github.kosmx.emotes.arch.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,15 +18,14 @@ public class EntityRenderDispatcherMixin {
 
     @Inject(
             method = {
-                    "distanceToSqr(Lnet/minecraft/world/entity/Entity;)D",
-                    "distanceToSqr(DDD)D"
+                    "distanceToSqr"
             },
             at = @At(
                     value = "HEAD"
             ),
             cancellable = true
     )
-    private void emotecraft$fixNPE(CallbackInfoReturnable<Double> cir) {
-        if (this.camera == null) cir.setReturnValue(Double.MAX_VALUE);
+    private void emotecraft$fixNPE(CallbackInfoReturnable<Double> cir, @Local(argsOnly = true) Entity entity) {
+        if (this.camera == null || entity instanceof UnsafeRemotePlayer) cir.setReturnValue(Double.MAX_VALUE);
     }
 }

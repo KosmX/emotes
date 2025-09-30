@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.neoforge;
 
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 
 public class PlatformToolsImpl {
     public static boolean hasSearchables() {
-        return LoadingModList.get().getModFileById("searchables") != null;
+        return FMLLoader.getCurrent().getLoadingModList().getModFileById("searchables") != null;
     }
 }

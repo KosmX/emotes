@@ -1,7 +1,7 @@
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
-    id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
+    id("dev.architectury.loom") version "1.11-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
     id("com.gradleup.shadow") version "9.2.2" apply false
     id("me.modmuss50.mod-publish-plugin") // version defined in buildSrc
@@ -34,6 +34,14 @@ subprojects {
         }
         maven("https://maven.neoforged.net/releases")
         mavenLocal()
+        maven {
+            name = "Maven for PR #2639" // https://github.com/neoforged/NeoForge/pull/2639
+            url = uri("https://prmaven.neoforged.net/NeoForge/pr2639")
+            content {
+                includeModule("net.neoforged", "neoforge")
+                includeModule("net.neoforged", "testframework")
+            }
+        }
     }
 
     tasks.withType(JavaCompile::class).configureEach {

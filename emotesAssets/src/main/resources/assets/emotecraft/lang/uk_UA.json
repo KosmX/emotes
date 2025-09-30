@@ -55,7 +55,7 @@
   "emotecraft.openFolder": "Відкрити теку емоцій",
   "emotecraft.otherconfig.quark": "Десеріалізатор Quark",
   "emotecraft.otherconfig.quark.tooltip": "Дуже нестабільний і не повністю підтримуваний.\n\nНе рекомендується використовувати, оскільки це може призвести до дивних результатів або навіть збою.",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Автор: ",
   "emotecraft.config": "Налаштування",
   "emotecraft.blockedEmote": "Вам заборонено відтворювати цю емоцію.",

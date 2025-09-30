@@ -9,7 +9,7 @@ import java.nio.file.Path;
 public class ForgeEmotesMain implements InstanceService {
     @Override
     public Path getGameDirectory() {
-        return FMLLoader.getGamePath();
+        return FMLLoader.getCurrent().getGameDir();
     }
 
     @Override

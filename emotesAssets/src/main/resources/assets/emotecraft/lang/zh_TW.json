@@ -48,7 +48,7 @@
   "emotecraft.openFolder": "打開表情文件夾",
   "emotecraft.otherconfig.quark": "啟用夸克序列化程序",
   "emotecraft.otherconfig.quark.tooltip": "夸克表情讀取器非常不穩定且不完全支持您的行動裝置。\n\n因為它可能不會正常工作，甚至崩潰，所以不推薦使用。",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "作者： ",
   "emotecraft.config": "配置表情",
   "emotecraft.blockedEmote": "您不允許播放此表情。",

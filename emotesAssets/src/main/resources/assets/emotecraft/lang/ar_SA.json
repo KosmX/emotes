@@ -11,7 +11,7 @@
   "emotecraft.otherconfig.debug": "التصحيح",
   "emotecraft.otherconfig.validate": "التحقق من صحة الرمز التعبيري",
   "emotecraft.otherconfig.validate.tooltip": "فقط في عوالم PvP، حيث شخص ما يريد الغش. لن يسمح بالرموز التعبيرية، ماذا يصنع الكثير من التعويض",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "المؤلف: ",
   "emotecraft.options.export": "قائمة التصدير",
   "emotecraft.song_too_big_to_send": "الأغنية كبيرة جدًا، ولا يمكن إرسالها إلى الخادم. يُمكن إرسال الرموز التعبيرية فقط"

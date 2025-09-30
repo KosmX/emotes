@@ -56,7 +56,7 @@
   "emotecraft.openFolder": "打开表情文件夹",
   "emotecraft.otherconfig.quark": "启用 Quark 解串器",
   "emotecraft.otherconfig.quark.tooltip": "极其不稳定且不完全受支持。\n\n不建议使用，因为它可能会导致奇怪的结果甚至崩溃。",
-  "category.emotecraft.keybinding": "表情工艺",
+  "key.category.emotecraft.keybinding": "表情工艺",
   "emotecraft.emote.author": "作者：",
   "emotecraft.config": "配置表情",
   "emotecraft.blockedEmote": "你无权播放此表情。",

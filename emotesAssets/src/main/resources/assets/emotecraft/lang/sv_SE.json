@@ -1,6 +1,6 @@
 {
   "emotecraft.options.options": "Modinställningar",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Skapare: ",
   "emotecraft.blockedEmote": "Du får inte använda den här emoten."
 }

@@ -43,7 +43,7 @@ dependencies {
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
     modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", project["fabric_api_version"]))
-    modImplementation("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
+    modCompileOnly("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
@@ -55,10 +55,10 @@ dependencies {
         pomCompile(this)
     }
 
-    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${project["bendablecuboids_version"]}") {
+    /*modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${project["bendablecuboids_version"]}") {
         isTransitive = false
         pomCompile(this)
-    }
+    }*/
 
     implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
         include(this)
@@ -71,9 +71,9 @@ dependencies {
     }
 
     // Third-party
-    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
+    /*modImplementation("com.blamejared.searchables:Searchables-fabric-1.21.8:${project["searchables_version"]}") {
         isTransitive = false
-    }
+    }*/
 
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))

@@ -56,7 +56,7 @@
   "emotecraft.openFolder": "Otevřít složku emocí",
   "emotecraft.otherconfig.quark": "Povolit kvarkový deserializátor",
   "emotecraft.otherconfig.quark.tooltip": "Vysoce nestabilní a není plně podporován.\n\nPoužití není doporučeno, protože může způsobit podivné výsledky nebo dokonce pád.",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
   "emotecraft.config": "Konfigurace emocí",
   "emotecraft.blockedEmote": "Nemáš povoleno přehrát tuto emoci.",
