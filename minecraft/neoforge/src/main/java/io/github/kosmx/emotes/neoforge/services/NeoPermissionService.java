@@ -35,7 +35,7 @@ public class NeoPermissionService implements IPermissionService {
 
     @Override
     public boolean isActive() {
-        return FMLLoader.getDist().isDedicatedServer();
+        return FMLLoader.getCurrent().getDist().isDedicatedServer();
     }
 
     @SubscribeEvent
