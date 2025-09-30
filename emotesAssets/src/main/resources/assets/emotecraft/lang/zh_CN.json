@@ -17,7 +17,6 @@
   "emotecraft.otherconfig.validationThreshold": "验证阀值",
   "emotecraft.otherconfig.validationThreshold.tooltip": "多少偏移量为过多。",
   "emotecraft.otherconfig.dark": "使用暗色表情轮盘",
-  "emotecraft.otherconfig.showicon": "仅显示图标（如果可用）",
   "emotecraft.otherconfig.stopthreshold": "表情停止速度",
   "emotecraft.otherconfig.stopthreshold.tooltip": "（0.22 为步行速度）\n\n如果值过大，表情就不会停止。但你仍可以使用停止播放表情按键。",
   "emotecraft.otherconfig.yratio": "Y 轴停止阈值",

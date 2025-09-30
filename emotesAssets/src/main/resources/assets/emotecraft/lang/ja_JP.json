@@ -15,7 +15,6 @@
   "emotecraft.otherconfig.validationThreshold": "検証のしきい値",
   "emotecraft.otherconfig.validationThreshold.tooltip": "オフセットが多すぎます。",
   "emotecraft.otherconfig.dark": "ダークエモートホイールを使用",
-  "emotecraft.otherconfig.showicon": "アイコンのみ表示（利用可能な場合）",
   "emotecraft.otherconfig.stopthreshold": "エモートの停止速度",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 は歩く速度)\n\n十分な大きさのエモートは止まらない。 その場合、キーが「エモートを止める」にバインドされていることを確認してください。",
   "emotecraft.otherconfig.yratio": "Y軸ストップしきい値",

@@ -17,7 +17,6 @@
   "emotecraft.otherconfig.validationThreshold": "Práh ověření",
   "emotecraft.otherconfig.validationThreshold.tooltip": "Jak velké vychýlení je příliš.",
   "emotecraft.otherconfig.dark": "Použít tmavé kolo emocí",
-  "emotecraft.otherconfig.showicon": "Zobrazit pouze ikony (pokud jsou k dispozici)",
   "emotecraft.otherconfig.stopthreshold": "Rychlost ukončení emoce",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 je rychlost chůze)\n\nS dostatečně vysokou hodnotou se emoce neukončí. V takovém případě se ujistěte, že máte přiřazenou klávesu k \"Ukončit přehrávání emoce\".",
   "emotecraft.otherconfig.yratio": "Práh ukočení v ose Y",

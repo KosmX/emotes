@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold": "Próg weryfikacji",
   "emotecraft.otherconfig.validationThreshold.tooltip": "Jak duże przesunięcie jest zbyt duże",
   "emotecraft.otherconfig.dark": "Ciemne koło szybkiego wyboru",
-  "emotecraft.otherconfig.showicon": "Wyświetlaj ikony zamiast nazw reakcji",
   "emotecraft.otherconfig.showIconsIfPossible": "Pokaż ikony zamiast podglądu (jeżeli dostępne)",
   "emotecraft.otherconfig.stopthreshold": "Zatrzymaj reakcję po przekroczeniu tego progu prędkości",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 to prędkość chodzenia)\n\nPrzy wystarczająco dużej wartości emotka nie zatrzyma się. W takim przypadku upewnij się, że masz ustawiony klawisz z \"Zatrzymaj emotkę.\"",

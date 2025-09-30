@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validate.tooltip": "Herkesin hile yapmak istediği, sadece PvP dünyaları için. Bir limit ekler ve bazı ifadeleri oynatmayı imkansız kılar.",
   "emotecraft.otherconfig.validationThreshold": "Doğrulama eşiği",
   "emotecraft.otherconfig.dark": "Karanlık temalı hızlı menü",
-  "emotecraft.otherconfig.showicon": "İfade isimleri yerine simgeleri göster",
   "emotecraft.otherconfig.stopthreshold": "İfadeyi bu hız sınırında durdur (0.22 yürüme hızıdır)",
   "emotecraft.otherconfig.stopthreshold.tooltip": "Eğer büyük bir değere sahipse, ifade oynamayı durdurmayacaktır. Ancak halen \"oynatmayı durdur\" tuşunu kullanabilirsiniz.",
   "emotecraft.otherconfig.yratio": "Y ekseninde hareket etme, durma sınırının yüzdesini(%) etkiliyor",
