@@ -18,7 +18,6 @@
   "emotecraft.otherconfig.validationThreshold": "Limite de Validação",
   "emotecraft.otherconfig.validationThreshold.tooltip": "Exatamente quanto deslocamento é demais.",
   "emotecraft.otherconfig.dark": "Usar Roda Escura de Emotes",
-  "emotecraft.otherconfig.showicon": "Mostrar Apenas Ícones (Se Disponível)",
   "emotecraft.otherconfig.showIconsIfPossible": "Mostrar ícones em vez de pré-visualizações (se disponível)",
   "emotecraft.otherconfig.stopthreshold": "Velocidade de Parada do Emotes",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0,22 é a velocidade de caminhada)\n\nCom um valor suficientemente alto, o emote não será interrompido. Nesse caso, certifique-se de que uma tecla esteja atribuída à opção 'Parar emote'.",

@@ -16,7 +16,6 @@
   "emotecraft.otherconfig.validationThreshold": "Тикшерү чиге",
   "emotecraft.otherconfig.validationThreshold.tooltip": "Уенчы мөмкин шудыру чиге.",
   "emotecraft.otherconfig.dark": "Караңгы эмоцияләр сайлау тәгәрмәчен куллану",
-  "emotecraft.otherconfig.showicon": "Тамгачыкларны күрсәтү (әгәр булса)",
   "emotecraft.otherconfig.stopthreshold": "Эмоция туктату тизлеге",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0.22 — йөрү тизлеге)\n\nШактый күп кыйммәт белән эмоция уйнатудан туктамаячак. Ул чагында «Эмоция уйнатуны туктату» төймәсе билгеләнүен тикшерегез.",
   "emotecraft.otherconfig.yratio": "Y күчәре буенча туктату чиге",

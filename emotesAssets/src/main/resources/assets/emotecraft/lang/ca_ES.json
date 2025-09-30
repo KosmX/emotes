@@ -15,7 +15,6 @@
   "emotecraft.otherconfig.validationThreshold": "Llindar de validació",
   "emotecraft.otherconfig.validationThreshold.tooltip": "Quant de desplaçament és massa.",
   "emotecraft.otherconfig.dark": "Usa la roda d'emoticones fosca",
-  "emotecraft.otherconfig.showicon": "Mostra només les icones (si està disponible)",
   "emotecraft.otherconfig.stopthreshold": "Velocitat d'aturada de l'emoticona",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0,22 és velocitat de caminar)\n\nAmb un valor prou gran, l'emoticona no s'aturarà. En aquest cas, assegureu-vos que una clau està lligada a 'Deixa de reproduir l'emoticona'",
   "emotecraft.otherconfig.yratio": "Llindar d'aturada de l'eix Y",

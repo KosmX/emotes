@@ -17,7 +17,6 @@
   "emotecraft.otherconfig.validationThreshold": "Umbral de Validación",
   "emotecraft.otherconfig.validationThreshold.tooltip": "Cuanto desplazamiento es demasiado.",
   "emotecraft.otherconfig.dark": "Usar el Menú de Emotes Oscuro",
-  "emotecraft.otherconfig.showicon": "Mostrar Solo Iconos (Si hay Disponibles)",
   "emotecraft.otherconfig.stopthreshold": "Velocidad del Emote Parado",
   "emotecraft.otherconfig.stopthreshold.tooltip": " \n(0,22 es la velocidad al caminar).\n\nCon un valor muy grande, el gesto no se detendrá. En ese caso, asegúrese de que una tecla esté vinculada a 'Dejar de reproducir el emote'.",
   "emotecraft.otherconfig.yratio": "Umbral del Eje Y al Estar Parado",

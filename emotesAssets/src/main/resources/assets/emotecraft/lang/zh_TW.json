@@ -15,7 +15,6 @@
   "emotecraft.otherconfig.validationThreshold": "驗證閾值",
   "emotecraft.otherconfig.validationThreshold.tooltip": "準確到多少的偏移量會太大",
   "emotecraft.otherconfig.dark": "使用深色快捷欄",
-  "emotecraft.otherconfig.showicon": "只顯示情緒圖標（如可行）",
   "emotecraft.otherconfig.stopthreshold": "表情停止速度",
   "emotecraft.otherconfig.stopthreshold.tooltip": " （0.22是正常行走速度）\n若該值過大，你將無法停止播放該表情。但你仍可使用停止播放按鍵。",
   "emotecraft.otherconfig.yratio": "Y軸方向上移動速度的停止閾值百分比（%）",
