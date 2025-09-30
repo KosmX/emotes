@@ -6,7 +6,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class UnsafeRemotePlayer extends RemotePlayer {
-    public final PlayerRenderState reusedState = new UnsafePlayerRenderState();
+    public final AvatarRenderState reusedState = new UnsafePlayerRenderState();
 
     private final PlayerInfo playerInfo;
 
