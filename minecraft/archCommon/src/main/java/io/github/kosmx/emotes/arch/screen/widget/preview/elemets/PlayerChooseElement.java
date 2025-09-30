@@ -2,38 +2,34 @@ package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.mojang.authlib.GameProfile;
+import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
 import io.github.kosmx.emotes.main.EmoteHolder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.ResourceLocation;
 
 import java.time.Duration;
-import java.util.Optional;
 import java.util.UUID;
 
-public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview*/ implements IChooseElement {
+public abstract class PlayerChooseElement extends PlayerPreview implements IChooseElement {
     protected final AbstractFastChooseWidget parent;
     protected final int id;
 
     public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
-        super(0, 0, 0, 0, CommonComponents.EMPTY);
+        super(profile, 0, 0, 0, 0, false);
+        this.player.emotecraft$getEmote().muteNbs = true;
 
         this.parent = parent;
         this.id = id;
 
-        // super.pause(true);
-        // super.tick();
+        tick();
     }
 
     protected abstract void updateRectangle();
@@ -46,18 +42,12 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
         if (isHoveredOrFocused() && doHoverPart) renderHover(guiGraphics);
 
         EmoteHolder emoteHolder = getEmote();
-        Optional<ResourceLocation> icon = Optional.ofNullable(emoteHolder).map(EmoteHolder::getIconIdentifier);
+        /*Optional<ResourceLocation> icon = Optional.ofNullable(emoteHolder).map(EmoteHolder::getIconIdentifier);
 
-        /*if (PlatformTools.getConfig().showIconsIfPossible.get() && icon.isPresent()) {
+        if (PlatformTools.getConfig().showIconsIfPossible.get() && icon.isPresent()) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
-        } else {
+        } else*/ {
             super.renderWidget(guiGraphics, getX() + (getWidth() / 2), getY() + (getHeight() / 2), partialTick);
-        }*/
-
-        if (icon.isPresent()) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
-        } else if (getEmote() != null) {
-            renderScrollingString(guiGraphics, Minecraft.getInstance().font, getEmote().name, getX(), getY(), getRight(), getBottom(), -1);
         }
 
         if (isHoveredOrFocused() && emoteHolder != null) {
@@ -74,7 +64,7 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
 
     @Override
     public void removed() {
-        // this.player.stopEmote();
+        this.player.stopEmote();
     }
 
     @Override
@@ -106,13 +96,34 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
         PlatformTools.getConfig().fastMenuEmotes[parent.getCurrentPage()][id] = emote == null ? null : emote.getUuid();
     }
 
-    /*@Override
+    @Override
     public void tick() {
         EmoteHolder holder = getEmote();
-        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), true, 1.5F);
-        super.pause(!isHoveredOrFocused());
+
+        float previewTick = holder == null ? 1.0F : calculatePreviewTick(holder.getEmote());
+        boolean shouldPlayAgain = holder == null || holder.getEmote().loopType().shouldPlayAgain(null, holder.getEmote());
+        boolean updated = playAnimation(holder == null ? null : holder.getEmote(), shouldPlayAgain ? Animation.LoopType.DEFAULT : Animation.LoopType.LOOP, true, previewTick);
+
+        super.pause(!updated && !isHoveredOrFocused());
         if (updated || isHoveredOrFocused()) super.tick();
-    }*/
+    }
+
+    protected static float calculatePreviewTick(Animation animation) {
+        ExtraAnimationData data = animation.data();
+
+        if (data.has("previewTick")) {
+            return (float) data.getRaw("previewTick");
+        }
+
+        if (animation.loopType().shouldPlayAgain(null, animation)) {
+            float returnToTick = animation.loopType().restartFromTick(null, animation);
+            if (returnToTick > 0.0F) {
+                return (animation.length() - returnToTick) / 2F;
+            }
+        }
+
+        return animation.length() / 2F;
+    }
 
     @Override
     protected boolean isValidClickButton(MouseButtonInfo button) {
@@ -129,11 +140,7 @@ public abstract class PlayerChooseElement extends AbstractWidget /*PlayerPreview
 
     @Override
     public void playDownSound(SoundManager handler) {
+        if (!this.parent.controller.doHoverPart(this)) return;
         playButtonClickSound(handler);
-    }
-
-    @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-        defaultButtonNarrationText(narrationElementOutput);
     }
 }

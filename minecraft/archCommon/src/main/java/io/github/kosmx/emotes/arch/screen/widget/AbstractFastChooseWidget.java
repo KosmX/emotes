@@ -105,6 +105,10 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         return this.currentPage;
     }
 
+    public void setSize(int size) {
+        setSize(size, size);
+    }
+
     @Override
     public void playDownSound(SoundManager handler) {
         // no-op

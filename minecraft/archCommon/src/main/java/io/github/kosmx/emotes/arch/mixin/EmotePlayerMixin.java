@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
 import com.zigythebird.playeranim.util.ClientUtil;
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.RawAnimation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -48,10 +49,10 @@ public abstract class EmotePlayerMixin extends Player implements IPlayerEntity {
     }
 
     @Override
-    public void emotecraft$playEmote(@Nullable Animation emote, float tick, boolean isForced) {
+    public void emotecraft$playEmote(@Nullable Animation emote, Animation.LoopType loopType, float tick, boolean isForced) {
         stopEmote();
         if (emote != null) {
-            this.emotecraft$container.triggerAnimation(emote, tick);
+            this.emotecraft$container.triggerAnimation(RawAnimation.begin().then(emote, loopType), tick);
             this.initEmotePerspective();
             if (this.isMainPlayer()) this.emotecraft$isForced = isForced;
         }

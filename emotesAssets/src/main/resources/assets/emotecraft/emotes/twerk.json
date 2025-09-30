@@ -15,6 +15,7 @@
         "degrees": false,
         "easeBeforeKeyframe": false,
         "nsfw": false,
+        "previewTick": 6,
         "moves": [
             {
                 "tick": 0,

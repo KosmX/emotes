@@ -27,14 +27,14 @@ public class MinecraftNbsPlayer extends NbsPlayer {
     }
 
     @Override
-    protected boolean preTick() {
-        if (this.player instanceof UnsafeRemotePlayer) return super.preTick();
+    protected boolean shouldTick() {
+        if (this.player instanceof UnsafeRemotePlayer) return super.shouldTick();
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != this.player.level()) {
             stop();
             return false;
         }
-        return !mc.isPaused() && super.preTick();
+        return !mc.isPaused() && super.shouldTick();
     }
 
     public @Nullable Component getNowPlaying() {

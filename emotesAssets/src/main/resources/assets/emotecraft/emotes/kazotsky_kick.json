@@ -13,6 +13,7 @@
         "beginTick":0,
         "endTick":60,
         "stopTick":61,
+        "previewTick": 10,
         "degrees":false,
         "moves":[
             

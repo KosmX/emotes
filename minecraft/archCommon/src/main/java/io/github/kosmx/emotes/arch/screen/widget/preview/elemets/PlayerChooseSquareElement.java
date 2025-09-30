@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
 import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranimcore.easing.EasingType;
+import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
@@ -35,7 +36,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
         this.isAnimFinishing = easedProgress > 0.9F;
 
         int s = this.parent.globalPadding();
-        float distance = (s * 3) * easedProgress;
+        float distance = (s * 2.5f) * easedProgress;
         int iconX = Math.round(parent.getX() + parent.getWidth() / 2F + this.dx * distance) - s;
         int iconY = Math.round(parent.getY() + parent.getHeight() / 2F + this.dy * distance) - s;
 
@@ -45,7 +46,9 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         ResourceLocation texture = Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND : INWORLD_MENU_LIST_BACKGROUND;
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX(), getY(), getRight(), getBottom(), getWidth(), getHeight(), 32, 32);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX() + 1, getY() + 1, getRight(), getBottom(), getWidth() - 2, getHeight() - 2, 32, 32);
+
+        WidgetOutliner.renderOutline(guiGraphics, this, -1);
 
         super.renderWidget(guiGraphics, this.isAnimFinishing ? mouseX : 0, this.isAnimFinishing ? mouseY : 0, partialTick);
     }

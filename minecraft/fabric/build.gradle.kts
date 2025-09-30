@@ -35,6 +35,7 @@ dependencies {
     modImplementation(fabricApi.module("fabric-networking-api-v1", project["fabric_api_version"]))
     modImplementation(fabricApi.module("fabric-key-binding-api-v1", project["fabric_api_version"]))
     modImplementation(fabricApi.module("fabric-lifecycle-events-v1", project["fabric_api_version"]))
+    modImplementation(fabricApi.module("fabric-rendering-v1", project["fabric_api_version"]))
 
     commonModule(project(":emotesAPI")) { isTransitive = false }
     commonModule(project(":emotesServer")) { isTransitive = false }
