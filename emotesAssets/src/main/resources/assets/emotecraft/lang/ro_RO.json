@@ -44,7 +44,7 @@
   "emotecraft.openFolder": "Deschide fișierul emoțiilor",
   "emotecraft.otherconfig.quark": "Activare serializator pentru modificația Quark",
   "emotecraft.otherconfig.quark.tooltip": "Cititorul de emoții Quark este extrem de instabil și nu este pe deplin suportat.\nFolosirea sa nu este recomandată. Poate funcționa în mod neașteptat sau chiar poate cauza un accident",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
   "emotecraft.config": "Configurare de emoții",
   "emotecraft.blockedEmote": "Nu îți este permis să utilizezi această emoție",

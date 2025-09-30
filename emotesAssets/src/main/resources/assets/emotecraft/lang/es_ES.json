@@ -56,7 +56,7 @@
   "emotecraft.openFolder": "Abrir Carpeta de Emotes",
   "emotecraft.otherconfig.quark": "Activar Deserializador Quark",
   "emotecraft.otherconfig.quark.tooltip": "Altamente inestable y sin soporte completo.\n\nNo se recomienda usar esto, ya que puede causar resultados extraños o incluso crashear el juego.",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
   "emotecraft.config": "Configurar Emotes",
   "emotecraft.blockedEmote": "No tienes permiso para reproducir este emote.",

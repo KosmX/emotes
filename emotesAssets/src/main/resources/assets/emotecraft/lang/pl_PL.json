@@ -55,7 +55,7 @@
   "emotecraft.openFolder": "Otwórz folder z emotkami",
   "emotecraft.otherconfig.quark": "Włącz Quark Deserializer",
   "emotecraft.otherconfig.quark.tooltip": "Wysoce niestabilny i nie w pełni obsługiwany.\n Używanie tego nie jest zalecane, ponieważ może to spowodować dziwne wyniki, a nawet awarię.",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
   "emotecraft.config": "Konfiguruj emotki",
   "emotecraft.blockedEmote": "Nie możesz wywołać tej emotki.",

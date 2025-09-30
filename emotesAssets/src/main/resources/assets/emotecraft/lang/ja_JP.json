@@ -50,7 +50,7 @@
   "emotecraft.openFolder": "エモートフォルダを開く",
   "emotecraft.otherconfig.quark": "Quark Deserializerを有効にする",
   "emotecraft.otherconfig.quark.tooltip": "非常に不安定で完全にサポートされていません。\n\n奇数の結果やクラッシュを引き起こす可能性があるため、これを使用することは推奨されません。",
-  "category.emotecraft.keybinding": "エモットクラフト",
+  "key.category.emotecraft.keybinding": "エモットクラフト",
   "emotecraft.emote.author": "作成者: ",
   "emotecraft.config": "設定のエモート",
   "emotecraft.blockedEmote": "このエモートをプレイすることはできません。",

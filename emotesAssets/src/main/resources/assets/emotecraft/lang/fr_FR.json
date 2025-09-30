@@ -54,7 +54,7 @@
   "emotecraft.openFolder": "Ouvrir le dossier d'émotes",
   "emotecraft.otherconfig.quark": "Activer le sérialiseur Quark",
   "emotecraft.otherconfig.quark.tooltip": "Le lecteur d'émotes Quark est hautement instable et n'est pas entièrement pris en charge.\nIl n'est pas recommandé de l'utiliser. Cela peut fonctionner de façon inattendue ou peut même provoquer un crash",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Auteur :",
   "emotecraft.config": "Configuration d'émote",
   "emotecraft.blockedEmote": "Vous n'avez pas la permission de jouer cet émote",

@@ -52,7 +52,7 @@
   "emotecraft.openFolder": "감정 표현 폴더 열기",
   "emotecraft.otherconfig.quark": "Quark Deserializer 사용",
   "emotecraft.otherconfig.quark.tooltip": "매우 불안정하고 완전히 지원되지 않아요.\n\n충돌을 일으킬 수 있기 때문에 사용을 권장하지 않아요.",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "제작자: ",
   "emotecraft.config": "감정 표현 설정",
   "emotecraft.blockedEmote": "이 감정 표현을 재생할 수 없어요.",

@@ -50,7 +50,7 @@
   "emotecraft.openFolder": "Obre la carpeta Emotes",
   "emotecraft.otherconfig.quark": "Activa el deserialitzador Quark",
   "emotecraft.otherconfig.quark.tooltip": "Molt inestable i sense suport total.\n\nNo es recomana utilitzar això, ja que pot causar resultats estranys o fins i tot fallades.",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "Autor: ",
   "emotecraft.config": "Configura els emotes",
   "emotecraft.blockedEmote": "No teniu permís per reproduir aquesta emotació.",
