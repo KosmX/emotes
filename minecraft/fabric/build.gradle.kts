@@ -71,9 +71,9 @@ dependencies {
     }
 
     // Third-party
-    /*modImplementation("com.blamejared.searchables:Searchables-fabric-1.21.8:${project["searchables_version"]}") {
+    modCompileOnly("com.blamejared.searchables:Searchables-fabric-1.21.8:${project["searchables_version"]}") {
         isTransitive = false
-    }*/
+    }
 
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))
