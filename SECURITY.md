@@ -8,8 +8,8 @@
 | 2.0.x   | :x:                |
 | 2.4.x   | :x:                |
 | 2.5.x   | :x:                |
-| 2.6.x   | :warning:          |
-| 3.0.x   | :warning: |
+| 2.6.x   | :x:                |
+| 3.0.x   | :warning:          |
 | 3.1.x   | :white_check_mark: |
 ## Reporting a Vulnerability  
 
