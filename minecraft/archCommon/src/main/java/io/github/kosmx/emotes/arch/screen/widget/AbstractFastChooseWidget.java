@@ -31,7 +31,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     protected final PageButton forwardButton = new PageButton(RecipeBookPage.PAGE_FORWARD_SPRITES, false, this::onForwardButton);
     protected final PageButton backButton = new PageButton(RecipeBookPage.PAGE_BACKWARD_SPRITES, false, this::onBackButton);
 
-    private int currentPage;
+    private static int currentPage;
 
     protected AbstractFastChooseWidget(FastChooseController controller, int x, int y, int size, Component message) {
         super(x, y, size, size, message);
@@ -46,7 +46,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         int centerX = getX() + getWidth() / 2;
         int centerY = getY() + getHeight() / 2;
 
-        Component text = Component.literal(String.valueOf(this.currentPage + 1));
+        Component text = Component.literal(String.valueOf(getCurrentPage() + 1));
         Font font = Minecraft.getInstance().font;
         int textWidth = font.width(text);
 
@@ -101,7 +101,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     public int getCurrentPage() {
-        return this.currentPage;
+        return AbstractFastChooseWidget.currentPage;
     }
 
     public void setSize(int size) {
@@ -120,18 +120,18 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     protected void onForwardButton(PageButton button) {
-        if (this.currentPage < PlatformTools.getConfig().fastMenuEmotes.length - 1) {
-            this.currentPage += 1;
+        if (AbstractFastChooseWidget.currentPage < PlatformTools.getConfig().fastMenuEmotes.length - 1) {
+            currentPage += 1;
         } else {
-            this.currentPage = 0;
+            currentPage = 0;
         }
     }
 
     protected void onBackButton(PageButton button) {
-        if (this.currentPage > 0) {
-            this.currentPage -= 1;
+        if (AbstractFastChooseWidget.currentPage > 0) {
+            currentPage -= 1;
         } else {
-            this.currentPage = PlatformTools.getConfig().fastMenuEmotes.length - 1;
+            currentPage = PlatformTools.getConfig().fastMenuEmotes.length - 1;
         }
     }
 
