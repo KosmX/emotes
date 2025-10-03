@@ -77,7 +77,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         guiGraphics.enableScissor(getX(), getY(), getRight(), getBottom());
 
         try {
-            int scale = this.renderBackround ? getHeight() / 3 : getHeight() / 2;
+            int scale = getHeight() / (this.renderBackround ? 3 : 2);
             InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.player);
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to render entity preview!", th);
@@ -101,7 +101,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        if (this.visible && (this.player != null && this.player.isPlayingEmote() || !this.renderBackround)) {
+        if (this.visible && this.player != null && this.player.isPlayingEmote()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
 
