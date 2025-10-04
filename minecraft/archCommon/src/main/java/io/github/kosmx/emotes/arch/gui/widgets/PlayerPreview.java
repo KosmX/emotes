@@ -10,12 +10,12 @@ import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.util.ARGB;
@@ -26,7 +26,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_OUT_QUART.buildTransformer(null);
 
     protected final boolean renderBackround;
-    protected RemotePlayer player;
+    protected ClientMannequin player;
 
     protected float animTime = 1.0F;
 
@@ -115,7 +115,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         }
     }
 
-    public RemotePlayer getPlayer() {
+    public ClientMannequin getMannequin() {
         return this.player;
     }
 

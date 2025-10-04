@@ -10,7 +10,6 @@
     "ServerPlayNetworkMixin"
   ],
   "client": [
-    "rendering.InventoryScreenMixin",
     "EmoteAvatarMixin",
     "EntityRenderDispatcherMixin",
     "KeyEventMixin",
