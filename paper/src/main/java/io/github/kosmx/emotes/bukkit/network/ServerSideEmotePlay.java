@@ -47,10 +47,6 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
         return player.avatar.getUUID();
     }
 
-    public BukkitNetworkInstance getPlayerNetworkInstance(Player player) {
-        return getPlayerFromUUID(player.getUniqueId());
-    }
-
     @Override
     public BukkitNetworkInstance getPlayerFromUUID(UUID playerUuid) {
         if (!this.players.containsKey(playerUuid)) {
@@ -68,7 +64,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     @Override
     protected void sendForEveryoneElse(NetData data, BukkitNetworkInstance player) {
         for (Player player1 : player.avatar.getBukkitEntity().getTrackedBy()) {
-            BukkitNetworkInstance instance = getPlayerNetworkInstance(player1);
+            BukkitNetworkInstance instance = getPlayerFromUUID(player1.getUniqueId());
             if (instance == player) continue;
 
             // Bukkit server will filter if I really can send, or not.
@@ -99,8 +95,8 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     @EventHandler
     public void onPlayerTrackEntity(PlayerTrackEntityEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            playerStartTracking(getPlayerNetworkInstance(player), getPlayerNetworkInstance(event.getPlayer()));
+        if (((CraftEntity) event.getEntity()).getHandle() instanceof Avatar avatar) {
+            playerStartTracking(getPlayerFromUUID(avatar.getUUID()), getPlayerFromUUID(event.getPlayer().getUniqueId()));
         }
     }
 
