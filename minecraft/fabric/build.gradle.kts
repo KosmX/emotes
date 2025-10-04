@@ -43,7 +43,7 @@ dependencies {
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
     modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", project["fabric_api_version"]))
-    modCompileOnly("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
+    modImplementation("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
@@ -71,7 +71,7 @@ dependencies {
     }
 
     // Third-party
-    modCompileOnly("com.blamejared.searchables:Searchables-fabric-1.21.8:${project["searchables_version"]}") {
+    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
         isTransitive = false
     }
 
