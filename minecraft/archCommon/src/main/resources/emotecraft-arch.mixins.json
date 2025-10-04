@@ -11,7 +11,7 @@
   ],
   "client": [
     "rendering.InventoryScreenMixin",
-    "EmotePlayerMixin",
+    "EmoteAvatarMixin",
     "EntityRenderDispatcherMixin",
     "KeyEventMixin",
     "LivingEntityRendererMixin",

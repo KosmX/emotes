@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Collection;
 
@@ -21,8 +22,8 @@ public class NetworkPlatformToolsImpl {
         return ServerConfigurationNetworking.canSend(player, channel);
     }
 
-    public static Collection<ServerPlayer> getTrackedBy(ServerPlayer player) {
-        return PlayerLookup.tracking(player);
+    public static Collection<ServerPlayer> getTrackedBy(Entity entity) {
+        return PlayerLookup.tracking(entity);
     }
 
     public static MinecraftServer getServer() {

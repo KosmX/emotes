@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
@@ -15,6 +16,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Avatar;
 
 import java.util.*;
 
@@ -49,26 +51,31 @@ public final class ServerCommands {
                         .then(argument("emote", StringArgumentType.string())
                                 .suggests(new EmoteArgumentProvider(ServerCommands::getEmotes))
                                 .executes(context -> {
-                                    var player = context.getSource().getPlayerOrException().getUUID();
+                                    UUID player = context.getSource().getPlayerOrException().getUUID();
+
                                     boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", 2);
-                                    var emote = EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote");
-                                    if (!admin && ServerEmoteAPI.isForcedEmote(player))
+                                    if (!admin && ServerEmoteAPI.isForcedEmote(player)) {
                                         throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
+                                    }
+
+                                    Animation emote = EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote");
                                     ServerEmoteAPI.playEmote(player, emote, false);
                                     return 0;
                                 })
-                                .then(argument("player", EntityArgument.players()).requires(IPermissionService.INSTANCE.require("emotes.play.player", 2))
+                                .then(argument("avatar", EntityArgument.entities())
+                                        .requires(IPermissionService.INSTANCE.require("emotes.play.player", 2))
                                         .executes(context -> {
                                             ServerEmoteAPI.playEmote(
-                                                    EntityArgument.getPlayer(context, "player").getUUID(),
+                                                    ServerCommands.getAvatar(context, "avatar").getUUID(),
                                                     EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote"),
-                                                    false);
+                                                    false
+                                            );
                                             return 0;
                                         })
                                         .then(argument("forced", BoolArgumentType.bool())
                                                 .executes(context -> {
                                                     ServerEmoteAPI.playEmote(
-                                                            EntityArgument.getPlayer(context, "player").getUUID(),
+                                                            ServerCommands.getAvatar(context, "avatar").getUUID(),
                                                             EmoteArgumentProvider.getEmote(getEmotes(context), context, "emote"),
                                                             BoolArgumentType.getBool(context, "forced"));
                                                     return 0;
@@ -81,17 +88,17 @@ public final class ServerCommands {
                         .executes(context -> {
                             boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", 2);
                             var player = context.getSource().getPlayerOrException().getUUID();
-                            boolean canStop = admin || !ServerEmoteAPI.isForcedEmote(player);
-                            if (canStop) {
+                            if (admin || !ServerEmoteAPI.isForcedEmote(player)) {
                                 ServerEmoteAPI.playEmote(player, null, false);
                                 return 0;
                             }
                             throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
                         })
-                        .then(argument("player", EntityArgument.players()).requires(IPermissionService.INSTANCE.require("emotes.stop.player", 2))
+                        .then(argument("avatar", EntityArgument.entity())
+                                .requires(IPermissionService.INSTANCE.require("emotes.stop.player", 2))
                                 .executes(context -> {
                                     ServerEmoteAPI.playEmote(
-                                            EntityArgument.getPlayer(context, "player").getUUID(),
+                                            ServerCommands.getAvatar(context, "avatar").getUUID(),
                                             null,
                                             false
                                     );
@@ -99,7 +106,9 @@ public final class ServerCommands {
                                 })
                         )
                 )
-                .then(literal("reload").requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.reload", 4) && isDedicated).executes(
+                .then(literal("reload")
+                        .requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.reload", 4) && isDedicated)
+                        .executes(
                         context -> {
                             UniversalEmoteSerializer.loadEmotes(); //Reload server-side emotes
                             return 0;
@@ -111,5 +120,13 @@ public final class ServerCommands {
 
     private static Map<UUID, Animation> getEmotes(CommandContext<CommandSourceStack> context) {
         return IPermissionService.INSTANCE.check(context.getSource(), "emotes.play.showhidden", 1) ? UniversalEmoteSerializer.getLoadedEmotes() : UniversalEmoteSerializer.SERVER_EMOTES;
+    }
+
+    public static Avatar getAvatar(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
+        if (EntityArgument.getEntity(context, name) instanceof Avatar avatar) {
+            return avatar;
+        } else {
+            throw new SimpleCommandExceptionType(Component.literal("The specified entity must be an avatar!")).create();
+        }
     }
 }

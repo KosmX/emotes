@@ -13,8 +13,8 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Avatar;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class EmotePlayer extends PlayerAnimationController {
     public boolean perspective = false;
     public boolean muteNbs = false;
 
-    public EmotePlayer(AbstractClientPlayer player) {
+    public EmotePlayer(Avatar player) {
         super(player, (controller, state, animSetter) -> PlayState.STOP);
     }
 
@@ -78,7 +78,7 @@ public class EmotePlayer extends PlayerAnimationController {
 
     @Override
     protected <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, CustomKeyFrameEvents.@Nullable CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
-        if (this.player instanceof UnsafeRemotePlayer) return;
+        if (this.avatar instanceof UnsafeRemotePlayer) return;
         super.handleCustomKeyframe(keyframes, main, event, animationTick, animationData);
     }
 

@@ -12,8 +12,8 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -23,10 +23,10 @@ public final class PlatformTools {
         return ClientNetwork.INSTANCE;
     }
 
-    public static @Nullable AbstractClientPlayer getPlayerFromUUID(UUID uuid) {
+    public static @Nullable Avatar getPlayerFromUUID(UUID uuid) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return null;
-        return (AbstractClientPlayer) level.getPlayerByUUID(uuid);
+        return (Avatar) level.getEntity(uuid);
     }
 
     public static void openExternalEmotesDir() {

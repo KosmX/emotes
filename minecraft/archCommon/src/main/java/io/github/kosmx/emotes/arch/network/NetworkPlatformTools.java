@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +35,7 @@ public final class NetworkPlatformTools {
 
     @ExpectPlatform
     @Contract
-    public static Collection<ServerPlayer> getTrackedBy(ServerPlayer player) {
+    public static Collection<ServerPlayer> getTrackedBy(Entity entity) {
         throw new AssertionError();
     }
 
