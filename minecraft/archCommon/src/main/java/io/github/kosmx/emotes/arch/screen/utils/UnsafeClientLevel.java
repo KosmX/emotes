@@ -123,7 +123,7 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
 
     @Override
     public @NotNull ChunkAccess getChunk(BlockPos pos) {
-        return new EmptyLevelChunk(this, ChunkPos.ZERO, Holder.direct(null));
+        return new EmptyLevelChunk(this, new ChunkPos(pos), Holder.direct(null));
     }
 
     @Override
