@@ -43,6 +43,7 @@ dependencies {
     commonModule(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
 
     modRuntimeOnly(fabricApi.module("fabric-screen-api-v1", project["fabric_api_version"]))
+    modRuntimeOnly(fabricApi.module("fabric-resource-loader-v0", project["fabric_api_version"]))
     modImplementation("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
