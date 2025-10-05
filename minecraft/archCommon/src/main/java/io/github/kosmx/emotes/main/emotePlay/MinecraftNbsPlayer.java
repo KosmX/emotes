@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.main.emotePlay;
 
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
-import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import io.github.kosmx.emotes.common.nbsplayer.NbsPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -28,7 +28,7 @@ public class MinecraftNbsPlayer extends NbsPlayer {
 
     @Override
     protected boolean shouldTick() {
-        if (this.avatar instanceof UnsafeRemotePlayer) return super.shouldTick();
+        if (this.avatar instanceof UnsafeMannequin) return super.shouldTick();
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != this.avatar.level()) {
             stop();

@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.mixin;
 
-import net.minecraft.client.Minecraft;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +18,6 @@ public class LivingEntityRendererMixin {
             cancellable = true
     )
     private void emotecraft$shouldShowName(LivingEntity livingEntity, double d, CallbackInfoReturnable<Boolean> cir) {
-        if (Minecraft.getInstance().player == null) cir.setReturnValue(false);
+        if (livingEntity instanceof UnsafeMannequin) cir.setReturnValue(false);
     }
 }

@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class UnsafeRemotePlayer extends ClientMannequin {
-    public UnsafeRemotePlayer(@Nullable ClientLevel clientLevel, GameProfile gameProfile) {
+public class UnsafeMannequin extends ClientMannequin {
+    public UnsafeMannequin(@Nullable ClientLevel clientLevel, GameProfile gameProfile) {
         super(Objects.requireNonNullElse(clientLevel, UnsafeClientLevel.INSTANCE), Minecraft.getInstance().playerSkinRenderCache());
         setProfile(ResolvableProfile.createResolved(gameProfile));
         setHideDescription(true);

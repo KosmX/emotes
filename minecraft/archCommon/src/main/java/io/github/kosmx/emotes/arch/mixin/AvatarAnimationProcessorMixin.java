@@ -3,7 +3,7 @@ package io.github.kosmx.emotes.arch.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.zigythebird.playeranim.animation.AvatarAnimationProcessor;
-import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Avatar;
 import org.spongepowered.asm.mixin.Final;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(AvatarAnimationProcessor.class)
-public class PlayerAnimationProcessorMixin {
+public class AvatarAnimationProcessorMixin {
     @Shadow
     @Final
     private Avatar avatar;
@@ -25,7 +25,7 @@ public class PlayerAnimationProcessorMixin {
             )
     )
     private boolean emotecraft$unpause(Minecraft instance, Operation<Boolean> original) {
-        if (this.avatar instanceof UnsafeRemotePlayer) return false;
+        if (this.avatar instanceof UnsafeMannequin) return false;
         return original.call(instance);
     }
 }
