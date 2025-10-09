@@ -3,7 +3,15 @@
     "name": {
       "translate": "emotecraft.emote.club_penguin_dance.name"
     },
-    "author": "3APA3EH",
+    "author": {
+      "player": {
+        "id": [1908333164, -351318969, -1208365445, -724395445]
+      },
+      "extra": [
+        " §73APA3EH"
+      ],
+      "color": "#ffffff"
+    },
     "description": {
       "translate": "emotecraft.emote.club_penguin_dance.description"
     },
