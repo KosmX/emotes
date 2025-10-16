@@ -71,7 +71,7 @@ public abstract class EmoteAvatarMixin extends LivingEntity implements IPlayerEn
     }
 
     @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
-    @Inject(method = {"tick", "method_5773"}, at = @At(value = "TAIL"))
+    @Inject(method = {"tick", "method_5773"}, at = @At(value = "TAIL"), remap = false)
     public void tick(CallbackInfo ci) {
         if (this.emotecraft$age <= 1) { // Emote init with a little delay (40-60 ms)
             if(this.emotecraft$age++ == 1) {

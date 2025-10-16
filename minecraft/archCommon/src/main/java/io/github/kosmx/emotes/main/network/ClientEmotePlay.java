@@ -101,7 +101,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 }
                 break;
             case STOP:
-                Avatar player = PlatformTools.getPlayerFromUUID(data.player);
+                Avatar player = PlatformTools.getAvatarFromUUID(data.player);
                 assert data.stopEmoteID != null;
                 if (player != null) {
                     ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUUID());
@@ -126,7 +126,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     static void receivePlayPacket(Animation emoteData, UUID player, float tick, boolean isForced) {
-        Avatar playerEntity = PlatformTools.getPlayerFromUUID(player);
+        Avatar playerEntity = PlatformTools.getAvatarFromUUID(player);
         if (isEmoteAllowed(emoteData, player)) {
             EventResult result = ClientEmoteEvents.EMOTE_VERIFICATION.invoker().verify(emoteData, player);
             if (result == EventResult.FAIL) return;
