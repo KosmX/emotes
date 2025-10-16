@@ -66,6 +66,12 @@ public class EmotePlayer extends PlayerAnimationController {
         if (this.song != null) this.song.stop();
     }
 
+    @Override
+    public void process(AnimationData state) {
+        super.process(state);
+        if (!this.animationState.isActive()) stop();
+    }
+
     /**
      * Is emotePlayer running
      *
