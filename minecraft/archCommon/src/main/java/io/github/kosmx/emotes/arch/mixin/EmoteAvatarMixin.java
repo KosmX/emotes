@@ -18,7 +18,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -62,12 +61,6 @@ public abstract class EmoteAvatarMixin extends LivingEntity implements IPlayerEn
     @Override
     public @NotNull EmotePlayer emotecraft$getEmote() {
         return this.emotecraft$container;
-    }
-
-    @Intrinsic
-    @Override
-    public void tick() {
-        super.tick();
     }
 
     @SuppressWarnings({"MixinAnnotationTarget", "UnresolvedMixinReference"})
