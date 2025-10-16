@@ -5,7 +5,6 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,11 +41,6 @@ public abstract class AbstractServerNetwork implements INetworkInstance, IServer
     @Override
     public int maxDataSize() {
         return CommonData.MAX_PACKET_SIZE - 16; // channel ID is 12, one extra int makes it 16 (string)
-    }
-
-    @Override
-    public boolean isActive() {
-        return getAvatar() instanceof ServerPlayer;
     }
 
     @Override

@@ -30,6 +30,11 @@ public final class ModdedServerPlayNetwork extends AbstractServerNetwork {
     }
 
     @Override
+    public boolean isActive() {
+        return true; // TODO
+    }
+
+    @Override
     public void sendPlayMessage(ByteBuffer bytes) {
         this.serverGamePacketListener.send(NetworkPlatformTools.playPacket(bytes));
     }

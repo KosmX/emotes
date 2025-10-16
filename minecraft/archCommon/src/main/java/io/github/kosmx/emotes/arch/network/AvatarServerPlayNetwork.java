@@ -31,6 +31,11 @@ public final class AvatarServerPlayNetwork extends AbstractServerNetwork {
     }
 
     @Override
+    public boolean isActive() {
+        return false;
+    }
+
+    @Override
     public void sendPlayMessage(ByteBuffer bytes) {
         throw new UnsupportedOperationException("Only players can have a connection!");
     }
