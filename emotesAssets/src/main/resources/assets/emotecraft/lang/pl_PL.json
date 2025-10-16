@@ -1,4 +1,5 @@
 {
+  "modmenu.descriptionTranslation.emotecraft": "Graj emocje w Minecraft\nOtwórz menu, aby skonfigurować szybkie wybieranie koła\n\nMożesz dodać własne emoty, i możesz zagrać w te gry, nawet jeśli nikt inny ich nie ma!\n\nSpecjalne podziękowania:\n- Kale Ko za tworzenie emocji i pomoc w projekcie interfejsu użytkownika\n\nUtrzymywane przez dima_dencep i ZigyTheBird",
   "emotecraft.menu": "Konfiguracja emotek",
   "emotecraft.options.options": "Ustawienia modyfikacji",
   "emotecraft.options.keybind": "Ustaw klawisz do odtwarzania wybranej emotki.",
@@ -31,6 +32,7 @@
   "emotecraft.otherconfig.enableNSFW": "Zezwalaj na nieprzyzwoite emotki",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) treści wulgarne\n\nMoże zawierać nagość, eksponowanie seksualności, przemoc lub inne potencjalnie nieodpowiednie treści.",
   "emotecraft.otherconfig.checkPose": "Sprawdź pozycję",
+  "emotecraft.otherconfig.checkPose.tooltip": "Emotecraft zatrzyma gest, jeśli znajdziesz się w złej pozycji(wyłączenie tego może spowodować przerwanie wydzielania się podczas przenoszenia)",
   "emotecraft.otherconfig.alwaysValidateEmote": "Zawsze weryfikuj otrzymane emotki",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "Opcja po stronie klienta; nie wpłynie na serwer wewnętrzny. \n\nDomyślnie sprawdzanie poprawności po stronie klienta ma miejsce tylko w przypadku odbierania emotikony z niezaufanego serwera proxy. Użyj tego, aby zawsze przeprowadzać walidację po stronie klienta.",
   "emotecraft.otherconfig.default3rdPersonFront": "Użyj widoku z przodu zamiast z tyłu dla 3. osoby",
@@ -80,10 +82,15 @@
   "emotecraft.emote.point.description": "Tędy",
   "emotecraft.emote.palm.name": "Facepalm",
   "emotecraft.emote.palm.description": "Czeeemu",
+  "emotecraft.emote.kazotsky_kick.name": "Taniec Kazockiego",
   "emotecraft.emote.here.name": "Tutaj",
   "emotecraft.emote.here.description": "Hejka, tu jestem",
   "emotecraft.emote.crying.name": "Płacz",
   "emotecraft.emote.crying.description": "Rozpaczaj",
+  "emotecraft.emote.club_penguin_dance.name": "Club penguin",
+  "emotecraft.emote.club_penguin_dance.description": "Radosny pingwini taniec szczęścia",
   "emotecraft.emote.clap.name": "Klaskanie",
-  "emotecraft.emote.clap.description": "klap klap klap"
+  "emotecraft.emote.clap.description": "klap klap klap",
+  "emotecraft.emote.backflip.name": "Skok w tył",
+  "emotecraft.emote.backflip.description": "Sprawia, że wykonujesz skok w tył"
 }

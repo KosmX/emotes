@@ -2,7 +2,15 @@
     "name": {
       "translate": "emotecraft.emote.point.name"
     },
-    "author": "KosmX",
+    "author": {
+      "player": {
+        "id": [2143116393, -1362800877, -2082782478, 1380574660]
+      },
+      "extra": [
+        " §7KosmX"
+      ],
+      "color": "#ffffff"
+    },
     "description": {
       "translate": "emotecraft.emote.point.description"
     },
