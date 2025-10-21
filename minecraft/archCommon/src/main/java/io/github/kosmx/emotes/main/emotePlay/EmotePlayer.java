@@ -59,17 +59,21 @@ public class EmotePlayer extends PlayerAnimationController {
         super.stop();
         stopTriggeredAnimation();
         this.animationQueue.clear();
-        if (this.perspective && PlatformTools.getPerspective() == PlatformTools.getConfig().getCameraType()) {
-            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
-            this.perspective = false;
-        }
-        if (this.song != null) this.song.stop();
+        internalStop();
     }
 
     @Override
     public void process(AnimationData state) {
         super.process(state);
-        if (!this.animationState.isActive()) stop();
+        if (!this.animationState.isActive()) internalStop();
+    }
+
+    private void internalStop() {
+        if (this.perspective && PlatformTools.getPerspective() == PlatformTools.getConfig().getCameraType()) {
+            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+            this.perspective = false;
+        }
+        if (this.song != null) this.song.stop();
     }
 
     /**
