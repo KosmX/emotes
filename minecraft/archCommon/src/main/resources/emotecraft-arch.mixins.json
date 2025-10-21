@@ -5,13 +5,12 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ConnectionHandlerMixin",
-    "PlayerAnimationProcessorMixin",
+    "AvatarAnimationProcessorMixin",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin"
   ],
   "client": [
-    "rendering.InventoryScreenMixin",
-    "EmotePlayerMixin",
+    "EmoteAvatarMixin",
     "EntityRenderDispatcherMixin",
     "KeyEventMixin",
     "LivingEntityRendererMixin",

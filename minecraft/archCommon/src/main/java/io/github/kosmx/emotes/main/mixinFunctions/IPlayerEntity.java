@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public interface IPlayerEntity {
     default void initEmotePerspective() {
-        if (isMainPlayer() && PlatformTools.getConfig().enablePerspective.get() && PlatformTools.getPerspective() == CameraType.FIRST_PERSON) {
+        if (isMainAvatar() && PlatformTools.getConfig().enablePerspective.get() && PlatformTools.getPerspective() == CameraType.FIRST_PERSON) {
             emotecraft$getEmote().perspective = true;
             PlatformTools.setPerspective(PlatformTools.getConfig().getCameraType());
         }
@@ -41,7 +41,7 @@ public interface IPlayerEntity {
         return EmotePlayer.isRunningEmote(this.emotecraft$getEmote());
     }
 
-    default boolean isMainPlayer() {
+    default boolean isMainAvatar() {
         return ClientUtil.getClientPlayer() == this;
     }
 

@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
@@ -26,6 +26,6 @@ public class EntityRenderDispatcherMixin {
             cancellable = true
     )
     private void emotecraft$fixNPE(CallbackInfoReturnable<Double> cir, @Local(argsOnly = true) Entity entity) {
-        if (this.camera == null || entity instanceof UnsafeRemotePlayer) cir.setReturnValue(Double.MAX_VALUE);
+        if (this.camera == null || entity instanceof UnsafeMannequin) cir.setReturnValue(Double.MAX_VALUE);
     }
 }

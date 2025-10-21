@@ -5,17 +5,17 @@ import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.easing.EasingType;
-import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.util.ARGB;
@@ -26,14 +26,14 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_OUT_QUART.buildTransformer(null);
 
     protected final boolean renderBackround;
-    protected RemotePlayer player;
+    protected ClientMannequin mannequin;
 
     protected float animTime = 1.0F;
 
     public PlayerPreview(GameProfile profile, int x, int y, int width, int height, boolean renderBackround) {
         super(x, y, width, height, CommonComponents.EMPTY);
 
-        this.player = new UnsafeRemotePlayer(null, profile);
+        this.mannequin = new UnsafeMannequin(null, profile);
         this.renderBackround = renderBackround;
         setAlpha(0.0F);
     }
@@ -44,17 +44,17 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
 
     public boolean playAnimation(@Nullable Animation animation, Animation.LoopType loopType, boolean check, float tick) {
         if (check && animation != null) {
-            EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
+            EmotePlayer emotePlayer = this.mannequin.emotecraft$getEmote();
             if (animation.equals(emotePlayer.getCurrentAnimationInstance())) {
                 return false;
             }
         }
-        this.player.emotecraft$playEmote(animation, loopType, tick, check);
+        this.mannequin.emotecraft$playEmote(animation, loopType, tick, check);
         return true;
     }
 
     public void pause(boolean paused) {
-        EmotePlayer emotePlayer = this.player.emotecraft$getEmote();
+        EmotePlayer emotePlayer = this.mannequin.emotecraft$getEmote();
         if (paused) {
             emotePlayer.pause();
         } else {
@@ -78,7 +78,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
 
         try {
             int scale = getHeight() / (this.renderBackround ? 3 : 2);
-            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.player);
+            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.mannequin);
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to render entity preview!", th);
         }
@@ -91,7 +91,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         }
 
         if (isHovered()) {
-            guiGraphics.requestCursor(isActive() && this.player.isPlayingEmote() ? CursorTypes.RESIZE_ALL : CursorType.DEFAULT);
+            guiGraphics.requestCursor(isActive() && this.mannequin.isPlayingEmote() ? CursorTypes.RESIZE_ALL : CursorType.DEFAULT);
         }
     }
 
@@ -101,12 +101,12 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     public void tick() {
-        if (this.visible && this.player != null && this.player.isPlayingEmote()) {
+        if (this.visible && this.mannequin != null && this.mannequin.isPlayingEmote()) {
             this.animTime = 0.0F;
             setAlpha(1.0F);
 
             try {
-                this.player.tick();
+                this.mannequin.tick();
             } catch (Throwable th) {
                 CommonData.LOGGER.warn("Failed to tick entity preview!", th);
             }
@@ -115,8 +115,8 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         }
     }
 
-    public RemotePlayer getPlayer() {
-        return this.player;
+    public ClientMannequin getMannequin() {
+        return this.mannequin;
     }
 
     @Override

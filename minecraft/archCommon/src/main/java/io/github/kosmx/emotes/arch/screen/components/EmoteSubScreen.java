@@ -107,7 +107,7 @@ public abstract class EmoteSubScreen extends Screen {
             public boolean setLastFolder(FolderEntry folder) {
                 if (super.setLastFolder(folder)) {
                     if (searchBox != null) searchBox.setValue("");
-                    if (preview != null) preview.getPlayer().stopEmote();
+                    if (preview != null) preview.getMannequin().stopEmote();
                     return true;
                 }
                 return false;
@@ -169,7 +169,7 @@ public abstract class EmoteSubScreen extends Screen {
             if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
                 this.preview.playAnimation(emote.emote.emote, Animation.LoopType.DEFAULT, true);
             } else if (hovered instanceof EmoteListWidget.FolderEntry) {
-                this.preview.getPlayer().stopEmote();
+                this.preview.getMannequin().stopEmote();
             }
             this.preview.tick();
         }
@@ -179,7 +179,7 @@ public abstract class EmoteSubScreen extends Screen {
     public void removed() {
         if (this.watcher != null) this.watcher.blockWhileLoading();
         super.removed();
-        if (this.preview != null) this.preview.getPlayer().stopEmote();
+        if (this.preview != null) this.preview.getMannequin().stopEmote();
     }
 
     private void closeWatcher() {

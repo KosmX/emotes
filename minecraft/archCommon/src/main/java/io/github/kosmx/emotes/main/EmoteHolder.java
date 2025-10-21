@@ -206,9 +206,9 @@ public class EmoteHolder implements Supplier<UUID> {
         return canPlayEmote(player) && ClientEmotePlay.clientStartLocalEmote(emote);
     }
 
-    private static boolean canPlayEmote(AbstractClientPlayer entity){
+    private static boolean canPlayEmote(AbstractClientPlayer entity) {
         if (!canRunEmote(entity)) return false;
-        return entity.isMainPlayer();
+        return entity.isMainAvatar();
     }
 
     /**

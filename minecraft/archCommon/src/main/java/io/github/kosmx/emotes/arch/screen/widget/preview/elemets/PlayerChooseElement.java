@@ -24,7 +24,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
         super(profile, 0, 0, 0, 0, false);
-        this.player.emotecraft$getEmote().muteNbs = true;
+        this.mannequin.emotecraft$getEmote().muteNbs = true;
 
         this.parent = parent;
         this.id = id;
@@ -64,7 +64,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     @Override
     public void removed() {
-        this.player.stopEmote();
+        this.mannequin.stopEmote();
     }
 
     @Override

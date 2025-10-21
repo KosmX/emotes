@@ -18,6 +18,6 @@ public interface ISearchEngine extends Renderable {
     Stream<EmoteListWidget.ListEntry> filter(Stream<EmoteListWidget.ListEntry> entries, String search);
 
     static ISearchEngine getInstance() {
-        return PlatformTools.hasSearchables() ? new SearchablesSearch() : VanillaSearch.INSTANCE;
+        return PlatformTools.HAS_SEARCHABLES ? new SearchablesSearch() : VanillaSearch.INSTANCE;
     }
 }

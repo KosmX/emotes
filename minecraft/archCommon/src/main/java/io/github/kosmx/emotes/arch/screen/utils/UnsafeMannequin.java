@@ -2,14 +2,13 @@ package io.github.kosmx.emotes.arch.screen.utils;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.ClientMannequin;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.player.RemotePlayer;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelPart;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -19,19 +18,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class UnsafeRemotePlayer extends RemotePlayer {
-    public final AvatarRenderState reusedState = new UnsafePlayerRenderState();
-
-    private final PlayerInfo playerInfo;
-
-    public UnsafeRemotePlayer(@Nullable ClientLevel clientLevel, GameProfile gameProfile) {
-        super(Objects.requireNonNullElse(clientLevel, UnsafeClientLevel.INSTANCE), gameProfile);
-        this.playerInfo = new PlayerInfo(gameProfile, true);
-    }
-
-    @Override
-    protected PlayerInfo getPlayerInfo() {
-        return this.playerInfo;
+public class UnsafeMannequin extends ClientMannequin {
+    public UnsafeMannequin(@Nullable ClientLevel clientLevel, GameProfile gameProfile) {
+        super(Objects.requireNonNullElse(clientLevel, UnsafeClientLevel.INSTANCE), Minecraft.getInstance().playerSkinRenderCache());
+        setProfile(ResolvableProfile.createResolved(gameProfile));
+        setHideDescription(true);
     }
 
     @Override

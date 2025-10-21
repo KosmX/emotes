@@ -7,6 +7,10 @@ accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE_BACKWARD_SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent SEARCH_HINT Lnet/minecraft/network/chat/Component;
 
+# Mannequins
+accessible method net/minecraft/world/entity/decoration/Mannequin setProfile (Lnet/minecraft/world/item/component/ResolvableProfile;)V
+accessible method net/minecraft/world/entity/decoration/Mannequin setHideDescription (Z)V
+
 # NeoForge network
 accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
 accessible class net/minecraft/server/level/ChunkMap$TrackedEntity

@@ -185,6 +185,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      * @param target target entity
      */
     protected void sendForPlayer(NetData data, P player, P target) {
+        if (!target.isActive()) return;
         try {
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data.copy());
             packetBuilder.setVersion(target.getRemoteVersions());

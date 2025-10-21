@@ -5,6 +5,10 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
+import net.minecraft.world.entity.Avatar;
+import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftMannequin;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,28 +44,27 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     @Override
     public UUID getUUIDFromPlayer(BukkitNetworkInstance player) {
-        return player.player.getUniqueId();
-    }
-
-    public BukkitNetworkInstance getPlayerNetworkInstance(Player player) {
-        return getPlayerFromUUID(player.getUniqueId());
+        return player.avatar.getUUID();
     }
 
     @Override
     public BukkitNetworkInstance getPlayerFromUUID(UUID playerUuid) {
         if (!this.players.containsKey(playerUuid)) {
-            Player player = PLUGIN.getServer().getPlayer(playerUuid);
-            if (player == null) return null;
-            CommonData.LOGGER.error("Player {} never joined. If it is a fake player, the fake-player plugin forgot to fire join event.", player);
-            this.players.put(playerUuid, new BukkitNetworkInstance(player));
+            CraftEntity entity = (CraftEntity) PLUGIN.getServer().getEntity(playerUuid);
+            if (entity == null) return null;
+
+            if (!(entity instanceof CraftMannequin)) {
+                CommonData.LOGGER.error("Player {} never joined. If it is a fake player, the fake-player plugin forgot to fire join event.", entity);
+            }
+            this.players.put(playerUuid, new BukkitNetworkInstance((Avatar) entity.getHandle()));
         }
         return this.players.get(playerUuid);
     }
 
     @Override
     protected void sendForEveryoneElse(NetData data, BukkitNetworkInstance player) {
-        for (Player player1 : player.player.getTrackedBy()) {
-            BukkitNetworkInstance instance = getPlayerNetworkInstance(player1);
+        for (Player player1 : player.avatar.getBukkitEntity().getTrackedBy()) {
+            BukkitNetworkInstance instance = getPlayerFromUUID(player1.getUniqueId());
             if (instance == player) continue;
 
             // Bukkit server will filter if I really can send, or not.
@@ -81,7 +84,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     public void registerPlayer(Player player) {
         UUID uuid = player.getUniqueId();
         if (this.players.containsKey(uuid)) return;
-        this.players.put(uuid, new BukkitNetworkInstance(player));
+        this.players.put(uuid, new BukkitNetworkInstance(((CraftPlayer) player).getHandle()));
     }
 
     @EventHandler
@@ -92,8 +95,8 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     @EventHandler
     public void onPlayerTrackEntity(PlayerTrackEntityEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            playerStartTracking(getPlayerNetworkInstance(player), getPlayerNetworkInstance(event.getPlayer()));
+        if (((CraftEntity) event.getEntity()).getHandle() instanceof Avatar avatar) {
+            playerStartTracking(getPlayerFromUUID(avatar.getUUID()), getPlayerFromUUID(event.getPlayer().getUniqueId()));
         }
     }
 
