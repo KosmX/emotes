@@ -39,10 +39,10 @@ dependencies {
         pomCompile(this)
     }
 
-    /*modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${project["bendablecuboids_version"]}") {
+    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${project["bendablecuboids_version"]}") {
         isTransitive = false
         pomCompile(this)
-    }*/
+    }
 
     modRuntimeOnly("org.redlance.dima_dencep.mods:TranslationFallbacksNeo:${project["translationfallbacks_version"]}") {
         include(this)
