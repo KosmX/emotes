@@ -6,6 +6,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.IdMapper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.AbortableIterationConsumer;
 import net.minecraft.world.Difficulty;
@@ -15,8 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.EmptyLevelChunk;
+import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.entity.EntityTypeTest;
@@ -66,12 +66,12 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
 
     @Override
     public int getMinY() {
-        return 0;
+        return 1;
     }
 
     @Override
     public int getHeight() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -113,17 +113,12 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
 
     @Override
     public ChunkAccess getChunk(int x, int z, ChunkStatus chunkStatus, boolean requireChunk) {
-        return null;
+        return new EmptyLevelChunk(this, new ChunkPos(x, z), Holder.direct(null));
     }
 
     @Override
     public @NotNull BlockState getBlockState(BlockPos pos) {
         return Blocks.VOID_AIR.defaultBlockState();
-    }
-
-    @Override
-    public @NotNull ChunkAccess getChunk(BlockPos pos) {
-        return new EmptyLevelChunk(this, new ChunkPos(pos), Holder.direct(null));
     }
 
     @Override
@@ -136,15 +131,23 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
         return 0L;
     }
 
-    private final ClientLevelData clientLevelData = new ClientLevelData(Difficulty.PEACEFUL, false, true);
-
+    private static final ClientLevelData CLIENT_LEVEL_DATA = new ClientLevelData(Difficulty.PEACEFUL, false, true);
     @Override
     public @NotNull ClientLevelData getLevelData() {
-        return this.clientLevelData;
+        return CLIENT_LEVEL_DATA;
     }
 
     @Override
     public @NotNull List<Entity> getPushableEntities(Entity entity, AABB boundingBox) {
         return Collections.emptyList();
+    }
+
+    private static final PalettedContainerFactory PALETTED_CONTAINER_FACTORY = new PalettedContainerFactory(
+            Strategy.createForBlockStates(new IdMapper<>()), Blocks.AIR.defaultBlockState(), null,
+            Strategy.createForBiomes(new IdMapper<>()), Holder.direct(null), null
+    );
+    @Override
+    public @NotNull PalettedContainerFactory palettedContainerFactory() {
+        return PALETTED_CONTAINER_FACTORY;
     }
 }
