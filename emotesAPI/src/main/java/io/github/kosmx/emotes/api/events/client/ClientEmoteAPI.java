@@ -29,7 +29,7 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
      * @param tick First tick
      * @return          Can the emote be played: this doesn't check server-side verification
      */
-    public static boolean playEmote(@Nullable Animation animation, int tick) {
+    public static boolean playEmote(@Nullable Animation animation, float tick) {
         return INSTANCE.playEmoteImpl(animation, tick);
     }
 
@@ -46,7 +46,7 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
 
     protected static final ClientEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ClientEmoteAPI.class);
 
-    protected abstract boolean playEmoteImpl(Animation animation, int tick);
+    protected abstract boolean playEmoteImpl(Animation animation, float tick);
 
     protected abstract Collection<Animation> clientEmoteListImpl();
 

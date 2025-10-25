@@ -26,7 +26,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
      * @param emote the new emote
      * @param tick First tick
      */
-    public static void setPlayerPlayingEmote(UUID player, @Nullable Animation emote, int tick) {
+    public static void setPlayerPlayingEmote(UUID player, @Nullable Animation emote, float tick) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, tick, false);
     }
 
@@ -45,7 +45,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
      * @param emote the new emote
      * @param tick First tick
      */
-    public static void forcePlayEmote(UUID player, @Nullable Animation emote, int tick) {
+    public static void forcePlayEmote(UUID player, @Nullable Animation emote, float tick) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, tick, true);
     }
 
@@ -66,7 +66,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
      * @param tick First tick
      * @param forced can they stop
      */
-    public static void playEmote(UUID player, @Nullable Animation emote, int tick, boolean forced) {
+    public static void playEmote(UUID player, @Nullable Animation emote, float tick, boolean forced) {
         INSTANCE.setPlayerPlayingEmoteImpl(player, emote, tick, forced);
     }
 
@@ -93,7 +93,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
 
     protected static final ServerEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ServerEmoteAPI.class);
 
-    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation KeyframeAnimation, int tick, boolean isForced);
+    protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation KeyframeAnimation, float tick, boolean isForced);
     protected abstract Pair<Animation, Float> getPlayedEmoteImpl(UUID player);
 
     protected abstract boolean isForcedEmoteImpl(UUID player);

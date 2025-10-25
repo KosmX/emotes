@@ -126,7 +126,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     @Override
-    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation emoteData, int tick, boolean isForced) {
+    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation emoteData, float tick, boolean isForced) {
         if (emoteData != null) {
             EmotePacket packet = new EmotePacket.Builder()
                     .configureToStreamEmote(emoteData)

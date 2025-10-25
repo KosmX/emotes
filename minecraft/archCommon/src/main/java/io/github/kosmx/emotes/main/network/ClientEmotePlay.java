@@ -41,7 +41,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         return clientStartLocalEmote(emote, 0);
     }
 
-    public static boolean clientStartLocalEmote(Animation emote, int tick) {
+    public static boolean clientStartLocalEmote(Animation emote, float tick) {
         LocalPlayer player = ClientUtil.getClientPlayer();
         if (player.emotecraft$isForcedEmote()) {
             return false;
@@ -176,7 +176,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     @Override
-    protected boolean playEmoteImpl(Animation animation, int tick) {
+    protected boolean playEmoteImpl(Animation animation, float tick) {
         if (animation != null) {
             return clientStartLocalEmote(animation, tick);
         } else {
