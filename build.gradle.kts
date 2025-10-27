@@ -1,7 +1,7 @@
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
-    id("dev.architectury.loom") version "1.11-SNAPSHOT" apply false
+    id("dev.architectury.loom") version "1.11.454" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply true
     id("com.gradleup.shadow") version "9.2.2" apply false
     id("me.modmuss50.mod-publish-plugin") // version defined in buildSrc
