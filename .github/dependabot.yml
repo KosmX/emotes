@@ -24,6 +24,12 @@ updates:
   directory: "/"
   schedule:
     interval: daily
+  registries:
+    - maven-central
+    - redlance-repo
+    - neoforged-maven
+    - architectury-maven
+    - blamejared-maven
   ignore:
   - dependency-name: com.google.code.gson:gson
   - dependency-name: org.jetbrains:annotations
