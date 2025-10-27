@@ -37,7 +37,7 @@ jobs:
         if [ -d "minecraft/neoforge/build/libs" ]; then
           cp minecraft/neoforge/build/libs/*.jar artifacts/
         fi
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v5
       with:
         name: Build Results
         path: artifacts/*.jar
