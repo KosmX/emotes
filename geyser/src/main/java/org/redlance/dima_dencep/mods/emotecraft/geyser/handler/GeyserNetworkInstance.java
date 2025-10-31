@@ -57,7 +57,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     @Override
     protected void sendMessage(byte[] bytes, @Nullable UUID target) {
         this.session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(
-                EmotecraftExt.EMOTECAFT_EMOTE_TYPE, bytes
+                EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, bytes
         ));
     }
 

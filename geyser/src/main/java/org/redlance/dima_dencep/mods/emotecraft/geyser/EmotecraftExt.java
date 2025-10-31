@@ -57,9 +57,9 @@ public class EmotecraftExt implements Extension {
 
     public static final Key MINECRAFT_REGISTER_TYPE = MinecraftKey.key("register");
 
-    public static final Key EMOTECAFT_EMOTE_TYPE = Key.key(CommonData.MOD_ID, CommonData.playEmoteID);
-    public static final Key EMOTECAFT_STREAM_TYPE = Key.key(CommonData.MOD_ID, CommonData.emoteStreamID);
-    private static final Set<Key> EMOTECRAFT_CHANNELS = Set.of(EMOTECAFT_EMOTE_TYPE, EMOTECAFT_STREAM_TYPE);
+    public static final Key EMOTECRAFT_EMOTE_TYPE = Key.key(CommonData.MOD_ID, CommonData.playEmoteID);
+    public static final Key EMOTECRAFT_STREAM_TYPE = Key.key(CommonData.MOD_ID, CommonData.emoteStreamID);
+    private static final Set<Key> EMOTECRAFT_CHANNELS = Set.of(EMOTECRAFT_EMOTE_TYPE, EMOTECRAFT_STREAM_TYPE);
 
     private static EmotecraftExt instance;
 
@@ -105,7 +105,7 @@ public class EmotecraftExt implements Extension {
         Set<Key> channels = DinnerboneProtocolUtils.readChannels(Unpooled.wrappedBuffer(bytes));
 
         CommonData.LOGGER.debug("Server listening channels: {}", channels);
-        if (channels.contains(EmotecraftExt.EMOTECAFT_EMOTE_TYPE)) {
+        if (channels.contains(EmotecraftExt.EMOTECRAFT_EMOTE_TYPE)) {
             CommonData.LOGGER.debug("Has emotecraft!");
 
             ByteBuf byteBuf = Unpooled.buffer();

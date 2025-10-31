@@ -17,11 +17,6 @@ import java.util.function.UnaryOperator;
 public class GeyserSessionPatch {
     public static final String CLASS_NAME = "org.geysermc.geyser.session.GeyserSession";
 
-    @SuppressWarnings("unused")
-    public static void hook(StartGamePacket packet) {
-        System.out.println(packet);
-    }
-
     public static byte[] patch(byte[] bytes) {
         ClassPool pool = ClassPool.getDefault();
         pool.appendClassPath(new ByteArrayClassPath(CLASS_NAME, bytes));
@@ -31,29 +26,11 @@ public class GeyserSessionPatch {
 
             CtClass protocolProviderInterface = pool.get("org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ProtocolProvider");
             cc.addInterface(protocolProviderInterface);
-
-            CtMethod ctMethod = CtNewMethod.make("""
+            cc.addMethod(CtNewMethod.make("""
                 public org.geysermc.mcprotocollib.protocol.MinecraftProtocol ec$protocol() {
                     return this.protocol;
                 }""", cc
-            );
-
-            MethodInfo methodInfo = ctMethod.getMethodInfo();
-            ConstPool cp = methodInfo.getConstPool();
-            AnnotationsAttribute attr = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
-            attr.addAnnotation(new javassist.bytecode.annotation.Annotation(Override.class.getName(), cp));
-            methodInfo.addAttribute(attr);
-
-            cc.addMethod(ctMethod);
-
-            CtMethod startGameMethod = cc.getDeclaredMethod("startGame");
-            startGameMethod.instrument(new ExprEditor() {
-                public void edit(MethodCall m) throws CannotCompileException {
-                    if (m.getClassName().equals("org.geysermc.geyser.session.UpstreamSession") && m.getMethodName().equals("sendPacket")) {
-                        m.replace("org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GeyserSessionPatch.hook(startGamePacket); $_ = $proceed($$);");
-                    }
-                }
-            });
+            ));
 
             return cc.toBytecode();
         } catch (Exception ex) {
