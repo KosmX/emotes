@@ -2,20 +2,20 @@ package io.github.kosmx.emotes.arch.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.zigythebird.playeranim.animation.PlayerAnimationProcessor;
-import io.github.kosmx.emotes.arch.screen.utils.UnsafeRemotePlayer;
+import com.zigythebird.playeranim.animation.AvatarAnimationProcessor;
+import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.Avatar;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(PlayerAnimationProcessor.class)
-public class PlayerAnimationProcessorMixin {
+@Mixin(AvatarAnimationProcessor.class)
+public class AvatarAnimationProcessorMixin {
     @Shadow
     @Final
-    private AbstractClientPlayer player;
+    private Avatar avatar;
 
     @WrapOperation(
             method = "handleAnimations",
@@ -25,7 +25,7 @@ public class PlayerAnimationProcessorMixin {
             )
     )
     private boolean emotecraft$unpause(Minecraft instance, Operation<Boolean> original) {
-        if (this.player instanceof UnsafeRemotePlayer) return false;
+        if (this.avatar instanceof UnsafeMannequin) return false;
         return original.call(instance);
     }
 }

@@ -13,10 +13,11 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import it.unimi.dsi.fastutil.Pair;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 
+import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         return clientStartLocalEmote(emote, 0);
     }
 
-    public static boolean clientStartLocalEmote(Animation emote, int tick) {
+    public static boolean clientStartLocalEmote(Animation emote, float tick) {
         LocalPlayer player = ClientUtil.getClientPlayer();
         if (player.emotecraft$isForcedEmote()) {
             return false;
@@ -63,7 +64,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
 
     public static boolean clientStopLocalEmote() {
         if (ClientUtil.getClientPlayer().isPlayingEmote()) {
-            return clientStopLocalEmote(ClientUtil.getClientPlayer().emotecraft$getEmote().getData());
+            return clientStopLocalEmote(ClientUtil.getClientPlayer().emotecraft$getEmote().getCurrentAnimationInstance());
         }
         return false;
     }
@@ -100,12 +101,12 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 }
                 break;
             case STOP:
-                AbstractClientPlayer player = PlatformTools.getPlayerFromUUID(data.player);
+                Avatar player = PlatformTools.getAvatarFromUUID(data.player);
                 assert data.stopEmoteID != null;
                 if (player != null) {
                     ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUUID());
                     player.stopEmote(data.stopEmoteID);
-                    if (player.isMainPlayer() && !data.isForced) {
+                    if (player.isMainAvatar() && !data.isForced) {
                         PlatformTools.addToast(Component.translatable("emotecraft.blockedEmote"));
                     }
                 } else {
@@ -125,8 +126,8 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     static void receivePlayPacket(Animation emoteData, UUID player, float tick, boolean isForced) {
-        AbstractClientPlayer playerEntity = PlatformTools.getPlayerFromUUID(player);
-        if(isEmoteAllowed(emoteData, player)) {
+        Avatar playerEntity = PlatformTools.getAvatarFromUUID(player);
+        if (isEmoteAllowed(emoteData, player)) {
             EventResult result = ClientEmoteEvents.EMOTE_VERIFICATION.invoker().verify(emoteData, player);
             if (result == EventResult.FAIL) return;
             if (playerEntity != null) {
@@ -139,10 +140,10 @@ public class ClientEmotePlay extends ClientEmoteAPI {
         }
     }
 
+    @SuppressWarnings("unused")
     public static boolean isEmoteAllowed(Animation emoteData, UUID player) {
-        return (PlatformTools.getConfig().enablePlayerSafety.get() || !PlatformTools.isPlayerBlocked(player));
+        return !PlatformTools.getConfig().enablePlayerSafety.get() || !Minecraft.getInstance().isBlocked(player);
     }
-
 
     /**
      * @param uuid get emote for this player
@@ -175,7 +176,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
     }
 
     @Override
-    protected boolean playEmoteImpl(Animation animation, int tick) {
+    protected boolean playEmoteImpl(Animation animation, float tick) {
         if (animation != null) {
             return clientStartLocalEmote(animation, tick);
         } else {

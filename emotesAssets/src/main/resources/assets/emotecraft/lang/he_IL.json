@@ -7,7 +7,7 @@
   "emotecraft.no_server": "לשרת לא מותקנת גירסה של Emotecraft. משתמשים אחרים לא יראו את ההנפשות שלך אם תשתמש בהם.",
   "emotecraft.different_server": "לשרת מותקנת גירסה אחרת של Emotecraft. ייתכן ששחקנים אחרים לא יראו את ההנפשות שלך פועלים כראוי.",
   "key.emotecraft.stop": "Stop Playing Emote",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "מחבר: ",
   "emotecraft.config": "הגדרות הנפשה",
   "emotecraft.blockedEmote": "אסור לך להשתמש בהנפשה הזאת.",

@@ -5,20 +5,17 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ConnectionHandlerMixin",
-    "EntityTrackerAccessor",
-    "PlayerAnimationProcessorMixin",
-    "ServerChunkCacheAccessor",
+    "AvatarAnimationProcessorMixin",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin"
   ],
   "client": [
-    "EmotePlayerMixin",
+    "EmoteAvatarMixin",
     "EntityRenderDispatcherMixin",
     "KeyEventMixin",
     "LivingEntityRendererMixin",
     "PlayerMixin",
-    "SoundEngineMixin",
-    "emf.EMFAnimationEntityContextMixin"
+    "SoundEngineMixin"
   ],
   "server": [],
   "injectors": {

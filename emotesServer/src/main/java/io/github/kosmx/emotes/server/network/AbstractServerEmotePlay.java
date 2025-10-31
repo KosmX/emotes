@@ -39,6 +39,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         );
     }
 
+    @SuppressWarnings("deprecation")
     public void receiveMessage(NetData data, P instance) throws IOException {
         CommonData.LOGGER.trace("[emotes server] Received data from: {} data: {}", instance, data);
         switch (data.purpose){
@@ -125,7 +126,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     @Override
-    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation emoteData, int tick, boolean isForced) {
+    protected void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation emoteData, float tick, boolean isForced) {
         if (emoteData != null) {
             EmotePacket packet = new EmotePacket.Builder()
                     .configureToStreamEmote(emoteData)
@@ -155,7 +156,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         } catch(IOException e) {
             CommonData.LOGGER.error("Failed to send config to client!", e);
         }
-        if(instance.getRemoteVersions().getOrDefault((byte)11, (byte)0) >= 0) {
+        if (instance.getRemoteVersions().getOrDefault(PacketConfig.HEADER_PACKET, (byte)0) >= 0) {
             UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).forEach(buffer ->
                     instance.sendMessage(buffer, null)
             );
@@ -184,6 +185,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      * @param target target entity
      */
     protected void sendForPlayer(NetData data, P player, P target) {
+        if (!target.isActive()) return;
         try {
             EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data.copy());
             packetBuilder.setVersion(target.getRemoteVersions());

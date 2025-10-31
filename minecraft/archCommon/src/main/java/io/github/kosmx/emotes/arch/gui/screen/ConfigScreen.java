@@ -35,6 +35,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     private static final Component CATEGORY_GENERAL = Component.translatable("emotecraft.otherconfig.category.general");
     private static final Component CATEGORY_EXPERT = Component.translatable("emotecraft.otherconfig.category.expert");
+    private static final Component CATEGORY_LEGACY = Component.translatable("emotecraft.otherconfig.category.legacy");
 
     private static final Component RESET_CONFIG_TITLE = Component.translatable("emotecraft.resetConfig.title");
     private static final Component RESET_CONFIG_MSG = Component.translatable("emotecraft.resetConfig.message");
@@ -47,11 +48,16 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @Override
     protected void addOptions() {
-        list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_GENERAL, this.font)));
-        PlatformTools.getConfig().iterateGeneral(entry -> addConfigEntry(entry, list));
+        assert this.list != null;
 
-        list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_EXPERT, this.font)));
-        PlatformTools.getConfig().iterateExpert(entry -> addConfigEntry(entry, list));
+        this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_GENERAL, this.font)));
+        PlatformTools.getConfig().basics.forEach(entry -> addConfigEntry(entry, list));
+
+        this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_EXPERT, this.font)));
+        PlatformTools.getConfig().expert.forEach(entry -> addConfigEntry(entry, list));
+
+        this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_LEGACY, this.font)));
+        PlatformTools.getConfig().legacy.forEach(entry -> addConfigEntry(entry, list));
     }
 
     @Override

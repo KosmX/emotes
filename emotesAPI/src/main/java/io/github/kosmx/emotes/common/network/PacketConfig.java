@@ -34,7 +34,7 @@ public final class PacketConfig {
      * 0: no
      * any non-zero value: yes
      */
-    public static final byte ALLOW_EMOTE_STREAM = (byte) 0x81;
+    // public static final byte ALLOW_EMOTE_STREAM = (byte) 0x81;
 
     public static final byte DISCOVERY_PACKET = (byte) 8;
     public static final byte HEADER_PACKET = 0x11;

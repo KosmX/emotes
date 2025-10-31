@@ -1,4 +1,5 @@
 {
+  "modmenu.descriptionTranslation.emotecraft": "لتشغيل إلايماءات في Minecraft\nافتح القائمة لتجهيز عجلة الاختيار السريع\n\nيمكنك إضافة إيماءات تعبيرية مخصصة، ويمكنك أن تستخدمها حتى لو لم يكن هناك من يملكها!\n\nشكر خاص الى:\n- Kale Ko لخلق إيماءة والمساعدة في تصميم واجهة المستخدم\n\nتم صناعته بواسطة dima_dencep و ZigyTheBird",
   "emotecraft.options.options": "خيارات المود",
   "emotecraft.options.keybind": "عيّن مفتاحًا مخصص لتشغيل الرموز التعبيرية المختارة",
   "emotecraft.options.fastmenu": "اختر رمزًا تعبيريًا عن طريق النقر عليه",
@@ -11,8 +12,10 @@
   "emotecraft.otherconfig.debug": "التصحيح",
   "emotecraft.otherconfig.validate": "التحقق من صحة الرمز التعبيري",
   "emotecraft.otherconfig.validate.tooltip": "فقط في عوالم PvP، حيث شخص ما يريد الغش. لن يسمح بالرموز التعبيرية، ماذا يصنع الكثير من التعويض",
-  "category.emotecraft.keybinding": "Emotecraft",
+  "emotecraft.otherconfig.showHiddenConfig.tooltip": ".",
+  "key.category.emotecraft.keybinding": "Emotecraft",
   "emotecraft.emote.author": "المؤلف: ",
   "emotecraft.options.export": "قائمة التصدير",
+  "emotecraft.export": "تصدير الإيماءات في .%s",
   "emotecraft.song_too_big_to_send": "الأغنية كبيرة جدًا، ولا يمكن إرسالها إلى الخادم. يُمكن إرسال الرموز التعبيرية فقط"
 }

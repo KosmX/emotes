@@ -1,5 +1,17 @@
 accessWidener v2 named
-
+# Gui
 accessible class net/minecraft/client/gui/screens/packs/PackSelectionScreen$Watcher
-extendable class net/minecraft/client/OptionInstance$ValueSet
-extendable class net/minecraft/client/OptionInstance$SliderableValueSet
+accessible field net/minecraft/client/gui/components/AbstractSelectionList MENU_LIST_BACKGROUND Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/client/gui/components/AbstractSelectionList INWORLD_MENU_LIST_BACKGROUND Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE_FORWARD_SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE_BACKWARD_SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
+accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent SEARCH_HINT Lnet/minecraft/network/chat/Component;
+
+# Mannequins
+accessible method net/minecraft/world/entity/decoration/Mannequin setProfile (Lnet/minecraft/world/item/component/ResolvableProfile;)V
+accessible method net/minecraft/world/entity/decoration/Mannequin setHideDescription (Z)V
+
+# NeoForge network
+accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
+accessible field net/minecraft/server/level/ChunkMap$TrackedEntity seenBy Ljava/util/Set;

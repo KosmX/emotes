@@ -30,7 +30,7 @@ public class ForgeNetwork {
                         (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player()),
                         (arg, playPayloadContext) -> {
                             try {
-                                ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), null);
+                                ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), playPayloadContext.listener()::send);
                             } catch (IOException e) {
                                 CommonData.LOGGER.error("", e);
                             }
@@ -45,9 +45,10 @@ public class ForgeNetwork {
                                 if (message.purpose != PacketTask.CONFIG) throw new IOException("Wrong packet type for config task");
 
                                 ((EmotesMixinConnection) configurationPayloadContext.connection()).emotecraft$setVersions(message.versions);
-                                UniversalEmoteSerializer.preparePackets(message.versions).forEach(buffer ->
-                                        configurationPayloadContext.connection().send(NetworkPlatformTools.playPacket(buffer))
-                                );
+                                UniversalEmoteSerializer.preparePackets(message.versions)
+                                        .map(NetworkPlatformTools::playPacket)
+                                        .forEach(configurationPayloadContext.connection()::send);
+
                                 configurationPayloadContext.finishCurrentTask(ConfigTask.TYPE);
                             } catch (IOException e) {
                                 CommonData.LOGGER.error("", e);
@@ -56,7 +57,7 @@ public class ForgeNetwork {
                         },
                         (arg, configurationPayloadContext) -> {
                             try {
-                                ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
+                                ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), configurationPayloadContext.listener()::send);
                             } catch (IOException e) {
                                 CommonData.LOGGER.error("", e);
                             }
@@ -66,7 +67,7 @@ public class ForgeNetwork {
                 .optional()
                 .configurationToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER, (arg, configurationPayloadContext) -> {
                     try {
-                        ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), p -> configurationPayloadContext.listener().send(p));
+                        ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), configurationPayloadContext.listener()::send);
                     } catch (IOException e) {
                         CommonData.LOGGER.error("", e);
                     }
@@ -75,9 +76,7 @@ public class ForgeNetwork {
 
     @SubscribeEvent
     public static void registerNetworkConfigTask(final RegisterConfigurationTasksEvent event) {
-        if (event.getListener().hasChannel(NetworkPlatformTools.EMOTE_CHANNEL_ID) ||
-                event.getListener().hasChannel(NetworkPlatformTools.STREAM_CHANNEL_ID)) {
-
+        if (event.getListener().hasChannel(NetworkPlatformTools.EMOTE_CHANNEL_ID)) {
             event.register(new ConfigTask());
         } else {
             CommonData.LOGGER.debug("Client doesn't support emotes, ignoring");

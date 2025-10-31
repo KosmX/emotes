@@ -15,7 +15,6 @@
   "emotecraft.otherconfig.validationThreshold": "Soglia Di Validazione",
   "emotecraft.otherconfig.validationThreshold.tooltip": "Quanto controbilanciamento è troppo.",
   "emotecraft.otherconfig.dark": "Usa la versione scura della ruota delle emote",
-  "emotecraft.otherconfig.showicon": "Mostra solo le icone (se disponibile)",
   "emotecraft.otherconfig.stopthreshold": "Velocità dell'interruzione delle emote",
   "emotecraft.otherconfig.stopthreshold.tooltip": " (0,22 è la velocità di camminata)\n\nCon un valore abbastanza grande, l'emote non si fermerà. In questo caso assicurati che un tasto sia associato a 'ferma l'emote'",
   "emotecraft.otherconfig.yratio": "Soglia Arresto Asse Y",

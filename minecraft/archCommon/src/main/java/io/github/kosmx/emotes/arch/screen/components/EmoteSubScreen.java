@@ -17,6 +17,7 @@ import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +35,6 @@ import java.util.stream.Stream;
  * Use to create your list of emotes. (dima_dencep uses it)
  */
 public abstract class EmoteSubScreen extends Screen {
-    private static final Component SEARCH = Component.translatable("gui.recipebook.search_hint");
-
     protected final boolean reloadOnOpen;
     protected final ISearchEngine searchEngine;
     protected Screen lastScreen;
@@ -49,11 +48,6 @@ public abstract class EmoteSubScreen extends Screen {
     protected HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     @Nullable
     protected EditBox searchBox;
-
-    @Deprecated(forRemoval = true)
-    protected EmoteSubScreen(Component title, Screen lastScreen) {
-        this(title, false, lastScreen);
-    }
 
     protected EmoteSubScreen(Component title, boolean reloadOnOpen, Screen lastScreen) {
         this(title, reloadOnOpen, ISearchEngine.getInstance(), lastScreen);
@@ -86,10 +80,10 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addTitle() {
-        this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, SEARCH,
+        this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, RecipeBookComponent.SEARCH_HINT,
                 () -> Objects.requireNonNull(this.list).getEmotes(isSearchActive())
         ));
-        this.searchBox.setHint(SEARCH);
+        this.searchBox.setHint(RecipeBookComponent.SEARCH_HINT);
         this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, isSearchActive(), string));
     }
 
@@ -113,7 +107,7 @@ public abstract class EmoteSubScreen extends Screen {
             public boolean setLastFolder(FolderEntry folder) {
                 if (super.setLastFolder(folder)) {
                     if (searchBox != null) searchBox.setValue("");
-                    if (preview != null) preview.getPlayer().stopEmote();
+                    if (preview != null) preview.getMannequin().stopEmote();
                     return true;
                 }
                 return false;
@@ -173,9 +167,9 @@ public abstract class EmoteSubScreen extends Screen {
                 hovered = null;
             }
             if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
-                this.preview.playAnimation(emote.emote.emote, true);
+                this.preview.playAnimation(emote.emote.emote, Animation.LoopType.DEFAULT, true);
             } else if (hovered instanceof EmoteListWidget.FolderEntry) {
-                this.preview.getPlayer().stopEmote();
+                this.preview.getMannequin().stopEmote();
             }
             this.preview.tick();
         }
@@ -185,7 +179,7 @@ public abstract class EmoteSubScreen extends Screen {
     public void removed() {
         if (this.watcher != null) this.watcher.blockWhileLoading();
         super.removed();
-        if (this.preview != null) this.preview.getPlayer().stopEmote();
+        if (this.preview != null) this.preview.getMannequin().stopEmote();
     }
 
     private void closeWatcher() {

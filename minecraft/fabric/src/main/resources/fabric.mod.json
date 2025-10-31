@@ -40,12 +40,13 @@
     "fabric-networking-api-v1": "*",
     "fabric-key-binding-api-v1": "*",
     "fabric-lifecycle-events-v1": "*",
-    "minecraft": ">=1.21.7",
-    "player_animation_library": ">=1.0.7+mc1.21.7",
-    "fabricloader": ">=0.17.2"
+    "fabric-rendering-v1": ">=12.5.1+fbe231d52c",
+    "minecraft": ">=1.21.9",
+    "player_animation_library": ">=1.1.0+alpha.1+mc.1.21.9",
+    "fabricloader": ">=0.17.3"
   },
   "breaks": {
-    "bendable_cuboids": "<1.0.5+mc1.21.7",
+    "bendable_cuboids": "<1.0.6+mc.1.21.9",
     "grimac": "*",
     "packetevents": "*"
   },

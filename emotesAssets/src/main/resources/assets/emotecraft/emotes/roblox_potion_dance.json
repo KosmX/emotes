@@ -2,7 +2,15 @@
     "name": {
       "translate": "emotecraft.emote.roblox_potion_dance.name"
     },
-    "author": "Wah0o",
+    "author": {
+      "player": {
+        "id": [-16861169, -1600304980, -1651674418, -1228779872]
+      },
+      "extra": [
+        " §7Wah0o"
+      ],
+      "color": "#ffffff"
+    },
     "description": {
       "translate": "emotecraft.emote.roblox_potion_dance.description"
     },
@@ -13,6 +21,7 @@
         "beginTick":0,
         "endTick":45,
         "stopTick":61,
+        "previewTick": 23,
         "degrees":false,
         "moves":[
             

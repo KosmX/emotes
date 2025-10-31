@@ -1,18 +1,24 @@
 package io.github.kosmx.emotes.arch.network;
 
-import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
-public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<ModdedServerPlayNetwork> {
+public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<AbstractServerNetwork> {
+    private final Map<UUID, AvatarServerPlayNetwork> nonPlayers = new WeakHashMap<>();
+
     public void receiveMessage(byte[] bytes, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             try {
@@ -33,39 +39,41 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Mo
         }
     }
 
+    @SuppressWarnings("unused")
     public void receiveStreamMessage(ServerPlayer player, ModdedServerPlayNetwork handler, ByteBuffer buf) {
-        try {
-            if (((EmotesMixinNetwork)handler).emotecraft$getServerNetworkInstance().allowEmoteStreaming()) {
-                var packet = handler.receiveStreamChunk(buf);
-                if (packet != null) {
-                    receiveMessage(packet.array(), handler);
+        player.connection.disconnect(Component.literal("This server does not support streaming!"));
+    }
+
+    @Override
+    protected UUID getUUIDFromPlayer(AbstractServerNetwork player) {
+        return player.getAvatar().getUUID();
+    }
+
+    @Override
+    protected AbstractServerNetwork getPlayerFromUUID(UUID player) {
+        ServerPlayer serverPlayer = NetworkPlatformTools.getServer().getPlayerList().getPlayer(player);
+        if (serverPlayer != null) return getPlayerNetworkInstance(serverPlayer);
+
+        if (!this.nonPlayers.containsKey(player)) {
+            for (ServerLevel level : NetworkPlatformTools.getServer().getAllLevels()) {
+                Entity entity = level.getEntity(player);
+                if (entity instanceof Avatar avatar) {
+                    this.nonPlayers.put(player, new AvatarServerPlayNetwork(avatar));
+                    break;
                 }
-            } else {
-                player.connection.disconnect(Component.literal("Emote stream is disabled on this server"));
             }
-        } catch (IOException e) {
-            CommonData.LOGGER.warn("Failed to receive packet!", e);
         }
+        return this.nonPlayers.get(player);
     }
 
-    @Override
-    protected UUID getUUIDFromPlayer(ModdedServerPlayNetwork player) {
-        return player.serverGamePacketListener.getPlayer().getUUID();
-    }
-
-    @Override
-    protected ModdedServerPlayNetwork getPlayerFromUUID(UUID player) {
-        return getPlayerNetworkInstance(NetworkPlatformTools.getServer().getPlayerList().getPlayer(player));
-    }
-
-    public ModdedServerPlayNetwork getPlayerNetworkInstance(ServerPlayer player) {
+    public AbstractServerNetwork getPlayerNetworkInstance(ServerPlayer player) {
         return ((EmotesMixinNetwork) player.connection).emotecraft$getServerNetworkInstance();
     }
 
     @Override
-    protected void sendForEveryoneElse(NetData data, ModdedServerPlayNetwork player) {
-        for (ServerPlayer target : PlayerTrackUtils.getTrackedBy(player.serverGamePacketListener.getPlayer())) {
-            ModdedServerPlayNetwork targetInstance = getPlayerNetworkInstance(target);
+    protected void sendForEveryoneElse(NetData data, AbstractServerNetwork player) {
+        for (ServerPlayer target : NetworkPlatformTools.getTrackedBy(player.getAvatar())) {
+            AbstractServerNetwork targetInstance = getPlayerNetworkInstance(target);
             if (targetInstance == player) continue;
 
             if (NetworkPlatformTools.canSendPlay(target, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {

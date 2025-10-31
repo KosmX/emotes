@@ -54,13 +54,6 @@ public interface INetworkInstance {
     }
 
     /**
-     * Does this server allow emote streams from client. This can allow larger/longer emotes but can be abused
-     */
-    default boolean allowEmoteStreaming() {
-        return false;
-    }
-
-    /**
      * The Proxy controller ask you to send the message,
      * only if {@link #isActive()} is true
      * @param builder packet builder
@@ -114,7 +107,7 @@ public interface INetworkInstance {
     /**
      * Maximum size of the data what the instance can send
      * <p>
-     * {@link AbstractNetworkInstance#maxDataSize()} defaults to {@link io.github.kosmx.emotes.common.CommonData#MAX_PACKET_SIZE}
+     * Defaults to {@link io.github.kosmx.emotes.common.CommonData#MAX_PACKET_SIZE}
      * @return max size of bytes[]
      */
     default int maxDataSize() {

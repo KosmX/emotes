@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import com.zigythebird.playeranim.PlayerAnimLibPlatform;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -12,38 +12,31 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public final class PlatformTools {
+    public static final boolean HAS_SEARCHABLES = PlayerAnimLibPlatform.isModLoaded("searchables");
+
     public static INetworkInstance getClientNetworkController() {
         return ClientNetwork.INSTANCE;
     }
 
-    public static @Nullable AbstractClientPlayer getPlayerFromUUID(UUID uuid) {
+    public static @Nullable Avatar getAvatarFromUUID(UUID uuid) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return null;
-        return (AbstractClientPlayer) level.getPlayerByUUID(uuid);
+        return (Avatar) level.getEntity(uuid);
     }
 
     public static void openExternalEmotesDir() {
         Util.getPlatform().openPath(InstanceService.INSTANCE.getExternalEmoteDir());
     }
 
-    @ExpectPlatform
-    public static boolean hasSearchables() {
-        throw new AssertionError();
-    }
-
     public static ClientConfig getConfig() {
         return (ClientConfig) Serializer.getConfig();
-    }
-
-    public static boolean isPlayerBlocked(UUID uuid) {
-        return Minecraft.getInstance().isBlocked(uuid);
     }
 
     public static CameraType getPerspective() {

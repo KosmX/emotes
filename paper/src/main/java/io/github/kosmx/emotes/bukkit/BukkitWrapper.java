@@ -17,6 +17,7 @@ import net.kyori.adventure.key.Key;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void onLoad() {
-        try { // Trying to increase the packet limit since the paper server is crap and severely limited
+        try { // Trying to increase the packet limit since the paper server is shit and severely limited
             StreamCodecUtils.replaceFallback(StreamCodecUtils.getThis(ServerboundCustomPayloadPacket.STREAM_CODEC),
                     (id) -> DiscardedPayload.codec(id, CommonData.MAX_PACKET_SIZE)
             );
@@ -48,23 +49,28 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->
                 ServerCommands.register(event.registrar().getDispatcher(), true)
         );
+
+        CommonData.LOGGER.info("Loading Emotecraft as a paper plugin...");
     }
 
     @Override
     public void onEnable() {
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EMOTE_PACKET);
-        Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance()::receivePluginMessage);
+        Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance());
         getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
-        getLogger().info("Loading Emotecraft as a bukkit plugin...");
     }
 
     @Override
     public void onDisable() {
+        Bukkit.getMessenger().unregisterOutgoingPluginChannel(this, EMOTE_PACKET);
         Bukkit.getMessenger().unregisterIncomingPluginChannel(this, EMOTE_PACKET);
+        HandlerList.unregisterAll(ServerSideEmotePlay.getInstance());
+
+        CommonData.LOGGER.warn("Emotecraft does not support disabling by PlugMan and similar plugins");
     }
 
     @Override
     public void afterInitChannel(@NotNull Channel channel) {
-        channel.pipeline().addBefore("decoder", BukkitWrapper.EMOTE_PACKET, EmotePayloadHandler.INSTANCE);
+        channel.pipeline().addAfter("splitter", BukkitWrapper.EMOTE_PACKET, EmotePayloadHandler.INSTANCE);
     }
 }

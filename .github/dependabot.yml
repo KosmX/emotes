@@ -1,11 +1,35 @@
 version: 2
+registries:
+  maven-central:
+    type: maven-repository
+    url: "https://repo.maven.apache.org/maven2/"
+  redlance-repo:
+    type: maven-repository
+    url: "https://repo.redlance.org/public/"
+  neoforged-maven:
+    type: maven-repository
+    url: "https://maven.neoforged.net/releases/"
+  architectury-maven:
+    type: maven-repository
+    url: "https://maven.architectury.dev/"
+  blamejared-maven:
+    type: maven-repository
+    url: "https://maven.blamejared.com/"
 updates:
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: daily
 - package-ecosystem: gradle
   directory: "/"
   schedule:
     interval: daily
-  open-pull-requests-limit: 10
+  registries:
+    - maven-central
+    - redlance-repo
+    - neoforged-maven
+    - architectury-maven
+    - blamejared-maven
   ignore:
   - dependency-name: com.google.code.gson:gson
   - dependency-name: org.jetbrains:annotations
-  - dependency-name: maven.modrinth

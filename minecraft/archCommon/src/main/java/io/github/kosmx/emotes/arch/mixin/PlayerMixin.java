@@ -1,8 +1,7 @@
 package io.github.kosmx.emotes.arch.mixin;
 
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
-import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
@@ -15,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin extends LivingEntity {
+public abstract class PlayerMixin extends Avatar {
     @Shadow
     public abstract boolean isLocalPlayer();
 

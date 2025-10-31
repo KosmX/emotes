@@ -6,6 +6,7 @@ import com.mojang.serialization.JsonOps;
 import io.github.kosmx.emotes.common.CommonData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
@@ -13,10 +14,9 @@ import net.minecraft.resources.ResourceLocation;
 public class McUtils {
     public static final Component MOD_NAME = Component.literal(CommonData.MOD_NAME);
     public static final Component SLASH = Component.literal("/");
-    public static final Component BACK = Component.literal("<").withStyle(style -> style.withBold(true));
 
     public static Component fromJson(String json, HolderLookup.Provider registries) {
-        if (json == null || json.isBlank()) return Component.empty();
+        if (json == null || json.isBlank()) return CommonComponents.EMPTY;
 
         try {
             return ComponentSerialization.CODEC.parse(
@@ -34,7 +34,7 @@ public class McUtils {
 
     public static Component fromJson(Object obj, HolderLookup.Provider registries) {
         return switch (obj) {
-            case null -> Component.empty();
+            case null -> CommonComponents.EMPTY;
 
             case String string -> McUtils.fromJson(string, registries);
 

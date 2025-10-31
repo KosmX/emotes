@@ -2,19 +2,26 @@ package io.github.kosmx.emotes.arch.network;
 
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.EmoteStreamHelper;
+import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.server.network.EmotePlayTracker;
+import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
+import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.UUID;
 
-public abstract class AbstractServerNetwork implements INetworkInstance {
-    @NotNull
-    protected final EmoteStreamHelper streamHelper = new ServerStreamHelper();
+public abstract class AbstractServerNetwork implements INetworkInstance, IServerNetworkInstance {
+    private final EmotePlayTracker emotePlayTracker = new EmotePlayTracker();
 
     @NotNull
     protected abstract EmotesMixinConnection getServerConnection();
+
+    @NotNull
+    protected abstract Avatar getAvatar();
 
     @Override
     public HashMap<Byte, Byte> getRemoteVersions() {
@@ -24,15 +31,6 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
     @Override
     public void setVersions(HashMap<Byte, Byte> map) {
         getServerConnection().emotecraft$setVersions(map);
-    }
-
-    abstract void sendEmotePacket(ByteBuffer buffer);
-
-    abstract void sendStreamPacket(ByteBuffer buffer);
-
-    @Override
-    public boolean isActive() {
-        return false;
     }
 
     @Override
@@ -45,24 +43,15 @@ public abstract class AbstractServerNetwork implements INetworkInstance {
         return CommonData.MAX_PACKET_SIZE - 16; // channel ID is 12, one extra int makes it 16 (string)
     }
 
-    public @Nullable ByteBuffer receiveStreamChunk(ByteBuffer buffer) {
-        return streamHelper.receiveStream(buffer);
+    @Override
+    public EmotePlayTracker getEmoteTracker() {
+        return this.emotePlayTracker;
     }
 
-    protected class ServerStreamHelper extends EmoteStreamHelper {
-        @Override
-        protected int getMaxPacketSize() {
-            return maxDataSize();
-        }
-
-        @Override
-        protected void sendPlayPacket(ByteBuffer buffer) {
-            sendEmotePacket(buffer);
-        }
-
-        @Override
-        protected void sendStreamChunk(ByteBuffer buffer) {
-            sendStreamPacket(buffer);
-        }
+    @Override
+    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
+        sendPlayMessage(builder.setVersion(getRemoteVersions()).build().write());
     }
+
+    public abstract void sendPlayMessage(ByteBuffer bytes);
 }

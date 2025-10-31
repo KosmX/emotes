@@ -2,7 +2,15 @@
 	"name": {
       "translate": "emotecraft.emote.waving.name"
     },
-	"author": "KosmX",
+    "author": {
+      "player": {
+        "id": [2143116393, -1362800877, -2082782478, 1380574660]
+      },
+      "extra": [
+        " §7KosmX"
+      ],
+      "color": "#ffffff"
+    },
 	"description": {
       "translate": "emotecraft.emote.waving.description"
     },
@@ -12,6 +20,7 @@
 		"endTick":45,
 		"stopTick":50,
 		"degrees":true,
+		"previewTick": 10,
 		"moves":[
 			{
 				"tick":0,

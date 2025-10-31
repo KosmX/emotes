@@ -2,8 +2,8 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     java
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
-    id("xyz.jpenilla.run-paper") version "2.3.1"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("xyz.jpenilla.run-paper") version "3.0.2"
     `maven-publish`
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin")
@@ -33,12 +33,6 @@ dependencies {
     }
     compileApi(project(":emotesAssets"))
     compileApi(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
-
-    implementation("com.velocitypowered:velocity-native") {
-        version {
-            strictly("3.4.0-SNAPSHOT")
-        }
-    }
 }
 
 tasks.runServer {
@@ -56,6 +50,7 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.WARN
     configurations = listOf(compileApi)
     archiveClassifier.set("")
     mergeServiceFiles()
@@ -74,6 +69,10 @@ tasks.assemble {
 
 java {
     withSourcesJar()
+}
+
+shadow {
+    addShadowVariantIntoJavaComponent = false
 }
 
 publishing {

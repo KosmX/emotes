@@ -36,11 +36,16 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+        if (in.readableBytes() == 0 || !ctx.channel().isActive()) {
+            out.add(in.retain());
+            return;
+        }
+
         Connection connection = (Connection) ctx.pipeline().get("packet_handler");
 
         int readerIndex = in.readerIndex();
-
         FriendlyByteBuf buf = new FriendlyByteBuf(in);
+
         if (buf.readVarInt() == PAYLOAD_ID) {
             if (PLAY_PAYLOAD.equals(buf.readResourceLocation())) {
 
@@ -54,7 +59,7 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
                 Player player = connection.getPlayer().getBukkitEntity();
                 ServerSideEmotePlay.getInstance().registerPlayer(player); // Force register
-                ServerSideEmotePlay.getInstance().receivePluginMessage(BukkitWrapper.EMOTE_PACKET, player, data);
+                ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, player, data);
                 return;
             }
         }

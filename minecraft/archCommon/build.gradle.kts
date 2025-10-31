@@ -21,9 +21,6 @@ dependencies {
     compileOnly("com.blamejared.searchables:Searchables-common-${minecraft_version}:${project["searchables_version"]}") {
         isTransitive = false
     }
-
-    modCompileOnly("maven.modrinth:entity-model-features:emqHnxMo")
-    modCompileOnly("maven.modrinth:entitytexturefeatures:hmRY8v2W")
 }
 
 java {

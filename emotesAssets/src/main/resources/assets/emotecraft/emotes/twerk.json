@@ -3,7 +3,15 @@
     "name": {
       "translate": "emotecraft.emote.twerk.name"
     },
-    "author": "3APA3EH",
+    "author": {
+      "player": {
+        "id": [1908333164, -351318969, -1208365445, -724395445]
+      },
+      "extra": [
+        " §73APA3EH"
+      ],
+      "color": "#ffffff"
+    },
     "description": {
       "translate": "emotecraft.emote.twerk.description"
     },
@@ -15,6 +23,7 @@
         "degrees": false,
         "easeBeforeKeyframe": false,
         "nsfw": false,
+        "previewTick": 6,
         "moves": [
             {
                 "tick": 0,

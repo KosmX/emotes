@@ -128,13 +128,13 @@ public class UniversalEmoteSerializer {
         if (!Serializer.getConfig().loadBuiltinEmotes.get()) {
             return;
         }
-        try (InputStream stream = UniversalEmoteSerializer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json")) {
+        try (InputStream stream = UniversalEmoteSerializer.class.getClassLoader().getResourceAsStream("assets/" + CommonData.MOD_ID + "/emotes/" + name + ".json")) {
             List<Animation> emotes = UniversalEmoteSerializer.readData(stream, name + ".json");
 
             for (Animation emote : emotes) {
                 emote.data().put(EmoteSerializer.BUILT_IN_KEY, true);
 
-                InputStream iconStream = UniversalEmoteSerializer.class.getResourceAsStream("/assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
+                InputStream iconStream = UniversalEmoteSerializer.class.getClassLoader().getResourceAsStream("assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
                 if(iconStream != null) {
                     emote.data().put("iconData", MathHelper.readFromIStream(iconStream));
                     iconStream.close();
