@@ -14,6 +14,7 @@ import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.geysermc.event.PostOrder;
 import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.geyser.api.command.Command;
+import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
@@ -53,7 +54,7 @@ public class EmotecraftExt implements Extension {
         }
     }
 
-    private static final Map<GeyserSession, GeyserNetworkInstance> INSTANCES = new ConcurrentHashMap<>();
+    private static final Map<GeyserConnection, GeyserNetworkInstance> INSTANCES = new ConcurrentHashMap<>();
 
     public static final Key MINECRAFT_REGISTER_TYPE = MinecraftKey.key("register");
 
@@ -125,7 +126,7 @@ public class EmotecraftExt implements Extension {
         }*/
     }
 
-    private void onEmotecraftPayload(GeyserSession session, Key channel, byte[] bytes) {
+    private void onEmotecraftPayload(GeyserConnection session, Key channel, byte[] bytes) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
         if (networkInstance.getConnectionType() == ConnectionType.NONE) {
             if (((ProtocolProvider) session).ec$state() == ProtocolState.CONFIGURATION) {
@@ -139,13 +140,13 @@ public class EmotecraftExt implements Extension {
 
     @Subscribe
     public void onSessionInitialize(SessionInitializeEvent event) {
-        GeyserSession session = (GeyserSession) event.connection();
+        GeyserConnection session = event.connection();
         EmotecraftExt.INSTANCES.put(session, new GeyserNetworkInstance(session));
     }
 
     @Subscribe
     public void onSessionDisconnect(SessionDisconnectEvent event) {
-        GeyserNetworkInstance instance = EmotecraftExt.INSTANCES.remove((GeyserSession) event.connection());
+        GeyserNetworkInstance instance = EmotecraftExt.INSTANCES.remove(event.connection());
         if (instance != null) instance.disconnect();
     }
 
@@ -154,12 +155,12 @@ public class EmotecraftExt implements Extension {
         event.register(Command.builder(this)
                 .name(rootCommand())
                 .bedrockOnly(true)
-                .source(GeyserSession.class)
+                .source(GeyserConnection.class)
                 .aliases(List.of("emotes", "form"))
                 .description("Emotecraft command")
                 .playerOnly(true)
                 .executor((source, cmd, args) ->
-                        EmotecraftExt.INSTANCES.get((GeyserSession) source).showForm()
+                        EmotecraftExt.INSTANCES.get((GeyserConnection) source).showForm()
                 )
                 .build()
         );
@@ -167,7 +168,7 @@ public class EmotecraftExt implements Extension {
 
     @Subscribe(postOrder = PostOrder.FIRST, ignoreCancelled = true)
     public void onEmote(ClientEmoteEvent event) {
-        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get((GeyserSession) event.connection());
+        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(event.connection());
         if (networkInstance != null && networkInstance.getConnectionType() != ConnectionType.NONE) {
             CompletableFuture<Animation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
 

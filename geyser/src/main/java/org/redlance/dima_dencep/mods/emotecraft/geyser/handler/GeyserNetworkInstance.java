@@ -11,6 +11,8 @@ import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import org.geysermc.cumulus.form.SimpleForm;
+import org.geysermc.geyser.api.connection.GeyserConnection;
+import org.geysermc.geyser.api.entity.type.player.GeyserPlayerEntity;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
@@ -29,12 +31,12 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>();
     // private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final UUIDMap<Animation> animations = new UUIDMap<>();
-    private final GeyserSession session;
+    private final GeyserConnection session;
 
     private UUID currentEmote;
     private ConnectionType connectionType = ConnectionType.NONE;
 
-    public GeyserNetworkInstance(GeyserSession session) {
+    public GeyserNetworkInstance(GeyserConnection session) {
         this.session = session;
     }
 
@@ -56,7 +58,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
     @Override
     protected void sendMessage(byte[] bytes, @Nullable UUID target) {
-        this.session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(
+        ((GeyserSession) this.session).sendDownstreamPacket(new ServerboundCustomPayloadPacket(
                 EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, bytes
         ));
     }
@@ -97,7 +99,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, data.player);
 
                     //playerEntity.emotecraft$playEmote(data.emoteData, data.tick, data.isForced);
-                    this.session.showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
+                    this.session.entities().showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
 
                     if (isMainPlayer(playerEntity)) {
                         this.currentEmote = data.emoteData.get();
@@ -159,11 +161,11 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void stopEmote() {
-        stopEmote(this.session.getPlayerEntity());
+        stopEmote(this.session.entities().playerEntity());
     }
 
-    public void stopEmote(PlayerEntity player) {
-        this.session.showEmote(player, "");
+    public void stopEmote(GeyserPlayerEntity player) {
+        this.session.entities().showEmote(player, "");
 
         if (isMainPlayer(player) && this.currentEmote != null) {
             try {
@@ -185,7 +187,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         try {
             sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
             if (local) {
-                this.session.showEmote(this.session.getPlayerEntity(), "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
+                this.session.entities().showEmote(this.session.entities().playerEntity(), "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
             }
             this.currentEmote = animation.get();
         } catch (Throwable th) {
@@ -195,13 +197,13 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
     public PlayerEntity getPlayerFromUUID(UUID uuid) {
         if (this.session.javaUuid().equals(uuid)) {
-            return this.session.getPlayerEntity();
+            return (PlayerEntity) this.session.entities().playerEntity();
         }
-        return this.session.getEntityCache().getPlayerEntity(uuid);
+        return ((GeyserSession) this.session).getEntityCache().getPlayerEntity(uuid);
     }
 
-    public boolean isMainPlayer(PlayerEntity player) {
-        return player != null && this.session.javaUuid().equals(player.getUuid());
+    public boolean isMainPlayer(GeyserPlayerEntity geyserPlayer) {
+        return geyserPlayer instanceof PlayerEntity player && this.session.javaUuid().equals(player.getUuid());
     }
 
     @Override
