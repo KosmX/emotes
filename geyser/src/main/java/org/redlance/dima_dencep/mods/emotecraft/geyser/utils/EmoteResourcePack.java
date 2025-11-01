@@ -205,6 +205,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
         CommonData.LOGGER.info("{} properties will be reserved by emotecraft! Please ignore the warnings below...", reserved);
 
         StringBuilder molangScript = new StringBuilder("variable.bone_{BONE_ID} = variable.bone_{BONE_ID} ?? {DEFAULT_VALUE};");
+        molangScript.append("variable.bone_{BONE_ID}_target = variable.bone_{BONE_ID}_target ?? {DEFAULT_VALUE};");
 
         this.registeredProperties.clear();
         for (int i = 0; i < reserved; i++) {
@@ -214,9 +215,11 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             String prop = "variable." + identifier.path();
 
             molangScript.append(prop).append(" = q.property('").append(identifier).append("');");
-            molangScript.append("variable.bone_{BONE_ID} = (math.floor(").append(prop).append(" / 10000000) == {BONE_ID}) ? ");
-            molangScript.append("((").append(prop).append(" - {BONE_ID} * 10000000 - 1000000) / 100) : variable.bone_{BONE_ID};");
+            molangScript.append("variable.bone_{BONE_ID}_target = (math.floor(").append(prop).append(" / 10000000) == {BONE_ID}) ? ");
+            molangScript.append("((").append(prop).append(" - {BONE_ID} * 10000000 - 1000000) / 100) : variable.bone_{BONE_ID}_target;");
         }
+
+        molangScript.append("variable.bone_{BONE_ID} = math.lerp(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.3);");
         molangScript.append("return variable.bone_{BONE_ID};");
 
         CommonData.LOGGER.debug("Registered {} properties!", this.registeredProperties.size());
