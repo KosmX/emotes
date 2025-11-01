@@ -8,6 +8,7 @@ import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.TransformType;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
+import io.github.kosmx.emotes.common.CommonData;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityProperty;
@@ -86,7 +87,12 @@ public class GeyserAnimationController extends AnimationController implements Ru
         tick(data);
 
         // Animate via properties
-        for (String partKey : BONE_POSITIONS.keySet()) {
+        for (String partKey : this.activeBones.keySet()) {
+            if (!BONE_POSITIONS.containsKey(partKey)) {
+                CommonData.LOGGER.warn("Unsupported bone: {}!", partKey);
+                continue;
+            }
+
             PlayerAnimBone bone = get3DTransform(new PlayerAnimBone(partKey));
 
             updateAxis(propertyManager, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
