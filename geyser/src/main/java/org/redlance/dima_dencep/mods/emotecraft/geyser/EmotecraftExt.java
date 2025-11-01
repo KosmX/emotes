@@ -20,7 +20,9 @@ import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCommandsEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
+import org.geysermc.geyser.api.event.lifecycle.GeyserPreInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
+import org.geysermc.geyser.pack.GeyserResourcePackManifest;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.session.PendingMicrosoftAuthentication;
 import org.geysermc.geyser.util.MinecraftKey;
@@ -34,6 +36,7 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.ConnectionType;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmoteResourcePack;
 
 import java.io.IOException;
 import java.util.*;
@@ -62,10 +65,19 @@ public class EmotecraftExt implements Extension {
     public static final Key EMOTECRAFT_STREAM_TYPE = Key.key(CommonData.MOD_ID, CommonData.emoteStreamID);
     private static final Set<Key> EMOTECRAFT_CHANNELS = Set.of(EMOTECRAFT_EMOTE_TYPE, EMOTECRAFT_STREAM_TYPE);
 
+    private final EmoteResourcePack resourcePack = new EmoteResourcePack(
+            new GeyserResourcePackManifest.Version(1, 0, 0), CommonData.MOD_NAME, CommonData.MOD_NAME
+    );
+
     private static EmotecraftExt instance;
 
     public EmotecraftExt() {
         EmotecraftExt.instance = this;
+    }
+
+    @Subscribe
+    public void onPreInitialize(GeyserPreInitializeEvent event) {
+        eventBus().register(this.resourcePack);
     }
 
     @Subscribe(postOrder = PostOrder.LAST)
@@ -189,6 +201,10 @@ public class EmotecraftExt implements Extension {
             }
             event.setCancelled(true);
         }
+    }
+
+    public EmoteResourcePack getResourcePack() {
+        return this.resourcePack;
     }
 
     public static EmotecraftExt getInstance() {

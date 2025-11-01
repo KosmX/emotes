@@ -18,26 +18,35 @@ import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.Nullable;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.GeyserAnimationController;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class GeyserNetworkInstance extends AbstractNetworkInstance {
+    private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
+
     private final HashMap<Byte, Byte> versions = new HashMap<>();
     // private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final UUIDMap<Animation> animations = new UUIDMap<>();
     private final GeyserConnection session;
+    private final Future<?> ticker;
+
+    private final Map<PlayerEntity, GeyserAnimationController> controllers = new WeakHashMap<>();
 
     private UUID currentEmote;
     private ConnectionType connectionType = ConnectionType.NONE;
 
     public GeyserNetworkInstance(GeyserConnection session) {
         this.session = session;
+
+        this.ticker = EXECUTOR.scheduleAtFixedRate(() -> this.controllers.values()
+                .forEach(GeyserAnimationController::run), 0L, 50L, TimeUnit.MILLISECONDS
+        );
     }
 
     @Override
@@ -99,7 +108,10 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, data.player);
 
                     //playerEntity.emotecraft$playEmote(data.emoteData, data.tick, data.isForced);
-                    this.session.entities().showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
+                    // this.session.entities().showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
+
+                    this.controllers.computeIfAbsent(playerEntity, GeyserAnimationController::new)
+                            .triggerAnimation(data.emoteData, data.tick);
 
                     if (isMainPlayer(playerEntity)) {
                         this.currentEmote = data.emoteData.get();
@@ -165,6 +177,10 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void stopEmote(GeyserPlayerEntity player) {
+        if (player instanceof PlayerEntity entity && this.controllers.containsKey(entity)) {
+            this.controllers.get(entity).stop();
+        }
+
         this.session.entities().showEmote(player, "");
 
         if (isMainPlayer(player) && this.currentEmote != null) {
@@ -173,9 +189,9 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
             } catch (IOException e) {
                 CommonData.LOGGER.warn("Failed to stop animation!", e);
             }
-        }
 
-        this.currentEmote = null;
+            this.currentEmote = null;
+        }
     }
 
     public void sendChatMessage(String key) {
@@ -252,5 +268,6 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.connectionType = ConnectionType.NONE;
         this.animations.clear();
         this.versions.clear();
+        this.ticker.cancel(true);
     }
 }

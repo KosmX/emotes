@@ -15,6 +15,7 @@ subprojects {
     group = "io.github.kosmx.emotes"
 
     repositories {
+        mavenLocal()
         maven("https://api.modrinth.com/maven") {
             name = "Modrinth"
             content {
@@ -37,7 +38,6 @@ subprojects {
         maven("https://repo.opencollab.dev/main/") {
             name = "Geyser"
         }
-        mavenLocal()
     }
 
     tasks.withType(JavaCompile::class).configureEach {
