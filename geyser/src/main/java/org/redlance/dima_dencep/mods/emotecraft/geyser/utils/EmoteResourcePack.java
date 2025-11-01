@@ -100,6 +100,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
         JsonObject animation = new JsonObject();
         animation.addProperty("animation_length", 1.0F);
         animation.addProperty("loop", true);
+        animation.addProperty("override_previous_animation", true);
         animation.add("bones", bones);
 
         JsonObject container = new JsonObject();

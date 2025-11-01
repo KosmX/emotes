@@ -8,11 +8,9 @@ import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.TransformType;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
-import io.github.kosmx.emotes.common.CommonData;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityProperty;
-import org.cloudburstmc.protocol.bedrock.packet.AnimateEntityPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetEntityDataPacket;
 import org.geysermc.geyser.api.entity.property.GeyserEntityProperty;
 import org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty;
@@ -21,6 +19,7 @@ import org.geysermc.geyser.entity.properties.GeyserEntityPropertyManager;
 import org.geysermc.geyser.entity.properties.type.PropertyType;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmoteResourcePack;
 
 import java.time.Duration;
@@ -44,7 +43,9 @@ public class GeyserAnimationController extends AnimationController implements Ru
     );
 
     private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
-    private final PlayerEntity playerEntity;
+    protected final PlayerEntity playerEntity;
+
+    private final Set<String> dirtyBones = new HashSet<>();
 
     public GeyserAnimationController(PlayerEntity playerEntity) {
         super((controller, state, animationSetter) -> PlayState.STOP, MolangLoader::createNewEngine);
@@ -67,29 +68,31 @@ public class GeyserAnimationController extends AnimationController implements Ru
     }
 
     @Override
+    protected void setupNewAnimation() {
+        super.setupNewAnimation();
+        BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, this.playerEntity);
+        for (String partKey : this.dirtyBones) {
+            updateBone(this.playerEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
+        }
+        this.dirtyBones.clear();
+    }
+
+    @Override
     public void run() {
         // Check propertyManager
         GeyserEntityPropertyManager propertyManager = this.playerEntity.getPropertyManager();
         if (propertyManager == null) return;
 
-        // Start animation
-        AnimateEntityPacket animatePacket = new AnimateEntityPacket();
-        animatePacket.setAnimation(EmoteResourcePack.ANIMATION_NAME);
-        animatePacket.setNextState("default");
-        animatePacket.setBlendOutTime(0.0f);
-        animatePacket.setStopExpression("query.any_animation_finished");
-        animatePacket.setController("__runtime_controller");
-        animatePacket.getRuntimeEntityIds().add(this.playerEntity.getGeyserId());
-        this.playerEntity.getSession().sendUpstreamPacket(animatePacket);
-
         AnimationData data = new AnimationData(0, 0.0F);
-        setupAnim(data);
         tick(data);
+
+        if (!isActive()) return;
+        setupAnim(data);
 
         // Animate via properties
         for (String partKey : this.activeBones.keySet()) {
             if (!BONE_POSITIONS.containsKey(partKey)) {
-                CommonData.LOGGER.warn("Unsupported bone: {}!", partKey);
+                // CommonData.LOGGER.debug("Unsupported bone: {}!", partKey);
                 continue;
             }
 
@@ -101,30 +104,27 @@ public class GeyserAnimationController extends AnimationController implements Ru
             } else if ("cape".equals(partKey)) {
                 bone.rotX *= -1;
             }
-
-            updateAxis(propertyManager, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
-            updateAxis(propertyManager, partKey, TransformType.ROTATION,
-                    (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
-            );
+            updateBone(propertyManager, partKey, bone);
         }
 
         // Flush
         flushPropertiesImmediately();
+        if (this.dirtyBones.isEmpty()) this.dirtyBones.addAll(this.activeBones.keySet());
     }
 
-    private void updateAxis(GeyserEntityPropertyManager propertyManager, String partKey, TransformType type, float x, float y, float z) {
-        Map<Axis, Integer> ids = EmotecraftExt.getInstance().getResourcePack().getAxisIds(partKey, type);
-        int packedX = pack(ids.get(Axis.X), x);
-        int packedY = pack(ids.get(Axis.Y), y);
-        int packedZ = pack(ids.get(Axis.Z), z);
-
-        System.out.printf("%s %s: X(id=%d, val=%.2f, packed=%d), Y(id=%d, val=%.2f, packed=%d), Z(id=%d, val=%.2f, packed=%d)%n",
-                partKey, type, ids.get(Axis.X), x, packedX, ids.get(Axis.Y), y, packedY, ids.get(Axis.Z), z, packedZ
+    protected void updateBone(GeyserEntityPropertyManager propertyManager, String partKey, PlayerAnimBone bone) {
+        if (!BONE_POSITIONS.containsKey(partKey)) return;
+        updateAxis(propertyManager, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
+        updateAxis(propertyManager, partKey, TransformType.ROTATION,
+                (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
         );
+    }
 
-        updateProperty(propertyManager, getAvailableProperty(), packedX);
-        updateProperty(propertyManager, getAvailableProperty(), packedY);
-        updateProperty(propertyManager, getAvailableProperty(), packedZ);
+    protected void updateAxis(GeyserEntityPropertyManager propertyManager, String partKey, TransformType type, float x, float y, float z) {
+        Map<Axis, Integer> ids = EmotecraftExt.getInstance().getResourcePack().getAxisIds(partKey, type);
+        updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.X), x));
+        updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.Y), y));
+        updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.Z), z));
     }
 
     private GeyserIntEntityProperty getAvailableProperty() {
@@ -168,6 +168,22 @@ public class GeyserAnimationController extends AnimationController implements Ru
         if (BONE_POSITIONS.containsKey(name)) return BONE_POSITIONS.get(name);
         if (pivotBones.containsKey(name)) return pivotBones.get(name).getPivot();
         return Vec3f.ZERO;
+    }
+
+    @Override
+    public void process(AnimationData state) {
+        super.process(state);
+        if (!this.animationState.isActive()) internalStop();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        internalStop();
+    }
+
+    protected void internalStop() {
+        BedrockPacketsUtils.sendBobAnimation(this.playerEntity);
     }
 
     public static int pack(int id, float value) {
