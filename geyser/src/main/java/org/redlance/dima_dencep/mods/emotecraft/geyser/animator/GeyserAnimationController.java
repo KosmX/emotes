@@ -90,7 +90,9 @@ public class GeyserAnimationController extends AnimationController implements Ru
             PlayerAnimBone bone = get3DTransform(new PlayerAnimBone(partKey));
 
             updateAxis(propertyManager, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
-            updateAxis(propertyManager, partKey, TransformType.ROTATION, bone.getRotX(), bone.getRotY(), bone.getRotZ());
+            updateAxis(propertyManager, partKey, TransformType.ROTATION,
+                    (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
+            );
         }
 
         // Flush
