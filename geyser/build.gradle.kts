@@ -24,7 +24,7 @@ dependencies {
 
         exclude(module = "gson")
         exclude(module = "slf4j-api")
-        exclude(module = "fastutil")
+        // exclude(module = "fastutil")
         exclude(module = "netty-buffer")
         exclude(module = "jspecify")
         exclude(module = "guava")
