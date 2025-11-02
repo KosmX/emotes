@@ -96,20 +96,26 @@ public class GeyserAnimationController extends AnimationController implements Ru
                 continue;
             }
 
-            PlayerAnimBone bone = get3DTransform(new PlayerAnimBone(partKey));
-
-            if ("left_arm".equals(partKey) || "right_arm".equals(partKey) || "head".equals(partKey)) {
-                bone.applyOtherBone(get3DTransform(new PlayerAnimBone("torso")).scale(-1));
-
-            } else if ("cape".equals(partKey)) {
-                bone.rotX *= -1;
-            }
-            updateBone(propertyManager, partKey, bone);
+            updateBone(propertyManager, partKey, get3DTransform(new PlayerAnimBone(partKey)));
         }
 
         // Flush
         flushPropertiesImmediately();
         if (this.dirtyBones.isEmpty()) this.dirtyBones.addAll(this.activeBones.keySet());
+    }
+
+    @Override
+    public PlayerAnimBone get3DTransform(@NonNull PlayerAnimBone bone) {
+        bone = super.get3DTransform(bone);
+
+        String boneName = bone.getName();
+        if ("left_arm".equals(boneName) || "right_arm".equals(boneName) || "head".equals(boneName)) {
+            bone.applyOtherBone(get3DTransform(new PlayerAnimBone("torso")).scale(-1));
+
+        } else if ("cape".equals(boneName)) {
+            bone.rotX *= -1;
+        }
+        return bone;
     }
 
     protected void updateBone(GeyserEntityPropertyManager propertyManager, String partKey, PlayerAnimBone bone) {
@@ -118,6 +124,7 @@ public class GeyserAnimationController extends AnimationController implements Ru
         updateAxis(propertyManager, partKey, TransformType.ROTATION,
                 (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
         );
+        updateAxis(propertyManager, partKey, TransformType.SCALE, bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
     }
 
     protected void updateAxis(GeyserEntityPropertyManager propertyManager, String partKey, TransformType type, float x, float y, float z) {
@@ -158,7 +165,7 @@ public class GeyserAnimationController extends AnimationController implements Ru
         this.playerEntity.getSession().sendUpstreamPacketImmediately(packet);
 
         try {
-            Thread.sleep(Duration.ofMillis(10)); // IDK
+            Thread.sleep(Duration.ofMillis(10 + this.playerEntity.getSession().ping())); // IDK
         } catch (InterruptedException ignored) {}
         this.lastUsedProperties.clear();
     }
