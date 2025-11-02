@@ -15,7 +15,6 @@ subprojects {
     group = "io.github.kosmx.emotes"
 
     repositories {
-        mavenLocal()
         maven("https://api.modrinth.com/maven") {
             name = "Modrinth"
             content {
