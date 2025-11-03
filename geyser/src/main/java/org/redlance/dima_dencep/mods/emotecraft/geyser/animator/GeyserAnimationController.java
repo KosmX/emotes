@@ -20,7 +20,7 @@ import org.geysermc.geyser.entity.properties.type.PropertyType;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmoteResourcePack;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
 import java.time.Duration;
 import java.util.*;

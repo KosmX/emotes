@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.redlance.dima_dencep.mods.emotecraft.geyser.utils;
+package org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

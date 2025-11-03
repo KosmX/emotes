@@ -36,7 +36,7 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.ConnectionType;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmoteResourcePack;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
 import java.io.IOException;
 import java.util.*;

@@ -1,4 +1,4 @@
-package org.redlance.dima_dencep.mods.emotecraft.geyser.utils;
+package org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +23,6 @@ import org.geysermc.geyser.api.util.Identifier;
 import org.geysermc.geyser.pack.GeyserResourcePack;
 import org.geysermc.geyser.pack.GeyserResourcePackManifest;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.GeyserAnimationController;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.ResourcePackVersionSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
