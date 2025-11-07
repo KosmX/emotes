@@ -1,12 +1,6 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery;
 
 import javassist.*;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.MethodInfo;
-import javassist.expr.ExprEditor;
-import javassist.expr.MethodCall;
-import org.cloudburstmc.protocol.bedrock.packet.StartGamePacket;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +12,8 @@ public class GeyserSessionPatch {
     public static final String CLASS_NAME = "org.geysermc.geyser.session.GeyserSession";
 
     public static byte[] patch(byte[] bytes) {
-        ClassPool pool = ClassPool.getDefault();
+        ClassPool pool = new ClassPool(null);
+        pool.insertClassPath(new LoaderClassPath(GeyserSessionPatch.class.getClassLoader()));
         pool.appendClassPath(new ByteArrayClassPath(CLASS_NAME, bytes));
 
         try {
