@@ -3,19 +3,18 @@ package io.github.kosmx.emotes.arch.screen.utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.layouts.LayoutElement;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 
 public class WidgetOutliner {
     public static void renderOutline(GuiGraphics guiGraphics, LayoutElement element, int color) {
-        ResourceLocation headerSeparator = Minecraft.getInstance().level == null ? Screen.HEADER_SEPARATOR : Screen.INWORLD_HEADER_SEPARATOR;
+        ResourceLocation headerSeparator = EmotecraftTexture.HEADER_SEPARATOR.identifier(Minecraft.getInstance().level != null);
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, headerSeparator, element.getX(), element.getY() - 1, 0.0F, 0.0F, element.getWidth(), 2, 32, 2, color);
 
         drawSeparatorRotated(guiGraphics, headerSeparator, element.getX() - 1, element.getY(), element.getHeight(), -90F, color);
         drawSeparatorRotated(guiGraphics, headerSeparator, element.getX() + element.getWidth() + 1, element.getY(), element.getHeight(), 90F, color);
 
-        ResourceLocation footerSeparator = Minecraft.getInstance().level == null ? Screen.FOOTER_SEPARATOR : Screen.INWORLD_FOOTER_SEPARATOR;
+        ResourceLocation footerSeparator = EmotecraftTexture.FOOTER_SEPARATOR.identifier(Minecraft.getInstance().level != null);
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, footerSeparator, element.getX(), element.getY() + element.getHeight() - 1, 0.0F, 0.0F, element.getWidth(), 2, 32, 2, color);
     }
 

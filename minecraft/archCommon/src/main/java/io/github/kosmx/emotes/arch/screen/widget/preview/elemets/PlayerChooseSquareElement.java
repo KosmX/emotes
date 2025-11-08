@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
 import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranimcore.easing.EasingType;
+import io.github.kosmx.emotes.arch.screen.utils.EmotecraftTexture;
 import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget;
@@ -11,9 +12,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
-
-import static net.minecraft.client.gui.components.AbstractSelectionList.INWORLD_MENU_LIST_BACKGROUND;
-import static net.minecraft.client.gui.components.AbstractSelectionList.MENU_LIST_BACKGROUND;
 
 public class PlayerChooseSquareElement extends PlayerChooseElement {
     private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_IN_CIRC.buildTransformer(null);
@@ -45,7 +43,7 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        ResourceLocation texture = Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND : INWORLD_MENU_LIST_BACKGROUND;
+        ResourceLocation texture = EmotecraftTexture.MENU_LIST_BACKGROUND.identifier(Minecraft.getInstance().level != null);
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX() + 1, getY() + 1, getRight(), getBottom(), getWidth() - 2, getHeight() - 2, 32, 32);
 
         WidgetOutliner.renderOutline(guiGraphics, this, -1);
