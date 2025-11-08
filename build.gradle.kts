@@ -107,6 +107,7 @@ val ds = publishDiscord {
     links {
         from(":minecraft:neoforge", "modrinth")
         from(":minecraft:fabric", "modrinth")
+        from(":geyser", "modrinth")
 
         val paper = project(":paper")
         from(paper, "modrinth")
@@ -121,7 +122,6 @@ val ds = publishDiscord {
         val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
         nextRow()
         custom("Hangar (Paper)", hangarLink, HANGAR_EMOJI)
-        from(":geyser", "github", GEYSER_EMOJI, "Geyser Ext")
     }
 }
 

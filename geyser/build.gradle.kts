@@ -92,6 +92,8 @@ publishing {
 }
 
 publishMods {
+    modLoaders.add("geyser")
+
     file.set(tasks.downgradeJar.get().archiveFile) // Java 17
     // additionalFiles.from(tasks.shadowJar.get().archiveFile) // Java 21
 
@@ -102,5 +104,14 @@ publishMods {
     github {
         accessToken = providers.environmentVariable("GH_TOKEN")
         parent(rootProject.tasks.named("publishGithub"))
+    }
+
+    modrinth {
+        announcementTitle = "Modrinth (Geyser)"
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = providers.gradleProperty("modrinth_id")
+        minecraftVersions.addAll(release_minecraft_versions)
+        displayName = mod_version
+        version = "${mod_version}+${removePreRc(minecraft_version)}-geyser"
     }
 }

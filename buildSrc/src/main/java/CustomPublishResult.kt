@@ -6,7 +6,6 @@ val CURSEFORGE_EMOJI = Emoji("curseforge", "1136405235187847198")
 val MODRINTH_EMOJI = Emoji("modrinth", "1136404935374798878")
 val HANGAR_EMOJI = Emoji("hangar", "1407387843931672647")
 val GITHUB_EMOJI = Emoji("github", "1136406913542795364")
-val GEYSER_EMOJI = Emoji("geyser", "1409806511508815922")
 
 fun Emoji.Companion.fromPlatform(platform: String): Emoji? {
     return when (platform) {
