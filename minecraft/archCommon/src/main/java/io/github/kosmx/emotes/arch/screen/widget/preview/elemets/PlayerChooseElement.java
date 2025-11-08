@@ -65,11 +65,10 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         if (isHoveredOrFocused() && doHoverPart) renderHover(guiGraphics);
 
         EmoteHolder emoteHolder = getEmote();
-        /*Optional<ResourceLocation> icon = Optional.ofNullable(emoteHolder).map(EmoteHolder::getIconIdentifier);
 
-        if (PlatformTools.getConfig().showIconsIfPossible.get() && icon.isPresent()) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, icon.orElseThrow(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
-        } else*/ {
+        if (emoteHolder != null && PlatformTools.getConfig().showIconsIfPossible.get() && emoteHolder.getIconIdentifier() != null) {
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, emoteHolder.getIconIdentifier(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
+        } else {
             super.renderWidget(guiGraphics, getX() + (getWidth() / 2), getY() + (getHeight() / 2), partialTick);
         }
 
