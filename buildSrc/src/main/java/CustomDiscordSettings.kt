@@ -20,9 +20,9 @@ class DownloadLinks {
         currentRow.add(result)
     }
 
-    fun RegularFileProperty.emoji(emoji: Emoji?): LatePublishResult {
+    fun RegularFileProperty.toLate(emoji: Emoji?, title: String?): LatePublishResult {
         val file = this.get().asFile
-        return LatePublishResult(file, emoji)
+        return LatePublishResult(file, emoji, title)
     }
 
     /**
@@ -35,8 +35,8 @@ class DownloadLinks {
     /**
      * Adds publish result for [platform] from mod-publish-plugin in [project]
      */
-    fun from(project: Project, platform: String, emoji: Emoji? = null) {
-        add(project.publishResult(platform).emoji(emoji))
+    fun from(project: Project, platform: String, emoji: Emoji? = null, title: String? = null) {
+        add(project.publishResult(platform).toLate(emoji, title))
     }
 
     fun custom(title: String, link: String, emoji: Emoji?) {

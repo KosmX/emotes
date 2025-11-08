@@ -273,5 +273,4 @@ public class EmotePacket {
             return this;
         }
     }
-
 }
