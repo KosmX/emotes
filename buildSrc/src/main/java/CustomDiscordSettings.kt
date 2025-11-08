@@ -28,8 +28,8 @@ class DownloadLinks {
     /**
      * Adds publish result for [platform] from mod-publish-plugin in [project]
      */
-    fun Project.from(project: String, platform: String, emoji: Emoji? = null) {
-        from(project(project), platform, emoji)
+    fun Project.from(project: String, platform: String, emoji: Emoji? = null, title: String? = null) {
+        from(project(project), platform, emoji, title)
     }
 
     /**
