@@ -11,6 +11,9 @@ extendable method net/minecraft/client/gui/components/AbstractWidget render (Lne
 # Mannequins
 accessible method net/minecraft/world/entity/decoration/Mannequin setProfile (Lnet/minecraft/world/item/component/ResolvableProfile;)V
 accessible method net/minecraft/world/entity/decoration/Mannequin setHideDescription (Z)V
+extendable method net/minecraft/client/entity/ClientMannequin updateSkin ()V
+accessible field net/minecraft/client/entity/ClientMannequin skinLookup Ljava/util/concurrent/CompletableFuture;
+accessible method net/minecraft/client/entity/ClientMannequin setSkin (Lnet/minecraft/world/entity/player/PlayerSkin;)V
 
 # NeoForge network
 accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
