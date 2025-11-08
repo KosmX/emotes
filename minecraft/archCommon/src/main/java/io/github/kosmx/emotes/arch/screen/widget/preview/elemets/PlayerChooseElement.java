@@ -4,23 +4,36 @@ import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.mojang.authlib.GameProfile;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
+import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
+import io.github.kosmx.emotes.arch.screen.utils.EmotecraftTexture;
+import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
+import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 
 import java.time.Duration;
 import java.util.UUID;
 
 public abstract class PlayerChooseElement extends PlayerPreview implements IChooseElement {
+    private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_IN_CIRC.buildTransformer(null);
+
     protected final AbstractFastChooseWidget parent;
     protected final int id;
+
+    private boolean isAnimFinishing;
 
     public PlayerChooseElement(AbstractFastChooseWidget parent, GameProfile profile, int id) {
         super(profile, 0, 0, 0, 0, false);
@@ -32,13 +45,23 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         tick();
     }
 
-    protected abstract void updateRectangle();
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, this.isAnimFinishing ? mouseX : 0, this.isAnimFinishing ? mouseY : 0, partialTick);
+    }
+
+    protected abstract void updateRectangle(float progress);
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         boolean doHoverPart = this.parent.controller.doHoverPart(this);
 
-        updateRectangle();
+        float progress = this.parent instanceof PreviewFastChooseWidget widget ? widget.getAnimTime() : 0.0F;
+        float easedProgress = 1.0F - EASING_TRANSFORMER.get(progress);
+        this.isAnimFinishing = easedProgress > 0.9F;
+
+        updateRectangle(easedProgress);
+        renderBackground(guiGraphics);
         if (isHoveredOrFocused() && doHoverPart) renderHover(guiGraphics);
 
         EmoteHolder emoteHolder = getEmote();
@@ -60,7 +83,15 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         }
     }
 
-    protected abstract void renderHover(GuiGraphics guiGraphics);
+    protected void renderBackground(GuiGraphics guiGraphics) {
+        ResourceLocation texture = EmotecraftTexture.MENU_LIST_BACKGROUND.identifier(Minecraft.getInstance().level != null);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX() + 1, getY() + 1, getRight(), getBottom(), getWidth() - 2, getHeight() - 2, 32, 32);
+        WidgetOutliner.renderOutline(guiGraphics, this, -1);
+    }
+
+    protected void renderHover(GuiGraphics guiGraphics) {
+        guiGraphics.fill(getX(), getY(), getRight(), getBottom(), ARGB.color(128, 66, 66, 66));
+    }
 
     @Override
     public void removed() {

@@ -16,7 +16,7 @@ public class ClientConfig extends SerializableConfig {
     /**
      * Wheel settings
      */
-    public final ConfigEntry<Boolean> dark = new ConfigEntry<>("dark", false, false, legacy);
+    // public final ConfigEntry<Boolean> dark = new ConfigEntry<>("dark", false, false, legacy);
     public final ConfigEntry<Boolean> oldChooseWheel = new ConfigEntry<>("oldChooseWheel", false, false, legacy);
     // public final ConfigEntry<Boolean> showIconsIfPossible = new ConfigEntry<>("showIconsIfPossible", false, false, legacy);
 
