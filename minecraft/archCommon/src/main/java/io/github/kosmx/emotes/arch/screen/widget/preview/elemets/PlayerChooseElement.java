@@ -68,7 +68,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
         if (emoteHolder != null && PlatformTools.getConfig().showIconsIfPossible.get() && emoteHolder.getIconIdentifier() != null) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, emoteHolder.getIconIdentifier(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
-        } else {
+        } else if (emoteHolder != null || !PlatformTools.getConfig().showIconsIfPossible.get()) {
             super.renderWidget(guiGraphics, getX() + (getWidth() / 2), getY() + (getHeight() / 2), partialTick);
         }
 
