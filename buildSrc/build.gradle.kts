@@ -14,5 +14,5 @@ dependencies {
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     compileOnly("com.squareup.okhttp3:okhttp:5.3.0")
 
-    implementation("commons-io:commons-io:2.20.0")
+    implementation("commons-io:commons-io:2.21.0")
 }
