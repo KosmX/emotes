@@ -1,4 +1,5 @@
 {
+  "emotecraft.menu": "감정 표현 설정",
   "emotecraft.options.options": "모드 설정",
   "emotecraft.options.keybind": "선택된 감정 표현을 재생할 키를 설정하세요.",
   "emotecraft.options.fastmenu": "감졍 표현을 클릭하고,",
@@ -28,6 +29,7 @@
   "emotecraft.otherconfig.prespective_redux.tooltip": "3인칭 시점이 켜진 경우에만 활성화돼요.",
   "emotecraft.otherconfig.enableNSFW": "NSFW 감정 표현 재생 허용",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW(연령 제한)\n\n부적절한 콘텐츠를 허용해요.\n\n과도한 노출, 성적 행위, 폭력 또는 그 외 부적절한 콘텐츠가 포함되어 있을 수 있어요.",
+  "emotecraft.otherconfig.checkPose.tooltip": "자세가 잘못되면 Emotecraft에서 감정 표현을 중지합니다 (이 설정을 끄면 웅크릴 때 감정 표현이 멈추지 않을 수 있습니다)",
   "emotecraft.otherconfig.alwaysValidateEmote": "항상 수신된 감정 표현 확인",
   "emotecraft.otherconfig.alwaysValidateEmote.tooltip": "내부 서버에 영향을 주지 않는 클라이언트측 설정이에요.\n\n기본값으로, 클라이언트측 유효성 검사는 신뢰할 수 없는 프록시에서 감정 표현을 수신받을 때만 진행돼요.\n설정을 켜면 항상 수신된 감정 표현을 확인해요.",
   "emotecraft.otherconfig.default3rdPersonFront": "3인칭 시점에서 전방 시점 사용",
