@@ -19,7 +19,7 @@ import java.util.UUID;
 /**
  * Send everything emotes mod data...
  */
-public class EmotePacket {
+public final class EmotePacket {
     public static final Byte2ByteMap defaultVersions = new Byte2ByteOpenHashMap();
     private static final NetHashMap SUB_PACKETS = new NetHashMap();
 
@@ -53,7 +53,7 @@ public class EmotePacket {
 
     public final NetData data;
 
-    protected EmotePacket(@NotNull NetData data) {
+    private EmotePacket(@NotNull NetData data) {
         if (data.versions == null || data.versions.isEmpty()) {
             data.versions = new HashMap<>(defaultVersions);
         }
