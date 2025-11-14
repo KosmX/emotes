@@ -41,6 +41,14 @@ public class UnsafeMannequin extends ClientMannequin {
     }
 
     @Override
+    protected void updateSkin() {
+        super.updateSkin();
+        if (this.skinLookup != null) {
+            this.skinLookup.thenAccept(playerSkin -> playerSkin.ifPresent(this::setSkin));
+        }
+    }
+
+    @Override
     public boolean touchingUnloadedChunk() {
         return true;
     }
