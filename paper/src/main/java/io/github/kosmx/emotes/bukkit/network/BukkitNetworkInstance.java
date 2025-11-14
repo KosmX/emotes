@@ -3,8 +3,11 @@ package io.github.kosmx.emotes.bukkit.network;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
@@ -27,12 +30,15 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
     }
 
     @Override
-    public void sendMessage(byte[] bytes, @Nullable UUID target) {
+    public void sendMessage(EmotePacket packet, @Nullable UUID target) {
         if (!(this.avatar instanceof ServerPlayer player)) {
             CommonData.LOGGER.error("Attempt to send a packet of an unsupported entity: {}!", this.avatar);
             return;
         }
-        player.getBukkitEntity().sendPluginMessage(PLUGIN, BukkitWrapper.EMOTE_PACKET, bytes);
+        ByteBuf buf = Unpooled.buffer();
+        packet.write(buf);
+        player.getBukkitEntity().sendPluginMessage(PLUGIN, BukkitWrapper.EMOTE_PACKET, buf.array());
+        buf.release();
     }
 
     @Override
