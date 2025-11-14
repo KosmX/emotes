@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.serializer.type.ISerializer;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.model.Song;
@@ -35,7 +35,7 @@ public class EmoteWriter {
                 if (Files.exists(iconPath)) throw new FileAlreadyExistsException(iconPath.toString());
 
                 try (OutputStream iconStream = Files.newOutputStream(iconPath)) {
-                    iconStream.write(AbstractNetworkInstance.safeGetBytesFromBuffer(iconData));
+                    iconStream.write(MathHelper.safeGetBytesFromBuffer(iconData));
                     iconStream.flush();
                 }
             }

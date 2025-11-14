@@ -2,9 +2,8 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
+import io.netty.buffer.ByteBuf;
 
-import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 public class EmoteIconPacket extends AbstractNetworkPacket{
@@ -19,32 +18,30 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        int size = byteBuffer.getInt();
-        if(size != 0) {
+    public void read(ByteBuf byteBuf, NetData config, byte version) {
+        int size = byteBuf.readInt();
+        if (size != 0) {
             byte[] bytes = new byte[size];
-            byteBuffer.get(bytes);
+            byteBuf.readBytes(bytes);
             config.extraData.put("iconData", ByteBuffer.wrap(bytes));
         }
     }
 
     @Override
-    public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
+    public void write(ByteBuf byteBuf, NetData config, byte version) {
         assert config.emoteData != null;
         ByteBuffer iconData = (ByteBuffer)config.emoteData.data().getRaw("iconData");
-        byteBuffer.putInt(iconData.remaining());
-        byteBuffer.put(iconData);
-        ((Buffer)iconData).position(0);
+
+        try {
+            byteBuf.writeInt(iconData.remaining());
+            byteBuf.writeBytes(iconData);
+        } finally {
+            iconData.position(0);
+        }
     }
 
     @Override
     public boolean doWrite(NetData config) {
         return config.purpose == PacketTask.FILE && config.emoteData != null && config.emoteData.data().has("iconData");
-    }
-
-    @Override
-    public int calculateSize(NetData config) {
-        if (config.emoteData == null) return 0;
-        return ((ByteBuffer)config.emoteData.data().getRaw("iconData")).remaining() + 4;
     }
 }

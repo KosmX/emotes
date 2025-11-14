@@ -2,19 +2,20 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.nbsplayer.LegacyNBSPacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
-import io.github.kosmx.emotes.common.tools.ByteBufferInputStream;
-import io.github.kosmx.emotes.common.tools.ByteBufferOutputStream;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.model.Song;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 @SuppressWarnings("deprecation")
-public class SongPacket extends AbstractNetworkPacket{
+public class SongPacket extends AbstractNetworkPacket {
     @Override
     public byte getID() {
         return PacketConfig.NBS_CONFIG;
@@ -26,62 +27,40 @@ public class SongPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
+    public void read(ByteBuf buf, NetData config, byte version) throws IOException {
         Song song = switch (version) {
             case 2 -> {
-                try {
-                    yield NoteBlockLib.readSong(new ByteBufferInputStream(byteBuffer), SongFormat.NBS);
+                try (InputStream is = new ByteBufInputStream(buf)) {
+                    yield NoteBlockLib.readSong(is, SongFormat.NBS);
                 } catch (Exception e) {
                     throw new IOException(e);
                 }
             }
 
-            case 1 -> LegacyNBSPacket.read(byteBuffer);
+            case 1 -> LegacyNBSPacket.read(buf);
             default -> null;
         };
         config.extraData.put("song", song);
     }
 
     @Override
-    public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
+    public void write(ByteBuf buf, NetData config, byte version) throws IOException {
         assert config.emoteData != null;
 
         Song song = (Song) config.emoteData.data().getRaw("song");
-        int version = getVer(config.versions);
-
         if (version > 1) {
-            try {
-                NoteBlockLib.writeSong(song, new ByteBufferOutputStream(byteBuffer));
+            try (OutputStream os = new ByteBufOutputStream(buf)) {
+                NoteBlockLib.writeSong(song, os);
             } catch (Exception e) {
                 throw new IOException(e);
             }
         } else {
-            LegacyNBSPacket.write((NbsSong) song, byteBuffer);
+            LegacyNBSPacket.write((NbsSong) song, buf);
         }
     }
 
     @Override
     public boolean doWrite(NetData config) {
         return config.versions.get(this.getID()) != 0 && config.emoteData != null && config.emoteData.data().has("song") && config.writeSong;
-    }
-
-    @Override
-    public int calculateSize(NetData config) {
-        if (config.emoteData == null || config.emoteData.data().getRaw("song") == null) return 0;
-        Song song = (Song) config.emoteData.data().getRaw("song");
-        if (getVer(config.versions) > 1) {
-            return calculateSongSize(song);
-        } else {
-            return LegacyNBSPacket.calculateMessageSize((NbsSong) song);
-        }
-    }
-
-    public static int calculateSongSize(Song song) {
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            NoteBlockLib.writeSong(song, os);
-            return os.size();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

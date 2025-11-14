@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -168,11 +167,11 @@ public class UniversalEmoteSerializer {
         return map;
     }
 
-    public static Stream<ByteBuffer> preparePackets(HashMap<Byte, Byte> compatibilityMap) {
+    public static Stream<EmotePacket> preparePackets(HashMap<Byte, Byte> compatibilityMap) {
         return UniversalEmoteSerializer.SERVER_EMOTES.values().stream().map(emote -> {
             try {
-                return new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000, false).setVersion(compatibilityMap).build().write();
-            } catch (IOException e) {
+                return new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000, false).setVersion(compatibilityMap).build();
+            } catch (Throwable e) {
                 CommonData.LOGGER.warn("Failed to prepare emote packet!", e);
                 return null;
             }

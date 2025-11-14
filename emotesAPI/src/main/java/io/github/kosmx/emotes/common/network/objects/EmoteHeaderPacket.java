@@ -1,11 +1,10 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.network.CommonNetwork;
 import io.github.kosmx.emotes.common.network.PacketConfig;
+import io.netty.buffer.ByteBuf;
+import team.unnamed.mocha.util.network.ProtocolUtils;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 public class EmoteHeaderPacket extends AbstractNetworkPacket{
@@ -20,58 +19,31 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        config.extraData.put("name", CommonNetwork.readString(byteBuffer));
-        config.extraData.put("description", CommonNetwork.readString(byteBuffer));
-        config.extraData.put("author", CommonNetwork.readString(byteBuffer));
+    public void read(ByteBuf byteBuf, NetData config, byte version) {
+        config.extraData.put("name", ProtocolUtils.readString(byteBuf));
+        config.extraData.put("description", ProtocolUtils.readString(byteBuf));
+        config.extraData.put("author", ProtocolUtils.readString(byteBuf));
         if (version >= 2) {
-            config.extraData.put("folderpath", CommonNetwork.readString(byteBuffer));
-            config.extraData.put("bages", CommonNetwork.readList(byteBuffer, CommonNetwork::readString));
+            config.extraData.put("folderpath", ProtocolUtils.readString(byteBuf));
+            config.extraData.put("bages", ProtocolUtils.readList(byteBuf, ProtocolUtils::readString));
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
+    public void write(ByteBuf byteBuf, NetData config, byte version) {
         assert config.emoteData != null;
-        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("name"));
-        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("description"));
-        CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("author"));
-        if (getVer(config.versions) >= 2) {
-            CommonNetwork.writeString(byteBuffer, (String) config.emoteData.data().getRaw("folderpath"));
-            CommonNetwork.writeList(byteBuffer, (List<String>) config.emoteData.data().getRaw("bages"), CommonNetwork::writeString);
+        ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("name"));
+        ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("description"));
+        ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("author"));
+        if (version >= 2) {
+            ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("folderpath"));
+            ProtocolUtils.writeList(byteBuf, (List<String>) config.emoteData.data().getRaw("bages"), CommonNetwork::writeString);
         }
     }
 
     @Override
     public boolean doWrite(NetData config) {
         return config.emoteData != null && config.purpose.exchangeHeader;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public int calculateSize(NetData config) {
-        Animation emote = config.emoteData;
-        if (emote == null) return 0;
-
-        int baseSize = sumStrings(
-                (String) emote.data().getRaw("name"),
-                (String) emote.data().getRaw("description"),
-                (String) emote.data().getRaw("author")
-        );
-
-        if (getVer(config.versions) >= 2) {
-            baseSize += CommonNetwork.stringSize((String) emote.data().getRaw("folderpath"));
-            baseSize += CommonNetwork.listSize((List<String>) config.emoteData.data().getRaw("bages"), CommonNetwork::stringSize);
-        }
-        return baseSize;
-    }
-
-    public static int sumStrings(String... strings) {
-        int size = 0;
-        for (String s : strings) {
-            size += CommonNetwork.stringSize(s);
-        }
-        return size;
     }
 }

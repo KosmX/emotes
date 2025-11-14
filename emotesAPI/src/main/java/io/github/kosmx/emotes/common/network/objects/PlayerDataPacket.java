@@ -1,10 +1,8 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import io.github.kosmx.emotes.common.network.CommonNetwork;
+import com.zigythebird.playeranimcore.network.NetworkUtils;
 import io.github.kosmx.emotes.common.network.PacketConfig;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class PlayerDataPacket extends AbstractNetworkPacket{
     @Override
@@ -18,25 +16,21 @@ public class PlayerDataPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public void read(ByteBuffer byteBuffer, NetData config, int version) throws IOException {
-        config.player = CommonNetwork.readUUID(byteBuffer);
-        if (version >= 1) config.isForced = byteBuffer.get() != 0x00;
+    public void read(ByteBuf byteBuf, NetData config, byte version) {
+        config.player = NetworkUtils.readUuid(byteBuf);
+        if (version >= 1) config.isForced = byteBuf.readByte() != 0x00;
     }
 
     @Override
-    public void write(ByteBuffer byteBuffer, NetData config) throws IOException {
+    public void write(ByteBuf byteBuf, NetData config, byte version) {
         assert config.player != null;
-        CommonNetwork.writeUUID(byteBuffer, config.player);
-        byteBuffer.put(config.isForced ? (byte) 0x01 : (byte) 0x00);
+
+        NetworkUtils.writeUuid(byteBuf, config.player);
+        if (version >= 1) byteBuf.writeByte(config.isForced ? (byte) 0x01 : (byte) 0x00);
     }
 
     @Override
     public boolean doWrite(NetData config) {
         return config.player != null;
-    }
-
-    @Override
-    public int calculateSize(NetData config) {
-        return 17;//1 UUID = 2 Long = 2*8 bytes = 16 bytes + 1 byte for forced flag
     }
 }

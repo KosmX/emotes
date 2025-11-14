@@ -6,7 +6,6 @@ import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -15,7 +14,7 @@ import java.util.function.Consumer;
  * Implement this if you want to act as a proxy for EmoteX
  * This has most of the functions implemented as you might want, but you can override any.
  */
-public abstract class AbstractNetworkInstance implements INetworkInstance{
+public abstract class AbstractNetworkInstance implements INetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>(EmotePacket.defaultVersions);
 
     /**
@@ -26,21 +25,12 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * or to Minecraft's PacketByteBuf (yarn mappings) / FriendlyByteBuf (official mappings)
      * {@code new FriendlyByteBuf(Unpooled.wrappedBuffer(bytes))}
      *
-     * @param bytes bytes to send
+     * @param packet bytes to send
      * @param target target to send message, if null, everyone in the view distance
      */
-    protected void sendMessage(byte[] bytes, @Nullable UUID target) {
+    public void sendMessage(EmotePacket packet, @Nullable UUID target) {
         // If code here were invoked, you have made a big mistake.
         throw new UnsupportedOperationException("You should have implemented send emote feature");
-    }
-
-    /**
-     * Send a ByteBuffer
-     * @param byteBuffer buffer to send
-     * @param target target to send message, if null, everyone in the view distance
-     */
-    public void sendMessage(ByteBuffer byteBuffer, @Nullable UUID target) {
-        sendMessage(safeGetBytesFromBuffer(byteBuffer), target);
     }
 
     /**
@@ -48,7 +38,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      * You can call the super, but if you do, you'll need to override another.
      * <p>
      * For example, you want to manipulate the data, before sending,
-     * override this, edit the builder, call its super then override {@link AbstractNetworkInstance#sendMessage(byte[], UUID)}
+     * override this, edit the builder, call its super then override {@link AbstractNetworkInstance#sendMessage(EmotePacket, UUID)}
      * to send the bytes data
      * <p>
      *
@@ -58,39 +48,17 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      */
     @Override
     public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        this.sendMessage(builder.build().write(), target); // everything is happening on the heap, there won't be any memory leak
+        this.sendMessage(builder.build(), target); // everything is happening on the heap, there won't be any memory leak
     }
 
     /**
      * Receive message, but you don't know who sent this
      * The bytes data has to contain the identity of the sender
      * {@link #trustReceivedPlayer()} should return true as you don't have your own identifier system as alternative
-     * @param bytes message
+     * @param packet message
      */
-    public void receiveMessage(byte[] bytes) {
-        this.receiveMessage(bytes, null);
-    }
-
-    /**
-     * Receive message with or without the sender's identity
-     * <p>
-     * You can convert Netty ByteBuf (or Minecraft's packet buffer) to bytes[] with this snippet
-     * <pre>
-     *      if(byteBuf.isDirect() || byteBuf.isReadOnly()){
-     *          byte[] bytes = new byte[byteBuf.readableBytes()];
-     *          byteBuf.getBytes(byteBuf.readerIndex(), bytes);
-     *          return bytes;
-     *      }
-     *      else {
-     *          return byteBuf.array();
-     *      }
-     * </pre>
-     *
-     * @param bytes message
-     * @param player the sender player, null if unknown
-     */
-    public void receiveMessage(byte[] bytes, UUID player) {
-        this.receiveMessage(ByteBuffer.wrap(bytes), player);
+    public void receiveMessage(EmotePacket packet) {
+        this.receiveMessage(packet, null);
     }
 
     /**
@@ -98,16 +66,6 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
      */
     protected void disconnect() {
         EmotesProxyManager.disconnectInstance(this);
-    }
-
-    /**
-     * If {@link ByteBuffer} is wrapped, it is safe to get the array
-     * but if is direct manual read is required.
-     * @param byteBuffer get the bytes from
-     * @return the byte array
-     */
-    public static byte[] safeGetBytesFromBuffer(ByteBuffer byteBuffer) {
-        return INetworkInstance.safeGetBytesFromBuffer(byteBuffer);
     }
 
     /**
@@ -139,7 +97,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance{
     @Override
     public void sendC2SConfig(Consumer<EmotePacket.Builder> consumer) {
         EmotePacket.Builder packetBuilder = new EmotePacket.Builder();
-        packetBuilder.configureToConfigExchange(true);
+        packetBuilder.configureToConfigExchange();
 
         try {
             consumer.accept(packetBuilder);

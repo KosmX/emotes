@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.network;
 
+import io.github.kosmx.emotes.common.network.EmotePacket;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,7 @@ public final class AvatarServerPlayNetwork extends AbstractServerNetwork {
     }
 
     @Override
-    public void sendPlayMessage(ByteBuffer bytes) {
+    public void sendPlayMessage(EmotePacket bytes) {
         throw new UnsupportedOperationException("Only players can have a connection!");
     }
 }

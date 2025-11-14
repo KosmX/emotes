@@ -30,7 +30,7 @@ public enum PacketTask {
         this.exchangeHeader = exchangeHeader;
         this.playerBound = playerBound;
     }
-    public static PacketTask getTaskFromID(byte b){
+    public static PacketTask getTaskFromID(byte b) {
         for(PacketTask task:PacketTask.values()){
             if(task.id == b)return task;
         }

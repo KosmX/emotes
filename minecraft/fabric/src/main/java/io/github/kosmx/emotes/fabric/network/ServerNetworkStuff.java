@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.fabric.network;
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
@@ -27,9 +26,9 @@ public final class ServerNetworkStuff {
             }
         });
 
-        ServerConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (buf, context) -> {
+        ServerConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (payload, context) -> {
             try {
-                var message = new EmotePacket.Builder().build().read(buf.bytes());
+                var message = payload.packet().data;
                 if (message.purpose != PacketTask.CONFIG) throw new IOException("Wrong packet type for config task");
 
                 ((EmotesMixinConnection) ((ServerCommonPacketListenerAccessor) context.networkHandler()).getConnection()).emotecraft$setVersions(message.versions);
@@ -46,10 +45,10 @@ public final class ServerNetworkStuff {
 
         // Play networking
         ServerPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (buf, context) ->
-                CommonServerNetworkHandler.getInstance().receiveMessage(buf.unwrapBytes(), context.player())
+                CommonServerNetworkHandler.getInstance().receiveMessage(buf.packet(), context.player())
         );
         ServerPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (buf, context) ->
-                CommonServerNetworkHandler.getInstance().receiveStreamMessage(buf.unwrapBytes(), context.player())
+                CommonServerNetworkHandler.getInstance().receiveStreamMessage(buf.packet(), context.player())
         );
     }
 }

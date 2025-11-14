@@ -9,8 +9,6 @@ import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -49,9 +47,9 @@ public abstract class AbstractServerNetwork implements INetworkInstance, IServer
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        sendPlayMessage(builder.setVersion(getRemoteVersions()).build().write());
+    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) {
+        sendPlayMessage(builder.setVersion(getRemoteVersions()).build());
     }
 
-    public abstract void sendPlayMessage(ByteBuffer bytes);
+    public abstract void sendPlayMessage(EmotePacket bytes);
 }

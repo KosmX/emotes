@@ -8,9 +8,9 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
@@ -126,7 +126,7 @@ public class EmoteHolder implements Supplier<UUID> {
     private void registerIcon(ByteBuffer buffer) {
         RenderSystem.assertOnRenderThread();
 
-        try (InputStream stream = new ByteArrayInputStream(AbstractNetworkInstance.safeGetBytesFromBuffer((buffer)))) {
+        try (InputStream stream = new ByteArrayInputStream(MathHelper.safeGetBytesFromBuffer((buffer)))) {
             this.iconIdentifier = McUtils.newIdentifier("icon" + hashCode());
 
             Minecraft.getInstance().getTextureManager().register(this.iconIdentifier,

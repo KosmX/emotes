@@ -2,26 +2,23 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import com.zigythebird.playeranimcore.network.LegacyAnimationBinary;
 import io.github.kosmx.emotes.common.network.PacketConfig;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 /**
  * It should be placed into emotecraftCommon, but it has too many references to minecraft codes...
  */
 public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
-    public void write(ByteBuffer buf, NetData config) {
-        int version = getVer(config.versions);
+    public void write(ByteBuf buf, NetData config, byte version) {
         assert config.emoteData != null;
-        buf.putInt((int) config.tick);
-        LegacyAnimationBinary.write(config.emoteData, buf, version);
+        buf.writeInt((int) config.tick);
+        // LegacyAnimationBinary.write(config.emoteData, buf, version); TODO
     }
 
     @Override
-    public void read(ByteBuffer buf, NetData config, int version) throws IOException {
-        config.tick = buf.getInt();
-        config.emoteData = LegacyAnimationBinary.read(buf, version);
+    public void read(ByteBuf buf, NetData config, byte version) {
+        config.tick = buf.readInt();
+        // config.emoteData = LegacyAnimationBinary.read(buf, version); TODO
         config.valid = true; // TODO
     }
 
@@ -44,18 +41,5 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     @Override
     public boolean doWrite(NetData data) {
         return data.emoteData != null && data.stopEmoteID == null && !data.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT);
-    }
-
-    /*
-    Data types in comment:
-    I int, 4 bytes
-    L Long 8 bytes (1 uuid = 2 L)
-    B byte, ...1 byte
-    F float, 4 bytes
-     */
-    @Override
-    public int calculateSize(NetData config) {
-        if (config.emoteData == null || config.versions.containsKey(PacketConfig.NEW_ANIMATION_FORMAT)) return 0;
-        return LegacyAnimationBinary.calculateSize(config.emoteData, getVer(config.versions)) + 4;
     }
 }

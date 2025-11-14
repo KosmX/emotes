@@ -20,7 +20,6 @@ public final class NetData {
      * //as the sub-packet ids
      */
     public PacketTask purpose = PacketTask.UNKNOWN;
-    public float threshold;
     @Nullable
     public UUID stopEmoteID = null;
     @Nullable
@@ -70,7 +69,6 @@ public final class NetData {
     public NetData copy() {
         NetData data = new NetData();
         data.purpose = this.purpose;
-        data.threshold = threshold;
         data.stopEmoteID = stopEmoteID;
         data.emoteData = emoteData;
         data.tick = tick;
@@ -87,7 +85,6 @@ public final class NetData {
     public String toString() {
         return "NetData{" +
                 "purpose=" + purpose +
-                ", threshold=" + threshold +
                 ", stopEmoteID=" + stopEmoteID +
                 ", emoteData=" + emoteData +
                 ", startingAt=" + tick +
