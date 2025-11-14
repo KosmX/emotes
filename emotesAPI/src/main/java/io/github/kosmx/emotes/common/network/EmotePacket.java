@@ -10,7 +10,6 @@ import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.util.network.VarIntUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public final class EmotePacket {
         for (int i = 0; i < count; i++) {
             AbstractNetworkPacket packet = SUB_PACKETS.get(byteBuf.readByte());
             byte subVersion = byteBuf.readByte();
-            int size = VarIntUtils.readVarInt(byteBuf);
+            int size = byteBuf.readInt();
             int currentPos = byteBuf.readerIndex();
 
             if (packet != null) {
@@ -126,7 +125,7 @@ public final class EmotePacket {
             ByteBuf byteBuf = Unpooled.buffer();
             byteBuf.writeByte(packet.getID());
             byteBuf.writeByte(packetVersion);
-            VarIntUtils.writeVarInt(byteBuf, packetContent.writerIndex());
+            byteBuf.writeInt(packetContent.writerIndex());
 
             byteBuf.writeBytes(packetContent);
 
