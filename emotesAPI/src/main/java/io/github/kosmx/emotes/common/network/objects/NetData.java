@@ -54,10 +54,10 @@ public final class NetData {
     public int sizeLimit = CommonData.MAX_PACKET_SIZE;
     public boolean strictSizeLimit = true;
 
-    HashMap<String, Object> extraData = new HashMap<>();
+    final Map<String, Object> extraData = new HashMap<>();
 
-    public boolean prepareAndValidate(){
-        if (emoteData != null && !this.extraData.isEmpty()) {
+    public boolean prepareAndValidate() {
+        if (this.emoteData != null && !this.extraData.isEmpty()) {
             emoteData.data().data().putAll(extraData);
         }
 

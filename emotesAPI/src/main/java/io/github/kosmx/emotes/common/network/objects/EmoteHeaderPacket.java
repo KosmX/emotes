@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.common.network.objects;
 import io.github.kosmx.emotes.common.network.CommonNetwork;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.netty.buffer.ByteBuf;
-import team.unnamed.mocha.util.network.ProtocolUtils;
 
 import java.util.List;
 
@@ -20,12 +19,12 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
 
     @Override
     public void read(ByteBuf byteBuf, NetData config, byte version) {
-        config.extraData.put("name", ProtocolUtils.readString(byteBuf));
-        config.extraData.put("description", ProtocolUtils.readString(byteBuf));
-        config.extraData.put("author", ProtocolUtils.readString(byteBuf));
+        config.extraData.put("name", CommonNetwork.readString(byteBuf));
+        config.extraData.put("description", CommonNetwork.readString(byteBuf));
+        config.extraData.put("author", CommonNetwork.readString(byteBuf));
         if (version >= 2) {
-            config.extraData.put("folderpath", ProtocolUtils.readString(byteBuf));
-            config.extraData.put("bages", ProtocolUtils.readList(byteBuf, ProtocolUtils::readString));
+            config.extraData.put("folderpath", CommonNetwork.readString(byteBuf));
+            config.extraData.put("bages", CommonNetwork.readList(byteBuf, CommonNetwork::readString));
         }
     }
 
@@ -33,12 +32,12 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     @SuppressWarnings("unchecked")
     public void write(ByteBuf byteBuf, NetData config, byte version) {
         assert config.emoteData != null;
-        ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("name"));
-        ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("description"));
-        ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("author"));
+        CommonNetwork.writeString(byteBuf, (String) config.emoteData.data().getRaw("name"));
+        CommonNetwork.writeString(byteBuf, (String) config.emoteData.data().getRaw("description"));
+        CommonNetwork.writeString(byteBuf, (String) config.emoteData.data().getRaw("author"));
         if (version >= 2) {
-            ProtocolUtils.writeString(byteBuf, (String) config.emoteData.data().getRaw("folderpath"));
-            ProtocolUtils.writeList(byteBuf, (List<String>) config.emoteData.data().getRaw("bages"), CommonNetwork::writeString);
+            CommonNetwork.writeString(byteBuf, (String) config.emoteData.data().getRaw("folderpath"));
+            CommonNetwork.writeList(byteBuf, (List<String>) config.emoteData.data().getRaw("bages"), CommonNetwork::writeString);
         }
     }
 
