@@ -52,9 +52,7 @@ public final class EmotePacket {
     public final NetData data;
 
     private EmotePacket(@NotNull NetData data) {
-        if (data.versions == null || data.versions.isEmpty()) {
-            data.versions = new HashMap<>(defaultVersions);
-        }
+        if (data.versions.isEmpty()) data.versions.putAll(defaultVersions);
         this.data = data;
     }
 
@@ -175,7 +173,8 @@ public final class EmotePacket {
          * To send an emote
          */
         public Builder setVersion(Map<Byte, Byte> versions) {
-            data.versions = new HashMap<>(versions);
+            data.versions.clear();
+            data.versions.putAll(versions);
             return this;
         }
 
@@ -252,7 +251,7 @@ public final class EmotePacket {
         public Builder configureToConfigExchange() {
             if (data.purpose != PacketTask.UNKNOWN) throw new IllegalArgumentException("Can't send config with emote or stop data...");
             this.data.purpose = PacketTask.CONFIG;
-            this.data.versions = new HashMap<>(EmotePacket.defaultVersions);
+            setVersion(EmotePacket.defaultVersions);
             return this;
         }
 

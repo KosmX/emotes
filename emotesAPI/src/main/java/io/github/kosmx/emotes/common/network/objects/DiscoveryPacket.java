@@ -23,7 +23,8 @@ public class DiscoveryPacket extends AbstractNetworkPacket {
         // check if every is exists, if not, return false
         // That is done somewhere else
         // apply changes
-        data.versions = map;
+        data.versions.clear();
+        data.versions.putAll(map);
         data.versionsUpdated = true;
     }
 

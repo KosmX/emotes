@@ -167,7 +167,7 @@ public class UniversalEmoteSerializer {
         return map;
     }
 
-    public static Stream<EmotePacket> preparePackets(HashMap<Byte, Byte> compatibilityMap) {
+    public static Stream<EmotePacket> preparePackets(Map<Byte, Byte> compatibilityMap) {
         return UniversalEmoteSerializer.SERVER_EMOTES.values().stream().map(emote -> {
             try {
                 return new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000, false).setVersion(compatibilityMap).build();

@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.common.network.PacketConfig;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -74,7 +75,7 @@ public abstract class AbstractNetworkInstance implements INetworkInstance {
      * @param map version/config map
      */
     @Override
-    public void setVersions(HashMap<Byte, Byte> map) {
+    public void setVersions(Map<Byte, Byte> map) {
         this.versions.clear();
         this.versions.putAll(map);
     }

@@ -4,6 +4,8 @@ import com.zigythebird.playeranimcore.network.LegacyAnimationBinary;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.netty.buffer.ByteBuf;
 
+import java.io.IOException;
+
 /**
  * It should be placed into emotecraftCommon, but it has too many references to minecraft codes...
  */
@@ -12,13 +14,13 @@ public class EmoteDataPacket extends AbstractNetworkPacket {
     public void write(ByteBuf buf, NetData config, byte version) {
         assert config.emoteData != null;
         buf.writeInt((int) config.tick);
-        // LegacyAnimationBinary.write(config.emoteData, buf, version); TODO
+        LegacyAnimationBinary.write(config.emoteData, buf, version);
     }
 
     @Override
-    public void read(ByteBuf buf, NetData config, byte version) {
+    public void read(ByteBuf buf, NetData config, byte version) throws IOException {
         config.tick = buf.readInt();
-        // config.emoteData = LegacyAnimationBinary.read(buf, version); TODO
+        config.emoteData = LegacyAnimationBinary.read(buf, version);
         config.valid = true; // TODO
     }
 

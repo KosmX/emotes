@@ -5,7 +5,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -25,17 +25,17 @@ public interface INetworkInstance {
      *
      * @return maybe null
      */
-    HashMap<Byte, Byte> getRemoteVersions();
+    Map<Byte, Byte> getRemoteVersions();
 
     /**
      * Receive (and save) versions from the other side
      * @param map map
      */
-    void setVersions(HashMap<Byte, Byte> map);
+    void setVersions(Map<Byte, Byte> map);
 
     /**
      * Invoked after receiving the presence packet
-     * {@link INetworkInstance#setVersions(HashMap)}
+     * {@link INetworkInstance#setVersions(Map)}
      * Used to send server-side config/emotes
      *
      * @deprecated communication changes

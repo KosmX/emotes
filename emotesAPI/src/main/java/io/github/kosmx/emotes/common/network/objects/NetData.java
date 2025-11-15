@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteSet;
 import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /*
@@ -36,7 +37,7 @@ public final class NetData {
     public final ByteSet skippedPackets = new ByteOpenHashSet();
 
     public boolean versionsUpdated = false;
-    public HashMap<Byte, Byte> versions;
+    public final Map<Byte, Byte> versions = new HashMap<>();
 
     //Set it to non-null if sending via MC Plugin channel
     //left it null when using Collar
@@ -76,7 +77,7 @@ public final class NetData {
         data.tick = tick;
         data.valid = valid;
         data.versionsUpdated = versionsUpdated;
-        data.versions = versions;
+        data.versions.putAll(versions);
         data.player = player;
         data.sizeLimit = sizeLimit;
         data.isForced = isForced;
