@@ -4,6 +4,8 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
+import it.unimi.dsi.fastutil.bytes.ByteSet;
 import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
@@ -31,7 +33,7 @@ public final class NetData {
     public boolean valid;
     //Never use it permanently
 
-    public boolean writeSong = true;
+    public final ByteSet skippedPackets = new ByteOpenHashSet();
 
     public boolean versionsUpdated = false;
     public HashMap<Byte, Byte> versions;

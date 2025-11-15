@@ -12,8 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Send everything emotes mod data...
@@ -45,8 +49,8 @@ public final class EmotePacket {
         SUB_PACKETS.put(new PlayerDataPacket());
         SUB_PACKETS.put(new StopPacket());
         SUB_PACKETS.put(new DiscoveryPacket());
-        SUB_PACKETS.put(new SongPacket());
         SUB_PACKETS.put(new EmoteHeaderPacket());
+        SUB_PACKETS.put(new SongPacket());
         SUB_PACKETS.put(new EmoteIconPacket());
     }
 
@@ -95,18 +99,44 @@ public final class EmotePacket {
     public void write(ByteBuf buf) {
         if (data.purpose == PacketTask.UNKNOWN) throw new IllegalArgumentException("Can't send packet without any purpose...");
 
-        NetHashMap writable = new NetHashMap();
+        AtomicInteger sizeSum = new AtomicInteger(6); //5 bytes is the header // 5 bytes is the header
+
+        Set<ByteBuf> writable = new HashSet<>();
         for (AbstractNetworkPacket packet : SUB_PACKETS.values()) {
-            if (packet.doWrite(this.data)) writable.put(packet);
+            if (!packet.doWrite(this.data)) continue;
+            boolean optional = packet.isOptional();
+
+            ByteBuf packetBuff = null;
+            try {
+                packetBuff = writeSubPacket(packet);
+            } catch (IOException ex) {
+                if (optional) {
+                    CommonData.LOGGER.warn("Exception while writing sub-package!", ex);
+                } else {
+                    throw new UncheckedIOException(ex);
+                }
+            }
+            if (packetBuff == null) continue;
+
+            int subPacketSize = packetBuff.writerIndex() + 6;
+            if (!optional || (sizeSum.get() + subPacketSize) <= this.data.sizeLimit) {
+                writable.add(packetBuff);
+                sizeSum.addAndGet(subPacketSize);
+            } else {
+                this.data.skippedPackets.add(packet.getID());
+                CommonData.LOGGER.warn("Writing {} skipped!", packet);
+            }
         }
+        if (data.strictSizeLimit && sizeSum.get() > data.sizeLimit) throw new RuntimeException(String.format(
+                "Can't send emote, packet's size (%s) is bigger than max allowed (%s)!", sizeSum.get(), data.sizeLimit
+        ));
 
         buf.writeInt(SUB_PACKETS.get(PacketConfig.DISCOVERY_PACKET).getVer(data.versions));
         buf.writeByte(this.data.purpose.id);
         buf.writeByte(writable.size());
 
         try {
-            for (AbstractNetworkPacket packet : writable.values()) {
-                ByteBuf byteBuf = writeSubPacket(packet);
+            for (ByteBuf byteBuf : writable) {
                 buf.writeBytes(byteBuf);
                 byteBuf.release();
             }
@@ -126,9 +156,7 @@ public final class EmotePacket {
             byteBuf.writeByte(packet.getID());
             byteBuf.writeByte(packetVersion);
             byteBuf.writeInt(packetContent.writerIndex());
-
             byteBuf.writeBytes(packetContent);
-
             return byteBuf;
         } finally {
             packetContent.release();

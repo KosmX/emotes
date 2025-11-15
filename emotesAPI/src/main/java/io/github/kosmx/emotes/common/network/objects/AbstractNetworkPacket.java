@@ -18,4 +18,8 @@ public abstract class AbstractNetworkPacket {
     public abstract void write(ByteBuf byteBuf, NetData config, byte version) throws IOException;
 
     public abstract boolean doWrite(NetData config);
+
+    public boolean isOptional() {
+        return false;
+    }
 }

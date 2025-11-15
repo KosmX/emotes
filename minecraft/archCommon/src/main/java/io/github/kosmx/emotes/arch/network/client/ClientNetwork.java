@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.network.chat.Component;
@@ -43,7 +44,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         var writer = builder.build();
         sendMessage(writer, null);
 
-        if (writer.data.emoteData != null && writer.data.emoteData.data().has("song") && !writer.data.writeSong) {
+        if (writer.data.emoteData != null && writer.data.emoteData.data().has("song") && writer.data.skippedPackets.contains(PacketConfig.NBS_CONFIG)) {
             PlatformTools.addToast(Component.translatable("emotecraft.song_too_big_to_send"));
         }
     }

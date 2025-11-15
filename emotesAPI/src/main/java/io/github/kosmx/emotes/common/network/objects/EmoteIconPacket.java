@@ -44,4 +44,9 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
     public boolean doWrite(NetData config) {
         return config.purpose == PacketTask.FILE && config.emoteData != null && config.emoteData.data().has("iconData");
     }
+
+    @Override
+    public boolean isOptional() {
+        return true;
+    }
 }
