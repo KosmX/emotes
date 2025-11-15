@@ -13,19 +13,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 /**
  * Send everything emotes mod data...
  */
 public final class EmotePacket {
     public static final Byte2ByteMap defaultVersions = new Byte2ByteOpenHashMap();
-    private static final NetHashMap SUB_PACKETS = new NetHashMap();
-
     static {
         AbstractNetworkPacket tmp = new NewAnimPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
@@ -43,16 +37,16 @@ public final class EmotePacket {
         defaultVersions.put(tmp.getID(), tmp.getVer());
         tmp = new EmoteIconPacket();
         defaultVersions.put(tmp.getID(), tmp.getVer());
-
-        SUB_PACKETS.put(new NewAnimPacket());
-        SUB_PACKETS.put(new EmoteDataPacket());
-        SUB_PACKETS.put(new PlayerDataPacket());
-        SUB_PACKETS.put(new StopPacket());
-        SUB_PACKETS.put(new DiscoveryPacket());
-        SUB_PACKETS.put(new EmoteHeaderPacket());
-        SUB_PACKETS.put(new SongPacket());
-        SUB_PACKETS.put(new EmoteIconPacket());
     }
+
+    private static final NetHashMap SUB_PACKETS = new NetHashMap(
+            new NewAnimPacket(), new EmoteDataPacket(),
+            new PlayerDataPacket(),
+            new StopPacket(),
+            new DiscoveryPacket(),
+            new EmoteHeaderPacket(),
+            new SongPacket(), new EmoteIconPacket()
+    );
 
     public final NetData data;
 
@@ -99,9 +93,9 @@ public final class EmotePacket {
     public void write(ByteBuf buf) {
         if (data.purpose == PacketTask.UNKNOWN) throw new IllegalArgumentException("Can't send packet without any purpose...");
 
-        AtomicInteger sizeSum = new AtomicInteger(6); //5 bytes is the header // 5 bytes is the header
+        int sizeSum = 6; // 5 bytes is the header + 1 count
 
-        Set<ByteBuf> writable = new HashSet<>();
+        List<ByteBuf> writable = new ArrayList<>();
         for (AbstractNetworkPacket packet : SUB_PACKETS.values()) {
             if (!packet.doWrite(this.data)) continue;
             boolean optional = packet.isOptional();
@@ -118,31 +112,32 @@ public final class EmotePacket {
             }
             if (packetBuff == null) continue;
 
-            int subPacketSize = packetBuff.writerIndex() + 6;
-            if (!optional || (sizeSum.get() + subPacketSize) <= this.data.sizeLimit) {
+            int subPacketSize = packetBuff.readableBytes();
+            if (!optional || (sizeSum + subPacketSize) <= this.data.sizeLimit) {
                 writable.add(packetBuff);
-                sizeSum.addAndGet(subPacketSize);
+                sizeSum += subPacketSize;
             } else {
                 this.data.skippedPackets.add(packet.getID());
                 CommonData.LOGGER.warn("Writing {} skipped!", packet);
                 packetBuff.release();
             }
         }
-        if (data.strictSizeLimit && sizeSum.get() > data.sizeLimit) throw new RuntimeException(String.format(
-                "Can't send emote, packet's size (%s) is bigger than max allowed (%s)!", sizeSum.get(), data.sizeLimit
-        ));
 
-        buf.writeInt(SUB_PACKETS.get(PacketConfig.DISCOVERY_PACKET).getVer(data.versions));
+        if (data.strictSizeLimit && sizeSum > data.sizeLimit) {
+            for (ByteBuf byteBuf : writable) byteBuf.release();
+            throw new RuntimeException(String.format(
+                    "Can't send emote, packet's size (%s) is bigger than max allowed (%s)!",
+                    sizeSum, data.sizeLimit
+            ));
+        }
+
+        buf.writeInt(CommonData.networkingVersion);
         buf.writeByte(this.data.purpose.id);
         buf.writeByte(writable.size());
 
-        try {
-            for (ByteBuf byteBuf : writable) {
-                buf.writeBytes(byteBuf);
-                byteBuf.release();
-            }
-        } catch (Throwable th) {
-            throw new RuntimeException("Exception while writing sub-packages", th);
+        for (ByteBuf byteBuf : writable) {
+            buf.writeBytes(byteBuf);
+            byteBuf.release();
         }
     }
 
@@ -156,7 +151,7 @@ public final class EmotePacket {
             ByteBuf byteBuf = Unpooled.buffer();
             byteBuf.writeByte(packet.getID());
             byteBuf.writeByte(packetVersion);
-            byteBuf.writeInt(packetContent.writerIndex());
+            byteBuf.writeInt(packetContent.readableBytes());
             byteBuf.writeBytes(packetContent);
             return byteBuf;
         } finally {
@@ -172,7 +167,7 @@ public final class EmotePacket {
          * To send an emote
          */
         public Builder setVersion(HashMap<Byte, Byte> versions){
-            data.versions = versions;
+            data.versions = new HashMap<>(versions);
             return this;
         }
 
@@ -205,7 +200,7 @@ public final class EmotePacket {
         }
 
         public Builder configureToStreamEmote(Animation emoteData, @Nullable UUID player) {
-            if (data.purpose != PacketTask.UNKNOWN) throw new IllegalArgumentException("Can's send and stop emote at the same time");
+            if (data.purpose != PacketTask.UNKNOWN) throw new IllegalArgumentException("Can't send and stop emote at the same time");
             data.purpose = PacketTask.STREAM;
             data.emoteData = emoteData;
             data.player = player;
