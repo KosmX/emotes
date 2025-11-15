@@ -125,6 +125,7 @@ public final class EmotePacket {
             } else {
                 this.data.skippedPackets.add(packet.getID());
                 CommonData.LOGGER.warn("Writing {} skipped!", packet);
+                packetBuff.release();
             }
         }
         if (data.strictSizeLimit && sizeSum.get() > data.sizeLimit) throw new RuntimeException(String.format(
