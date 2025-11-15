@@ -5,7 +5,8 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.PooledByteBufAllocator;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -87,10 +88,14 @@ public final class EmotePacket {
         if (!data.prepareAndValidate()) throw new RuntimeException("no valid data");
     }
 
+    public void write(ByteBuf buf) {
+        write(buf, PooledByteBufAllocator.DEFAULT);
+    }
+
     /**
      * Write packet to a new ByteBuf
      */
-    public void write(ByteBuf buf) {
+    public void write(ByteBuf buf, ByteBufAllocator allocator) {
         if (data.purpose == PacketTask.UNKNOWN) throw new IllegalArgumentException("Can't send packet without any purpose...");
 
         int sizeSum = 6; // 5 bytes is the header + 1 count
@@ -103,7 +108,7 @@ public final class EmotePacket {
 
                 ByteBuf packetBuff = null;
                 try {
-                    packetBuff = writeSubPacket(packet);
+                    packetBuff = writeSubPacket(packet, allocator);
                 } catch (IOException ex) {
                     if (optional) {
                         CommonData.LOGGER.warn("Exception while writing sub-package!", ex);
@@ -144,14 +149,14 @@ public final class EmotePacket {
         }
     }
 
-    private ByteBuf writeSubPacket(AbstractNetworkPacket packet) throws IOException {
+    private ByteBuf writeSubPacket(AbstractNetworkPacket packet, ByteBufAllocator allocator) throws IOException {
         byte packetVersion = packet.getVer(this.data.versions);
 
-        ByteBuf packetContent = Unpooled.buffer();
+        ByteBuf packetContent = allocator.buffer();
         try {
             packet.write(packetContent, this.data, packetVersion);
 
-            ByteBuf byteBuf = Unpooled.buffer();
+            ByteBuf byteBuf = allocator.buffer(packetContent.readableBytes() + 6);
             byteBuf.writeByte(packet.getID());
             byteBuf.writeByte(packetVersion);
             byteBuf.writeInt(packetContent.readableBytes());

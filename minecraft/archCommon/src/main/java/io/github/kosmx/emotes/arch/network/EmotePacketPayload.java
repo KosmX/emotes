@@ -22,7 +22,7 @@ public record EmotePacketPayload(@NotNull CustomPacketPayload.Type<?> id, @NotNu
 
     @NotNull
     public static StreamCodec<FriendlyByteBuf, EmotePacketPayload> reader(@NotNull CustomPacketPayload.Type<?> channel) {
-        return CustomPacketPayload.codec((payload, buf) -> payload.packet().write(buf), buf -> new EmotePacketPayload(channel, new EmotePacket(buf)));
+        return CustomPacketPayload.codec((payload, buf) -> payload.packet().write(buf, buf.alloc()), buf -> new EmotePacketPayload(channel, new EmotePacket(buf)));
     }
 
     public static final StreamCodec<FriendlyByteBuf, EmotePacketPayload> EMOTE_CHANNEL_READER = reader(NetworkPlatformTools.EMOTE_CHANNEL_ID);
