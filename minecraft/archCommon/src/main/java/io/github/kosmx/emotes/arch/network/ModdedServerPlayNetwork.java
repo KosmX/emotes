@@ -1,11 +1,10 @@
 package io.github.kosmx.emotes.arch.network;
 
 import io.github.kosmx.emotes.arch.mixin.ServerCommonPacketListenerAccessor;
+import io.github.kosmx.emotes.common.network.EmotePacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.ByteBuffer;
 
 /**
  * Wrapper class for Emotes play network implementation
@@ -35,7 +34,7 @@ public final class ModdedServerPlayNetwork extends AbstractServerNetwork {
     }
 
     @Override
-    public void sendPlayMessage(ByteBuffer bytes) {
-        this.serverGamePacketListener.send(NetworkPlatformTools.playPacket(bytes));
+    public void sendPlayMessage(EmotePacket packet) {
+        this.serverGamePacketListener.send(NetworkPlatformTools.playPacket(packet));
     }
 }

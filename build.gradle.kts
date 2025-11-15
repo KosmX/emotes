@@ -33,6 +33,7 @@ subprojects {
             }
         }
         maven("https://maven.neoforged.net/releases")
+        mavenLocal()
     }
 
     tasks.withType(JavaCompile::class).configureEach {

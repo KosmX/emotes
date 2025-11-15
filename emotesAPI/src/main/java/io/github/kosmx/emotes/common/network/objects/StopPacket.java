@@ -1,9 +1,8 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import io.github.kosmx.emotes.common.network.CommonNetwork;
+import com.zigythebird.playeranimcore.network.NetworkUtils;
 import io.github.kosmx.emotes.common.network.PacketConfig;
-
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class StopPacket extends AbstractNetworkPacket {
     @Override
@@ -17,23 +16,18 @@ public class StopPacket extends AbstractNetworkPacket {
     }
 
     @Override
-    public void read(ByteBuffer buf, NetData config, int version) {
-        config.stopEmoteID = CommonNetwork.readUUID(buf);
+    public void read(ByteBuf buf, NetData config, byte version) {
+        config.stopEmoteID = NetworkUtils.readUuid(buf);
     }
 
     @Override
-    public void write(ByteBuffer buf, NetData config) {
+    public void write(ByteBuf buf, NetData config, byte version) {
         assert config.stopEmoteID != null;
-        CommonNetwork.writeUUID(buf, config.stopEmoteID);
+        NetworkUtils.writeUuid(buf, config.stopEmoteID);
     }
 
     @Override
     public boolean doWrite(NetData config) {
-        return config.stopEmoteID != null; //Write only if config has true stop value
-    }
-
-    @Override
-    public int calculateSize(NetData config) {
-        return Long.BYTES * 2; // 16
+        return config.stopEmoteID != null; // Write only if config has true stop value
     }
 }

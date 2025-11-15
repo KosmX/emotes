@@ -9,9 +9,7 @@ import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public abstract class AbstractServerNetwork implements INetworkInstance, IServerNetworkInstance {
@@ -24,12 +22,12 @@ public abstract class AbstractServerNetwork implements INetworkInstance, IServer
     protected abstract Avatar getAvatar();
 
     @Override
-    public HashMap<Byte, Byte> getRemoteVersions() {
+    public Map<Byte, Byte> getRemoteVersions() {
         return getServerConnection().emotecraft$getRemoteVersions();
     }
 
     @Override
-    public void setVersions(HashMap<Byte, Byte> map) {
+    public void setVersions(Map<Byte, Byte> map) {
         getServerConnection().emotecraft$setVersions(map);
     }
 
@@ -49,9 +47,9 @@ public abstract class AbstractServerNetwork implements INetworkInstance, IServer
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        sendPlayMessage(builder.setVersion(getRemoteVersions()).build().write());
+    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) {
+        sendPlayMessage(builder.setVersion(getRemoteVersions()).build());
     }
 
-    public abstract void sendPlayMessage(ByteBuffer bytes);
+    public abstract void sendPlayMessage(EmotePacket bytes);
 }
