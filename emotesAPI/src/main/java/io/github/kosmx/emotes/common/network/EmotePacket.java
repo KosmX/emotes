@@ -131,7 +131,7 @@ public final class EmotePacket {
                     "Can't send emote, packet's size (%s) is bigger than max allowed (%s)!", sizeSum, data.sizeLimit
             ));
 
-            buf.writeInt(CommonData.networkingVersion);
+            buf.writeInt(this.data.versions.getOrDefault(PacketConfig.DISCOVERY_PACKET, CommonData.networkingVersion));
             buf.writeByte(this.data.purpose.id);
             buf.writeByte(writable.size());
 
