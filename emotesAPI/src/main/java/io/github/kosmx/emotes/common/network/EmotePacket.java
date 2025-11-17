@@ -41,10 +41,10 @@ public final class EmotePacket {
     }
 
     private static final NetHashMap SUB_PACKETS = new NetHashMap(
+            new DiscoveryPacket(),
             new NewAnimPacket(), new EmoteDataPacket(),
             new PlayerDataPacket(),
             new StopPacket(),
-            new DiscoveryPacket(),
             new EmoteHeaderPacket(),
             new SongPacket(), new EmoteIconPacket()
     );
