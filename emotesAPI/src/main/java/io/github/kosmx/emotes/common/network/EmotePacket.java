@@ -61,7 +61,7 @@ public final class EmotePacket {
         this.data = new NetData();
         this.data.purpose = PacketTask.getTaskFromID(byteBuf.readByte());
 
-        byte count = byteBuf.readByte();
+        short count = byteBuf.readUnsignedByte();
         for (int i = 0; i < count; i++) {
             AbstractNetworkPacket packet = SUB_PACKETS.get(byteBuf.readByte());
             byte subVersion = byteBuf.readByte();
@@ -72,7 +72,11 @@ public final class EmotePacket {
                 try {
                     packet.read(byteBuf, this.data, subVersion);
                 } catch (Throwable th) {
-                    throw new RuntimeException("Invalid " + packet + " sub-packet received", th);
+                    if (packet.isOptional()) {
+                        CommonData.LOGGER.warn("Invalid {} sub-packet received!", packet, th);
+                    } else {
+                        throw new RuntimeException("Invalid " + packet + " sub-packet received", th);
+                    }
                 }
 
                 if (byteBuf.readerIndex() != size + currentPos) {
@@ -109,7 +113,7 @@ public final class EmotePacket {
                     packetBuff = writeSubPacket(packet, allocator);
                 } catch (IOException ex) {
                     if (optional) {
-                        CommonData.LOGGER.warn("Exception while writing sub-package!", ex);
+                        CommonData.LOGGER.warn("Exception while writing {} sub-packet!", packet, ex);
                     } else {
                         throw ex;
                     }
