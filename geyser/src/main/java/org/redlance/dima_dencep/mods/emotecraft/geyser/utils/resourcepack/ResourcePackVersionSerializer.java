@@ -1,19 +1,17 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.google.gson.*;
 import org.geysermc.geyser.pack.GeyserResourcePackManifest;
 
-import java.io.IOException;
+import java.lang.reflect.Type;
 
-public class ResourcePackVersionSerializer extends JsonSerializer<GeyserResourcePackManifest.Version> {
+public class ResourcePackVersionSerializer extends GeyserResourcePackManifest.Version.VersionDeserializer implements JsonDeserializer<GeyserResourcePackManifest.Version>, JsonSerializer<GeyserResourcePackManifest.Version> {
     @Override
-    public void serialize(GeyserResourcePackManifest.Version version, JsonGenerator generator, SerializerProvider provider) throws IOException {
-        generator.writeStartArray();
-        generator.writeNumber(version.major());
-        generator.writeNumber(version.minor());
-        generator.writeNumber(version.patch());
-        generator.writeEndArray();
+    public JsonElement serialize(GeyserResourcePackManifest.Version version, Type typeOfSrc, JsonSerializationContext ctx) {
+        JsonArray array = new JsonArray(3);
+        array.add(version.major());
+        array.add(version.minor());
+        array.add(version.patch());
+        return array;
     }
 }

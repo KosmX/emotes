@@ -10,6 +10,8 @@ import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.entity.type.player.GeyserPlayerEntity;
@@ -23,7 +25,6 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -55,7 +56,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     @Override
-    public void setVersions(HashMap<Byte, Byte> map) {
+    public void setVersions(Map<Byte, Byte> map) {
         this.versions.clear();
         this.versions.putAll(map);
     }
@@ -66,16 +67,19 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     @Override
-    protected void sendMessage(byte[] bytes, @Nullable UUID target) {
+    public void sendMessage(EmotePacket packet, @Nullable UUID target) {
+        ByteBuf buf = Unpooled.buffer();
+        packet.write(buf);
         ((GeyserSession) this.session).sendDownstreamPacket(new ServerboundCustomPayloadPacket(
-                EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, bytes
+                EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, buf.array()
         ));
+        buf.release();
     }
 
     @Override
-    public void receiveMessage(ByteBuffer byteBuffer, UUID player) {
+    public void receiveMessage(EmotePacket packet, UUID player) {
         try {
-            NetData data = new EmotePacket.Builder().build().read(byteBuffer);
+            NetData data = packet.data;
             if (!trustReceivedPlayer()) {
                 data.player = null;
             }

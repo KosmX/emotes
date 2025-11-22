@@ -6,9 +6,10 @@ import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonObject;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
+import com.zigythebird.playeranimcore.util.JsonUtil;
 import io.github.kosmx.emotes.common.CommonData;
-import net.raphimc.minecraftauth.util.JsonUtil;
 import org.jetbrains.annotations.NotNull;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
 import java.io.*;
 import java.net.http.HttpClient;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BedrockEmoteLoader extends CacheLoader<String, CompletableFuture<Animation>> {
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
+            // .version(HttpClient.Version.HTTP_2)
             .followRedirects(HttpClient.Redirect.ALWAYS)
             .build();
 
@@ -47,10 +48,10 @@ public class BedrockEmoteLoader extends CacheLoader<String, CompletableFuture<An
 
     private Animation parseAnimation(HttpResponse<InputStream> response) {
         try (Reader reader = new InputStreamReader(response.body())) {
-            JsonObject obj = JsonUtil.GSON.fromJson(reader, JsonObject.class);
+            JsonObject obj = EmoteResourcePack.GSON.fromJson(reader, JsonObject.class);
 
-            if (!JsonUtil.getBooleanOr(obj, "present", false)) {
-                throw new NullPointerException(JsonUtil.getStringOr(obj, "message", "Animation is not present!"));
+            if (!obj.has("present") || !obj.get("present").getAsBoolean()) {
+                throw new NullPointerException(JsonUtil.getAsString(obj, "message", "Animation is not present!"));
 
             } else if (obj.has("message")) {
                 CommonData.LOGGER.warn(obj.get("message").getAsString());

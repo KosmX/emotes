@@ -1,8 +1,7 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.zigythebird.playeranimcore.enums.Axis;
@@ -39,11 +38,11 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
     private static final Identifier PLAYER_IDENTIFIER = Identifier.of(Identifier.DEFAULT_NAMESPACE, "player");
     public static final String ANIMATION_NAME = String.format("animation.%s", CommonData.MOD_ID);
 
-    public static final ObjectMapper JSON_MAPPER = new ObjectMapper()
-            .registerModule(new SimpleModule()
-                    .addSerializer(GeyserResourcePackManifest.Version.class, new ResourcePackVersionSerializer())
-            )
-            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    public static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(GeyserResourcePackManifest.Version.class, new ResourcePackVersionSerializer())
+            .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
+            .disableHtmlEscaping()
+            .create();
 
     private final Map<String, EnumMap<TransformType, EnumMap<Axis, Integer>>> identifiers = new HashMap<>();
     private final Set<GeyserIntEntityProperty> registeredProperties = new HashSet<>(1);
@@ -119,8 +118,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ZipOutputStream zos = new ZipOutputStream(baos)
         ) {
-            String manifestJson = EmoteResourcePack.JSON_MAPPER.writeValueAsString(this.manifest);
-            System.out.println(manifestJson);
+            String manifestJson = EmoteResourcePack.GSON.toJson(this.manifest);
             zos.putNextEntry(new ZipEntry("manifest.json"));
             zos.write(manifestJson.getBytes(StandardCharsets.UTF_8));
             zos.closeEntry();

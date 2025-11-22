@@ -3,6 +3,7 @@ package org.redlance.dima_dencep.mods.emotecraft.geyser;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -115,7 +116,9 @@ public class EmotecraftExt implements Extension {
     }
 
     private void onMinecraftRegisterPayload(GeyserSession session, Key type, byte[] bytes) {
-        Set<Key> channels = DinnerboneProtocolUtils.readChannels(Unpooled.wrappedBuffer(bytes));
+        ByteBuf inputByteBuf = Unpooled.wrappedBuffer(bytes);
+        Set<Key> channels = DinnerboneProtocolUtils.readChannels(inputByteBuf);
+        inputByteBuf.release();
 
         CommonData.LOGGER.debug("Server listening channels: {}", channels);
         if (channels.contains(EmotecraftExt.EMOTECRAFT_EMOTE_TYPE)) {
@@ -124,6 +127,7 @@ public class EmotecraftExt implements Extension {
             ByteBuf byteBuf = Unpooled.buffer();
             DinnerboneProtocolUtils.writeChannels(byteBuf, EMOTECRAFT_CHANNELS);
             session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
+            byteBuf.release();
 
             if (((ProtocolProvider) session).ec$state() == ProtocolState.GAME) {
                 GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
@@ -147,7 +151,9 @@ public class EmotecraftExt implements Extension {
             }
             networkInstance.setConnectionType(ConnectionType.BACKEND);
         }
-        networkInstance.receiveMessage(bytes);
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
+        networkInstance.receiveMessage(new EmotePacket(byteBuf));
+        byteBuf.release();
     }
 
     @Subscribe

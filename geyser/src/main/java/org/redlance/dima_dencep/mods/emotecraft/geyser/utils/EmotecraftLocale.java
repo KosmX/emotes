@@ -1,16 +1,17 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.github.kosmx.emotes.common.CommonData;
-import org.geysermc.geyser.GeyserImpl;
 import org.geysermc.geyser.text.GeyserLocale;
+import org.geysermc.geyser.util.JsonUtils;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class EmotecraftLocale {
     private static final Map<String, Map<String, String>> LOCALE_MAPPINGS = new HashMap<>();
@@ -24,15 +25,11 @@ public class EmotecraftLocale {
         if (LOCALE_MAPPINGS.containsKey(locale)) return;
 
         try (InputStream localeStream = EmotecraftLocale.class.getResourceAsStream("/assets/emotecraft/lang/" + locale + ".json")) {
-            JsonNode localeObj = GeyserImpl.JSON_MAPPER.readTree(localeStream);
-            Iterator<Map.Entry<String, JsonNode>> localeIterator = localeObj.fields();
+            JsonObject localeObj = JsonUtils.fromJson(Objects.requireNonNull(localeStream));
             Map<String, String> langMap = new HashMap<>();
-
-            while (localeIterator.hasNext()) {
-                Map.Entry<String, JsonNode> entry = localeIterator.next();
-                langMap.put(entry.getKey(), entry.getValue().asText());
+            for (Map.Entry<String, JsonElement> entry : localeObj.entrySet()) {
+                langMap.put(entry.getKey(), entry.getValue().getAsString());
             }
-
             LOCALE_MAPPINGS.put(locale, langMap);
         } catch (FileNotFoundException e) {
             throw new AssertionError(GeyserLocale.getLocaleStringLog("geyser.locale.fail.file", locale, e.getMessage()));
