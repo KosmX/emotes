@@ -37,6 +37,7 @@ subprojects {
         maven("https://repo.opencollab.dev/main/") {
             name = "Geyser"
         }
+        mavenLocal()
     }
 
     tasks.withType(JavaCompile::class).configureEach {

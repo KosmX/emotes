@@ -4,8 +4,11 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
+import it.unimi.dsi.fastutil.bytes.ByteSet;
 import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /*
@@ -20,7 +23,6 @@ public final class NetData {
      * //as the sub-packet ids
      */
     public PacketTask purpose = PacketTask.UNKNOWN;
-    public float threshold;
     @Nullable
     public UUID stopEmoteID = null;
     @Nullable
@@ -32,10 +34,10 @@ public final class NetData {
     public boolean valid;
     //Never use it permanently
 
-    public boolean writeSong = true;
+    public final ByteSet skippedPackets = new ByteOpenHashSet();
 
     public boolean versionsUpdated = false;
-    public HashMap<Byte, Byte> versions;
+    public final Map<Byte, Byte> versions = new HashMap<>();
 
     //Set it to non-null if sending via MC Plugin channel
     //left it null when using Collar
@@ -52,10 +54,10 @@ public final class NetData {
     public int sizeLimit = CommonData.MAX_PACKET_SIZE;
     public boolean strictSizeLimit = true;
 
-    HashMap<String, Object> extraData = new HashMap<>();
+    final Map<String, Object> extraData = new HashMap<>();
 
-    public boolean prepareAndValidate(){
-        if (emoteData != null && !this.extraData.isEmpty()) {
+    public boolean prepareAndValidate() {
+        if (this.emoteData != null && !this.extraData.isEmpty()) {
             emoteData.data().data().putAll(extraData);
         }
 
@@ -70,13 +72,12 @@ public final class NetData {
     public NetData copy() {
         NetData data = new NetData();
         data.purpose = this.purpose;
-        data.threshold = threshold;
         data.stopEmoteID = stopEmoteID;
         data.emoteData = emoteData;
         data.tick = tick;
         data.valid = valid;
         data.versionsUpdated = versionsUpdated;
-        data.versions = versions;
+        data.versions.putAll(versions);
         data.player = player;
         data.sizeLimit = sizeLimit;
         data.isForced = isForced;
@@ -87,7 +88,6 @@ public final class NetData {
     public String toString() {
         return "NetData{" +
                 "purpose=" + purpose +
-                ", threshold=" + threshold +
                 ", stopEmoteID=" + stopEmoteID +
                 ", emoteData=" + emoteData +
                 ", startingAt=" + tick +

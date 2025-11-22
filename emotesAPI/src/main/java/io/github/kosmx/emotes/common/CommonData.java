@@ -30,7 +30,7 @@ public class CommonData {
      * Only one network ID, not compatibly with earlier versions.
      * sub-packets and sub-versions. probably final version...
      */
-    public static final int networkingVersion = 8;
+    public static final byte networkingVersion = 8;
 
     /**
      * bidirectional, Emote playing or repeating

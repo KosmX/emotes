@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.neoforge.network;
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.network.chat.Component;
@@ -21,16 +20,16 @@ public class ForgeNetwork {
         event.registrar("emotecraft") // Play networking
                 .optional()
                 .playBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER,
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.unwrapBytes(), playPayloadContext.player()),
-                        (arg, playPayloadContext) -> ClientNetwork.INSTANCE.receiveMessage(arg.unwrapBytes())
+                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.packet(), playPayloadContext.player()),
+                        (arg, playPayloadContext) -> ClientNetwork.INSTANCE.receiveMessage(arg.packet())
                 )
 
                 .optional()
                 .playBidirectional(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER,
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.unwrapBytes(), playPayloadContext.player()),
+                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.packet(), playPayloadContext.player()),
                         (arg, playPayloadContext) -> {
                             try {
-                                ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), playPayloadContext.listener()::send);
+                                ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), playPayloadContext.listener()::send);
                             } catch (IOException e) {
                                 CommonData.LOGGER.error("", e);
                             }
@@ -41,7 +40,7 @@ public class ForgeNetwork {
                 .configurationBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER,
                         (arg, configurationPayloadContext) -> {
                             try {
-                                var message = new EmotePacket.Builder().build().read(arg.bytes());
+                                var message = arg.packet().data;
                                 if (message.purpose != PacketTask.CONFIG) throw new IOException("Wrong packet type for config task");
 
                                 ((EmotesMixinConnection) configurationPayloadContext.connection()).emotecraft$setVersions(message.versions);
@@ -57,7 +56,7 @@ public class ForgeNetwork {
                         },
                         (arg, configurationPayloadContext) -> {
                             try {
-                                ClientNetwork.INSTANCE.receiveConfigMessage(arg.bytes(), configurationPayloadContext.listener()::send);
+                                ClientNetwork.INSTANCE.receiveConfigMessage(arg.packet(), configurationPayloadContext.listener()::send);
                             } catch (IOException e) {
                                 CommonData.LOGGER.error("", e);
                             }
@@ -67,7 +66,7 @@ public class ForgeNetwork {
                 .optional()
                 .configurationToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER, (arg, configurationPayloadContext) -> {
                     try {
-                        ClientNetwork.INSTANCE.receiveStreamMessage(arg.bytes(), configurationPayloadContext.listener()::send);
+                        ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), configurationPayloadContext.listener()::send);
                     } catch (IOException e) {
                         CommonData.LOGGER.error("", e);
                     }

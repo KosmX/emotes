@@ -3,10 +3,11 @@ package io.github.kosmx.emotes.arch.network;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public interface EmotesMixinConnection {
-    @NotNull HashMap<Byte, Byte> emotecraft$getRemoteVersions();
+    @NotNull
+    Map<Byte, Byte> emotecraft$getRemoteVersions();
 
-    void emotecraft$setVersions(@Nullable HashMap<Byte, Byte> map);
+    void emotecraft$setVersions(@Nullable Map<Byte, Byte> map);
 }

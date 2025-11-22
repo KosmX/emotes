@@ -26,14 +26,14 @@ public class Serializer<T extends SerializableConfig> {
     protected final Class<T> configClass;
     private final Consumer<GsonBuilder> consumer;
 
-    public final Gson serializer;
+    protected final Gson serializer;
     private T config;
 
     public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass) {
-        this(configSuppler, configClass, null);
+        this(configSuppler, configClass, GsonBuilder::setPrettyPrinting);
     }
 
-    public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass, Consumer<GsonBuilder> consumer) {
+    protected Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass, Consumer<GsonBuilder> consumer) {
         this.configSerializer = configSuppler;
         this.configClass = configClass;
         this.consumer = consumer;
@@ -43,12 +43,8 @@ public class Serializer<T extends SerializableConfig> {
 
     protected Gson initializeSerializer(GsonBuilder builder) {
         builder.registerTypeAdapter(this.configClass, this.configSerializer);
-
-        if (this.consumer != null) {
-            this.consumer.accept(builder);
-        }
-
-        return builder.setPrettyPrinting().create();
+        if (this.consumer != null) this.consumer.accept(builder);
+        return builder.disableHtmlEscaping().create();
     }
 
     public boolean saveConfig() {
@@ -104,10 +100,6 @@ public class Serializer<T extends SerializableConfig> {
     }
 
     // Static helpers
-
-    public static Gson getSerializer() {
-        return Serializer.INSTANCE.serializer;
-    }
 
     public static SerializableConfig getConfig() {
         return Serializer.INSTANCE.readConfig();

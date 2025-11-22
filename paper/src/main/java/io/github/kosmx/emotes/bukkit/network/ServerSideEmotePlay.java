@@ -4,6 +4,8 @@ import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
 import net.minecraft.world.entity.Avatar;
 import org.bukkit.craftbukkit.entity.CraftEntity;
@@ -30,11 +32,14 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message) {
         if (channel.equals(BukkitWrapper.EMOTE_PACKET)) {
             BukkitNetworkInstance playerNetwork = this.players.get(player.getUniqueId());
-            if (playerNetwork != null) { // Let the common server logic process the message
+            if (playerNetwork != null) {
+                ByteBuf byteBuf = Unpooled.wrappedBuffer(message);
                 try {
-                    this.receiveMessage(message, playerNetwork);
+                    this.receiveMessage(byteBuf, playerNetwork);
                 } catch (Exception e) {
                     CommonData.LOGGER.error("", e);
+                } finally {
+                    byteBuf.release();
                 }
             } else {
                 CommonData.LOGGER.warn("Player {} is not registered!", player.getName());

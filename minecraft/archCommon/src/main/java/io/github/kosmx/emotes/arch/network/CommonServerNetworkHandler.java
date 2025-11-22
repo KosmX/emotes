@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.network;
 
+import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import net.minecraft.network.chat.Component;
@@ -11,7 +12,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -19,10 +19,10 @@ import java.util.WeakHashMap;
 public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<AbstractServerNetwork> {
     private final Map<UUID, AvatarServerPlayNetwork> nonPlayers = new WeakHashMap<>();
 
-    public void receiveMessage(byte[] bytes, Player player) {
+    public void receiveMessage(EmotePacket packet, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             try {
-                receiveMessage(bytes, getHandler(serverPlayer.connection));
+                receiveMessage(packet, getHandler(serverPlayer.connection));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -33,14 +33,14 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Ab
         return ((EmotesMixinNetwork) handler).emotecraft$getServerNetworkInstance();
     }
 
-    public void receiveStreamMessage(byte[] bytes, Player player) {
+    public void receiveStreamMessage(EmotePacket packet, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            receiveStreamMessage(serverPlayer, getHandler(serverPlayer.connection), ByteBuffer.wrap(bytes));
+            receiveStreamMessage(serverPlayer, getHandler(serverPlayer.connection), packet);
         }
     }
 
     @SuppressWarnings("unused")
-    public void receiveStreamMessage(ServerPlayer player, ModdedServerPlayNetwork handler, ByteBuffer buf) {
+    public void receiveStreamMessage(ServerPlayer player, ModdedServerPlayNetwork handler, EmotePacket packet) {
         player.connection.disconnect(Component.literal("This server does not support streaming!"));
     }
 

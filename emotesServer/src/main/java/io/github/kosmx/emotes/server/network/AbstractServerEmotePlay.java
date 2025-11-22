@@ -12,15 +12,14 @@ import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 /**
  * This will be used for modded servers
- *
  */
 public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> extends ServerEmoteAPI {
     protected boolean doValidate() {
@@ -31,27 +30,23 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
 
     protected abstract P getPlayerFromUUID(UUID player);
 
-    public void receiveMessage(byte[] bytes, P instance) throws IOException{
-        receiveMessage(new EmotePacket.Builder()
-                .setThreshold(Serializer.getConfig().validThreshold.get())
-                .build()
-                .read(ByteBuffer.wrap(bytes)), instance
-        );
+    public void receiveMessage(ByteBuf bytes, P instance) throws IOException {
+        receiveMessage(new EmotePacket(bytes), instance);
     }
 
     @SuppressWarnings("deprecation")
-    public void receiveMessage(NetData data, P instance) throws IOException {
-        CommonData.LOGGER.trace("[emotes server] Received data from: {} data: {}", instance, data);
-        switch (data.purpose){
+    public void receiveMessage(EmotePacket packet, P instance) throws IOException {
+        CommonData.LOGGER.trace("[emotes server] Received data from: {} data: {}", instance, packet);
+        switch (packet.data.purpose){
             case STOP:
-                stopEmote(instance, data);
+                stopEmote(instance, packet.data);
                 break;
             case CONFIG:
-                instance.setVersions(data.versions);
+                instance.setVersions(packet.data.versions);
                 instance.presenceResponse();
                 break;
             case STREAM:
-                handleStreamEmote(data, instance);
+                handleStreamEmote(packet.data, instance);
                 break;
             case UNKNOWN:
             default:
@@ -164,7 +159,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     }
 
     public EmotePacket.Builder getS2CConfigPacket(boolean trackPlayState) {
-        NetData configData = new EmotePacket.Builder().configureToConfigExchange(true).build().data;
+        NetData configData = new EmotePacket.Builder().configureToConfigExchange().build().data;
         if (trackPlayState) {
             configData.versions.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)0x01);
         }

@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Mixin(Connection.class)
 public class ConnectionHandlerMixin implements EmotesMixinConnection {
@@ -16,15 +17,13 @@ public class ConnectionHandlerMixin implements EmotesMixinConnection {
     private final HashMap<Byte, Byte> emotecraft$versions = new HashMap<>();
 
     @Override
-    public @NotNull HashMap<Byte, Byte> emotecraft$getRemoteVersions() {
-        return emotecraft$versions;
+    public @NotNull Map<Byte, Byte> emotecraft$getRemoteVersions() {
+        return this.emotecraft$versions;
     }
 
     @Override
-    public void emotecraft$setVersions(@Nullable HashMap<Byte, Byte> map) {
-        emotecraft$versions.clear();
-        if (map != null) {
-            emotecraft$versions.putAll(map);
-        }
+    public void emotecraft$setVersions(@Nullable Map<Byte, Byte> map) {
+        this.emotecraft$versions.clear();
+        if (map != null) this.emotecraft$versions.putAll(map);
     }
 }

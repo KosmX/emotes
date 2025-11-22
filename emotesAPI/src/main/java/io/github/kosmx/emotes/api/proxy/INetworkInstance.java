@@ -5,8 +5,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -26,17 +25,17 @@ public interface INetworkInstance {
      *
      * @return maybe null
      */
-    HashMap<Byte, Byte> getRemoteVersions();
+    Map<Byte, Byte> getRemoteVersions();
 
     /**
      * Receive (and save) versions from the other side
      * @param map map
      */
-    void setVersions(HashMap<Byte, Byte> map);
+    void setVersions(Map<Byte, Byte> map);
 
     /**
      * Invoked after receiving the presence packet
-     * {@link INetworkInstance#setVersions(HashMap)}
+     * {@link INetworkInstance#setVersions(Map)}
      * Used to send server-side config/emotes
      *
      * @deprecated communication changes
@@ -67,11 +66,11 @@ public interface INetworkInstance {
      * Network instance has received a message, it will send it to EmoteX core to execute
      * you can set your receive event to invoke this
      * there are it's other forms in {@link AbstractNetworkInstance}
-     * @param byteBuffer received buffer
+     * @param packet received buffer
      * @param player player who plays the emote, Can be NULL but only if {@link #trustReceivedPlayer()} is true or message is not play or stop
      */
-    default void receiveMessage(ByteBuffer byteBuffer, UUID player) {
-        EmotesProxyManager.receiveMessage(byteBuffer, player, this);
+    default void receiveMessage(EmotePacket packet, UUID player) {
+        EmotesProxyManager.receiveMessage(packet, player, this);
     }
 
     /**
@@ -112,20 +111,5 @@ public interface INetworkInstance {
      */
     default int maxDataSize() {
         return CommonData.MAX_PACKET_SIZE;
-    }
-
-    /**
-     * If {@link ByteBuffer} is wrapped, it is safe to get the array
-     * but if is direct manual read is required.
-     * @param byteBuffer get the bytes from
-     * @return the byte array
-     */
-    static byte[] safeGetBytesFromBuffer(ByteBuffer byteBuffer) {
-        if (byteBuffer.isDirect() || byteBuffer.isReadOnly()) {
-            byte[] bytes = new byte[byteBuffer.remaining()];
-            byteBuffer.get(bytes);
-            return bytes;
-        }
-        else return byteBuffer.array();
     }
 }

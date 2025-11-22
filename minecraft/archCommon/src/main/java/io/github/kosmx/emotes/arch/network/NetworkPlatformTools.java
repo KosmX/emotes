@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.network;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -14,7 +15,6 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 
 public final class NetworkPlatformTools {
@@ -39,10 +39,8 @@ public final class NetworkPlatformTools {
         throw new AssertionError();
     }
 
-    public static @NotNull Packet<?> createClientboundPacket(@NotNull CustomPacketPayload.Type<?> id, @NotNull ByteBuffer buf) {
-        assert (buf.hasRemaining()); // don't send empty packets
-
-        return new ClientboundCustomPayloadPacket(new EmotePacketPayload(id, buf));
+    public static @NotNull Packet<?> createClientboundPacket(@NotNull CustomPacketPayload.Type<?> id, @NotNull EmotePacket packet) {
+        return new ClientboundCustomPayloadPacket(new EmotePacketPayload(id, packet));
     }
 
     @ExpectPlatform
@@ -50,11 +48,11 @@ public final class NetworkPlatformTools {
         throw new AssertionError();
     }
 
-    public static @NotNull Packet<?> playPacket(@NotNull ByteBuffer buf) {
-        return createClientboundPacket(EMOTE_CHANNEL_ID, buf);
+    public static @NotNull Packet<?> playPacket(@NotNull EmotePacket packet) {
+        return createClientboundPacket(EMOTE_CHANNEL_ID, packet);
     }
 
-    public static @NotNull Packet<?> streamPacket(@NotNull ByteBuffer buf) {
-        return createClientboundPacket(STREAM_CHANNEL_ID, buf);
+    public static @NotNull Packet<?> streamPacket(@NotNull EmotePacket packet) {
+        return createClientboundPacket(STREAM_CHANNEL_ID, packet);
     }
 }

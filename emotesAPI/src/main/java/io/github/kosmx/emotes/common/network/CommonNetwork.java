@@ -1,10 +1,10 @@
 package io.github.kosmx.emotes.common.network;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import com.zigythebird.playeranimcore.network.LegacyAnimationBinary;
+import io.netty.buffer.ByteBuf;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -13,45 +13,20 @@ import java.util.function.Function;
  * This can still here but it can be removed if unused
  */
 public class CommonNetwork {
-    public static String readString(ByteBuffer buf) {
-        int len = buf.getInt();
-        if (len <= 0) return null;
-        byte[] b = new byte[len];
-        buf.get(b); //that is safe to use.
-        return new String(b, StandardCharsets.UTF_8);
+    public static String readString(ByteBuf buf) {
+        return LegacyAnimationBinary.getString(buf);
     }
 
-    public static void writeString(ByteBuffer buf, String str) {
+    public static void writeString(ByteBuf buf, String str) {
         if (str == null || str.isBlank()) { // Minor optimization to avoid writing empty lines
-            buf.putInt(0);
+            buf.writeInt(0);
             return;
         }
-        byte[] b = str.getBytes(StandardCharsets.UTF_8);
-        buf.putInt(b.length);
-        buf.put(b);
+        LegacyAnimationBinary.putString(buf, str);
     }
 
-    public static int stringSize(String str) {
-        int size = 4;
-        if (str != null && !str.isBlank()) {
-            size += str.getBytes(StandardCharsets.UTF_8).length;
-        }
-        return size;
-    }
-
-    public static UUID readUUID(ByteBuffer buf){
-        long a = buf.getLong();
-        long b = buf.getLong();
-        return new UUID(a, b); //The order is important
-    }
-
-    public static void writeUUID(ByteBuffer buf, UUID uuid){
-        buf.putLong(uuid.getMostSignificantBits());
-        buf.putLong(uuid.getLeastSignificantBits());
-    }
-
-    public static <T> List<T> readList(ByteBuffer buf, Function<ByteBuffer, T> reader) {
-        int count = buf.getInt();
+    public static <T> List<T> readList(ByteBuf buf, Function<ByteBuf, T> reader) {
+        int count = buf.readInt();
         List<T> list = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             list.add(reader.apply(buf));
@@ -59,32 +34,23 @@ public class CommonNetwork {
         return list;
     }
 
-    public static <T> void writeList(ByteBuffer buf, List<T> elements, BiConsumer<ByteBuffer, T> writter) {
+    public static <T> void writeList(ByteBuf buf, List<T> elements, BiConsumer<ByteBuf, T> writter) {
         if (elements == null) {
-            buf.putInt(0);
+            buf.writeInt(0);
             return;
         }
 
-        buf.putInt(elements.size());
+        buf.writeInt(elements.size());
         for (T entry : elements) {
             writter.accept(buf, entry);
         }
     }
 
-    public static <T> int listSize(List<T> elements, Function<T, Integer> sizer) {
-        int size = 4;
-        if (elements == null) return size;
-        for (T entry : elements) {
-            size += sizer.apply(entry);
-        }
-        return size;
+    public static boolean readBoolean(ByteBuf buf) {
+        return buf.readByte() != 0;
     }
 
-    public static boolean readBoolean(ByteBuffer buf) {
-        return buf.get() != 0;
-    }
-
-    public static void writeBoolean(ByteBuffer buf, boolean bool) {
-        buf.put((byte) (bool ? 1 : 0));
+    public static void writeBoolean(ByteBuf buf, boolean bool) {
+        buf.writeByte((byte) (bool ? 1 : 0));
     }
 }

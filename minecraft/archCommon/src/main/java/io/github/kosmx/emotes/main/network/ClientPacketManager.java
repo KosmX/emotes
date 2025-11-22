@@ -6,11 +6,9 @@ import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.UUID;
 
 /**
@@ -68,33 +66,28 @@ public final class ClientPacketManager extends EmotesProxyManager {
         }
     }
 
-    static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
+    @Override
+    protected void dispatchReceive(EmotePacket packet, UUID player, INetworkInstance networkInstance) {
         try {
-            NetData data = new EmotePacket.Builder().setThreshold(PlatformTools.getConfig().validThreshold.get()).build().read(buffer);
             if(!networkInstance.trustReceivedPlayer()){
-                data.player = null;
+                packet.data.player = null;
             }
             if(player != null) {
-                data.player = player;
+                packet.data.player = player;
             }
-            if(data.player == null && data.purpose.playerBound){
+            if(packet.data.player == null && packet.data.purpose.playerBound){
                 //this is not exactly IO but something went wrong in IO so it is IO fail
                 throw new IOException("Didn't received any player information");
             }
 
             try {
-                ClientEmotePlay.executeMessage(data, networkInstance);
+                ClientEmotePlay.executeMessage(packet.data, networkInstance);
             } catch (Exception e) {//I don't want to break the whole game with a bad message but I'll warn with the highest level
                 CommonData.LOGGER.error("Critical error has occurred while receiving emote!", e);
             }
         } catch (IOException e) {
             CommonData.LOGGER.warn("Error while receiving packet!", e);
         }
-    }
-
-    @Override
-    protected void dispatchReceive(ByteBuffer buffer, UUID player, INetworkInstance networkInstance) {
-        receiveMessage(buffer, player, networkInstance);
     }
 
     public static boolean isRemoteAvailable(){

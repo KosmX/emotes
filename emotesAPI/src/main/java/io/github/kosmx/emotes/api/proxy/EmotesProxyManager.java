@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.api.proxy;
 
-import java.nio.ByteBuffer;
+import io.github.kosmx.emotes.common.network.EmotePacket;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -41,14 +41,14 @@ public abstract class EmotesProxyManager {
 
     /**
      * Network instance has received a message, it will send it to EmoteX to execute
-     * You can invoke it via {@link INetworkInstance#receiveMessage(ByteBuffer, UUID)}
+     * You can invoke it via {@link INetworkInstance#receiveMessage(EmotePacket, UUID)}
      *
-     * @param buffer received buffer
+     * @param packet received buffer
      * @param player player who plays the emote, Can be NULL but only
      * @param networkInstance the network instance to send back information or to store other version
      */
-    static void receiveMessage(ByteBuffer buffer, UUID player, INetworkInstance networkInstance){
-        getManager().dispatchReceive(buffer, player, networkInstance);
+    static void receiveMessage(EmotePacket packet, UUID player, INetworkInstance networkInstance){
+        getManager().dispatchReceive(packet, player, networkInstance);
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class EmotesProxyManager {
         manager = newManager;
     }
 
-    protected abstract void dispatchReceive(ByteBuffer buffer, UUID player, INetworkInstance networkInstance);
+    protected abstract void dispatchReceive(EmotePacket packet, UUID player, INetworkInstance networkInstance);
 
     public abstract void onDisconnectFromServer(INetworkInstance networkInstance);
 }
