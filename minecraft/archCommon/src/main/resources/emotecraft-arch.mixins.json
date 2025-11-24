@@ -9,8 +9,7 @@
     "ServerChunkCacheAccessor",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin",
-    "ServerPlayTrackerMixin",
-    "emf.EMFAnimationEntityContextMixin"
+    "ServerPlayTrackerMixin"
   ],
   "client": [
     "EmotePlayerMixin",
