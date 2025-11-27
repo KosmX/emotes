@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.server.serializer;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.server.serializer.type.ISerializer;
+import io.github.kosmx.emotes.server.serializer.type.IWriter;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.model.Song;
 
@@ -17,10 +17,10 @@ public class EmoteWriter {
     private static final Pattern INVALID_FILENAME_CHARS = Pattern.compile("[\\\\/:*?\"<>|]");
 
     public static void writeAnimationInBestFormat(Animation animation, Path exportDir) throws Exception {
-        writeAnimationInFormat(animation, exportDir, UniversalEmoteSerializer.findBestSerializer());
+        writeAnimationInFormat(animation, exportDir, UniversalEmoteSerializer.findWriter(null));
     }
 
-    public static void writeAnimationInFormat(Animation animation, Path exportDir, ISerializer format) throws Exception {
+    public static void writeAnimationInFormat(Animation animation, Path exportDir, IWriter format) throws Exception {
         Path file = createFileName(animation, exportDir, format.getExtension());
 
         try (OutputStream stream = Files.newOutputStream(file)) {

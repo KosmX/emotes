@@ -16,7 +16,7 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -41,24 +41,24 @@ public class EmoteSerializer {
                 if (folderPath.startsWith("server") || folderPath.contains("_export")) {
                     return;
                 }
-                emotes.addAll(serializeExternalEmote(file, folderPath));
+                emotes.addAll(serializeExternalEmote(file, folderPath).values());
             });
         } catch (Throwable e) {
             CommonData.LOGGER.warn("Failed to walk emotes!", e);
         }
     }
 
-    public static List<Animation> serializeExternalEmote(Path file) {
+    public static Map<String, Animation> serializeExternalEmote(Path file) {
         return EmoteSerializer.serializeExternalEmote(file, null);
     }
 
-    public static List<Animation> serializeExternalEmote(Path file, String folderPath) {
+    public static Map<String, Animation> serializeExternalEmote(Path file, String folderPath) {
         String fileName = file.getFileName().toString();
         String baseFileName = getBaseName(fileName);
 
         try (InputStream reader = Files.newInputStream(file)) {
-            List<Animation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
-            for (Animation emote : emotes) { // Avoid lambda
+            Map<String, Animation> emotes = UniversalEmoteSerializer.readData(reader, fileName);
+            for (Animation emote : emotes.values()) { // Avoid lambda
                 ExtraAnimationData data = emote.data();
                 if (folderPath != null && !folderPath.isBlank()) {
                     data.put(EmoteSerializer.FOLDER_PATH_KEY, folderPath);
@@ -72,7 +72,7 @@ public class EmoteSerializer {
                 try (InputStream iconStream = Files.newInputStream(icon)) {
                     final ByteBuffer byteBuffer = MathHelper.readFromIStream(iconStream);
 
-                    for (Animation emote : emotes) { // Avoid lambda
+                    for (Animation emote : emotes.values()) { // Avoid lambda
                         emote.data().put("iconData", byteBuffer);
                     }
                 } catch (Throwable th) {
@@ -85,7 +85,7 @@ public class EmoteSerializer {
                 try {
                     Song nbs = NoteBlockLib.readSong(song, SongFormat.NBS);
 
-                    for (Animation emote : emotes) { // Avoid lambda
+                    for (Animation emote : emotes.values()) { // Avoid lambda
                         emote.data().put("song", nbs);
                     }
                 } catch (Throwable th) {
@@ -96,7 +96,7 @@ public class EmoteSerializer {
             return emotes;
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Error while importing external emote: {}", file.getFileName(), th);
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
     }
 

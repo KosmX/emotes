@@ -7,7 +7,7 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.EmoteWriter;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
-import io.github.kosmx.emotes.server.serializer.type.ISerializer;
+import io.github.kosmx.emotes.server.serializer.type.IWriter;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -42,7 +42,7 @@ public class ExportMenu extends Screen {
         gridLayout.defaultCellSetting().paddingHorizontal(Button.DEFAULT_SPACING).paddingBottom(4).alignHorizontallyCenter();
         GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(2);
 
-        for (ISerializer serializer : UniversalEmoteSerializer.getSerializers().toList()) {
+        for (IWriter serializer : UniversalEmoteSerializer.WRITERS) {
             rowHelper.addChild(Button.builder(Component.translatable("emotecraft.export", serializer.getExtension()),
                             button -> exportEmotesInFormat(serializer)
             ).width(Button.BIG_WIDTH).build());
@@ -63,7 +63,7 @@ public class ExportMenu extends Screen {
         repositionElements();
     }
 
-    private void exportEmotesInFormat(ISerializer format) {
+    private void exportEmotesInFormat(IWriter format) {
         Path exportDir = InstanceService.INSTANCE.getExternalEmoteDir().resolve(format.getExtension() + "_export");
         try {
             Files.createDirectories(exportDir);

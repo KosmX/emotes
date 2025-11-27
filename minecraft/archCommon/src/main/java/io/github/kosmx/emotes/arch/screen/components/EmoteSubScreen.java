@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -226,10 +227,10 @@ public abstract class EmoteSubScreen extends Screen {
         for (Path path : paths) {
             try (Stream<Path> stream = Files.walk(path)) {
                 stream.forEach(emote -> {
-                    List<Animation> animations = EmoteSerializer.serializeExternalEmote(emote);
+                    Map<String, Animation> animations = EmoteSerializer.serializeExternalEmote(emote);
                     if (animations.isEmpty()) return;
 
-                    for (Animation animation : animations) {
+                    for (Animation animation : animations.values()) {
                         try {
                             EmoteWriter.writeAnimationInBestFormat(animation, InstanceService.INSTANCE.getExternalEmoteDir());
                         } catch (Throwable th) {

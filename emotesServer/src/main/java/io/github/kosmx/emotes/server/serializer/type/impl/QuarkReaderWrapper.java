@@ -1,14 +1,16 @@
-package io.github.kosmx.emotes.server.serializer.type;
+package io.github.kosmx.emotes.server.serializer.type.impl;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.server.config.Serializer;
+import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
+import io.github.kosmx.emotes.server.serializer.type.IReader;
 
 import java.io.InputStream;
-import java.util.List;
+import java.util.Map;
 
 public class QuarkReaderWrapper implements IReader {
     @Override
-    public List<Animation> read(InputStream stream, String filename) throws EmoteSerializerException {
+    public Map<String, Animation> read(InputStream stream, String filename) throws EmoteSerializerException {
         /*try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             QuarkReader quarkReader = new QuarkReader();
             quarkReader.deserialize(reader, filename);
@@ -27,6 +29,6 @@ public class QuarkReaderWrapper implements IReader {
 
     @Override
     public boolean isActive() {
-        return Serializer.getConfig().enableQuark.get();
+        return IReader.super.isActive() && Serializer.getConfig().enableQuark.get();
     }
 }
