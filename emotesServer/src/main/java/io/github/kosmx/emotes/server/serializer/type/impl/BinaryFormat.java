@@ -29,7 +29,7 @@ public class BinaryFormat implements IReader, IWriter {
             if (data.purpose != PacketTask.FILE || data.emoteData == null) {
                 throw new EmoteSerializerException("Binary emote is invalid", getExtension());
             }
-            return Collections.singletonMap(data.emoteData.get().toString(), data.emoteData);
+            return Collections.singletonMap(data.emoteData.getNameOrId(), data.emoteData);
         } catch (Throwable exception) {
             throw new EmoteSerializerException("Something went wrong", getExtension(), exception);
         } finally {
