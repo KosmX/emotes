@@ -65,9 +65,6 @@ dependencies {
             configuration = "transformProductionNeoForge"
         )
     ) { isTransitive = false }
-
-    // Temp fixes
-    forgeRuntimeLibrary("org.javassist:javassist:3.30.2-GA")
 }
 
 tasks.processResources {

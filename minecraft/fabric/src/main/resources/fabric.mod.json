@@ -42,7 +42,7 @@
     "fabric-lifecycle-events-v1": "*",
     "fabric-rendering-v1": ">=12.5.1+fbe231d52c",
     "minecraft": ">=1.21.9",
-    "player_animation_library": ">=1.1.0+alpha.1+mc.1.21.9",
+    "player_animation_library": ">=1.1.1+mc.1.21.9",
     "fabricloader": ">=0.17.3"
   },
   "breaks": {
