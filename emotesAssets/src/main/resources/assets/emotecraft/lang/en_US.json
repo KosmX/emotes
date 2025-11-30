@@ -97,5 +97,7 @@
   "emotecraft.emote.clap.name": "Clap",
   "emotecraft.emote.clap.description": "clap clap clap",
   "emotecraft.emote.backflip.name": "Back Flip",
-  "emotecraft.emote.backflip.description": "Makes You Do A Back Flip"
+  "emotecraft.emote.backflip.description": "Makes You Do A Back Flip",
+  "emotecraft.dataloss.msg": "Possible loss of animation data",
+  "emotecraft.dataloss.descr": "Writing in this format may result in data loss or incorrect playback of the final file!\nAre you sure you want to do this?"
 }

@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -24,6 +25,8 @@ import java.nio.file.Path;
 
 public class ExportMenu extends Screen {
     private static final Component TITLE = Component.translatable("emotecraft.options.export");
+    private static final Component DATA_LOSS_MSG = Component.translatable("emotecraft.dataloss.msg");
+    private static final Component DATA_LOSS_DESCR = Component.translatable("emotecraft.dataloss.descr");
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     protected final Screen parent;
@@ -43,9 +46,23 @@ public class ExportMenu extends Screen {
         GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(2);
 
         for (IWriter serializer : UniversalEmoteSerializer.WRITERS) {
-            rowHelper.addChild(Button.builder(Component.translatable("emotecraft.export", serializer.getExtension()),
-                            button -> exportEmotesInFormat(serializer)
-            ).width(Button.BIG_WIDTH).build());
+            rowHelper.addChild(Button.builder(Component.translatable("emotecraft.export", serializer.getExtension()), button -> {
+                if (!serializer.possibleDataLoss()) {
+                    exportEmotesInFormat(serializer);
+                    return;
+                }
+
+                this.minecraft.setScreen(new ConfirmScreen(choice -> {
+                    if (choice) exportEmotesInFormat(serializer);
+                    this.minecraft.setScreen(this);
+                }, DATA_LOSS_MSG, DATA_LOSS_DESCR) {
+                    @Override
+                    protected void addButtons(LinearLayout layout) {
+                        super.addButtons(layout);
+                        setDelay(100);
+                    }
+                });
+            }).width(Button.BIG_WIDTH).build());
         }
 
         this.layout.addToContents(gridLayout);

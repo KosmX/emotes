@@ -97,5 +97,7 @@
   "emotecraft.emote.clap.name": "Хлопки",
   "emotecraft.emote.clap.description": "хлоп хлоп хлоп",
   "emotecraft.emote.backflip.name": "Сальто назад",
-  "emotecraft.emote.backflip.description": "Заставляет тебя сделать сальто назад"
+  "emotecraft.emote.backflip.description": "Заставляет тебя сделать сальто назад",
+  "emotecraft.dataloss.msg": "Возможная потеря данных анимации",
+  "emotecraft.dataloss.descr": "Запись в этом формате может привести к потере данных или неправильному воспроизведению конечного файла!\nВы уверены, что хотите это сделать?"
 }

@@ -56,6 +56,11 @@ public class BinaryFormat implements IReader, IWriter {
     }
 
     @Override
+    public boolean possibleDataLoss() {
+        return false;
+    }
+
+    @Override
     public String getExtension() {
         return "emotecraft";
     }

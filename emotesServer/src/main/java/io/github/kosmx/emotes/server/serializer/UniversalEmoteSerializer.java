@@ -68,10 +68,14 @@ public class UniversalEmoteSerializer {
                 .findFirst();
     }
 
+    private static final Comparator<IWriter> WRITTER_COMPARATOR = Comparator
+            .comparingInt((IWriter w) -> w.onlyEmoteFile() ? 0 : 1)
+            .thenComparingInt(w -> w.possibleDataLoss() ? 0 : 1);
+
     public static IWriter findWriter(@Nullable String fileName) throws EmoteSerializerException {
         return UniversalEmoteSerializer.WRITERS.stream()
-                .filter(reader -> fileName == null || reader.canWrite(fileName))
-                .max(Comparator.comparingInt(t -> t.onlyEmoteFile() ? 0 : 1))
+                .filter(writer -> fileName == null || writer.canWrite(fileName))
+                .max(WRITTER_COMPARATOR)
                 .orElseThrow(() -> new EmoteSerializerException("No writer has been found!", null));
     }
 
@@ -83,7 +87,9 @@ public class UniversalEmoteSerializer {
      * @throws EmoteSerializerException this is a dangerous task, can go wrong
      */
     public static void writeKeyframeAnimation(OutputStream stream, Animation emote, String fileName) throws EmoteSerializerException {
-        UniversalEmoteSerializer.findWriter(fileName).write(emote, stream, fileName);
+        IWriter writer = UniversalEmoteSerializer.findWriter(fileName);
+        if (writer.possibleDataLoss()) CommonData.LOGGER.warn("Writing in {} format may result in data loss or incorrect playback of the final file!", writer.getExtension());
+        writer.write(emote, stream, fileName);
     }
 
     public static UUIDMap<Animation> loadEmotes() {
