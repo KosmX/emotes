@@ -11,6 +11,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.geysermc.event.PostOrder;
 import org.geysermc.event.subscribe.Subscribe;
+import org.geysermc.geyser.api.entity.property.type.GeyserBooleanEntityProperty;
 import org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty;
 import org.geysermc.geyser.api.event.EventRegistrar;
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineEntityPropertiesEvent;
@@ -21,6 +22,7 @@ import org.geysermc.geyser.api.pack.ResourcePackManifest;
 import org.geysermc.geyser.api.util.Identifier;
 import org.geysermc.geyser.pack.GeyserResourcePack;
 import org.geysermc.geyser.pack.GeyserResourcePackManifest;
+import org.geysermc.geyser.util.FileUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.GeyserAnimationController;
 
 import java.io.ByteArrayOutputStream;
@@ -43,6 +45,8 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             .registerTypeHierarchyAdapter(Collection.class, new CollectionAdapter())
             .disableHtmlEscaping()
             .create();
+
+    public GeyserBooleanEntityProperty isEmoting;
 
     private final Map<String, EnumMap<TransformType, EnumMap<Axis, Integer>>> identifiers = new HashMap<>();
     private final Set<GeyserIntEntityProperty> registeredProperties = new HashSet<>(1);
@@ -136,6 +140,21 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             zos.write(animationJson.getBytes(StandardCharsets.UTF_8));
             zos.closeEntry();
 
+            String geometry = new String(FileUtils.readAllBytes("model.json"), StandardCharsets.UTF_8);
+            zos.putNextEntry(new ZipEntry("models/entity/emotecraft.json"));
+            zos.write(geometry.getBytes(StandardCharsets.UTF_8));
+            zos.closeEntry();
+
+            String entity = new String(FileUtils.readAllBytes("player.entity.json"), StandardCharsets.UTF_8);
+            zos.putNextEntry(new ZipEntry("entity/player.entity.json"));
+            zos.write(entity.getBytes(StandardCharsets.UTF_8));
+            zos.closeEntry();
+
+            String renderController = new String(FileUtils.readAllBytes("player.render_controllers.json"), StandardCharsets.UTF_8);
+            zos.putNextEntry(new ZipEntry("render_controllers/emotecraft.json"));
+            zos.write(renderController.getBytes(StandardCharsets.UTF_8));
+            zos.closeEntry();
+
             zos.finish();
             return this.packData = baos.toByteArray();
         } catch (IOException e) {
@@ -199,12 +218,13 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
 
     @Subscribe(postOrder = PostOrder.LAST)
     public void onDefineEntityProperties(GeyserDefineEntityPropertiesEvent event) {
-        int reserved = /*Math.max(1, (32 - event.properties(PLAYER_IDENTIFIER).size()) / 3)*/32;
+        int reserved = /*Math.max(1, (31 - event.properties(PLAYER_IDENTIFIER).size()) / 3)*/31;
         CommonData.LOGGER.info("{} properties will be reserved by emotecraft! Please ignore the warnings below...", reserved);
 
         StringBuilder molangScript = new StringBuilder("variable.bone_{BONE_ID} = variable.bone_{BONE_ID} ?? {DEFAULT_VALUE};");
         molangScript.append("variable.bone_{BONE_ID}_target = variable.bone_{BONE_ID}_target ?? {DEFAULT_VALUE};");
 
+        this.isEmoting = event.registerBooleanProperty(PLAYER_IDENTIFIER, Identifier.of(CommonData.MOD_ID, "is_emoting"), false);
         this.registeredProperties.clear();
         for (int i = 0; i < reserved; i++) {
             Identifier identifier = Identifier.of(CommonData.MOD_ID, String.format("property_%s", i));
@@ -222,6 +242,10 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
 
         CommonData.LOGGER.debug("Registered {} properties!", this.registeredProperties.size());
         this.molangScript = molangScript.toString();
+    }
+
+    public GeyserBooleanEntityProperty getIsEmotingProperty() {
+        return this.isEmoting;
     }
 
     public Set<GeyserIntEntityProperty> getRegisteredProperties() {

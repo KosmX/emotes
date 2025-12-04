@@ -70,6 +70,7 @@ public class GeyserAnimationController extends AnimationController implements Ru
     @Override
     protected void setupNewAnimation() {
         super.setupNewAnimation();
+        updateProperty(this.playerEntity.getPropertyManager(), EmotecraftExt.getInstance().getResourcePack().getIsEmotingProperty(), true);
         BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, this.playerEntity);
         for (String partKey : this.dirtyBones) {
             updateBone(this.playerEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
@@ -108,11 +109,7 @@ public class GeyserAnimationController extends AnimationController implements Ru
     public PlayerAnimBone get3DTransform(@NonNull PlayerAnimBone bone) {
         bone = super.get3DTransform(bone);
 
-        String boneName = bone.getName();
-        if ("left_arm".equals(boneName) || "right_arm".equals(boneName) || "head".equals(boneName)) {
-            bone.applyOtherBone(get3DTransform(new PlayerAnimBone("torso")).scale(-1));
-
-        } else if ("cape".equals(boneName)) {
+        if ("cape".equals(bone.getName())) {
             bone.rotX *= -1;
         }
         return bone;
@@ -190,6 +187,7 @@ public class GeyserAnimationController extends AnimationController implements Ru
     }
 
     protected void internalStop() {
+        updateProperty(this.playerEntity.getPropertyManager(), EmotecraftExt.getInstance().getResourcePack().getIsEmotingProperty(), false);
         BedrockPacketsUtils.sendBobAnimation(this.playerEntity);
     }
 
