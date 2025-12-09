@@ -112,12 +112,12 @@ val ds = publishDiscord {
         from(":minecraft:neoforge", "curseforge")
         from(":minecraft:fabric", "curseforge")
 
-        val hangarProjectName = providers.gradleProperty("hangarProjectName")
+        /*val hangarProjectName = providers.gradleProperty("hangarProjectName")
             .getOrElse("dima_dencep/emotecraft")
         val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
         val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
         nextRow()
-        custom("Hangar (Paper)", hangarLink, HANGAR_EMOJI)
+        custom("Hangar (Paper)", hangarLink, HANGAR_EMOJI)*/
     }
 }
 
