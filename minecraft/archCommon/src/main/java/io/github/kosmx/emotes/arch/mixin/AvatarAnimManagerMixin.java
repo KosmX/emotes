@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.arch.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.zigythebird.playeranim.animation.AvatarAnimationProcessor;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Avatar;
@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(AvatarAnimationProcessor.class)
-public class AvatarAnimationProcessorMixin {
+@Mixin(AvatarAnimManager.class)
+public class AvatarAnimManagerMixin {
     @Shadow
     @Final
     private Avatar avatar;

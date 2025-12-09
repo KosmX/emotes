@@ -12,7 +12,7 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +56,7 @@ public final class ClientNetwork extends AbstractNetworkInstance {
 
     @ExpectPlatform
     @Contract
-    public static boolean isServerChannelOpen(ResourceLocation id) {
+    public static boolean isServerChannelOpen(Identifier id) {
         throw new AssertionError();
     }
 

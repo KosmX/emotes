@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.network.neoforge;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class NetworkPlatformToolsImpl {
-    public static boolean canSendPlay(ServerPlayer player, ResourceLocation channel) {
+    public static boolean canSendPlay(ServerPlayer player, Identifier channel) {
         return player.connection.hasChannel(channel);
     }
 
-    public static boolean canSendConfig(ServerConfigurationPacketListenerImpl packetListener, ResourceLocation channel) {
+    public static boolean canSendConfig(ServerConfigurationPacketListenerImpl packetListener, Identifier channel) {
         return packetListener.hasChannel(channel);
     }
 

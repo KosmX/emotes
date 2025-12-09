@@ -8,7 +8,7 @@ import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -38,7 +38,7 @@ public class InstrumentConventer {
                 return createForNoteBlock(NoteBlockInstrument.PLING, pos, note.getVolume(), note.getPitch());
             }*/
 
-            ResourceLocation sound = parseSoundFile(Minecraft.getInstance().getResourceManager(), file);
+            Identifier sound = parseSoundFile(Minecraft.getInstance().getResourceManager(), file);
             if (sound != null) {
                 return new SoundDirectInstance(sound, note.getVolume(), note.getPitch(), pos);
             }
@@ -68,8 +68,8 @@ public class InstrumentConventer {
         return new SoundEventInstance(instrument.getSoundEvent().value(), volume, pitch, pos);
     }
 
-    public static @Nullable ResourceLocation parseSoundFile(ResourceManager manager, String file) {
-        ResourceLocation first = ResourceLocation.tryParse(file);
+    public static @Nullable Identifier parseSoundFile(ResourceManager manager, String file) {
+        Identifier first = Identifier.tryParse(file);
         if (first != null && manager.getResource(Sound.SOUND_LISTER.idToFile(first)).isPresent()) {
             return first;
         }
@@ -77,7 +77,7 @@ public class InstrumentConventer {
         int namespaceIndex = file.indexOf("/");
         String namespace = namespaceIndex != -1 ? file.substring(0, namespaceIndex) : file;
         String path = namespaceIndex != -1 && file.startsWith(namespace) ? file.substring(namespace.length() + 1) : file;
-        ResourceLocation second = ResourceLocation.tryBuild(namespace, path);
+        Identifier second = Identifier.tryBuild(namespace, path);
         if (second != null && manager.getResource(Sound.SOUND_LISTER.idToFile(second)).isPresent()) {
             return second;
         }
@@ -86,7 +86,7 @@ public class InstrumentConventer {
     }
 
     public static @Nullable SoundEvent parseSoundName(@NotNull String name) {
-        ResourceLocation first = ResourceLocation.tryParse(name);
+        Identifier first = Identifier.tryParse(name);
         if (first != null && BuiltInRegistries.SOUND_EVENT.containsKey(first)) {
             return BuiltInRegistries.SOUND_EVENT.getValue(first);
         }

@@ -20,27 +20,27 @@ config = "emotecraft-arch.mixins.json"
 [[dependencies.emotecraft]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.9.0-beta,)"
+versionRange = "[21.11.0-beta,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.emotecraft]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.9,)"
+versionRange = "[1.21.11,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.emotecraft]]
 modId="player_animation_library"
 type="required"
-versionRange="[1.1.1+mc.1.21.9,)"
+versionRange="[1.1.3+alpha.1+mc.1.21.11,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.emotecraft]]
 modId="bendable_cuboids"
 type="incompatible"
-versionRange="[1.0,1.0.6+mc.1.21.9)"
+versionRange="[1.0,1.0.6+mc.1.21.11)"
 ordering="NONE"
 side="BOTH"

@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "ConnectionHandlerMixin",
-    "AvatarAnimationProcessorMixin",
+    "AvatarAnimManagerMixin",
     "ServerCommonPacketListenerAccessor",
     "ServerPlayNetworkMixin"
   ],

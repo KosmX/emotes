@@ -1,7 +1,5 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
-import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -40,8 +38,8 @@ public class PageButton extends AbstractButton {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (this.drawBackground) super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        if (this.drawBackground) super.renderDefaultSprite(guiGraphics);
 
         int width = this.drawBackground ? PAGE_BUTTON_WIDTH : getWidth();
         int height = this.drawBackground ? PAGE_BUTTON_HEIGHT : getHeight();
@@ -57,15 +55,6 @@ public class PageButton extends AbstractButton {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.sprites.get(this.active, this.active && isHoveredOrFocused()), x, y,
                 width, height, ARGB.white(this.alpha)
         );
-
-        if (this.isHovered()) {
-            guiGraphics.requestCursor(this.isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
-        }
-    }
-
-    @Override
-    public void renderString(GuiGraphics guiGraphics, Font font, int color) {
-        // no-op
     }
 
     @Override

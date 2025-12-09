@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -54,7 +54,7 @@ public class EmoteHolder implements Supplier<UUID> {
     public AtomicInteger hash = null; // The emote's identifier hash //caching only
     public static UUIDMap<EmoteHolder> list = new UUIDMap<>(); // static array of all imported emotes
     @Nullable
-    private ResourceLocation iconIdentifier = null;
+    private Identifier iconIdentifier = null;
 
     /**
      * Null if imported locally
@@ -116,7 +116,7 @@ public class EmoteHolder implements Supplier<UUID> {
         });
     }
 
-    public @Nullable ResourceLocation getIconIdentifier() {
+    public @Nullable Identifier getIconIdentifier() {
         if (this.emote.data().getRaw("iconData") instanceof ByteBuffer buff && this.iconIdentifier == null) {
             registerIcon(buff);
         }
@@ -147,7 +147,7 @@ public class EmoteHolder implements Supplier<UUID> {
         if (RenderSystem.isOnRenderThread()) {
             Minecraft.getInstance().getTextureManager().release(this.iconIdentifier);
         } else {
-            ResourceLocation iconIdentifier = this.iconIdentifier;
+            Identifier iconIdentifier = this.iconIdentifier;
             Minecraft.getInstance().executeBlocking(() -> Minecraft.getInstance()
                     .getTextureManager().release(iconIdentifier)
             );

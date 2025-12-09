@@ -9,7 +9,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class McUtils {
     public static final Component MOD_NAME = Component.literal(CommonData.MOD_NAME);
@@ -46,7 +46,7 @@ public class McUtils {
         };
     }
 
-    public static ResourceLocation newIdentifier(String id){
-        return ResourceLocation.fromNamespaceAndPath(CommonData.MOD_ID, id);
+    public static Identifier newIdentifier(String id) {
+        return Identifier.fromNamespaceAndPath(CommonData.MOD_ID, id);
     }
 }
