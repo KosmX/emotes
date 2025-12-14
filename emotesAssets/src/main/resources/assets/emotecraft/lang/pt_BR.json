@@ -97,5 +97,7 @@
   "emotecraft.emote.clap.name": "Palmas",
   "emotecraft.emote.clap.description": "palma palma palma",
   "emotecraft.emote.backflip.name": "Back Flip",
-  "emotecraft.emote.backflip.description": "Faz Você Dar Um Back Flip"
+  "emotecraft.emote.backflip.description": "Faz Você Dar Um Back Flip",
+  "emotecraft.dataloss.msg": "Possível perda de dados de animação",
+  "emotecraft.dataloss.descr": "Escrever neste formato pode resultar em perda de dados ou reprodução incorreta do arquivo final!\nTem certeza de que deseja fazer isso?"
 }
