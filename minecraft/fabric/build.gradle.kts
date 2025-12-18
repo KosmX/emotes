@@ -56,10 +56,10 @@ dependencies {
         pomCompile(this)
     }
 
-    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${project["bendablecuboids_version"]}") {
+    /*modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${project["bendablecuboids_version"]}") {
         isTransitive = false
         pomCompile(this)
-    }
+    }*/
 
     implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
         include(this)
@@ -72,9 +72,9 @@ dependencies {
     }
 
     // Third-party
-    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
+    /*modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
         isTransitive = false
-    }
+    }*/
 
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))

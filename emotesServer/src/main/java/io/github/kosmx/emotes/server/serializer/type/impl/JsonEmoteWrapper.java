@@ -1,22 +1,22 @@
-package io.github.kosmx.emotes.server.serializer.type;
+package io.github.kosmx.emotes.server.serializer.type.impl;
 
 import com.google.gson.JsonParseException;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
+import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
+import io.github.kosmx.emotes.server.serializer.type.IReader;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 
 public class JsonEmoteWrapper implements IReader {
-
     @Override
-    public List<Animation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
+    public Map<String, Animation> read(InputStream inputStream, String filename) throws EmoteSerializerException {
         try {
             Map<String, Animation> deserialized = UniversalAnimLoader.loadAnimations(inputStream);
             if (deserialized == null) throw new IOException("Can't load emote, " + filename + " is empty.");
-            return new ArrayList<>(deserialized.values());
+            return Collections.unmodifiableMap(deserialized);
         } catch (JsonParseException | IOException e) {
             throw new EmoteSerializerException("Exception has occurred", getExtension(), e);
         }

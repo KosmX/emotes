@@ -39,10 +39,10 @@ dependencies {
         pomCompile(this)
     }
 
-    modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${project["bendablecuboids_version"]}") {
+    /*modRuntimeOnly("com.zigythebird.bendable_cuboids:BendableCuboidsNeo:${project["bendablecuboids_version"]}") {
         isTransitive = false
         pomCompile(this)
-    }
+    }*/
 
     modRuntimeOnly("org.redlance.dima_dencep.mods:TranslationFallbacksNeo:${project["translationfallbacks_version"]}") {
         include(this)
@@ -65,9 +65,6 @@ dependencies {
             configuration = "transformProductionNeoForge"
         )
     ) { isTransitive = false }
-
-    // Temp fixes
-    forgeRuntimeLibrary("org.javassist:javassist:3.30.2-GA")
 }
 
 tasks.processResources {

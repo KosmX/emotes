@@ -69,5 +69,6 @@
   "emotecraft.cant.override.forced": "Du musst das aktuelle Emote zu spielen, du kannst es jetzt nicht ändern.",
   "emotecraft.folder": "Ordner",
   "emotecraft.reloading": "Emotes werden neu geladen...",
-  "emotecraft.reloading.done": "Neuladen hat %s Sekunden gedauert!"
+  "emotecraft.reloading.done": "Neuladen hat %s Sekunden gedauert!",
+  "emotecraft.emote.crying.description": "Heulen"
 }

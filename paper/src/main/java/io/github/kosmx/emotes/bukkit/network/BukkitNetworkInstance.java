@@ -36,9 +36,14 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
             return;
         }
         ByteBuf buf = Unpooled.buffer();
-        packet.write(buf);
-        player.getBukkitEntity().sendPluginMessage(PLUGIN, BukkitWrapper.EMOTE_PACKET, buf.array());
-        buf.release();
+        try {
+            packet.write(buf);
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.readBytes(bytes);
+            player.getBukkitEntity().sendPluginMessage(PLUGIN, BukkitWrapper.EMOTE_PACKET, bytes);
+        } finally {
+            buf.release();
+        }
     }
 
     @Override

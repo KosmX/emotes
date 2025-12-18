@@ -9,8 +9,6 @@ version = mod_version
 dependencies {
     api("com.zigythebird.playeranim:PlayerAnimationLibCore:${project["playeranimlib_version"]}")
     api("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}")
-    implementation("com.google.code.gson:gson:2.11.0") // gson for MC 1.21.4
-    api("org.jetbrains:annotations:24.0.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.1")

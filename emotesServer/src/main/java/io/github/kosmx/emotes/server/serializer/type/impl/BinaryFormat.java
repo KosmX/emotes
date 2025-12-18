@@ -1,9 +1,12 @@
-package io.github.kosmx.emotes.server.serializer.type;
+package io.github.kosmx.emotes.server.serializer.type.impl;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
+import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
+import io.github.kosmx.emotes.server.serializer.type.IReader;
+import io.github.kosmx.emotes.server.serializer.type.IWriter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -11,13 +14,13 @@ import io.netty.buffer.PooledByteBufAllocator;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
-public class BinaryFormat implements ISerializer {
+public class BinaryFormat implements IReader, IWriter {
     private static final ByteBufAllocator ALLOC = PooledByteBufAllocator.DEFAULT;
 
     @Override
-    public List<Animation> read(InputStream stream, String filename) throws EmoteSerializerException {
+    public Map<String, Animation> read(InputStream stream, String filename) throws EmoteSerializerException {
         ByteBuf buf = ALLOC.buffer();
         try {
             buf.writeBytes(stream.readAllBytes());
@@ -26,7 +29,7 @@ public class BinaryFormat implements ISerializer {
             if (data.purpose != PacketTask.FILE || data.emoteData == null) {
                 throw new EmoteSerializerException("Binary emote is invalid", getExtension());
             }
-            return Collections.singletonList(data.emoteData);
+            return Collections.singletonMap(data.emoteData.getNameOrId(), data.emoteData);
         } catch (Throwable exception) {
             throw new EmoteSerializerException("Something went wrong", getExtension(), exception);
         } finally {
@@ -49,6 +52,11 @@ public class BinaryFormat implements ISerializer {
 
     @Override
     public boolean onlyEmoteFile() {
+        return false;
+    }
+
+    @Override
+    public boolean possibleDataLoss() {
         return false;
     }
 

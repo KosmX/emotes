@@ -17,7 +17,7 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import net.minecraft.network.protocol.game.GameProtocols;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.entity.Player;
 
@@ -27,7 +27,7 @@ import java.util.List;
 public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
     public static final EmotePayloadHandler INSTANCE = new EmotePayloadHandler();
 
-    public static final ResourceLocation PLAY_PAYLOAD = McUtils.newIdentifier(CommonData.playEmoteID);
+    public static final Identifier PLAY_PAYLOAD = McUtils.newIdentifier(CommonData.playEmoteID);
     private static final int PAYLOAD_ID = EmotePayloadHandler.hackPayloadId();
 
     private EmotePayloadHandler() {
@@ -47,7 +47,7 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
         FriendlyByteBuf buf = new FriendlyByteBuf(in);
 
         if (buf.readVarInt() == PAYLOAD_ID) {
-            if (PLAY_PAYLOAD.equals(buf.readResourceLocation())) {
+            if (PLAY_PAYLOAD.equals(buf.readIdentifier())) {
 
                 int i = buf.readableBytes();
                 if (i <= 0 || i > CommonData.MAX_PACKET_SIZE) {
@@ -77,7 +77,11 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
         );
 
         RegistryFriendlyByteBuf friendlyByteBuf = new RegistryFriendlyByteBuf(Unpooled.buffer(), MinecraftServer.getServer().registryAccess());
-        protocol.codec().encode(friendlyByteBuf, new ServerboundCustomPayloadPacket(new DiscardedPayload(PLAY_PAYLOAD, new byte[0])));
-        return friendlyByteBuf.readVarInt();
+        try {
+            protocol.codec().encode(friendlyByteBuf, new ServerboundCustomPayloadPacket(new DiscardedPayload(PLAY_PAYLOAD, new byte[0])));
+            return friendlyByteBuf.readVarInt();
+        } finally {
+            friendlyByteBuf.release();
+        }
     }
 }

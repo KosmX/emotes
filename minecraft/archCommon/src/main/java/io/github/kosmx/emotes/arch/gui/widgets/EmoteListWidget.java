@@ -23,7 +23,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -219,7 +219,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             }
             int maxBadgesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (getContentX() + 31);
             int badgeWidth = BageUtils.drawBadges(matrices, minecraft.font, this.bages, maxX, getContentY(), maxBadgesWidth, true);
-            renderScrollingString(matrices, minecraft.font, this.name, getContentX() + 31, getContentX() + 31, getContentY(), maxX - badgeWidth, getContentY() + minecraft.font.lineHeight, -1);
+            matrices.textRenderer(GuiGraphics.HoveredTextEffects.NONE).acceptScrolling(this.name, getContentX() + 31, getContentX() + 31, maxX - badgeWidth, getContentY(), getContentY() + minecraft.font.lineHeight);
             matrices.drawString(minecraft.font, this.description, getContentX() + 31, getContentY() + 12, -8355712);
             renderAdditional(matrices, mouseX, mouseY, hovered, tickDelta);
             matrices.disableScissor();
@@ -259,12 +259,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             Component path = appendScreenPath(mainFolder, Component.empty());
             if (compactMode) {
-                renderScrollingString(guiGraphics, minecraft.font, path,
-                        getContentX(), getContentX(), getContentY(), getContentRight(), getContentY() + minecraft.font.lineHeight, -1
+                guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.NONE).acceptScrolling(path,
+                        getContentX(), getContentX(), getContentRight(), getContentY(), getContentY() + minecraft.font.lineHeight
                 );
             } else {
-                renderScrollingString(guiGraphics, minecraft.font, path,
-                        getContentX(), getContentY(), getContentRight(), getContentY() + minecraft.font.lineHeight, -1
+                guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.NONE).acceptScrollingWithDefaultCenter(path,
+                        getContentX(), getContentRight(), getContentY(), getContentY() + minecraft.font.lineHeight
                 );
             }
         }
@@ -318,7 +318,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                 matrices.drawString(minecraft.font, text, getContentX() + 31, getContentY() + 23, -8355712);
             }
 
-            ResourceLocation texture = this.emote.getIconIdentifier();
+            Identifier texture = this.emote.getIconIdentifier();
             if (texture != null) {
                 GlStateManager._enableBlend();
                 matrices.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
@@ -369,8 +369,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public class FolderEntry extends ListEntry {
-        public static final ResourceLocation FOLDER = McUtils.newIdentifier("textures/folder.png");
-        public static final ResourceLocation FOLDER_OPEN = McUtils.newIdentifier("textures/folder_open.png");
+        public static final Identifier FOLDER = McUtils.newIdentifier("textures/folder.png");
+        public static final Identifier FOLDER_OPEN = McUtils.newIdentifier("textures/folder_open.png");
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
         private final Map<Component, ListEntry> entries = new HashMap<>();
@@ -382,7 +382,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         @Override
         public void renderAdditional(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float tickDelta) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, getX(), getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
         }
 
         @Override

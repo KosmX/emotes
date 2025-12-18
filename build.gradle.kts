@@ -1,11 +1,14 @@
+import org.redlance.dima_dencep.gradle.publish2discord.publishDiscord
+import org.redlance.dima_dencep.gradle.publish2discord.utils.Emoji
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
     id("xyz.wagyourtail.jvmdowngrader") version("1.3.3") apply false
-    id("dev.architectury.loom") version "1.13.457" apply false
+    id("dev.architectury.loom") version "1.13.467" apply false
     id("architectury-plugin") version "3.4.162" apply true
-    id("com.gradleup.shadow") version "9.2.2" apply false
-    id("me.modmuss50.mod-publish-plugin") // version defined in buildSrc
+    id("com.gradleup.shadow") version "9.3.0" apply false
+    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
+    id("org.redlance.dima_dencep.gradle.PublishToDiscord") version "1.0.0"
 }
 
 subprojects {
@@ -93,14 +96,12 @@ val ds = publishDiscord {
     }
 
     username = "Emotecraft Updates"
-    content = "<@&926902263941849118>"
     url = providers.environmentVariable("DISCORD_WEBHOOK")
 
-    val changelog = changes.replace("<br>", "  \n")
-    embed {
+    container {
         color = kotlin.random.Random.nextInt(0x000000, 0x1000000)
         title = "Emotecraft $mod_version for Minecraft $minecraft_version is out!"
-        description = "Changes:  \n$changelog"
+        description = "### Changes:\n${changes.replace("<br>", "\n- ")}"
         thumbnail("https://raw.githubusercontent.com/KosmX/emotes/d97b2df4ab59bbd2740f30497e96f92cb643b2df/emotesAssets/src/main/resources/emotecraft_mod_logo.png")
         timestamp(System.currentTimeMillis())
     }
@@ -122,8 +123,10 @@ val ds = publishDiscord {
         val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
         val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
         nextRow()
-        custom("Hangar (Paper)", hangarLink, HANGAR_EMOJI)
+        custom("Hangar (Paper)", hangarLink, Emoji.HANGAR_EMOJI)
     }
+
+    footer = "||<@&926902263941849118>||"
 }
 
 allprojects {

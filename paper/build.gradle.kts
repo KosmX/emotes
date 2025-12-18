@@ -7,7 +7,7 @@ plugins {
     `maven-publish`
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin")
-    id("io.papermc.hangar-publish-plugin") version "0.1.3"
+    id("io.papermc.hangar-publish-plugin") version "0.1.4"
 }
 
 base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
@@ -116,7 +116,7 @@ publishMods {
     }
 }
 
-tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
+/*tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
 
 hangarPublish.publications.register("plugin") {
     version = "${mod_version}+${minecraft_version}-paper"
@@ -132,5 +132,4 @@ hangarPublish.publications.register("plugin") {
         jar = tasks.shadowJar.flatMap { it.archiveFile }
         platformVersions = release_minecraft_versions
     }
-}
-
+}*/

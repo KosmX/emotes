@@ -7,7 +7,7 @@ import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
@@ -23,13 +23,13 @@ public final class NetworkPlatformTools {
 
     @ExpectPlatform
     @Contract // contract to fix flow analysis.
-    public static boolean canSendPlay(ServerPlayer player, ResourceLocation channel) {
+    public static boolean canSendPlay(ServerPlayer player, Identifier channel) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
     @Contract
-    public static boolean canSendConfig(ServerConfigurationPacketListenerImpl player, ResourceLocation channel) {
+    public static boolean canSendConfig(ServerConfigurationPacketListenerImpl player, Identifier channel) {
         throw new AssertionError();
     }
 
