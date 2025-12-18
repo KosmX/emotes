@@ -1,13 +1,13 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.animator;
 
-import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.animation.AnimationData;
+import com.zigythebird.playeranimcore.animation.HumanoidAnimationController;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.enums.Axis;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.TransformType;
-import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
+import io.github.kosmx.emotes.common.CommonData;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityProperty;
@@ -25,23 +25,7 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteR
 import java.time.Duration;
 import java.util.*;
 
-/**
- * Bends in the bedrock are not supported, so this feature is not implemented here.
- */
-public class GeyserAnimationController extends AnimationController implements Runnable {
-    // Bone pivot point positions used to apply custom pivot point translations.
-    public static final Map<String, Vec3f> BONE_POSITIONS = Map.of(
-            "right_arm", new Vec3f(5, 22, 0),
-            "left_arm", new Vec3f(-5, 22, 0),
-            "left_leg", new Vec3f(-2f, 12, 0f),
-            "right_leg", new Vec3f(2f, 12, 0f),
-            "torso", new Vec3f(0, 24, 0),
-            "head", new Vec3f(0, 24, 0),
-            "body", new Vec3f(0, 12, 0),
-            "cape", new Vec3f(0, 24, 2),
-            "elytra", new Vec3f(0, 24, 2)
-    );
-
+public class GeyserAnimationController extends HumanoidAnimationController implements Runnable {
     private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
     protected final PlayerEntity playerEntity;
 
@@ -50,21 +34,6 @@ public class GeyserAnimationController extends AnimationController implements Ru
     public GeyserAnimationController(PlayerEntity playerEntity) {
         super((controller, state, animationSetter) -> PlayState.STOP, MolangLoader::createNewEngine);
         this.playerEntity = playerEntity;
-    }
-
-    @Override
-    public void registerBones() {
-        this.registerPlayerAnimBone("body");
-        this.registerPlayerAnimBone("right_arm");
-        this.registerPlayerAnimBone("left_arm");
-        this.registerPlayerAnimBone("right_leg");
-        this.registerPlayerAnimBone("left_leg");
-        this.registerPlayerAnimBone("head");
-        this.registerPlayerAnimBone("torso");
-        this.registerPlayerAnimBone("right_item");
-        this.registerPlayerAnimBone("left_item");
-        this.registerPlayerAnimBone("cape");
-        this.registerPlayerAnimBone("elytra");
     }
 
     @Override
@@ -91,8 +60,8 @@ public class GeyserAnimationController extends AnimationController implements Ru
 
         // Animate via properties
         for (String partKey : this.activeBones.keySet()) {
-            if (!BONE_POSITIONS.containsKey(partKey)) {
-                // CommonData.LOGGER.debug("Unsupported bone: {}!", partKey);
+            if (!this.bones.containsKey(partKey)) {
+                CommonData.LOGGER.debug("Unsupported bone: {}!", partKey);
                 continue;
             }
 
@@ -119,7 +88,7 @@ public class GeyserAnimationController extends AnimationController implements Ru
     }
 
     protected void updateBone(GeyserEntityPropertyManager propertyManager, String partKey, PlayerAnimBone bone) {
-        if (!BONE_POSITIONS.containsKey(partKey)) return;
+        if (!this.bones.containsKey(partKey)) return;
         updateAxis(propertyManager, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
         updateAxis(propertyManager, partKey, TransformType.ROTATION,
                 (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
@@ -171,13 +140,6 @@ public class GeyserAnimationController extends AnimationController implements Ru
     }
 
     @Override
-    public Vec3f getBonePosition(String name) {
-        if (BONE_POSITIONS.containsKey(name)) return BONE_POSITIONS.get(name);
-        if (pivotBones.containsKey(name)) return pivotBones.get(name).getPivot();
-        return Vec3f.ZERO;
-    }
-
-    @Override
     public void process(AnimationData state) {
         super.process(state);
         if (!this.animationState.isActive()) internalStop();
@@ -201,5 +163,13 @@ public class GeyserAnimationController extends AnimationController implements Ru
         intValue = intValue + 1000000;
 
         return id * 10000000 + intValue;
+    }
+
+    /**
+     * A small hack that allows us to get all registered bones.
+     */
+    public static Collection<String> getRegisteredBones() {
+        GeyserAnimationController controller = new GeyserAnimationController(null);
+        return Collections.unmodifiableCollection(controller.bones.keySet());
     }
 }

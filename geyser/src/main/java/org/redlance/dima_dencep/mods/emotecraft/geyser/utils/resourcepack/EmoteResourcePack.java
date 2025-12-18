@@ -72,7 +72,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
         int id = 0;
 
         this.identifiers.clear();
-        for (String boneName : GeyserAnimationController.BONE_POSITIONS.keySet()) {
+        for (String boneName : GeyserAnimationController.getRegisteredBones()) {
             JsonObject bone = new JsonObject();
 
             EnumMap<TransformType, EnumMap<Axis, Integer>> transformType = this.identifiers.computeIfAbsent(boneName,

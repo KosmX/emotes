@@ -19,4 +19,9 @@ public class EmotecraftService implements InstanceService {
     public boolean isActive() {
         return EmotecraftExt.getInstance() != null && EmotecraftExt.getInstance().isEnabled();
     }
+
+    @Override
+    public int getPriority() {
+        return InstanceService.super.getPriority() - 1;
+    }
 }
