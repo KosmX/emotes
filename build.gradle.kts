@@ -6,7 +6,7 @@ plugins {
     id("dev.architectury.loom") version "1.13.467" apply false
     id("architectury-plugin") version "3.4.162" apply true
     id("com.gradleup.shadow") version "9.3.0" apply false
-    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
+    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
     id("org.redlance.dima_dencep.gradle.PublishToDiscord") version "1.0.0"
 }
 
