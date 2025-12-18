@@ -4,6 +4,7 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -126,7 +127,7 @@ public class EmotecraftExt implements Extension {
 
             ByteBuf byteBuf = Unpooled.buffer();
             DinnerboneProtocolUtils.writeChannels(byteBuf, EMOTECRAFT_CHANNELS);
-            session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, byteBuf.array()));
+            session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, MathHelper.readBytes(byteBuf)));
             byteBuf.release();
 
             if (((ProtocolProvider) session).ec$state() == ProtocolState.GAME) {
