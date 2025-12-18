@@ -17,7 +17,7 @@ import org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty;
 import org.geysermc.geyser.api.util.Identifier;
 import org.geysermc.geyser.entity.properties.GeyserEntityPropertyManager;
 import org.geysermc.geyser.entity.properties.type.PropertyType;
-import org.geysermc.geyser.entity.type.player.PlayerEntity;
+import org.geysermc.geyser.entity.type.player.AvatarEntity;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
@@ -27,21 +27,21 @@ import java.util.*;
 
 public class GeyserAnimationController extends HumanoidAnimationController implements Runnable {
     private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
-    protected final PlayerEntity playerEntity;
+    protected final AvatarEntity avatarEntity;
 
     private final Set<String> dirtyBones = new HashSet<>();
 
-    public GeyserAnimationController(PlayerEntity playerEntity) {
+    public GeyserAnimationController(AvatarEntity avatarEntity) {
         super((controller, state, animationSetter) -> PlayState.STOP, MolangLoader::createNewEngine);
-        this.playerEntity = playerEntity;
+        this.avatarEntity = avatarEntity;
     }
 
     @Override
     protected void setupNewAnimation() {
         super.setupNewAnimation();
-        BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, this.playerEntity);
+        BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, this.avatarEntity);
         for (String partKey : this.dirtyBones) {
-            updateBone(this.playerEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
+            updateBone(this.avatarEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
         }
         this.dirtyBones.clear();
     }
@@ -49,10 +49,10 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     @Override
     public void run() {
         // Check propertyManager
-        GeyserEntityPropertyManager propertyManager = this.playerEntity.getPropertyManager();
+        GeyserEntityPropertyManager propertyManager = this.avatarEntity.getPropertyManager();
         if (propertyManager == null) return;
 
-        AnimationData data = new AnimationData(0, 0.0F);
+        AnimationData data = new AnimationData(0, 1.0F);
         tick(data);
 
         if (!isActive()) return;
@@ -124,17 +124,17 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     }
 
     private void flushPropertiesImmediately() {
-        GeyserEntityPropertyManager propertyManager = this.playerEntity.getPropertyManager();
+        GeyserEntityPropertyManager propertyManager = this.avatarEntity.getPropertyManager();
         if (propertyManager == null || !propertyManager.hasProperties()) return;
 
         SetEntityDataPacket packet = new SetEntityDataPacket();
-        packet.setRuntimeEntityId(this.playerEntity.getGeyserId());
+        packet.setRuntimeEntityId(this.avatarEntity.getGeyserId());
         propertyManager.applyFloatProperties(packet.getProperties().getFloatProperties());
         propertyManager.applyIntProperties(packet.getProperties().getIntProperties());
-        this.playerEntity.getSession().sendUpstreamPacketImmediately(packet);
+        this.avatarEntity.getSession().sendUpstreamPacketImmediately(packet);
 
         try {
-            Thread.sleep(Duration.ofMillis(10 + this.playerEntity.getSession().ping())); // IDK
+            Thread.sleep(Duration.ofMillis(10 + this.avatarEntity.getSession().ping())); // IDK
         } catch (InterruptedException ignored) {}
         this.lastUsedProperties.clear();
     }
@@ -152,7 +152,7 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     }
 
     protected void internalStop() {
-        BedrockPacketsUtils.sendBobAnimation(this.playerEntity);
+        BedrockPacketsUtils.sendBobAnimation(this.avatarEntity);
     }
 
     public static int pack(int id, float value) {

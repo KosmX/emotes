@@ -15,6 +15,7 @@ import io.netty.buffer.Unpooled;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.entity.type.player.GeyserPlayerEntity;
+import org.geysermc.geyser.entity.type.player.AvatarEntity;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
@@ -37,7 +38,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final GeyserConnection session;
     private final Future<?> ticker;
 
-    private final Map<PlayerEntity, GeyserAnimationController> controllers = new WeakHashMap<>();
+    private final Map<AvatarEntity, GeyserAnimationController> controllers = new WeakHashMap<>();
 
     private UUID currentEmote;
     private ConnectionType connectionType = ConnectionType.NONE;
@@ -181,7 +182,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void stopEmote(GeyserPlayerEntity player) {
-        if (player instanceof PlayerEntity entity && this.controllers.containsKey(entity)) {
+        if (player instanceof AvatarEntity entity && this.controllers.containsKey(entity)) {
             this.controllers.get(entity).stop();
         }
 
