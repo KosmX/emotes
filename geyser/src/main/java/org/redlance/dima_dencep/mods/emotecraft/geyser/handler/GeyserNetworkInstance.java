@@ -48,7 +48,13 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.session = session;
 
         this.ticker = EXECUTOR.scheduleAtFixedRate(() -> this.controllers.values()
-                .forEach(GeyserAnimationController::run), 0L, 50L, TimeUnit.MILLISECONDS
+                .forEach(controller -> {
+                    try {
+                        controller.run();
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
+                }), 0L, 50L, TimeUnit.MILLISECONDS
         );
     }
 
