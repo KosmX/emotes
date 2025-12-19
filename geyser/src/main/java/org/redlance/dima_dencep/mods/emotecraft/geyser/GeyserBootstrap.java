@@ -6,9 +6,12 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import org.geysermc.geyser.extension.GeyserExtensionContainer;
 import org.geysermc.geyser.platform.standalone.GeyserStandaloneBootstrap;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GeyserSessionPatch;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 
 /**
  * Used to run Emotecraft in a dev environment.
@@ -19,7 +22,7 @@ public class GeyserBootstrap {
     }
 
     public static void main(String[] args) throws ReflectiveOperationException, IOException {
-        GeyserSessionPatch.patchClass(GeyserExtensionContainer.class, "org/geysermc/geyser/extension/GeyserExtensionLoader.class", GeyserBootstrap::patch);
+        GeyserBootstrap.patchClass(GeyserExtensionContainer.class, "org/geysermc/geyser/extension/GeyserExtensionLoader.class", GeyserBootstrap::patch);
         GeyserStandaloneBootstrap.main(args);
     }
 
@@ -51,6 +54,13 @@ public class GeyserBootstrap {
             return cc.toBytecode();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void patchClass(Class<?> nearClass, String name, UnaryOperator<byte[]> patcher) throws ReflectiveOperationException, IOException {
+        try (InputStream is = Objects.requireNonNull(nearClass.getClassLoader().getResourceAsStream(name))) {
+            byte[] bytecode = patcher.apply(is.readAllBytes());
+            MethodHandles.privateLookupIn(nearClass, MethodHandles.lookup()).defineClass(bytecode);
         }
     }
 }
