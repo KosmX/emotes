@@ -81,7 +81,10 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         if ("left_arm".equals(boneName) || "right_arm".equals(boneName) || "head".equals(boneName)) {
             bone.applyOtherBone(get3DTransform(new PlayerAnimBone("torso")).scale(-1));
 
-        } else if ("cape".equals(boneName)) {
+        } else if ("left_leg".equals(boneName) || "right_leg".equals(boneName)) {
+            bone.applyOtherBone(get3DTransform(new PlayerAnimBone("body")));
+
+        } if ("cape".equals(boneName)) {
             bone.rotX *= -1;
         }
         return bone;

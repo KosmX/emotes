@@ -90,7 +90,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             )));
 
             String bedrockBone = UniversalAnimLoader.restorePlayerBoneName(boneName);
-            if ("body".equals(bedrockBone)) bedrockBone = "root";
+            if ("body".equals(bedrockBone)) bedrockBone = "waist";
             if ("torso".equals(bedrockBone)) bedrockBone = "body";
             bones.add(bedrockBone, bone);
         }
