@@ -6,7 +6,9 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.enums.Axis;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.TransformType;
+import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
+import com.zigythebird.playeranimcore.util.MatrixUtil;
 import io.github.kosmx.emotes.common.CommonData;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -23,7 +25,6 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
@@ -67,7 +68,7 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         GeyserEntityPropertyManager propertyManager = this.avatarEntity.getPropertyManager();
         if (propertyManager == null) return;
 
-        AnimationData data = new AnimationData(0, 1.0F);
+        AnimationData data = new AnimationData(0, 1.0F, false);
         tick(data);
 
         if (!isActive()) return;
@@ -94,12 +95,19 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
 
         String boneName = bone.getName();
         if ("left_arm".equals(boneName) || "right_arm".equals(boneName) || "head".equals(boneName)) {
-            bone.applyOtherBone(get3DTransform(new PlayerAnimBone("torso")).scale(-1));
+            PlayerAnimBone torsoBone = get3DTransform(new PlayerAnimBone("torso"));
+            torsoBone.mulPos(-1);
+            torsoBone.mulRot(-1);
+            torsoBone.setScaleX(1 / bone.getScaleX());
+            torsoBone.setScaleY(1 / bone.getScaleY());
+            torsoBone.setScaleZ(1 / bone.getScaleZ());
 
+            MatrixUtil.applyParentsToChild(bone, Collections.singleton(torsoBone), this::getBonePosition);
         } else if ("left_leg".equals(boneName) || "right_leg".equals(boneName)) {
-            bone.applyOtherBone(get3DTransform(new PlayerAnimBone("body")));
+            PlayerAnimBone body = get3DTransform(new PlayerAnimBone("body"));
+            MatrixUtil.applyParentsToChild(bone, Collections.singleton(body), this::getBonePosition);
 
-        } if ("cape".equals(boneName)) {
+        } else if ("cape".equals(boneName)) {
             bone.rotX *= -1;
         }
         return bone;
@@ -201,15 +209,12 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     public static int pack(int id, float value) {
         id = Math.max(-99, Math.min(99, id));
         value = Math.max(-9999.99f, Math.min(9999.99f, value));
-
         int intValue = Math.round(value * 100f);
-        intValue = intValue + 1000000;
-
-        return id * 10000000 + intValue;
+        return id * 10000000 + intValue + 1000000;
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         this.ticker.cancel(true);
     }
 
@@ -221,8 +226,6 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
             Set<String> bones = new HashSet<>(controller.bones.keySet());
             for (String bendable : BendingGeometry.BENDABLE_BONES) bones.add(bendable + BendingGeometry.BEND_SUFFIX);
             return Collections.unmodifiableCollection(bones);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 }

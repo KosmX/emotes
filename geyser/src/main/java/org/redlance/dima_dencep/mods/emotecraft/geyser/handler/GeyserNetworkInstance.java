@@ -28,7 +28,6 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>();
@@ -268,11 +267,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.animations.clear();
         this.versions.clear();
         for (GeyserAnimationController controller : this.controllers.values()) {
-            try {
-                controller.close();
-            } catch (IOException e) {
-                CommonData.LOGGER.warn("Failed to close controller!", e);
-            }
+            controller.close();
         }
         this.controllers.clear();
     }
