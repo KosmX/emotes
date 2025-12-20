@@ -57,7 +57,7 @@ public class BendingGeometry {
         int boneSize = bone.getAsJsonArray("cubes").get(0).getAsJsonObject()
                 .getAsJsonArray("size").get(1).getAsInt();
 
-        JsonObject secondBone = makeCubeBendable(bone);
+        JsonObject secondBone = makeCubeBendable(bone, true);
         String name = bone.get("name").getAsString();
         for (JsonElement element : new ArrayList<>(bones.asList())) { // Fix hierarchy
             JsonObject boneObj = element.getAsJsonObject();
@@ -68,7 +68,7 @@ public class BendingGeometry {
                 if (firstCube.has("inflate") && boneSize == firstCube.getAsJsonArray("size").get(1).getAsInt()) {
                     CommonData.LOGGER.info("Second layer detected! {}", boneObj);
 
-                    JsonObject secondBoneSecondLayer = makeCubeBendable(boneObj);
+                    JsonObject secondBoneSecondLayer = makeCubeBendable(boneObj, false);
                     boneObj.add("parent", bone.get("name"));
                     secondBoneSecondLayer.add("parent", secondBone.get("name"));
                     bones.add(secondBoneSecondLayer);
@@ -85,8 +85,10 @@ public class BendingGeometry {
      * @param bone Mutable bone
      * @return Second bending bone
      */
-    private static JsonObject makeCubeBendable(JsonObject bone) {
+    private static JsonObject makeCubeBendable(JsonObject bone, boolean drawCrossSection) {
         JsonObject bendableCube = bone.getAsJsonArray("cubes").get(0).getAsJsonObject();
+        if (bendableCube.get("uv").isJsonArray()) bendableCube.add("uv", expandCubeUV(bendableCube));
+
         { // Patch size
             JsonArray size = bendableCube.getAsJsonArray("size");
             size.set(1, new JsonPrimitive(size.get(1).getAsFloat() / 2F));
@@ -95,8 +97,37 @@ public class BendingGeometry {
         JsonObject secondBendableCube = bendableCube.deepCopy();
         float secondBendableCubeSizeY = secondBendableCube.getAsJsonArray("size").get(1).getAsFloat();
         { // Patch second cube uv + pivot
-            JsonArray uv = secondBendableCube.getAsJsonArray("uv");
-            uv.set(1, new JsonPrimitive(uv.get(1).getAsFloat() + secondBendableCubeSizeY));
+            JsonObject uv = secondBendableCube.getAsJsonObject("uv");
+            String[] sides = {"north", "south", "east", "west"};
+
+            for (String side : sides) {
+                JsonObject face = uv.getAsJsonObject(side);
+
+                JsonArray uvCoords = face.getAsJsonArray("uv");
+                uvCoords.set(1, new JsonPrimitive(uvCoords.get(1).getAsFloat() + secondBendableCubeSizeY));
+
+                JsonArray uvSize = face.getAsJsonArray("uv_size");
+                uvSize.set(1, new JsonPrimitive(secondBendableCubeSizeY));
+            }
+
+            if (!drawCrossSection) uv.remove("up");
+        }
+
+        { // Patch first cube uv
+            JsonObject uv = bendableCube.getAsJsonObject("uv");
+            String[] sides = {"north", "south", "east", "west"};
+
+            for (String side : sides) {
+                JsonObject face = uv.getAsJsonObject(side);
+                JsonArray uvSize = face.getAsJsonArray("uv_size");
+                uvSize.set(1, new JsonPrimitive(secondBendableCubeSizeY));
+            }
+
+            if (drawCrossSection) {
+                uv.add("down", uv.getAsJsonObject("up").deepCopy());
+            } else {
+                uv.remove("down");
+            }
         }
 
         JsonArray secondCubes = new JsonArray();
@@ -120,5 +151,37 @@ public class BendingGeometry {
         secondBone.add("pivot", pivot);
 
         return secondBone;
+    }
+
+    public static JsonObject expandCubeUV(JsonObject cube) {
+        JsonArray uvArray = cube.getAsJsonArray("uv");
+        float u = uvArray.get(0).getAsFloat();
+        float v = uvArray.get(1).getAsFloat();
+
+        JsonArray sizeArray = cube.getAsJsonArray("size");
+        float w = sizeArray.get(0).getAsFloat();
+        float h = sizeArray.get(1).getAsFloat();
+        float d = sizeArray.get(2).getAsFloat();
+
+        JsonObject root = new JsonObject();
+        root.add("east", createFace(u, v + d, d, h));
+        root.add("north", createFace(u + d, v + d, w, h));
+        root.add("west", createFace(u + d + w, v + d, d, h));
+        root.add("south", createFace(u + d + w + d, v + d, w, h));
+        root.add("up", createFace(u + d, v, w, d));
+        root.add("down", createFace(u + d + w, v, w, d));
+
+        return root;
+    }
+
+    private static JsonObject createFace(float u, float v, float w, float h) {
+        JsonObject face = new JsonObject();
+        JsonArray uv = new JsonArray();
+        uv.add(u); uv.add(v);
+        face.add("uv", uv);
+        JsonArray size = new JsonArray();
+        size.add(w); size.add(h);
+        face.add("uv_size", size);
+        return face;
     }
 }
