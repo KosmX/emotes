@@ -80,14 +80,14 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
                     k -> new EnumMap<>(TransformType.class)
             );
 
-            bone.add("rotation", generateBone(id++, id++, id++, 0, transformType.computeIfAbsent(
+            bone.add("rotation", generateBone(true, id++, id++, id++, 0, transformType.computeIfAbsent(
                     TransformType.ROTATION, k -> new EnumMap<>(Axis.class)
             )));
-            bone.add("position", generateBone(id++, id++, id++, 0, transformType.computeIfAbsent(
+            bone.add("position", generateBone(false, id++, id++, id++, 0, transformType.computeIfAbsent(
                     TransformType.POSITION, k -> new EnumMap<>(Axis.class)
             )));
             if (!boneName.endsWith(BendingGeometry.BEND_SUFFIX)) {
-                bone.add("scale", generateBone(id++, id++, id++, 1, transformType.computeIfAbsent(
+                bone.add("scale", generateBone(false, id++, id++, id++, 1, transformType.computeIfAbsent(
                         TransformType.SCALE, k -> new EnumMap<>(Axis.class)
                 )));
             }
@@ -146,23 +146,26 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
         }
     }
 
-    private JsonArray generateBone(int x, int y, int z, float defaultValue, EnumMap<Axis, Integer> axisMap) {
+    private JsonArray generateBone(boolean rotate, int x, int y, int z, float defaultValue, EnumMap<Axis, Integer> axisMap) {
         axisMap.put(Axis.X, x);
         axisMap.put(Axis.Y, y);
         axisMap.put(Axis.Z, z);
 
         JsonArray axis = new JsonArray();
         axis.add(this.molangScript
+                .replace("{{ROTATE}}", rotate ? "rotate" : "")
                 .replace("{BONE_ID_RAW}", String.valueOf(x))
                 .replace("{BONE_ID}", String.valueOf(x).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
         );
         axis.add(this.molangScript
+                .replace("{{ROTATE}}", rotate ? "rotate" : "")
                 .replace("{BONE_ID_RAW}", String.valueOf(y))
                 .replace("{BONE_ID}", String.valueOf(y).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
         );
         axis.add(this.molangScript
+                .replace("{{ROTATE}}", rotate ? "rotate" : "")
                 .replace("{BONE_ID_RAW}", String.valueOf(z))
                 .replace("{BONE_ID}", String.valueOf(z).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
@@ -223,7 +226,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             molangScript.append("((").append(prop).append(" - ({BONE_ID_RAW} * 10000000) - 1000000) / 100) : variable.bone_{BONE_ID}_target;");
         }
 
-        molangScript.append("variable.bone_{BONE_ID} = math.lerp(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.2);");
+        molangScript.append("variable.bone_{BONE_ID} = math.lerp{{ROTATE}}(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.2);");
         molangScript.append("return variable.bone_{BONE_ID};");
 
         CommonData.LOGGER.debug("Registered {} properties!", this.registeredProperties.size());
