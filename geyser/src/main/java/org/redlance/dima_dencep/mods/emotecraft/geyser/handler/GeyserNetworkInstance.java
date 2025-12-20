@@ -31,13 +31,10 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class GeyserNetworkInstance extends AbstractNetworkInstance {
-    private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
-
     private final HashMap<Byte, Byte> versions = new HashMap<>();
     // private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final UUIDMap<Animation> animations = new UUIDMap<>();
     private final GeyserConnection session;
-    private final Future<?> ticker;
 
     private final Map<AvatarEntity, GeyserAnimationController> controllers = new WeakHashMap<>();
 
@@ -46,16 +43,6 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
     public GeyserNetworkInstance(GeyserConnection session) {
         this.session = session;
-
-        this.ticker = EXECUTOR.scheduleAtFixedRate(() -> this.controllers.values()
-                .forEach(controller -> {
-                    try {
-                        controller.run();
-                    } catch (Throwable th) {
-                        th.printStackTrace();
-                    }
-                }), 0L, 50L, TimeUnit.MILLISECONDS
-        );
     }
 
     @Override
@@ -280,6 +267,13 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.connectionType = ConnectionType.NONE;
         this.animations.clear();
         this.versions.clear();
-        this.ticker.cancel(true);
+        for (GeyserAnimationController controller : this.controllers.values()) {
+            try {
+                controller.close();
+            } catch (IOException e) {
+                CommonData.LOGGER.warn("Failed to close controller!", e);
+            }
+        }
+        this.controllers.clear();
     }
 }

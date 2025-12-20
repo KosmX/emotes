@@ -22,18 +22,33 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.*;
 
-public class GeyserAnimationController extends HumanoidAnimationController implements Runnable {
+public class GeyserAnimationController extends HumanoidAnimationController implements Runnable, Closeable {
+    private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(100, Thread.ofVirtual()
+            .name("emotecraft-animating-")
+            .uncaughtExceptionHandler((t, e) -> CommonData.LOGGER.warn("Failed to animate!", e))
+            .factory()
+    );
+
     private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
     protected final AvatarEntity avatarEntity;
+    protected final Future<?> ticker;
 
     private final Set<String> dirtyBones = new HashSet<>();
 
     public GeyserAnimationController(AvatarEntity avatarEntity) {
+        this(avatarEntity, EXECUTOR);
+    }
+
+    public GeyserAnimationController(AvatarEntity avatarEntity, ScheduledExecutorService executor) {
         super((controller, state, animationSetter) -> PlayState.STOP, MolangLoader::createNewEngine);
         this.avatarEntity = avatarEntity;
+        this.ticker = executor.scheduleAtFixedRate(this, 0L, 50L, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -193,13 +208,21 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         return id * 10000000 + intValue;
     }
 
+    @Override
+    public void close() throws IOException {
+        this.ticker.cancel(true);
+    }
+
     /**
      * A small hack that allows us to get all registered bones.
      */
     public static Collection<String> getRegisteredBones() {
-        GeyserAnimationController controller = new GeyserAnimationController(null);
-        Set<String> bones = new HashSet<>(controller.bones.keySet());
-        for (String bendable : BendingGeometry.BENDABLE_BONES) bones.add(bendable + BendingGeometry.BEND_SUFFIX);
-        return Collections.unmodifiableCollection(bones);
+        try (GeyserAnimationController controller = new GeyserAnimationController(null)) {
+            Set<String> bones = new HashSet<>(controller.bones.keySet());
+            for (String bendable : BendingGeometry.BENDABLE_BONES) bones.add(bendable + BendingGeometry.BEND_SUFFIX);
+            return Collections.unmodifiableCollection(bones);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
