@@ -159,7 +159,7 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     }
 
     public static int pack(int id, float value) {
-        id = Math.max(0, Math.min(99, id));
+        id = Math.max(-99, Math.min(99, id));
         value = Math.max(-9999.99f, Math.min(9999.99f, value));
 
         int intValue = Math.round(value * 100f);

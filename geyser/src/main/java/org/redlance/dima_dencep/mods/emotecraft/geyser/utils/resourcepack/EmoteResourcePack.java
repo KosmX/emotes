@@ -69,7 +69,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
     private JsonObject generateAnimation() {
         JsonObject bones = new JsonObject();
 
-        int id = 0;
+        int id = -98;
 
         this.identifiers.clear();
         for (String boneName : GeyserAnimationController.getRegisteredBones()) {
@@ -150,15 +150,18 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
 
         JsonArray axis = new JsonArray();
         axis.add(this.molangScript
-                .replace("{BONE_ID}", String.valueOf(x))
+                .replace("{BONE_ID_RAW}", String.valueOf(x))
+                .replace("{BONE_ID}", String.valueOf(x).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
         );
         axis.add(this.molangScript
-                .replace("{BONE_ID}", String.valueOf(y))
+                .replace("{BONE_ID_RAW}", String.valueOf(y))
+                .replace("{BONE_ID}", String.valueOf(y).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
         );
         axis.add(this.molangScript
-                .replace("{BONE_ID}", String.valueOf(z))
+                .replace("{BONE_ID_RAW}", String.valueOf(z))
+                .replace("{BONE_ID}", String.valueOf(z).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
         );
         return axis;
@@ -213,8 +216,8 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             String prop = "variable." + identifier.path();
 
             molangScript.append(prop).append(" = q.property('").append(identifier).append("');");
-            molangScript.append("variable.bone_{BONE_ID}_target = (math.floor(").append(prop).append(" / 10000000) == {BONE_ID}) ? ");
-            molangScript.append("((").append(prop).append(" - {BONE_ID} * 10000000 - 1000000) / 100) : variable.bone_{BONE_ID}_target;");
+            molangScript.append("variable.bone_{BONE_ID}_target = (math.floor(").append(prop).append(" / 10000000) == {BONE_ID_RAW}) ? ");
+            molangScript.append("((").append(prop).append(" - ({BONE_ID_RAW} * 10000000) - 1000000) / 100) : variable.bone_{BONE_ID}_target;");
         }
 
         molangScript.append("variable.bone_{BONE_ID} = math.lerp(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.3);");
