@@ -11,7 +11,7 @@ import static io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess.UNSAFE
 
 public class ReflectHacks {
     @SuppressWarnings("removal")
-    protected static final MethodHandles.Lookup TRUSTED_LOOKUP = uncheck(() -> {
+    public static final MethodHandles.Lookup TRUSTED_LOOKUP = uncheck(() -> {
         Field hackfield = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
         return (MethodHandles.Lookup) UNSAFE.getObject(UNSAFE.staticFieldBase(hackfield), UNSAFE.staticFieldOffset(hackfield));
     });

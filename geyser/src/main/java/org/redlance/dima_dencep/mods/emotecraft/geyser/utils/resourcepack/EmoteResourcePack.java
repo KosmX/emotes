@@ -21,6 +21,7 @@ import org.geysermc.geyser.api.pack.ResourcePackManifest;
 import org.geysermc.geyser.api.util.Identifier;
 import org.geysermc.geyser.pack.GeyserResourcePack;
 import org.geysermc.geyser.pack.GeyserResourcePackManifest;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.BendingGeometry;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.GeyserAnimationController;
 
 import java.io.ByteArrayOutputStream;
@@ -85,9 +86,11 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             bone.add("position", generateBone(id++, id++, id++, 0, transformType.computeIfAbsent(
                     TransformType.POSITION, k -> new EnumMap<>(Axis.class)
             )));
-            bone.add("scale", generateBone(id++, id++, id++, 1, transformType.computeIfAbsent(
-                    TransformType.SCALE, k -> new EnumMap<>(Axis.class)
-            )));
+            if (!boneName.endsWith(BendingGeometry.BEND_SUFFIX)) {
+                bone.add("scale", generateBone(id++, id++, id++, 1, transformType.computeIfAbsent(
+                        TransformType.SCALE, k -> new EnumMap<>(Axis.class)
+                )));
+            }
 
             String bedrockBone = UniversalAnimLoader.restorePlayerBoneName(boneName);
             if ("body".equals(bedrockBone)) bedrockBone = "waist";

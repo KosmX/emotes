@@ -97,6 +97,10 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
                 (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
         );
         // updateAxis(propertyManager, partKey, TransformType.SCALE, bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
+
+        if (BendingGeometry.BENDABLE_BONES.contains(partKey)) {
+            updateBend(propertyManager, partKey + BendingGeometry.BEND_SUFFIX, bone.bend);
+        }
     }
 
     protected void updateAxis(GeyserEntityPropertyManager propertyManager, String partKey, TransformType type, float x, float y, float z) {
@@ -104,6 +108,27 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.X), x));
         updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.Y), y));
         updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.Z), z));
+    }
+
+    protected void updateBend(GeyserEntityPropertyManager propertyManager, String partKey, float bend) {
+        EmoteResourcePack resourcePack = EmotecraftExt.getInstance().getResourcePack();
+
+        updateProperty(propertyManager, getAvailableProperty(), pack(
+                resourcePack.getAxisIds(partKey, TransformType.ROTATION).get(Axis.X),
+                (float) Math.toDegrees(bend)
+        ));
+
+        float radius = 2.0f;
+        float angle = Math.abs(bend);
+
+        updateProperty(propertyManager, getAvailableProperty(), pack(
+                resourcePack.getAxisIds(partKey, TransformType.POSITION).get(Axis.Y),
+                (float) (radius * (1 - Math.cos(angle)))
+        ));
+        updateProperty(propertyManager, getAvailableProperty(), pack(
+                resourcePack.getAxisIds(partKey, TransformType.POSITION).get(Axis.Z),
+                (float) -(radius * Math.sin(angle))
+        ));
     }
 
     private GeyserIntEntityProperty getAvailableProperty() {
@@ -173,6 +198,8 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
      */
     public static Collection<String> getRegisteredBones() {
         GeyserAnimationController controller = new GeyserAnimationController(null);
-        return Collections.unmodifiableCollection(controller.bones.keySet());
+        Set<String> bones = new HashSet<>(controller.bones.keySet());
+        for (String bendable : BendingGeometry.BENDABLE_BONES) bones.add(bendable + BendingGeometry.BEND_SUFFIX);
+        return Collections.unmodifiableCollection(bones);
     }
 }
