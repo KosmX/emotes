@@ -72,9 +72,9 @@ dependencies {
     }
 
     // Third-party
-    /*modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
+    modImplementation("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
         isTransitive = false
-    }*/
+    }
 
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))
