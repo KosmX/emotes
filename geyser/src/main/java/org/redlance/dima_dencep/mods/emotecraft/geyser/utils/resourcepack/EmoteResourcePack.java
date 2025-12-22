@@ -226,7 +226,10 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             molangScript.append("((").append(prop).append(" - ({BONE_ID_RAW} * 10000000) - 1000000) / 100) : variable.bone_{BONE_ID}_target;");
         }
 
-        molangScript.append("variable.bone_{BONE_ID} = math.lerp{{ROTATE}}(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.2);");
+        molangScript.append("variable.bone_{BONE_ID}_delta = math.abs(variable.bone_{BONE_ID} - variable.bone_{BONE_ID}_target);");
+        molangScript.append("variable.bone_{BONE_ID} = (variable.bone_{BONE_ID}_delta < 0.001) ? ");
+        molangScript.append("variable.bone_{BONE_ID}_target : ");
+        molangScript.append("math.lerp{{ROTATE}}(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.2);");
         molangScript.append("return variable.bone_{BONE_ID};");
 
         CommonData.LOGGER.debug("Registered {} properties!", this.registeredProperties.size());
