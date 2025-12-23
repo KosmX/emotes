@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.arch.network.client;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
@@ -9,11 +8,11 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
+import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,8 +26,8 @@ import java.util.function.Consumer;
  * - receive message (3x for 3 channels)
  * - handle configuration
  */
-public final class ClientNetwork extends AbstractNetworkInstance {
-    public static ClientNetwork INSTANCE = new ClientNetwork();
+public abstract class ClientNetwork extends AbstractNetworkInstance {
+    public static ClientNetwork INSTANCE = ServiceLoaderUtil.loadServices(ClientNetwork.class).findAny().orElseThrow();
 
     private boolean isConfiguredNormally;
 
@@ -54,17 +53,8 @@ public final class ClientNetwork extends AbstractNetworkInstance {
         sendPlayPacket(EmotePacketPayload.playPacket(byteBuffer));
     }
 
-    @ExpectPlatform
-    @Contract
-    public static boolean isServerChannelOpen(Identifier id) {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
-    @Contract
-    public static void sendPlayPacket(CustomPacketPayload packet) {
-        throw new AssertionError();
-    }
+    public abstract boolean isServerChannelOpen(Identifier id);
+    public abstract void sendPlayPacket(CustomPacketPayload packet);
 
     /**
      *

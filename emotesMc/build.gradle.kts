@@ -19,7 +19,13 @@ dependencies {
     })
 
     api(project(":emotesServer")) {
+        exclude(group = "org.jetbrains", module = "annotations")
+
         exclude(module = "gson")
+        exclude(module = "slf4j-api")
+        exclude(module = "fastutil")
+        exclude(module = "guava")
+        exclude(module = "netty-buffer")
     }
 }
 

@@ -10,7 +10,7 @@ plugins {
     id("org.redlance.dima_dencep.gradle.PublishToDiscord") version "1.0.3"
 }
 
-subprojects {
+allprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
 
