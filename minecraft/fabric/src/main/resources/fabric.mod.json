@@ -42,8 +42,8 @@
     "fabric-lifecycle-events-v1": "*",
     "fabric-rendering-v1": ">=12.5.1+fbe231d52c",
     "minecraft": ">=1.21.11",
-    "player_animation_library": ">=1.1.3+alpha.1+mc.1.21.11",
-    "fabricloader": ">=0.18.2"
+    "player_animation_library": ">=1.1.4+mc.1.21.11",
+    "fabricloader": ">=0.18.3"
   },
   "breaks": {
     "bendable_cuboids": "<1.0.6+mc.1.21.11",

@@ -15,7 +15,7 @@ dependencies {
     minecraft("com.mojang:minecraft:${minecraft_version}")
     mappings(loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.10:${parchment_version}@zip")
+        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
     })
 
     api(project(":emotesServer")) {
