@@ -1,13 +1,9 @@
-architectury {
-    common("fabric", "neoforge")
-}
-
 loom {
     accessWidenerPath = file("src/main/resources/emotes.accesswidener")
 }
 
 dependencies {
-    modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
+    modCompileOnly("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
     implementation(project(":emotesAssets"))
     implementation(project(":emotesAPI"))

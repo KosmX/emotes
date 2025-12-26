@@ -19,20 +19,8 @@ configurations.api.configure { extendsFrom(compileApi) }
 dependencies {
     paperweight.paperDevBundle("${minecraft_version}-R0.1-SNAPSHOT")
 
-    compileApi(project(":emotesServer")) {
-        exclude(group = "org.jetbrains", module = "annotations")
-
-        exclude(module = "gson")
-        exclude(module = "slf4j-api")
-        exclude(module = "fastutil")
-        exclude(module = "netty-buffer")
-        exclude(module = "jspecify")
-        exclude(module = "guava")
-        exclude(module = "error_prone_annotations")
-        exclude(module = "netty-buffer")
-    }
     compileApi(project(":emotesAssets"))
-    compileApi(project(path = ":emotesMc", configuration = "namedElements")) { isTransitive = false }
+    compileApi(project(path = ":emotesMc", configuration = "namedElements"))
 }
 
 tasks.runServer {

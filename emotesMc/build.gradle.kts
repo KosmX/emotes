@@ -15,11 +15,17 @@ dependencies {
     minecraft("com.mojang:minecraft:${minecraft_version}")
     mappings(loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.21.10:${parchment_version}@zip")
+        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
     })
 
     api(project(":emotesServer")) {
+        exclude(group = "org.jetbrains", module = "annotations")
+
         exclude(module = "gson")
+        exclude(module = "slf4j-api")
+        exclude(module = "fastutil")
+        exclude(module = "guava")
+        exclude(module = "netty-buffer")
     }
 }
 

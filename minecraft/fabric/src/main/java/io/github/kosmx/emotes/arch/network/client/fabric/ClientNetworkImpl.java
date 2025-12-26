@@ -1,16 +1,19 @@
 package io.github.kosmx.emotes.arch.network.client.fabric;
 
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("unused")
-public class ClientNetworkImpl {
-    public static boolean isServerChannelOpen(Identifier id) {
+public final class ClientNetworkImpl extends ClientNetwork {
+    @Override
+    public boolean isServerChannelOpen(Identifier id) {
         return ClientPlayNetworking.canSend(id);
     }
 
-    public static void sendPlayPacket(CustomPacketPayload payload) {
+    @Override
+    public void sendPlayPacket(CustomPacketPayload payload) {
         ClientPlayNetworking.send(payload);
     }
 }

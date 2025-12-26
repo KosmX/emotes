@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.network.neoforge;
 
+import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkMap;
@@ -13,24 +14,27 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
-public class NetworkPlatformToolsImpl {
-    public static boolean canSendPlay(ServerPlayer player, Identifier channel) {
+public final class NetworkPlatformToolsImpl implements NetworkPlatformTools {
+    @Override
+    public boolean canSendPlay(ServerPlayer player, Identifier channel) {
         return player.connection.hasChannel(channel);
     }
 
-    public static boolean canSendConfig(ServerConfigurationPacketListenerImpl packetListener, Identifier channel) {
+    @Override
+    public boolean canSendConfig(ServerConfigurationPacketListenerImpl packetListener, Identifier channel) {
         return packetListener.hasChannel(channel);
     }
 
-    public static Collection<ServerPlayer> getTrackedBy(Entity entity) {
+    @Override
+    public Collection<ServerPlayer> getTrackedBy(Entity entity) {
         ChunkMap.TrackedEntity tracked = ((ServerLevel) entity.level()).getChunkSource().chunkMap.entityMap.get(entity.getId());
         return tracked.seenBy.stream()
                 .map(ServerPlayerConnection::getPlayer)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public static MinecraftServer getServer() {
+    @Override
+    public MinecraftServer getServer() {
         return ServerLifecycleHooks.getCurrentServer();
     }
 }

@@ -16,16 +16,16 @@ public class ServiceLoaderUtil {
     public static final int HIGHEST_PRIORITY = 1000;
     public static final int LOWEST_PRIORITY = -1000;
 
-    public static <T extends IEmotecraftService> Stream<T> loadServices(Class<T> serviceClass) {
-        ModuleLayer layer = ServiceLoaderUtil.class.getModule().getLayer(); // NeoForge compat?
+    public static <T> Stream<T> loadServices(Class<T> serviceClass) {
+        ModuleLayer layer = serviceClass.getModule().getLayer(); // NeoForge compat?
 
         ServiceLoader<T> loader = layer == null ? ServiceLoader.load(serviceClass,
-                ServiceLoaderUtil.class.getClassLoader()
+                serviceClass.getClassLoader()
         ) : ServiceLoader.load(layer, serviceClass);
 
         return loader.stream()
                 .map(ServiceLoader.Provider::get)
-                .filter(IEmotecraftService::isActive);
+                .filter(service -> !(service instanceof IEmotecraftService emotecraftService) || emotecraftService.isActive());
     }
 
     public static <T extends IEmotecraftService> Stream<T> loadServicesSorted(Class<T> serviceClass) {

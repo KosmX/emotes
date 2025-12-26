@@ -13,18 +13,13 @@ loom {
     accessWidenerPath = project(":minecraft:archCommon").loom.accessWidenerPath
 }
 
-val common = configurations.register("common").get()
 val commonModule = configurations.register("commonModule").get()
-val shadowCommon = configurations.register("shadowCommon").get()
 val pomCompile = configurations.register("pomDep").get()
 
-
 configurations.apply {
-    common.extendsFrom(commonModule)
-    shadowCommon.extendsFrom(commonModule)
-    compileClasspath.configure { extendsFrom(common) }
-    runtimeClasspath.configure { extendsFrom(common) }
-    named("developmentNeoForge").configure { extendsFrom(common) }
+    compileClasspath.configure { extendsFrom(commonModule) }
+    runtimeClasspath.configure { extendsFrom(commonModule) }
+    named("developmentNeoForge").configure { extendsFrom(commonModule) }
 }
 
 dependencies {
@@ -58,13 +53,7 @@ dependencies {
     pomCompile(project(":emotesAssets"))
     pomCompile(project(":minecraft:archCommon"))
 
-    common(project(path = ":minecraft:archCommon", configuration = "namedElements")) { isTransitive = false }
-    shadowCommon(
-        project(
-            path = ":minecraft:archCommon",
-            configuration = "transformProductionNeoForge"
-        )
-    ) { isTransitive = false }
+    commonModule(project(path = ":minecraft:archCommon", configuration = "namedElements")) { isTransitive = false }
 }
 
 tasks.processResources {
@@ -90,7 +79,7 @@ java {
 
 tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.WARN
-    configurations = listOf(shadowCommon)
+    configurations = listOf(commonModule)
     archiveClassifier.set("dev-shadow")
     mergeServiceFiles()
 }
