@@ -6,7 +6,6 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.enums.Axis;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.TransformType;
-import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
 import com.zigythebird.playeranimcore.util.MatrixUtil;
 import io.github.kosmx.emotes.common.CommonData;
@@ -28,6 +27,8 @@ import java.io.Closeable;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static org.redlance.dima_dencep.mods.emotecraft.geyser.animator.PackedProperty.pack;
 
 public class GeyserAnimationController extends HumanoidAnimationController implements Runnable, Closeable {
     private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(100, Thread.ofVirtual()
@@ -119,7 +120,7 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         updateAxis(propertyManager, partKey, TransformType.ROTATION,
                 (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
         );
-        // updateAxis(propertyManager, partKey, TransformType.SCALE, bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
+        updateAxis(propertyManager, partKey, TransformType.SCALE, bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
 
         if (BendingGeometry.BENDABLE_BONES.contains(partKey)) {
             updateBend(propertyManager, partKey + BendingGeometry.BEND_SUFFIX, bone.bend);
@@ -204,13 +205,6 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
 
     protected void internalStop() {
         BedrockPacketsUtils.sendBobAnimation(this.avatarEntity);
-    }
-
-    public static int pack(int id, float value) {
-        id = Math.max(-99, Math.min(99, id));
-        value = Math.max(-9999.99f, Math.min(9999.99f, value));
-        int intValue = Math.round(value * 100f);
-        return id * 10000000 + intValue + 1000000;
     }
 
     @Override

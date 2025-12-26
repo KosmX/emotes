@@ -23,6 +23,7 @@ import org.geysermc.geyser.pack.GeyserResourcePack;
 import org.geysermc.geyser.pack.GeyserResourcePackManifest;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.BendingGeometry;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.GeyserAnimationController;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.PackedProperty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -217,13 +218,15 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
         this.registeredProperties.clear();
         for (int i = 0; i < reserved; i++) {
             Identifier identifier = Identifier.of(CommonData.MOD_ID, String.format("property_%s", i));
-            this.registeredProperties.add(event.registerIntegerProperty(PLAYER_IDENTIFIER, identifier, Integer.MIN_VALUE, Integer.MAX_VALUE));
+            this.registeredProperties.add(event.registerIntegerProperty(PLAYER_IDENTIFIER, identifier, PackedProperty.PROP_MIN, PackedProperty.PROP_MAX_USED));
 
             String prop = "variable." + identifier.path();
 
             molangScript.append(prop).append(" = q.property('").append(identifier).append("');");
-            molangScript.append("variable.bone_{BONE_ID}_target = (math.floor(").append(prop).append(" / 10000000) == {BONE_ID_RAW}) ? ");
-            molangScript.append("((").append(prop).append(" - ({BONE_ID_RAW} * 10000000) - 1000000) / 100) : variable.bone_{BONE_ID}_target;");
+            molangScript.append("variable._raw = ").append(prop).append(" + 1000000;");
+            molangScript.append("variable._id = math.floor(variable._raw / ").append(PackedProperty.SLOT).append(") - 99;");
+            molangScript.append("variable._val = (math.mod(variable._raw, ").append(PackedProperty.SLOT).append(") - ").append(PackedProperty.CENTER).append(") / ").append(PackedProperty.SCALE).append(";");
+            molangScript.append("variable.bone_{BONE_ID}_target = (variable._id == {BONE_ID_RAW}) ? ").append("variable._val : variable.bone_{BONE_ID}_target;");
         }
 
         molangScript.append("variable.bone_{BONE_ID}_delta = math.abs(variable.bone_{BONE_ID} - variable.bone_{BONE_ID}_target);");
