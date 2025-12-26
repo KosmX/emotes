@@ -154,19 +154,19 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
 
         JsonArray axis = new JsonArray();
         axis.add(this.molangScript
-                .replace("{{ROTATE}}", rotate ? "rotate" : "")
+                .replace("{LERP_VALUE}", rotate ? "0" : "1")
                 .replace("{BONE_ID_RAW}", String.valueOf(x))
                 .replace("{BONE_ID}", String.valueOf(x).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
         );
         axis.add(this.molangScript
-                .replace("{{ROTATE}}", rotate ? "rotate" : "")
+                .replace("{LERP_VALUE}", rotate ? "0" : "1")
                 .replace("{BONE_ID_RAW}", String.valueOf(y))
                 .replace("{BONE_ID}", String.valueOf(y).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
         );
         axis.add(this.molangScript
-                .replace("{{ROTATE}}", rotate ? "rotate" : "")
+                .replace("{LERP_VALUE}", rotate ? "0" : "1")
                 .replace("{BONE_ID_RAW}", String.valueOf(z))
                 .replace("{BONE_ID}", String.valueOf(z).replace("-", "_"))
                 .replace("{DEFAULT_VALUE}", String.valueOf(defaultValue))
@@ -229,10 +229,9 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             molangScript.append("variable.bone_{BONE_ID}_target = (variable._id == {BONE_ID_RAW}) ? ").append("variable._val : variable.bone_{BONE_ID}_target;");
         }
 
-        molangScript.append("variable.bone_{BONE_ID}_delta = math.abs(variable.bone_{BONE_ID} - variable.bone_{BONE_ID}_target);");
-        molangScript.append("variable.bone_{BONE_ID} = (variable.bone_{BONE_ID}_delta < 0.001) ? ");
-        molangScript.append("variable.bone_{BONE_ID}_target : ");
-        molangScript.append("math.lerp{{ROTATE}}(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.2);");
+        molangScript.append("variable.bone_{BONE_ID} = ({LERP_VALUE} == 1) ? (");
+        molangScript.append("(math.abs(variable.bone_{BONE_ID} - variable.bone_{BONE_ID}_target) < 0.001) ? variable.bone_{BONE_ID}_target : math.lerp(variable.bone_{BONE_ID}, variable.bone_{BONE_ID}_target, 0.2)");
+        molangScript.append(") : variable.bone_{BONE_ID}_target;");
         molangScript.append("return variable.bone_{BONE_ID};");
 
         CommonData.LOGGER.debug("Registered {} properties!", this.registeredProperties.size());
