@@ -1,5 +1,6 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.animator;
 
+import com.google.common.collect.Sets;
 import com.zigythebird.playeranimcore.animation.AnimationData;
 import com.zigythebird.playeranimcore.animation.HumanoidAnimationController;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
@@ -21,38 +22,25 @@ import org.geysermc.geyser.entity.properties.type.PropertyType;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
-import java.io.Closeable;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 
 import static org.redlance.dima_dencep.mods.emotecraft.geyser.animator.PackedProperty.pack;
 
-public class GeyserAnimationController extends HumanoidAnimationController implements Runnable, Closeable {
-    private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(100, Thread.ofVirtual()
-            .name("emotecraft-animating-")
-            .uncaughtExceptionHandler((t, e) -> CommonData.LOGGER.warn("Failed to animate!", e))
-            .factory()
-    );
-
+public class GeyserAnimationController extends HumanoidAnimationController {
     private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
-    private final Set<AvatarEntity> listeners = new HashSet<>();
-
-    protected final UUID avatarId;
-    protected final Future<?> ticker;
-
+    private final Set<AvatarEntity> listeners = Sets.newConcurrentHashSet();
     private final Set<String> dirtyBones = new HashSet<>();
 
-    protected GeyserAnimationController(UUID avatarId) {
-        this(avatarId, EXECUTOR);
-    }
+    protected final UUID avatarId;
 
-    protected GeyserAnimationController(UUID avatarId, ScheduledExecutorService executor) {
+    protected GeyserAnimationController(UUID avatarId) {
         super((controller, state, animationSetter) -> PlayState.STOP, MolangLoader::createNewEngine);
         this.avatarId = avatarId;
-        this.ticker = executor.scheduleAtFixedRate(this, 0L, 50L, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -70,13 +58,12 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         }
     }
 
-    @Override
-    public void run() {
+    public boolean handleFrame() {
         try {
             AnimationData data = new AnimationData(0, 1.0F, false);
             tick(data);
 
-            if (!isActive()) return;
+            if (!isActive()) return true;
             setupAnim(data);
 
             // Animate via properties
@@ -89,6 +76,11 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
                 PlayerAnimBone bone = get3DTransform(new PlayerAnimBone(partKey));
 
                 for (AvatarEntity avatarEntity : this.listeners) {
+                    if (GeyserEntityUtils.unsubscribedFromEntity(avatarEntity)) {
+                        unsubscribe(avatarEntity);
+                        continue;
+                    }
+
                     // Check propertyManager
                     GeyserEntityPropertyManager propertyManager = avatarEntity.getPropertyManager();
                     if (propertyManager == null) continue;
@@ -102,6 +94,9 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to animate {}!", this.avatarId, th);
         }
+
+        this.listeners.removeIf(GeyserEntityUtils::unsubscribedFromEntity);
+        return this.listeners.isEmpty();
     }
 
     @Override
@@ -203,7 +198,10 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
 
         try {
             Thread.sleep(Duration.ofMillis(10));
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return;
+        }
         this.lastUsedProperties.clear();
     }
 
@@ -227,19 +225,13 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         if (this.listeners.remove(avatarEntity)) BedrockPacketsUtils.sendBobAnimation(avatarEntity);
     }
 
-    @Override
-    public void close() {
-        this.ticker.cancel(true);
-    }
-
     /**
      * A small hack that allows us to get all registered bones.
      */
     public static Collection<String> getRegisteredBones() {
-        try (GeyserAnimationController controller = new GeyserAnimationController(UUID.randomUUID())) {
-            Set<String> bones = new HashSet<>(controller.bones.keySet());
-            for (String bendable : BendingGeometry.BENDABLE_BONES) bones.add(bendable + BendingGeometry.BEND_SUFFIX);
-            return Collections.unmodifiableCollection(bones);
-        }
+        GeyserAnimationController controller = new GeyserAnimationController(UUID.randomUUID());
+        Set<String> bones = new HashSet<>(controller.bones.keySet());
+        for (String bendable : BendingGeometry.BENDABLE_BONES) bones.add(bendable + BendingGeometry.BEND_SUFFIX);
+        return Collections.unmodifiableCollection(bones);
     }
 }

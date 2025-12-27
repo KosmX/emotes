@@ -35,4 +35,8 @@ public class GeyserEntityUtils {
         packet.setEmoteId(emoteId);
         emoter.getSession().sendUpstreamPacket(packet);
     }
+
+    public static boolean unsubscribedFromEntity(AvatarEntity entity) {
+        return entity.getSession().getEntityCache().getEntityByGeyserId(entity.getGeyserId()) == null;
+    }
 }

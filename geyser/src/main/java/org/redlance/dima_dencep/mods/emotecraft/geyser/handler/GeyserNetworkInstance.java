@@ -98,7 +98,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
                 if (avatarEntity != null) {
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, data.player);
-                    ControllerHolder.get(avatarEntity).triggerAnimation(data.emoteData, data.tick);
+                    ControllerHolder.INSTANCE.get(avatarEntity).triggerAnimation(data.emoteData, data.tick);
                     if (isMainAvatar(avatarEntity)) {
                         this.currentEmote = data.emoteData.get();
                     }
@@ -162,7 +162,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void stopEmote(AvatarEntity avatarEntity) {
-        ControllerHolder.get(avatarEntity).stop();
+        ControllerHolder.INSTANCE.get(avatarEntity).stop();
         GeyserEntityUtils.showEmote(avatarEntity, "");
 
         if (isMainAvatar(avatarEntity) && this.currentEmote != null) {
