@@ -7,7 +7,7 @@ plugins {
     id("architectury-plugin") version "3.4.162" apply true
     id("com.gradleup.shadow") version "9.3.0" apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
-    id("org.redlance.dima_dencep.gradle.PublishToDiscord") version "1.0.3"
+    id("org.redlance.dima_dencep.gradle.PublishToDiscord") version "1.0.4"
 }
 
 allprojects {
@@ -96,7 +96,7 @@ val ds = publishDiscord {
 
     container {
         color = kotlin.random.Random.nextInt(0x000000, 0x1000000)
-        title = "Emotecraft $mod_version for Minecraft $minecraft_version is out!"
+        title = "## ✨ Emotecraft for Minecraft $minecraft_version\n### v$mod_version is out!"
         description = "### Changes:\n${changes.replace("<br>", "\n- ")}"
         thumbnail("https://raw.githubusercontent.com/KosmX/emotes/d97b2df4ab59bbd2740f30497e96f92cb643b2df/emotesAssets/src/main/resources/emotecraft_mod_logo.png")
         timestamp(System.currentTimeMillis())
