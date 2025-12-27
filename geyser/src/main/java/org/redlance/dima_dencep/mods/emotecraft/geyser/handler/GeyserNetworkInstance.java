@@ -10,21 +10,17 @@ import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
-import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.geyser.api.connection.GeyserConnection;
-import org.geysermc.geyser.api.entity.type.player.GeyserPlayerEntity;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
-import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.Nullable;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.GeyserAnimationController;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.ControllerHolder;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,8 +30,6 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     // private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final UUIDMap<Animation> animations = new UUIDMap<>();
     private final GeyserConnection session;
-
-    private final Map<AvatarEntity, GeyserAnimationController> controllers = new WeakHashMap<>();
 
     private UUID currentEmote;
     private ConnectionType connectionType = ConnectionType.NONE;
@@ -97,21 +91,15 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         switch (Objects.requireNonNull(data.purpose)) {
             case STREAM:
                 assert data.emoteData != null;
-                PlayerEntity playerEntity = getPlayerFromUUID(data.player);
+                AvatarEntity avatarEntity = getAvatarFromUUID(data.player);
 
                 EventResult result = ClientEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, data.player);
                 if (result == EventResult.FAIL) break;
 
-                if (playerEntity != null) {
+                if (avatarEntity != null) {
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, data.player);
-
-                    //playerEntity.emotecraft$playEmote(data.emoteData, data.tick, data.isForced);
-                    // this.session.entities().showEmote(playerEntity, "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
-
-                    this.controllers.computeIfAbsent(playerEntity, GeyserAnimationController::new)
-                            .triggerAnimation(data.emoteData, data.tick);
-
-                    if (isMainPlayer(playerEntity)) {
+                    ControllerHolder.get(avatarEntity).triggerAnimation(data.emoteData, data.tick);
+                    if (isMainAvatar(avatarEntity)) {
                         this.currentEmote = data.emoteData.get();
                     }
                 } /*else {
@@ -121,13 +109,12 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
             case STOP:
                 assert data.stopEmoteID != null;
-                PlayerEntity player = getPlayerFromUUID(data.player);
+                AvatarEntity avatar = getAvatarFromUUID(data.player);
 
-                if (player != null) {
-                    ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUuid());
-                    stopEmote(player);
-
-                    if (isMainPlayer(player) && !data.isForced) {
+                if (avatar != null) {
+                    ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, avatar.getUuid());
+                    stopEmote(avatar);
+                    if (isMainAvatar(avatar) && !data.isForced) {
                         sendChatMessage("emotecraft.blockedEmote");
                     }
                 } else {
@@ -149,7 +136,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         }
     }
 
-    public void showForm() {
+    /*public void showForm() {
         SimpleForm.Builder builder = SimpleForm.builder()
                 .translator(EmotecraftLocale::getLocaleString, this.session.locale())
                 .title(CommonData.MOD_NAME);
@@ -168,20 +155,17 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
             if (animation != null) playEmote(animation, true);
         }).build();
         this.session.sendForm(simpleForm);
-    }
+    }*/
 
     public void stopEmote() {
-        stopEmote(this.session.entities().playerEntity());
+        stopEmote((AvatarEntity) this.session.entities().playerEntity());
     }
 
-    public void stopEmote(GeyserPlayerEntity player) {
-        if (player instanceof AvatarEntity entity && this.controllers.containsKey(entity)) {
-            this.controllers.get(entity).stop();
-        }
+    public void stopEmote(AvatarEntity avatarEntity) {
+        ControllerHolder.get(avatarEntity).stop();
+        GeyserEntityUtils.showEmote(avatarEntity, "");
 
-        this.session.entities().showEmote(player, "");
-
-        if (isMainPlayer(player) && this.currentEmote != null) {
+        if (isMainAvatar(avatarEntity) && this.currentEmote != null) {
             try {
                 sendMessage(new EmotePacket.Builder().configureToSendStop(this.currentEmote), null);
             } catch (IOException e) {
@@ -209,15 +193,12 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         }
     }
 
-    public PlayerEntity getPlayerFromUUID(UUID uuid) {
-        if (this.session.javaUuid().equals(uuid)) {
-            return (PlayerEntity) this.session.entities().playerEntity();
-        }
-        return ((GeyserSession) this.session).getEntityCache().getPlayerEntity(uuid);
+    public AvatarEntity getAvatarFromUUID(UUID uuid) {
+        return GeyserEntityUtils.getAvatarByUUID((GeyserSession) this.session, uuid);
     }
 
-    public boolean isMainPlayer(GeyserPlayerEntity geyserPlayer) {
-        return geyserPlayer instanceof PlayerEntity player && this.session.javaUuid().equals(player.getUuid());
+    public boolean isMainAvatar(AvatarEntity avatarEntity) {
+        return ((AvatarEntity) this.session.entities().playerEntity()).getUuid().equals(avatarEntity.getUuid());
     }
 
     @Override
@@ -266,9 +247,5 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.connectionType = ConnectionType.NONE;
         this.animations.clear();
         this.versions.clear();
-        for (GeyserAnimationController controller : this.controllers.values()) {
-            controller.close();
-        }
-        this.controllers.clear();
     }
 }

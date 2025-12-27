@@ -38,56 +38,70 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     );
 
     private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
-    protected final AvatarEntity avatarEntity;
+    private final Set<AvatarEntity> listeners = new HashSet<>();
+
+    protected final UUID avatarId;
     protected final Future<?> ticker;
 
     private final Set<String> dirtyBones = new HashSet<>();
 
-    public GeyserAnimationController(AvatarEntity avatarEntity) {
-        this(avatarEntity, EXECUTOR);
+    protected GeyserAnimationController(UUID avatarId) {
+        this(avatarId, EXECUTOR);
     }
 
-    public GeyserAnimationController(AvatarEntity avatarEntity, ScheduledExecutorService executor) {
+    protected GeyserAnimationController(UUID avatarId, ScheduledExecutorService executor) {
         super((controller, state, animationSetter) -> PlayState.STOP, MolangLoader::createNewEngine);
-        this.avatarEntity = avatarEntity;
+        this.avatarId = avatarId;
         this.ticker = executor.scheduleAtFixedRate(this, 0L, 50L, TimeUnit.MILLISECONDS);
     }
 
     @Override
     protected void setupNewAnimation() {
         super.setupNewAnimation();
-        BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, this.avatarEntity);
-        for (String partKey : this.dirtyBones) {
-            updateBone(this.avatarEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
-        }
+        for (AvatarEntity avatar : this.listeners) subscribe(avatar);
         this.dirtyBones.clear();
+    }
+
+    public void subscribe(AvatarEntity avatarEntity) {
+        this.listeners.add(avatarEntity);
+        BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, avatarEntity);
+        for (String partKey : this.dirtyBones) {
+            updateBone(avatarEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
+        }
     }
 
     @Override
     public void run() {
-        // Check propertyManager
-        GeyserEntityPropertyManager propertyManager = this.avatarEntity.getPropertyManager();
-        if (propertyManager == null) return;
+        try {
+            AnimationData data = new AnimationData(0, 1.0F, false);
+            tick(data);
 
-        AnimationData data = new AnimationData(0, 1.0F, false);
-        tick(data);
+            if (!isActive()) return;
+            setupAnim(data);
 
-        if (!isActive()) return;
-        setupAnim(data);
+            // Animate via properties
+            for (String partKey : this.activeBones.keySet()) {
+                if (!this.bones.containsKey(partKey)) {
+                    CommonData.LOGGER.debug("Unsupported bone: {}!", partKey);
+                    continue;
+                }
 
-        // Animate via properties
-        for (String partKey : this.activeBones.keySet()) {
-            if (!this.bones.containsKey(partKey)) {
-                CommonData.LOGGER.debug("Unsupported bone: {}!", partKey);
-                continue;
+                PlayerAnimBone bone = get3DTransform(new PlayerAnimBone(partKey));
+
+                for (AvatarEntity avatarEntity : this.listeners) {
+                    // Check propertyManager
+                    GeyserEntityPropertyManager propertyManager = avatarEntity.getPropertyManager();
+                    if (propertyManager == null) continue;
+                    updateBone(propertyManager, partKey, bone);
+                }
             }
 
-            updateBone(propertyManager, partKey, get3DTransform(new PlayerAnimBone(partKey)));
+            // Flush
+            flushPropertiesImmediately();
+            if (this.dirtyBones.isEmpty()) this.dirtyBones.addAll(this.activeBones.keySet());
+        } catch (Throwable th) {
+            CommonData.LOGGER.warn("Failed to animate {}!", this.avatarId, th);
         }
-
-        // Flush
-        flushPropertiesImmediately();
-        if (this.dirtyBones.isEmpty()) this.dirtyBones.addAll(this.activeBones.keySet());
     }
 
     @Override
@@ -176,14 +190,16 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     }
 
     private void flushPropertiesImmediately() {
-        GeyserEntityPropertyManager propertyManager = this.avatarEntity.getPropertyManager();
-        if (propertyManager == null || !propertyManager.hasProperties()) return;
+        for (AvatarEntity avatarEntity : this.listeners) {
+            GeyserEntityPropertyManager propertyManager = avatarEntity.getPropertyManager();
+            if (propertyManager == null || !propertyManager.hasProperties()) continue;
 
-        SetEntityDataPacket packet = new SetEntityDataPacket();
-        packet.setRuntimeEntityId(this.avatarEntity.getGeyserId());
-        propertyManager.applyFloatProperties(packet.getProperties().getFloatProperties());
-        propertyManager.applyIntProperties(packet.getProperties().getIntProperties());
-        this.avatarEntity.getSession().sendUpstreamPacketImmediately(packet);
+            SetEntityDataPacket packet = new SetEntityDataPacket();
+            packet.setRuntimeEntityId(avatarEntity.getGeyserId());
+            propertyManager.applyFloatProperties(packet.getProperties().getFloatProperties());
+            propertyManager.applyIntProperties(packet.getProperties().getIntProperties());
+            avatarEntity.getSession().sendUpstreamPacketImmediately(packet);
+        }
 
         try {
             Thread.sleep(Duration.ofMillis(10));
@@ -204,7 +220,11 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
     }
 
     protected void internalStop() {
-        BedrockPacketsUtils.sendBobAnimation(this.avatarEntity);
+        for (AvatarEntity avatarEntity : this.listeners) BedrockPacketsUtils.sendBobAnimation(avatarEntity);
+    }
+
+    public void unsubscribe(AvatarEntity avatarEntity) {
+        if (this.listeners.remove(avatarEntity)) BedrockPacketsUtils.sendBobAnimation(avatarEntity);
     }
 
     @Override
@@ -216,7 +236,7 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
      * A small hack that allows us to get all registered bones.
      */
     public static Collection<String> getRegisteredBones() {
-        try (GeyserAnimationController controller = new GeyserAnimationController(null)) {
+        try (GeyserAnimationController controller = new GeyserAnimationController(UUID.randomUUID())) {
             Set<String> bones = new HashSet<>(controller.bones.keySet());
             for (String bendable : BendingGeometry.BENDABLE_BONES) bones.add(bendable + BendingGeometry.BEND_SUFFIX);
             return Collections.unmodifiableCollection(bones);

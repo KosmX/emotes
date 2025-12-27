@@ -15,12 +15,10 @@ import org.cloudburstmc.protocol.bedrock.packet.EmoteListPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.geysermc.event.PostOrder;
 import org.geysermc.event.subscribe.Subscribe;
-import org.geysermc.geyser.api.command.Command;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
-import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCommandsEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPreInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
@@ -158,7 +156,7 @@ public class EmotecraftExt implements Extension {
         if (instance != null) instance.disconnect();
     }
 
-    @Subscribe
+    /*@Subscribe
     public void onDefineCommands(GeyserDefineCommandsEvent event) {
         event.register(Command.builder(this)
                 .name(rootCommand())
@@ -172,7 +170,7 @@ public class EmotecraftExt implements Extension {
                 )
                 .build()
         );
-    }
+    }*/
 
     @Subscribe(postOrder = PostOrder.FIRST, ignoreCancelled = true)
     public void onEmote(ClientEmoteEvent event) {
