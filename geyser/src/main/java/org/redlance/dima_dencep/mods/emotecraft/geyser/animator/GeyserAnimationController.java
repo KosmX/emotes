@@ -21,13 +21,14 @@ import org.geysermc.geyser.entity.properties.GeyserEntityPropertyManager;
 import org.geysermc.geyser.entity.properties.type.PropertyType;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry.BendingGeometry;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry.GeometryChanger;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.*;
 
 import static org.redlance.dima_dencep.mods.emotecraft.geyser.animator.PackedProperty.pack;
 
@@ -51,19 +52,26 @@ public class GeyserAnimationController extends HumanoidAnimationController {
     }
 
     public void subscribe(AvatarEntity avatarEntity) {
-        this.listeners.add(avatarEntity);
+        if (this.listeners.add(avatarEntity)) {
+            GeometryChanger.changeGeometryToBending(avatarEntity).join();
+            try {
+                Thread.sleep(Duration.ofMillis(10));
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        }
         BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, avatarEntity);
         for (String partKey : this.dirtyBones) {
             updateBone(avatarEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
         }
     }
 
-    public boolean handleFrame() {
+    protected void handleFrameInternal() {
         try {
             AnimationData data = new AnimationData(0, 1.0F, false);
             tick(data);
 
-            if (!isActive()) return true;
+            if (!isActive()) return;
             setupAnim(data);
 
             // Animate via properties
@@ -94,7 +102,10 @@ public class GeyserAnimationController extends HumanoidAnimationController {
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to animate {}!", this.avatarId, th);
         }
+    }
 
+    protected boolean handleFrame() {
+        handleFrameInternal();
         this.listeners.removeIf(GeyserEntityUtils::unsubscribedFromEntity);
         return this.listeners.isEmpty();
     }

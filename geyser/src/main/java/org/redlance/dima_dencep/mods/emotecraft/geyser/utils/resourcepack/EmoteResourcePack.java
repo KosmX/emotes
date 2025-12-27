@@ -21,7 +21,7 @@ import org.geysermc.geyser.api.pack.ResourcePackManifest;
 import org.geysermc.geyser.api.util.Identifier;
 import org.geysermc.geyser.pack.GeyserResourcePack;
 import org.geysermc.geyser.pack.GeyserResourcePackManifest;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.BendingGeometry;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry.BendingGeometry;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.GeyserAnimationController;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.PackedProperty;
 

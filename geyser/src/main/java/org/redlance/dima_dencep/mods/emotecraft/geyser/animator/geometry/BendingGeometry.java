@@ -1,4 +1,4 @@
-package org.redlance.dima_dencep.mods.emotecraft.geyser.animator;
+package org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
