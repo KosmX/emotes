@@ -1,15 +1,19 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser;
 
+import io.github.kosmx.emotes.common.CommonData;
 import javassist.ByteArrayClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import org.geysermc.geyser.extension.GeyserExtensionContainer;
 import org.geysermc.geyser.platform.standalone.GeyserStandaloneBootstrap;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ReflectHacks;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
@@ -17,8 +21,22 @@ import java.util.function.UnaryOperator;
  * Used to run Emotecraft in a dev environment.
  */
 public class GeyserBootstrap {
+    private static final Class<?> LEVEL_CLASS = ReflectHacks.uncheck(() -> Class.forName("org.apache.logging.log4j.Level"));
+    private static final MethodHandle SET_LEVEL = ReflectHacks.uncheck(() -> ReflectHacks.TRUSTED_LOOKUP.findStatic(
+            Class.forName("org.apache.logging.log4j.core.config.Configurator"),
+            "setLevel", MethodType.methodType(void.class, String.class, LEVEL_CLASS)
+    ));
+    private static final MethodHandle DEBUG_LEVEL = ReflectHacks.uncheck(() -> ReflectHacks.TRUSTED_LOOKUP.findStaticGetter(
+            LEVEL_CLASS, "DEBUG", LEVEL_CLASS
+    ));
+
     static {
         System.setProperty("java.awt.headless", "true");
+        try {
+            SET_LEVEL.invoke(CommonData.LOGGER.getName(), DEBUG_LEVEL.invoke());
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void main(String[] args) throws ReflectiveOperationException, IOException {

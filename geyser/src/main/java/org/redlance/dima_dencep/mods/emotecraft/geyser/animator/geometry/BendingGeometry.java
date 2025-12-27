@@ -39,7 +39,7 @@ public class BendingGeometry {
 
     private static void addBoneBends(JsonObject geometry) {
         String identifier = geometry.getAsJsonObject("description").get("identifier").getAsString();
-        CommonData.LOGGER.info("Patching '{}' for bends...", identifier);
+        CommonData.LOGGER.debug("Patching '{}' for bends...", identifier);
 
         JsonArray bones = geometry.getAsJsonArray("bones");
         for (JsonElement element : new ArrayList<>(bones.asList())) {
@@ -66,7 +66,7 @@ public class BendingGeometry {
                 JsonObject firstCube = boneObj.has("cubes") ? boneObj.getAsJsonArray("cubes").get(0).getAsJsonObject() : new JsonObject();
 
                 if (firstCube.has("inflate") && boneSize == firstCube.getAsJsonArray("size").get(1).getAsInt()) {
-                    CommonData.LOGGER.info("Second layer detected! {}", boneObj);
+                    CommonData.LOGGER.debug("Second layer detected! {}", boneObj);
 
                     JsonObject secondBoneSecondLayer = makeCubeBendable(boneObj, false);
                     boneObj.add("parent", bone.get("name"));
