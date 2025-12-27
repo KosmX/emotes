@@ -10,16 +10,20 @@ import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
+import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.Nullable;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.ControllerHolder;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
 
 import java.io.IOException;
@@ -57,11 +61,14 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     @Override
     public void sendMessage(EmotePacket packet, @Nullable UUID target) {
         ByteBuf buf = Unpooled.buffer();
-        packet.write(buf);
-        ((GeyserSession) this.session).sendDownstreamPacket(new ServerboundCustomPayloadPacket(
-                EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, MathHelper.readBytes(buf)
-        ));
-        buf.release();
+        try {
+            packet.write(buf);
+            ((GeyserSession) this.session).sendDownstreamPacket(new ServerboundCustomPayloadPacket(
+                    EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, MathHelper.readBytes(buf)
+            ));
+        } finally {
+            buf.release();
+        }
     }
 
     @Override
@@ -136,7 +143,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         }
     }
 
-    /*public void showForm() {
+    public void showEmoteList() {
         SimpleForm.Builder builder = SimpleForm.builder()
                 .translator(EmotecraftLocale::getLocaleString, this.session.locale())
                 .title(CommonData.MOD_NAME);
@@ -152,10 +159,10 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         SimpleForm simpleForm = builder.validResultHandler((form, response) -> {
             UUID emoteId = FormUtils.extractAnimationFromButton(response.clickedButton());
             Animation animation = this.animations.getOrDefault(emoteId, UniversalEmoteSerializer.getEmote(emoteId));
-            if (animation != null) playEmote(animation, true);
+            if (animation != null) playEmote(animation, null);
         }).build();
         this.session.sendForm(simpleForm);
-    }*/
+    }
 
     public void stopEmote() {
         stopEmote((AvatarEntity) this.session.entities().playerEntity());
@@ -180,12 +187,15 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.session.sendMessage(EmotecraftLocale.getLocaleString(key, this.session.locale()));
     }
 
-    public void playEmote(Animation animation, boolean local) {
+    public void playEmote(Animation animation, String bedrockId) {
         ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, 0, this.session.javaUuid());
         try {
             sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
-            if (local) {
-                this.session.entities().showEmote(this.session.entities().playerEntity(), "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"); // TODO translate
+            PlayerEntity playerEntity = (PlayerEntity) this.session.entities().playerEntity();
+            if (bedrockId != null) {
+                this.session.entities().showEmote(playerEntity, bedrockId);
+            } else {
+                ControllerHolder.INSTANCE.get(playerEntity).triggerAnimation(animation, 0);
             }
             this.currentEmote = animation.get();
         } catch (Throwable th) {

@@ -37,6 +37,12 @@ public class GeyserEntityUtils {
     }
 
     public static boolean unsubscribedFromEntity(AvatarEntity entity) {
-        return entity.getSession().getEntityCache().getEntityByGeyserId(entity.getGeyserId()) == null;
+        GeyserSession session = entity.getSession();
+
+        if (session.entities().playerEntity() == entity) {
+            return session.isClosed();
+        } else {
+            return session.getEntityCache().getEntityByGeyserId(entity.getGeyserId()) == null;
+        }
     }
 }

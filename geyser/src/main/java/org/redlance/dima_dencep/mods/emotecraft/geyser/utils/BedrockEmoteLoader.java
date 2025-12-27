@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class BedrockEmoteLoader extends CacheLoader<String, CompletableFuture<Animation>> {
@@ -79,6 +80,10 @@ public class BedrockEmoteLoader extends CacheLoader<String, CompletableFuture<An
     }
 
     public static CompletableFuture<Animation> loadEmote(String emoteId) {
-        return BedrockEmoteLoader.BEDROCK_KEYFRAMES.getUnchecked(emoteId);
+        try {
+            return BedrockEmoteLoader.BEDROCK_KEYFRAMES.get(emoteId);
+        } catch (Throwable th) {
+            return CompletableFuture.failedFuture(th);
+        }
     }
 }

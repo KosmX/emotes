@@ -11,14 +11,17 @@ import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.kyori.adventure.key.Key;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.cloudburstmc.protocol.bedrock.packet.EmoteListPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 import org.geysermc.event.PostOrder;
 import org.geysermc.event.subscribe.Subscribe;
+import org.geysermc.geyser.api.command.Command;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
+import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCommandsEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPreInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
@@ -156,21 +159,26 @@ public class EmotecraftExt implements Extension {
         if (instance != null) instance.disconnect();
     }
 
-    /*@Subscribe
+    @Override
+    public @NonNull String rootCommand() {
+        return "emotes-geyser";
+    }
+
+    @Subscribe
     public void onDefineCommands(GeyserDefineCommandsEvent event) {
         event.register(Command.builder(this)
-                .name(rootCommand())
+                .name("list")
                 .bedrockOnly(true)
                 .source(GeyserConnection.class)
-                .aliases(List.of("emotes", "form"))
-                .description("Emotecraft command")
+                .aliases(Collections.singletonList("emotes"))
+                .description("List of emotes")
                 .playerOnly(true)
                 .executor((source, cmd, args) ->
-                        EmotecraftExt.INSTANCES.get((GeyserConnection) source).showForm()
+                        EmotecraftExt.INSTANCES.get((GeyserConnection) source).showEmoteList()
                 )
                 .build()
         );
-    }*/
+    }
 
     @Subscribe(postOrder = PostOrder.FIRST, ignoreCancelled = true)
     public void onEmote(ClientEmoteEvent event) {
@@ -179,17 +187,17 @@ public class EmotecraftExt implements Extension {
             CompletableFuture<Animation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
 
             if (animation.isDone() && !animation.isCompletedExceptionally()) {
-                networkInstance.playEmote(animation.join(), false);
-
+                networkInstance.playEmote(animation.join(), null);
             } else {
                 networkInstance.stopEmote();
 
                 if (animation.isCompletedExceptionally()) {
-                    networkInstance.sendChatMessage("emotecraft.cantconvert");
+                    networkInstance.sendChatMessage("emotecraft.blockedEmote");
+                    CommonData.LOGGER.warn("Failed to translate emote!", animation.exceptionNow());
 
                 } else {
                     animation.thenAccept(emote -> networkInstance.playEmote(
-                            emote, true
+                            emote, event.emoteId()
                     ));
                 }
             }
