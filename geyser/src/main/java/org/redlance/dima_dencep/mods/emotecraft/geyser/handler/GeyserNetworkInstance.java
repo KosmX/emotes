@@ -22,6 +22,7 @@ import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.Serverbound
 import org.jetbrains.annotations.Nullable;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.ControllerHolder;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
@@ -170,7 +171,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
     public void stopEmote(AvatarEntity avatarEntity) {
         ControllerHolder.INSTANCE.get(avatarEntity).stop();
-        GeyserEntityUtils.showEmote(avatarEntity, "");
+        BedrockPacketsUtils.sendBobAnimation(avatarEntity);
 
         if (isMainAvatar(avatarEntity) && this.currentEmote != null) {
             try {
