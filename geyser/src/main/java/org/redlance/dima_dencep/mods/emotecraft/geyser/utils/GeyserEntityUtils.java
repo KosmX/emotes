@@ -27,9 +27,10 @@ public class GeyserEntityUtils {
 
     public static boolean unsubscribedFromEntity(AvatarEntity entity) {
         GeyserSession session = entity.getSession();
+        if (session.isClosed()) return true;
 
         if (session.entities().playerEntity() == entity) {
-            return session.isClosed();
+            return false;
         } else {
             return session.getEntityCache().getEntityByGeyserId(entity.getGeyserId()) == null;
         }
