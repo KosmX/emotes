@@ -186,7 +186,7 @@ public class GeyserAnimationController extends HumanoidAnimationController imple
         this.avatarEntity.getSession().sendUpstreamPacketImmediately(packet);
 
         try {
-            Thread.sleep(Duration.ofMillis(10 + this.avatarEntity.getSession().ping())); // IDK
+            Thread.sleep(Duration.ofMillis(10));
         } catch (InterruptedException ignored) {}
         this.lastUsedProperties.clear();
     }
