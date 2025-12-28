@@ -104,7 +104,7 @@ publishMods {
     }
 }
 
-/*tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
+tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
 
 hangarPublish.publications.register("plugin") {
     version = "${mod_version}+${minecraft_version}-paper"
@@ -120,4 +120,4 @@ hangarPublish.publications.register("plugin") {
         jar = tasks.shadowJar.flatMap { it.archiveFile }
         platformVersions = release_minecraft_versions
     }
-}*/
+}

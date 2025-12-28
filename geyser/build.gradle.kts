@@ -97,7 +97,7 @@ publishMods {
     file.set(tasks.downgradeJar.get().archiveFile) // Java 17
     // additionalFiles.from(tasks.shadowJar.get().archiveFile) // Java 21
 
-    type = ReleaseType.of(releaseType)
+    type = ReleaseType./*of(releaseType)*/ALPHA // Force alpha
     changelog = changes
     dryRun = gradle.startParameter.isDryRun
 

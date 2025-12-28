@@ -107,23 +107,26 @@ val ds = publishDiscord {
     }
 
     links {
-        from(":minecraft:neoforge", "modrinth")
-        from(":minecraft:fabric", "modrinth")
-        from(":geyser", "modrinth")
+        // NeoForge
+        from(":minecraft:neoforge", "modrinth", title = "NeoForge (Modrinth)")
+        from(":minecraft:neoforge", "curseforge", title = "Neoforge (CurseForge)")
+        nextRow()
 
+        // Fabric
+        from(":minecraft:fabric", "modrinth", title = "Fabric (Modrinth)")
+        from(":minecraft:fabric", "curseforge", title = "Fabric (CurseForge)")
+        nextRow()
+
+        // Paper
         val paper = project(":paper")
-        from(paper, "modrinth")
+        from(paper, "modrinth", title = "Paper (Modrinth)")
+        val hangarProjectName = providers.gradleProperty("hangarProjectName").getOrElse("dima_dencep/emotecraft")
+        val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/${paper.mod_version}+${paper.minecraft_version}-paper"
+        custom("Paper (Hangar)", hangarLink, Emoji.HANGAR_EMOJI)
         nextRow()
 
-        from(":minecraft:neoforge", "curseforge")
-        from(":minecraft:fabric", "curseforge")
-
-        val hangarProjectName = providers.gradleProperty("hangarProjectName")
-            .getOrElse("dima_dencep/emotecraft")
-        val ver = "${paper.mod_version}+${paper.minecraft_version}-paper"
-        val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/$ver"
-        nextRow()
-        custom("Hangar (Paper)", hangarLink, Emoji.HANGAR_EMOJI)
+        // Geyser
+        from(":geyser", "modrinth", title = "Geyser (Modrinth)")
     }
 
     footer = "||<@&926902263941849118>||"
