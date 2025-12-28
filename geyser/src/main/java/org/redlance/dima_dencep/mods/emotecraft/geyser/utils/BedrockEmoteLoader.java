@@ -37,6 +37,9 @@ public class BedrockEmoteLoader extends CacheLoader<String, CompletableFuture<An
     @Override
     public @NotNull CompletableFuture<Animation> load(@NotNull String emoteId) {
         HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.redlance.org/bugrock/v1/marketplace/get-emote-by-uuid"))
+                .header("user-agent", EmotecraftExt.getInstance().description().toString())
+                .POST(HttpRequest.BodyPublishers.ofString(emoteId))
                 .build();
 
         CommonData.LOGGER.debug("Sending request: {}", request);
