@@ -55,7 +55,14 @@ tasks {
     downgradeJar {
         dependsOn(shadowJar)
 
+        val from = project.java_version.majorVersion.toInt()
+        val to = JavaVersion.VERSION_17.majorVersion.toInt()
+
+        multiReleaseOriginal = true
+        multiReleaseVersions = (from downTo to).map { JavaVersion.toVersion(it) }
+
         downgradeTo = JavaVersion.VERSION_17
+        classpath = configurations.compileClasspath.get()
         inputFile = shadowJar.get().archiveFile
         archiveClassifier.set("")
     }
