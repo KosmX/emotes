@@ -48,4 +48,14 @@ public final class ControllerHolder {
         controller.subscribe(entity);
         return controller;
     }
+
+    public void resubscribe(AvatarEntity entity) {
+        for (GeyserAnimationController controller : this.controllers.values()) {
+            if (controller.listeners.contains(entity)) {
+                controller.unsubscribe(entity);
+                controller.subscribe(entity);
+                controller.subscribe(entity);
+            }
+        }
+    }
 }

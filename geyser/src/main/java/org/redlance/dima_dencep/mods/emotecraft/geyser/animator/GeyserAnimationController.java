@@ -34,7 +34,7 @@ import static org.redlance.dima_dencep.mods.emotecraft.geyser.animator.PackedPro
 
 public class GeyserAnimationController extends HumanoidAnimationController {
     private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
-    private final Set<AvatarEntity> listeners = Sets.newConcurrentHashSet();
+    protected final Set<AvatarEntity> listeners = Sets.newConcurrentHashSet();
     private final Set<String> dirtyBones = new HashSet<>();
 
     protected final UUID avatarId;

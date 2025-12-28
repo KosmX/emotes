@@ -31,6 +31,7 @@ import org.geysermc.geyser.util.MinecraftKey;
 import org.geysermc.mcprotocollib.protocol.data.ProtocolState;
 import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundCustomPayloadPacket;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.commands.FixGeometryCommand;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserHacks;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ReflectHacks;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.ConnectionType;
@@ -166,16 +167,24 @@ public class EmotecraftExt implements Extension {
 
     @Subscribe
     public void onDefineCommands(GeyserDefineCommandsEvent event) {
-        event.register(Command.builder(this)
+        event.register(Command.<GeyserConnection>builder(this)
                 .name("list")
                 .bedrockOnly(true)
                 .source(GeyserConnection.class)
                 .aliases(Collections.singletonList("emotes"))
                 .description("List of emotes")
                 .playerOnly(true)
-                .executor((source, cmd, args) ->
-                        EmotecraftExt.INSTANCES.get((GeyserConnection) source).showEmoteList()
-                )
+                .executor((source, cmd, args) -> EmotecraftExt.INSTANCES.get(source).showEmoteList())
+                .build()
+        );
+        event.register(Command.<GeyserConnection>builder(this)
+                .name("fix-geometry")
+                .bedrockOnly(true)
+                .source(GeyserConnection.class)
+                .aliases(Collections.singletonList("fix-bends"))
+                .description("Fix geometry")
+                .playerOnly(true)
+                .executor(new FixGeometryCommand())
                 .build()
         );
     }
