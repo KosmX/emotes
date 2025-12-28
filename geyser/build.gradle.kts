@@ -24,12 +24,23 @@ dependencies {
 
         exclude(module = "gson")
         exclude(module = "slf4j-api")
-        // exclude(module = "fastutil")
+        exclude(module = "fastutil")
         exclude(module = "netty-buffer")
         exclude(module = "jspecify")
         exclude(module = "guava")
         exclude(module = "error_prone_annotations")
         exclude(module = "netty-buffer")
+    }
+
+    // Fastutil
+    compileApi("org.cloudburstmc.fastutil.maps:byte-byte-maps:8.5.15") {
+        isTransitive = false
+    }
+    compileApi("org.cloudburstmc.fastutil.maps:byte-object-maps:8.5.15") {
+        isTransitive = false
+    }
+    compileApi("org.cloudburstmc.fastutil.commons:float-common:8.5.15") {
+        isTransitive = false
     }
 }
 
