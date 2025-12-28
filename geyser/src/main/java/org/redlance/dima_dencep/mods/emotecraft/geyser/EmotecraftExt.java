@@ -96,7 +96,7 @@ public class EmotecraftExt implements Extension {
             GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
             if (networkInstance != null && networkInstance.isPlaying() && session.isSneaking()) {
                 CommonData.LOGGER.debug("Stopping animation {}", session.name());
-                networkInstance.stopEmote(session.getPlayerEntity());
+                networkInstance.stopEmote(session.getPlayerEntity(), null);
             }
             return true;
         });
@@ -189,7 +189,11 @@ public class EmotecraftExt implements Extension {
             if (animation.isDone() && !animation.isCompletedExceptionally()) {
                 networkInstance.playEmote(animation.join(), null);
             } else {
-                networkInstance.stopEmote();
+                try {
+                    networkInstance.stopEmote(UUID.fromString(event.emoteId()));
+                } catch (IllegalArgumentException ex) { // Not uuid
+                    networkInstance.stopEmote(null);
+                }
 
                 if (animation.isCompletedExceptionally()) {
                     networkInstance.sendChatMessage("emotecraft.blockedEmote");

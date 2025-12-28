@@ -39,6 +39,7 @@ public class BedrockEmoteLoader extends CacheLoader<String, CompletableFuture<An
         HttpRequest request = HttpRequest.newBuilder()
                 .build();
 
+        CommonData.LOGGER.debug("Sending request: {}", request);
         return BedrockEmoteLoader.HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
                 .thenApply(this::parseAnimation)
                 .exceptionally(throwable -> {

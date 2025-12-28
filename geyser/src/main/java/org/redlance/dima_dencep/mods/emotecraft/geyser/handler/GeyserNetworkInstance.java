@@ -22,10 +22,7 @@ import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.Serverbound
 import org.jetbrains.annotations.Nullable;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.ControllerHolder;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.EmotecraftLocale;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.FormUtils;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -105,11 +102,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 if (result == EventResult.FAIL) break;
 
                 if (avatarEntity != null) {
-                    ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, data.player);
-                    ControllerHolder.INSTANCE.get(avatarEntity).triggerAnimation(data.emoteData, data.tick);
-                    if (isMainAvatar(avatarEntity)) {
-                        this.currentEmote = data.emoteData.get();
-                    }
+                    playEmote(avatarEntity, data.emoteData, null);
                 } /*else {
                     // this.queue.put(data.player, new QueueEntry(data.emoteData, data.tick, ClientMethods.getCurrentTick()));
                 }*/
@@ -120,8 +113,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 AvatarEntity avatar = getAvatarFromUUID(data.player);
 
                 if (avatar != null) {
-                    ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, avatar.getUuid());
-                    stopEmote(avatar);
+                    stopEmote(avatar, data.stopEmoteID);
                     if (isMainAvatar(avatar) && !data.isForced) {
                         sendChatMessage("emotecraft.blockedEmote");
                     }
@@ -165,15 +157,23 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.session.sendForm(simpleForm);
     }
 
-    public void stopEmote() {
-        stopEmote((AvatarEntity) this.session.entities().playerEntity());
+    public void stopEmote(@Nullable UUID stopEmoteID) {
+        stopEmote((AvatarEntity) this.session.entities().playerEntity(), stopEmoteID);
     }
 
-    public void stopEmote(AvatarEntity avatarEntity) {
+    public void stopEmote(AvatarEntity avatarEntity, @Nullable UUID stopEmoteID) {
+        if (stopEmoteID != null) { // TODO check
+            ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(stopEmoteID, avatarEntity.getUuid());
+        }
+
         ControllerHolder.INSTANCE.get(avatarEntity).stop();
         BedrockPacketsUtils.sendBobAnimation(avatarEntity);
 
         if (isMainAvatar(avatarEntity) && this.currentEmote != null) {
+            if (stopEmoteID == null) { // TODO check
+                ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(this.currentEmote, avatarEntity.getUuid());
+            }
+
             try {
                 sendMessage(new EmotePacket.Builder().configureToSendStop(this.currentEmote), null);
             } catch (IOException e) {
@@ -189,18 +189,25 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void playEmote(Animation animation, String bedrockId) {
+        playEmote((AvatarEntity) this.session.entities().playerEntity(), animation, bedrockId);
+    }
+
+    public void playEmote(AvatarEntity avatarEntity, Animation animation, String bedrockId) {
         ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, 0, this.session.javaUuid());
-        try {
-            sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
-            PlayerEntity playerEntity = (PlayerEntity) this.session.entities().playerEntity();
-            if (bedrockId != null) {
-                this.session.entities().showEmote(playerEntity, bedrockId);
-            } else {
-                ControllerHolder.INSTANCE.get(playerEntity).triggerAnimation(animation, 0);
+
+        if (isMainAvatar(avatarEntity)) {
+            try {
+                sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
             this.currentEmote = animation.get();
-        } catch (Throwable th) {
-            throw new RuntimeException(th);
+        }
+
+        if (avatarEntity instanceof PlayerEntity player && bedrockId != null) {
+            this.session.entities().showEmote(player, bedrockId);
+        } else {
+            ControllerHolder.INSTANCE.get(avatarEntity).triggerAnimation(animation, 0);
         }
     }
 
@@ -252,7 +259,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     @Override
     public void disconnect() {
         if (this.currentEmote != null) {
-            stopEmote();
+            stopEmote(this.currentEmote);
             this.currentEmote = null;
         }
         this.connectionType = ConnectionType.NONE;
