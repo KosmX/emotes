@@ -3,6 +3,7 @@ import org.redlance.dima_dencep.gradle.publish2discord.utils.Emoji
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
+    id("xyz.wagyourtail.jvmdowngrader") version("1.3.3") apply false
     id("dev.architectury.loom") version "1.13.467" apply false
     id("architectury-plugin") version "3.4.162" apply true
     id("com.gradleup.shadow") version "9.3.0" apply false
@@ -36,6 +37,9 @@ allprojects {
             }
         }
         maven("https://maven.neoforged.net/releases")
+        maven("https://repo.opencollab.dev/main/") {
+            name = "Geyser"
+        }
         mavenLocal()
     }
 
@@ -105,6 +109,7 @@ val ds = publishDiscord {
     links {
         from(":minecraft:neoforge", "modrinth")
         from(":minecraft:fabric", "modrinth")
+        from(":geyser", "modrinth")
 
         val paper = project(":paper")
         from(paper, "modrinth")

@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.common.tools;
 
+import io.netty.buffer.ByteBuf;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -22,5 +24,11 @@ public class MathHelper {
             return bytes;
         }
         else return byteBuffer.array();
+    }
+
+    public static byte[] readBytes(ByteBuf buf) {
+        byte[] bytes = new byte[buf.readableBytes()];
+        buf.readBytes(bytes);
+        return bytes;
     }
 }

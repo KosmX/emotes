@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GeyserRun" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.redlance.dima_dencep.mods.emotecraft.geyser.GeyserBootstrap" />
+    <module name="emotecraft.geyser.main" />
+    <option name="VM_PARAMETERS" value="-Djava.awt.headless=true -XX:+AllowEnhancedClassRedefinition" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/geyser/run" />
+    <method v="2" />
+  </configuration>
+</component>
