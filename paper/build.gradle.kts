@@ -104,10 +104,10 @@ publishMods {
     }
 }
 
-/*tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
+tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
 
 hangarPublish.publications.register("plugin") {
-    version = "${mod_version}+${minecraft_version}-paper"
+    version = "${mod_version}+${minecraft_version}"
     channel = when (releaseType) { // convert to set channel names
         "stable" -> "Release"
         "beta" -> "Beta"
@@ -120,4 +120,4 @@ hangarPublish.publications.register("plugin") {
         jar = tasks.shadowJar.flatMap { it.archiveFile }
         platformVersions = release_minecraft_versions
     }
-}*/
+}
