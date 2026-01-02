@@ -46,11 +46,14 @@ dependencies {
 
 tasks {
     processResources {
+        val apiVersion = (project.properties["geyser_version"] as String).removeSuffix("-SNAPSHOT")
+
         inputs.property("version", version)
         inputs.property("description", mod_description)
+        inputs.property("apiversion", apiVersion)
 
         filesMatching("extension.yml") {
-            expand("version" to version, "description" to mod_description)
+            expand("version" to version, "description" to mod_description, "apiversion" to apiVersion)
         }
     }
 

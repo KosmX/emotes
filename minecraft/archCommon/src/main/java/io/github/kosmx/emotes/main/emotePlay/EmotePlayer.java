@@ -54,7 +54,6 @@ public class EmotePlayer extends PlayerAnimationController {
     }
 
     @Override
-    @SuppressWarnings("UnstableApiUsage")
     public void stop() {
         super.stop();
         stopTriggeredAnimation();
