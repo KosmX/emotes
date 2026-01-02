@@ -11,18 +11,22 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookPage;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractFastChooseWidget extends AbstractWidget implements ContainerEventHandler {
-    protected final List<AbstractWidget> elements = new ArrayList<>();
+    private final List<AbstractWidget> elements = new ArrayList<>();
+    private final List<IChooseElement> chooseElements = new ArrayList<>();
+
     public final FastChooseController controller;
 
     @Nullable
@@ -77,6 +81,17 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     @Override
     public @NotNull List<AbstractWidget> children() {
         return this.elements;
+    }
+
+    protected void addChild(AbstractWidget widget) {
+        this.elements.add(widget);
+        if (widget instanceof IChooseElement element) {
+            this.chooseElements.add(element);
+        }
+    }
+
+    public List<IChooseElement> getChooseElements() {
+        return this.chooseElements;
     }
 
     @Override
@@ -184,5 +199,14 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     @Override
     public void setFocused(boolean focused) {
         ContainerEventHandler.super.setFocused(focused);
+    }
+
+    @Override
+    public boolean keyPressed(@NonNull KeyEvent event) {
+        if (this.controller.supportsKeyboardNavigation()) {
+            if (event.isLeft()) onBackButton(this.backButton);
+            if (event.isRight()) onForwardButton(this.forwardButton);
+        }
+        return ContainerEventHandler.super.keyPressed(event);
     }
 }

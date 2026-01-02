@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
 import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
+import org.joml.Vector2f;
 
 public class PlayerChooseCircleElement extends PlayerChooseElement {
     protected final float angle;
@@ -9,6 +10,12 @@ public class PlayerChooseCircleElement extends PlayerChooseElement {
     public PlayerChooseCircleElement(AbstractFastChooseWidget parent, GameProfile profile, int id, float angle) {
         super(parent, profile, id);
         this.angle = angle;
+    }
+
+    @Override
+    protected void getDirectionVector(Vector2f out) {
+        float rad = (float) Math.toRadians(this.angle);
+        out.set((float) Math.sin(rad), (float) Math.cos(rad));
     }
 
     @Override

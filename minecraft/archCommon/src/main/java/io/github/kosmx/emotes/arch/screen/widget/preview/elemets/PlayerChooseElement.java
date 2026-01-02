@@ -15,6 +15,7 @@ import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget
 import io.github.kosmx.emotes.main.EmoteHolder;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -23,6 +24,8 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import org.joml.Vector2f;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -51,6 +54,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     }
 
     protected abstract void updateRectangle(float progress);
+    protected abstract void getDirectionVector(Vector2f out);
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -65,6 +69,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         if (isHoveredOrFocused() && doHoverPart) renderHover(guiGraphics);
 
         EmoteHolder emoteHolder = getEmote();
+        if (this.parent.controller.supportsKeyboardNavigation() && emoteHolder != null) renderTileId(guiGraphics, easedProgress);
 
         if (emoteHolder != null && PlatformTools.getConfig().showIconsIfPossible.get() && emoteHolder.getIconIdentifier() != null) {
             guiGraphics.blit(RenderPipelines.GUI_TEXTURED, emoteHolder.getIconIdentifier(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
@@ -90,6 +95,37 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     protected void renderHover(GuiGraphics guiGraphics) {
         guiGraphics.fill(getX(), getY(), getRight(), getBottom(), ARGB.color(128, 66, 66, 66));
+    }
+
+    protected void renderTileId(GuiGraphics gg, float easedProgress) {
+        Vector2f dir = new Vector2f();
+        getDirectionVector(dir);
+        if (dir.x == 0f && dir.y == 0f) return;
+
+        float inv = Mth.invSqrt(dir.x * dir.x + dir.y * dir.y);
+        float nx = dir.x * inv, ny = dir.y * inv;
+
+        float cx0 = getX() + getWidth() * 0.5f;
+        float cy0 = getY() + getHeight() * 0.5f;
+
+        float cx1 = parent.getX() + parent.getWidth() * 0.5f;
+        float cy1 = parent.getY() + parent.getHeight() * 0.5f;
+
+        float t = 1f - easedProgress;
+        float cx = Mth.lerp(t, cx0, cx1);
+        float cy = Mth.lerp(t, cy0, cy1);
+
+        float halfW = getWidth() * 0.5f;
+        float halfH = getHeight() * 0.5f;
+        float edge = Math.min(halfW / Math.abs(nx), halfH / Math.abs(ny));
+        float offset = edge + 14f + Math.min(getWidth(), getHeight()) * 0.25f * t;
+
+        float px = cx + nx * offset;
+        float py = cy + ny * offset;
+
+        Font font = Minecraft.getInstance().font;
+        String s = Integer.toString(this.id + 1);
+        gg.drawString(font, s, Math.round(px - font.width(s) / 2f), Math.round(py - font.lineHeight / 2f), 0xFFFFFFFF, true);
     }
 
     @Override

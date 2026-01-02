@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.CommonComponents;
+import org.jspecify.annotations.NonNull;
 
 public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
     private final boolean animated;
@@ -22,34 +23,34 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
 
         GameProfile profile = Minecraft.getInstance().getGameProfile();
         if (PlatformTools.getConfig().oldChooseWheel.get()) {
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 0, 0F));
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 1, 45F));
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 2, 90F));
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 3, 135F));
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 4, 180f));
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 5, 225F));
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 6, 270F));
-            this.elements.add(new PlayerChooseCircleElement(this, profile, 7, 315F));
+            addChild(new PlayerChooseCircleElement(this, profile, 0, 0F));
+            addChild(new PlayerChooseCircleElement(this, profile, 1, 45F));
+            addChild(new PlayerChooseCircleElement(this, profile, 2, 90F));
+            addChild(new PlayerChooseCircleElement(this, profile, 3, 135F));
+            addChild(new PlayerChooseCircleElement(this, profile, 4, 180f));
+            addChild(new PlayerChooseCircleElement(this, profile, 5, 225F));
+            addChild(new PlayerChooseCircleElement(this, profile, 6, 270F));
+            addChild(new PlayerChooseCircleElement(this, profile, 7, 315F));
         } else {
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 0, -1, -1));
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 1, 0, -1));
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 2, 1, -1));
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 3, -1, 0));
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 4, 1, 0));
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 5, -1, 1));
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 6, 0, 1));
-            this.elements.add(new PlayerChooseSquareElement(this, profile, 7, 1, 1));
+            addChild(new PlayerChooseSquareElement(this, profile, 0, -1, -1));
+            addChild(new PlayerChooseSquareElement(this, profile, 1, 0, -1));
+            addChild(new PlayerChooseSquareElement(this, profile, 2, 1, -1));
+            addChild(new PlayerChooseSquareElement(this, profile, 3, -1, 0));
+            addChild(new PlayerChooseSquareElement(this, profile, 4, 1, 0));
+            addChild(new PlayerChooseSquareElement(this, profile, 5, -1, 1));
+            addChild(new PlayerChooseSquareElement(this, profile, 6, 0, 1));
+            addChild(new PlayerChooseSquareElement(this, profile, 7, 1, 1));
         }
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {
         defaultButtonNarrationText(narrationElementOutput);
     }
 
     @Override
     public void tick() {
-        for (AbstractWidget widget : this.elements) {
+        for (AbstractWidget widget : this.children()) {
             if (widget instanceof PlayerPreview preview) preview.tick();
         }
         if (this.animated) {

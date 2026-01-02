@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.widget.preview.elemets;
 
 import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
+import org.joml.Vector2f;
 
 public class PlayerChooseSquareElement extends PlayerChooseElement {
     protected final int dx;
@@ -11,6 +12,11 @@ public class PlayerChooseSquareElement extends PlayerChooseElement {
         super(parent, profile, id);
         this.dx = dx;
         this.dy = dy;
+    }
+
+    @Override
+    protected void getDirectionVector(Vector2f out) {
+        out.set((float) dx, (float) dy);
     }
 
     @Override

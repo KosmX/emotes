@@ -47,6 +47,7 @@
   "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "Если параметр stopTick стоит по умолчанию, Emotecraft изменит его на последний ключевой кадр. Проверяет только JSON-эмоции",
   "emotecraft.otherconfig.alwaysOpenScreen": "Открывать экран эмоций даже при отсоединенной камере",
   "emotecraft.otherconfig.alwaysOpenScreen.tooltip": "Некоторые моды (Freecam) могут контролировать движения игрока даже при отсоединённой камере. Эта настройка переопределяет состояние экрана",
+  "emotecraft.otherconfig.enableWheelKeyboardNav": "Включить навигацию с помощью клавиатуры на колесе выбора",
   "emotecraft.emotelist": "Все эмоции",
   "emotecraft.no_server": "На сервере не установлен Emotecraft! Другие игроки не увидят, проигрываете ли Вы эмоции",
   "emotecraft.different_server": "Сервер имеет другую версию Emotecraft, Ваши эмоции могут проигрываться некорректно для других игроков",

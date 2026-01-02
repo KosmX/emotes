@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
@@ -13,12 +14,15 @@ import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
+
+import java.util.List;
 
 public class FastMenuScreen extends Screen implements FastChooseController {
     protected static final Component TITLE = Component.translatable("emotecraft.fastmenu");
@@ -87,7 +91,15 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     public boolean keyPressed(@NonNull KeyEvent keyEvent) {
+        if (supportsKeyboardNavigation()) {
+            List<IChooseElement> chooseElements = this.fastMenu.getChooseElements();
+            int digit = keyEvent.getDigit() - 1;
+            if (digit >= 0 && digit < chooseElements.size() && onClick(chooseElements.get(digit), keyEvent, false)) {
+                return true;
+            }
+        }
         if (super.keyPressed(keyEvent)) {
+            if (supportsKeyboardNavigation() && (keyEvent.isRight() || keyEvent.isLeft())) this.fastMenu.keyPressed(keyEvent); // Force
             return true;
         }
         if (EmotecraftClientMod.OPEN_MENU_KEY.matches(keyEvent)) {
@@ -138,7 +150,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     }
 
     @Override
-    public boolean onClick(IChooseElement element, MouseButtonEvent event, boolean unused) {
+    public boolean onClick(IChooseElement element, InputWithModifiers event, boolean unused) {
         if(element.getEmote() != null){
             boolean bl = element.getEmote().playEmote();
             if (bl) Minecraft.getInstance().setScreen(null);
@@ -150,5 +162,10 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     @Override
     public boolean doesShowInvalid() {
         return false;
+    }
+
+    @Override
+    public boolean supportsKeyboardNavigation() {
+        return PlatformTools.getConfig().enableWheelKeyboardNav.get();
     }
 }

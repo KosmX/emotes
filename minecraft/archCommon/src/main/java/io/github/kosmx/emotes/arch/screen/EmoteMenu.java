@@ -18,6 +18,7 @@ import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
@@ -268,9 +269,9 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     }
 
     @Override
-    public boolean onClick(IChooseElement element, MouseButtonEvent event, boolean bl) {
+    public boolean onClick(IChooseElement element, InputWithModifiers event, boolean bl) {
         if (activeKeyTime != 0) return false;
-        if (event.button() == 1) {
+        if (event.input() == 1) {
             element.clearEmote();
             return true;
         } else if (list != null && list.getFocused() != null) {
@@ -289,5 +290,10 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     @Override
     public boolean doesShowInvalid() {
         return true;
+    }
+
+    @Override
+    public boolean supportsKeyboardNavigation() {
+        return false;
     }
 }
