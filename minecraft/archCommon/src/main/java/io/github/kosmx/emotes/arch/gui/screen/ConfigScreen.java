@@ -9,10 +9,7 @@ import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.OptionsList;
-import net.minecraft.client.gui.components.StringWidget;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +19,7 @@ import net.minecraft.network.chat.Component;
 
 import java.text.DecimalFormat;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -107,8 +105,33 @@ public class ConfigScreen extends OptionsSubScreen {
                         d2i.apply(floatEntry.getConfigVal()),
                         integer -> floatEntry.setConfigVal(i2d.apply(integer))
                 ));
+            } else if (entry instanceof SerializableConfig.EnumConfigEntry<?> enumEntry) {
+                addEnumEntry(options, tooltip, enumEntry);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Enum<T>> void addEnumEntry(OptionsList options, OptionInstance.TooltipSupplier<?> tooltip, SerializableConfig.EnumConfigEntry<T> entry) {
+        Class<T> enumClass = entry.getEnumClass();
+        T[] values = enumClass.getEnumConstants();
+
+        OptionInstance.CaptionBasedToString<T> valueLabel = (component, value) -> Options.genericValueLabel(component, Component.literal(value.name()));
+
+        Codec<T> codec = Codec.STRING.xmap(
+                s -> Enum.valueOf(enumClass, s),
+                Object::toString
+        );
+
+        options.addBig(new OptionInstance<>(
+                "emotecraft.otherconfig." + entry.getName(),
+                (OptionInstance.TooltipSupplier<T>) tooltip,
+                valueLabel,
+                new OptionInstance.Enum<>(List.of(values), codec),
+                codec,
+                entry.get(),
+                entry::set
+        ));
     }
 
     private void resetAll(boolean bl) {

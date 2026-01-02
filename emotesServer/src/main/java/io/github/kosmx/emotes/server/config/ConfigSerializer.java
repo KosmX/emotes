@@ -38,14 +38,14 @@ public class ConfigSerializer<T extends SerializableConfig> implements JsonDeser
         String id = null;
         if (node.has(entry.getName())) {
             id = entry.getName();
-
-        } else if (node.has(entry.getOldConfigName())) {
-            id = entry.getOldConfigName();
+        } else {
+            String old = entry.getOldConfigName();
+            if (old != null && node.has(old)) {
+                id = old;
+            }
         }
 
-        if (id == null)
-            return;
-
+        if (id == null) return;
         entry.set(context.deserialize(node.get(id), entry.get().getClass()));
     }
 

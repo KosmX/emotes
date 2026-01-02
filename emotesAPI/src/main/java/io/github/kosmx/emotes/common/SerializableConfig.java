@@ -157,4 +157,40 @@ public class SerializableConfig {
             super(name, defVal, hasTooltip, collection, hidden);
         }
     }
+
+    public static class EnumConfigEntry<E extends Enum<E>> extends ConfigEntry<E> {
+        private final Class<E> enumClass;
+
+        public EnumConfigEntry(String name, String oldconfig, E defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden) {
+            super(name, oldconfig, defVal, hasTooltip, collection, hidden);
+            this.enumClass = defVal.getDeclaringClass();
+        }
+
+        public EnumConfigEntry(String name, String oldconfig, E defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
+            this(name, oldconfig, defVal, hasTooltip, collection, false);
+        }
+
+        public EnumConfigEntry(String name, E defVal, boolean hasTooltip, List<ConfigEntry<?>> collection) {
+            this(name, null, defVal, hasTooltip, collection, false);
+        }
+
+        public EnumConfigEntry(String name, E defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden) {
+            this(name, null, defVal, hasTooltip, collection, hidden);
+        }
+
+        public EnumConfigEntry(String name, E defVal, List<ConfigEntry<?>> collection, boolean hidden) {
+            this(name, null, defVal, false, collection, hidden);
+        }
+
+        public Class<E> getEnumClass() {
+            return this.enumClass;
+        }
+
+        @Override
+        public void set(E newValue) {
+            if (newValue == null) throw new NullPointerException("Enum value cannot be null for " + name);
+            if (newValue.getDeclaringClass() != enumClass) throw new IllegalArgumentException("Wrong enum type for " + name + ": " + newValue.getDeclaringClass());
+            super.set(newValue);
+        }
+    }
 }

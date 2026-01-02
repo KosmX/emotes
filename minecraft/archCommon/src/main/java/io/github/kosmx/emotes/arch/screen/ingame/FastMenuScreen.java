@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
 import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget;
+import io.github.kosmx.emotes.main.config.CloseWheel;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -98,27 +99,44 @@ public class FastMenuScreen extends Screen implements FastChooseController {
                 return true;
             }
         }
+        if (PlatformTools.getConfig().closeWheelType.get() == CloseWheel.PRESS && EmotecraftClientMod.OPEN_MENU_KEY.matches(keyEvent)) {
+            return onToggleKey(keyEvent);
+        }
         if (super.keyPressed(keyEvent)) {
             if (supportsKeyboardNavigation() && (keyEvent.isRight() || keyEvent.isLeft())) this.fastMenu.keyPressed(keyEvent); // Force
-            return true;
-        }
-        if (EmotecraftClientMod.OPEN_MENU_KEY.matches(keyEvent)) {
-            onClose();
             return true;
         }
         return false;
     }
 
     @Override
+    public boolean keyReleased(@NonNull KeyEvent keyEvent) {
+        if (PlatformTools.getConfig().closeWheelType.get() == CloseWheel.HOLD && EmotecraftClientMod.OPEN_MENU_KEY.matches(keyEvent)) {
+            return onToggleKey(keyEvent);
+        }
+        return super.keyReleased(keyEvent);
+    }
+
+    @Override
     public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean bl) {
-        if (super.mouseClicked(event, bl)) {
-            return true;
+        if (PlatformTools.getConfig().closeWheelType.get() == CloseWheel.PRESS && EmotecraftClientMod.OPEN_MENU_KEY.matchesMouse(event)) {
+            return onToggleKey(event);
         }
-        if (EmotecraftClientMod.OPEN_MENU_KEY.matchesMouse(event)) {
-            onClose();
-            return true;
+        return super.mouseClicked(event, bl);
+    }
+
+    @Override
+    public boolean mouseReleased(@NonNull MouseButtonEvent event) {
+        if (PlatformTools.getConfig().closeWheelType.get() == CloseWheel.HOLD && EmotecraftClientMod.OPEN_MENU_KEY.matchesMouse(event)) {
+            return onToggleKey(event);
         }
-        return false;
+        return super.mouseReleased(event);
+    }
+
+    @SuppressWarnings("unused")
+    protected boolean onToggleKey(InputWithModifiers event) {
+        onClose();
+        return true;
     }
 
     @Override

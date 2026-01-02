@@ -20,6 +20,7 @@ public class ClientConfig extends SerializableConfig {
     public final ConfigEntry<Boolean> oldChooseWheel = new ConfigEntry<>("oldChooseWheel", false, false, legacy);
     public final ConfigEntry<Boolean> showIconsIfPossible = new ConfigEntry<>("showIconsIfPossible", false, false, legacy);
 
+    public final EnumConfigEntry<CloseWheel> closeWheelType = new EnumConfigEntry<>("closeWheelType", CloseWheel.PRESS, true, basics);
     public final ConfigEntry<Boolean> enableWheelKeyboardNav = new ConfigEntry<>("enableWheelKeyboardNav", true, false, basics);
     public final ConfigEntry<Boolean> enablePerspective = new ConfigEntry<>("perspective", true, false, basics);
     public final ConfigEntry<Boolean> frontAsTPPerspective = new ConfigEntry<>("default3rdPersonFront", false, false, basics);
