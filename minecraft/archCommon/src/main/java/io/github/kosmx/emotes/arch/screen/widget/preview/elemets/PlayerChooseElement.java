@@ -125,7 +125,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
         Font font = Minecraft.getInstance().font;
         String s = Integer.toString(this.id + 1);
-        gg.drawString(font, s, Math.round(px - font.width(s) / 2f), Math.round(py - font.lineHeight / 2f), 0xFFFFFFFF, true);
+        gg.drawString(font, s, Math.round(px - font.width(s) / 2f), Math.round(py - font.lineHeight / 2f), -1);
     }
 
     @Override
