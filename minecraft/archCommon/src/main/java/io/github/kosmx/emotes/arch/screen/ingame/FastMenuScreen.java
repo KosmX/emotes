@@ -18,6 +18,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 public class FastMenuScreen extends Screen implements FastChooseController {
     protected static final Component TITLE = Component.translatable("emotecraft.fastmenu");
@@ -25,7 +26,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     private static final Component WARN_NO_EMOTECRAFT = Component.translatable("emotecraft.no_server");
     private static final Component WARN_ONLY_PROXY = Component.translatable("emotecraft.only_proxy");
 
-    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 0, HeaderAndFooterLayout.DEFAULT_HEADER_AND_FOOTER_HEIGHT);
     protected final Screen parent;
 
     protected AbstractFastChooseWidget fastMenu;
@@ -37,6 +38,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     public void init() {
+        this.layout.setHeaderHeight(this.font.lineHeight * 2);
         if (ClientPacketManager.isRemoteAvailable()) {
             // this.layout.addTitleHeader(getTitle(), this.font); TODO Do we want this?
             this.layout.setHeaderHeight(0);
@@ -79,12 +81,12 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     }
 
     @Override
-    protected void renderBlurredBackground(GuiGraphics guiGraphics) {
+    protected void renderBlurredBackground(@NonNull GuiGraphics guiGraphics) {
         // no-op
     }
 
     @Override
-    public boolean keyPressed(KeyEvent keyEvent) {
+    public boolean keyPressed(@NonNull KeyEvent keyEvent) {
         if (super.keyPressed(keyEvent)) {
             return true;
         }
@@ -96,7 +98,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+    public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean bl) {
         if (super.mouseClicked(event, bl)) {
             return true;
         }
