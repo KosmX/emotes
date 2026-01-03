@@ -88,6 +88,9 @@ tasks {
 
     jar {
         archiveClassifier.set("dev")
+        manifest {
+            attributes("Multi-Release" to true)
+        }
     }
 
     assemble {
