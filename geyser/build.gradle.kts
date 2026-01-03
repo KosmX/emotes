@@ -45,6 +45,8 @@ dependencies {
     compileApi("org.redlance:common-utils-common:1.0.0") {
         isTransitive = false
     }
+    compileApi("org.ow2.asm:asm:9.9.1")
+    compileApi("org.ow2.asm:asm-commons:9.9.1")
 }
 
 tasks {
@@ -65,8 +67,8 @@ tasks {
         archiveClassifier.set("shaded")
         mergeServiceFiles()
 
-        relocate("team.unnamed.mocha", "com.zigythebird.playeranim.lib.mochafloats")
         relocate("javassist", "com.zigythebird.playeranim.lib.javassist")
+        relocate("org.objectweb", "com.zigythebird.playeranim.lib.ow")
     }
 
     downgradeJar {
