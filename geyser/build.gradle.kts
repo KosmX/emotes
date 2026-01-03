@@ -42,6 +42,9 @@ dependencies {
     compileApi("org.cloudburstmc.fastutil.commons:float-common:8.5.15") {
         isTransitive = false
     }
+    compileApi("org.redlance:common-utils-common:1.0.0") {
+        isTransitive = false
+    }
 }
 
 tasks {

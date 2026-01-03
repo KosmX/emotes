@@ -9,14 +9,14 @@ import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.common.CommonData;
 import org.geysermc.geyser.api.skin.SkinGeometry;
 import org.geysermc.geyser.skin.SkinManager;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ReflectHacks;
+import org.redlance.common.utils.ReflectUtils;
 
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.Set;
 
 public class BendingGeometry {
-    private static final VarHandle SKIN_MANAGER_GEOMETRY = ReflectHacks.uncheck(() -> ReflectHacks.TRUSTED_LOOKUP.findStaticVarHandle(
+    private static final VarHandle SKIN_MANAGER_GEOMETRY = ReflectUtils.uncheck(() -> ReflectUtils.TRUSTED_LOOKUP.findStaticVarHandle(
             SkinManager.class, "GEOMETRY", String.class
     ));
 

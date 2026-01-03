@@ -33,7 +33,7 @@ import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.Clientbound
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.commands.FixGeometryCommand;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserHacks;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ReflectHacks;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ProtocolUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.ConnectionType;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
@@ -125,7 +125,7 @@ public class EmotecraftExt implements Extension {
             session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, MathHelper.readBytes(byteBuf)));
             byteBuf.release();
 
-            if (ReflectHacks.getProtocol(session).getOutboundState() == ProtocolState.GAME) {
+            if (ProtocolUtils.getProtocol(session).getOutboundState() == ProtocolState.GAME) {
                 GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.get(session);
 
                 if (networkInstance.getConnectionType() == ConnectionType.NONE) {
@@ -141,7 +141,7 @@ public class EmotecraftExt implements Extension {
     private void onEmotecraftPayload(GeyserConnection session, Key channel, byte[] bytes) {
         GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
         if (networkInstance.getConnectionType() == ConnectionType.NONE) {
-            if (ReflectHacks.getProtocol((GeyserSession) session).getOutboundState() == ProtocolState.CONFIGURATION) {
+            if (ProtocolUtils.getProtocol((GeyserSession) session).getOutboundState() == ProtocolState.CONFIGURATION) {
                 CommonData.LOGGER.debug("Configuring emotecraft...");
                 networkInstance.sendC2SConfig();
             }

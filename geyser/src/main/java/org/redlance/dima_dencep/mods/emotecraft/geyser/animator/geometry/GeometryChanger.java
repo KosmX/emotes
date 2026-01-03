@@ -11,7 +11,7 @@ import org.geysermc.geyser.entity.type.player.AvatarEntity;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.skin.SkinManager;
 import org.geysermc.geyser.skin.SkinProvider;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ReflectHacks;
+import org.redlance.common.utils.ReflectUtils;
 
 import java.awt.*;
 import java.lang.invoke.MethodHandle;
@@ -19,10 +19,10 @@ import java.lang.invoke.MethodType;
 import java.util.concurrent.CompletableFuture;
 
 public class GeometryChanger {
-    private static final MethodHandle REQUEST_SKIN_DATA = ReflectHacks.uncheck(() -> ReflectHacks.TRUSTED_LOOKUP.findStatic(
+    private static final MethodHandle REQUEST_SKIN_DATA = ReflectUtils.uncheck(() -> ReflectUtils.TRUSTED_LOOKUP.findStatic(
             SkinProvider.class, "requestSkinData", MethodType.methodType(CompletableFuture.class, AvatarEntity.class, GeyserSession.class)
     ));
-    private static final MethodHandle GET_SKIN = ReflectHacks.uncheck(() -> ReflectHacks.TRUSTED_LOOKUP.findStatic(
+    private static final MethodHandle GET_SKIN = ReflectUtils.uncheck(() -> ReflectUtils.TRUSTED_LOOKUP.findStatic(
             SkinManager.class, "getSkin", MethodType.methodType(SerializedSkin.class, GeyserSession.class, String.class, Skin.class, Cape.class, SkinGeometry.class)
     ));
 
