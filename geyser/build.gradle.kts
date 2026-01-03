@@ -67,6 +67,7 @@ tasks {
         archiveClassifier.set("shaded")
         mergeServiceFiles()
 
+        relocate("team.unnamed.mocha", "com.zigythebird.playeranim.lib.mochafloats")
         relocate("javassist", "com.zigythebird.playeranim.lib.javassist")
         relocate("org.objectweb", "com.zigythebird.playeranim.lib.ow")
     }

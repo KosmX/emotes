@@ -8,21 +8,24 @@ import java.net.URI;
 import java.security.CodeSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.jar.JarFile;
 
 public final class GeyserRelocationIndex extends Remapper {
     private final Map<String, String> rootToTarget;
+    private final Function<String, Boolean> hasOwnClass;
 
     private static final String GEYSER_SHADED_BASE = "org/geysermc/geyser/shaded/";
     private static final String GEYSER_PLATFORM_BASE = "org/geysermc/geyser/platform/";
     private static final String SHADED_SEGMENT = "shaded/";
 
-    private GeyserRelocationIndex(Map<String, String> rootToTarget) {
+    private GeyserRelocationIndex(Map<String, String> rootToTarget, Function<String, Boolean> hasOwnClass) {
         super(Opcodes.ASM9);
         this.rootToTarget = rootToTarget;
+        this.hasOwnClass = hasOwnClass;
     }
 
-    public static GeyserRelocationIndex fromGeyserJar(Class<?> geyserAnchor) {
+    public static GeyserRelocationIndex fromGeyserJar(Class<?> geyserAnchor, Function<String, Boolean> hasOwnClass) {
         File jarFile = jarFileOf(geyserAnchor);
         Map<String, String> map = new HashMap<>(512);
 
@@ -56,12 +59,13 @@ public final class GeyserRelocationIndex extends Remapper {
             throw new RuntimeException("Failed to index Geyser relocations from " + jarFile, ex);
         }
 
-        return new GeyserRelocationIndex(map);
+        return new GeyserRelocationIndex(map, hasOwnClass);
     }
 
     @Override
     public String map(String internalName) {
         if (internalName == null) return null;
+        if (this.hasOwnClass.apply(internalName)) return internalName;
         String root = twoSegmentRoot(internalName);
         if (root == null) return internalName;
         String targetRoot = rootToTarget.get(root);
