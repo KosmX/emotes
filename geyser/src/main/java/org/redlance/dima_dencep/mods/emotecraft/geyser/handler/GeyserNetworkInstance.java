@@ -102,7 +102,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 if (result == EventResult.FAIL) break;
 
                 if (avatarEntity != null) {
-                    playEmote(avatarEntity, data.emoteData, null);
+                    playEmote(avatarEntity, data.emoteData, data.tick, null);
                 } /*else {
                     // this.queue.put(data.player, new QueueEntry(data.emoteData, data.tick, ClientMethods.getCurrentTick()));
                 }*/
@@ -152,7 +152,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         SimpleForm simpleForm = builder.validResultHandler((form, response) -> {
             UUID emoteId = FormUtils.extractAnimationFromButton(response.clickedButton());
             Animation animation = this.animations.getOrDefault(emoteId, UniversalEmoteSerializer.getEmote(emoteId));
-            if (animation != null) playEmote(animation, null);
+            if (animation != null) playEmote(animation, 0, null);
         }).build();
         this.session.sendForm(simpleForm);
     }
@@ -188,12 +188,12 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         this.session.sendMessage(EmotecraftLocale.getLocaleString(key, this.session.locale()));
     }
 
-    public void playEmote(Animation animation, String bedrockId) {
-        playEmote((AvatarEntity) this.session.entities().playerEntity(), animation, bedrockId);
+    public void playEmote(Animation animation, float tick, String bedrockId) {
+        playEmote((AvatarEntity) this.session.entities().playerEntity(), animation, tick, bedrockId);
     }
 
-    public void playEmote(AvatarEntity avatarEntity, Animation animation, String bedrockId) {
-        ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, 0, this.session.javaUuid());
+    public void playEmote(AvatarEntity avatarEntity, Animation animation, float tick, String bedrockId) {
+        ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, tick, avatarEntity.getUuid());
 
         if (isMainAvatar(avatarEntity)) {
             try {
@@ -205,9 +205,9 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         }
 
         if (avatarEntity instanceof PlayerEntity player && bedrockId != null) {
-            this.session.entities().showEmote(player, bedrockId);
+            this.session.entities().showEmote(player, bedrockId); // TODO support tick?
         } else {
-            ControllerHolder.INSTANCE.get(avatarEntity).triggerAnimation(animation, 0);
+            ControllerHolder.INSTANCE.get(avatarEntity).triggerAnimation(animation, tick);
         }
     }
 

@@ -200,7 +200,7 @@ public class EmotecraftExt implements Extension {
             CompletableFuture<Animation> animation = BedrockEmoteLoader.loadEmote(event.emoteId());
 
             if (animation.isDone() && !animation.isCompletedExceptionally()) {
-                networkInstance.playEmote(animation.join(), null);
+                networkInstance.playEmote(animation.join(), 0, null);
             } else {
                 try {
                     networkInstance.stopEmote(UUID.fromString(event.emoteId()));
@@ -214,7 +214,7 @@ public class EmotecraftExt implements Extension {
 
                 } else {
                     animation.thenAccept(emote -> networkInstance.playEmote(
-                            emote, event.emoteId()
+                            emote, 0, event.emoteId()
                     ));
                 }
             }

@@ -1,6 +1,7 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.animator;
 
 import io.github.kosmx.emotes.common.CommonData;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
 
 import java.util.Map;
@@ -41,6 +42,10 @@ public final class ControllerHolder {
                 if (remove) controllers.remove(uuid);
             });
         }
+    }
+
+    public @Nullable GeyserAnimationController getByUUID(UUID id) {
+        return this.controllers.get(id);
     }
 
     public GeyserAnimationController get(AvatarEntity entity) {
