@@ -20,8 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class UnsafeRemotePlayer extends RemotePlayer {
-    public final PlayerRenderState reusedState = new UnsafePlayerRenderState();
-
     private final PlayerInfo playerInfo;
 
     public UnsafeRemotePlayer(@Nullable ClientLevel clientLevel, GameProfile gameProfile) {

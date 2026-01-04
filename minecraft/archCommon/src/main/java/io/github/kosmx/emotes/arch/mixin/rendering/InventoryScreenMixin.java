@@ -17,12 +17,14 @@ public class InventoryScreenMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/entity/EntityRenderer;createRenderState(Lnet/minecraft/world/entity/Entity;F)Lnet/minecraft/client/renderer/entity/state/EntityRenderState;"
-            )
+            ),
+            require = 0
     )
     private static EntityRenderState emotecraft$previews(EntityRenderer<Entity, EntityRenderState> instance, Entity entity, float partialTick, Operation<EntityRenderState> original) {
-        if (entity instanceof UnsafeRemotePlayer player) {
-            instance.extractRenderState(player, player.reusedState, partialTick);
-            return player.reusedState;
+        if (entity instanceof UnsafeRemotePlayer) {
+            EntityRenderState renderState = instance.createRenderState();
+            instance.extractRenderState(entity, renderState, partialTick);
+            return renderState;
         } else {
             return original.call(instance, entity, partialTick);
         }
