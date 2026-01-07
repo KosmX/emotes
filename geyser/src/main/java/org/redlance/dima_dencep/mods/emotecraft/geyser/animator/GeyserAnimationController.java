@@ -83,7 +83,7 @@ public class GeyserAnimationController extends HumanoidAnimationController {
                         continue;
                     }
 
-                    BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, avatarEntity);
+                    if (isActive()) BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, avatarEntity);
                     updateBone(avatarEntity, partKey, bone);
                 }
             }
