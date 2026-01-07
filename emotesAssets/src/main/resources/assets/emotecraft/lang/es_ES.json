@@ -20,7 +20,7 @@
   "emotecraft.otherconfig.dark": "Usar el Menú de Emotes Oscuro",
   "emotecraft.otherconfig.showIconsIfPossible": "Mostrar iconos en vez de vistas previas (si están disponibles)",
   "emotecraft.otherconfig.stopthreshold": "Velocidad de Parada del Emote",
-  "emotecraft.otherconfig.stopthreshold.tooltip": " \n(0,22 es la velocidad al caminar).\n\nCon un valor muy grande, el gesto no se detendrá. En ese caso, asegúrese de que una tecla esté vinculada a 'Dejar de reproducir el emote'.",
+  "emotecraft.otherconfig.stopthreshold.tooltip": " \n(0,22 es la velocidad al caminar).\n\nCon un valor muy grande, el gesto no se detendrá. En ese caso, asegúrese de que una tecla esté vinculada a 'Dejar de reproducir el emote.'",
   "emotecraft.otherconfig.yratio": "Sensibilidad del Eje Y (detener emote)",
   "emotecraft.otherconfig.yratio.tooltip": "Cuánto movimiento del eje Y es probable que detenga un emote. Un valor mayor significa una mayor probabilidad.",
   "emotecraft.otherconfig.loadbuiltin": "Cargar Emotes Incorporados",
