@@ -11,14 +11,8 @@ import com.zigythebird.playeranimcore.molang.MolangLoader;
 import com.zigythebird.playeranimcore.util.MatrixUtil;
 import io.github.kosmx.emotes.common.CommonData;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.cloudburstmc.protocol.bedrock.data.entity.EntityProperty;
-import org.cloudburstmc.protocol.bedrock.packet.SetEntityDataPacket;
-import org.geysermc.geyser.api.entity.property.GeyserEntityProperty;
 import org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty;
 import org.geysermc.geyser.api.util.Identifier;
-import org.geysermc.geyser.entity.properties.GeyserEntityPropertyManager;
-import org.geysermc.geyser.entity.properties.type.PropertyType;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry.BendingGeometry;
@@ -27,13 +21,15 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockPacketsUtils
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
-import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.redlance.dima_dencep.mods.emotecraft.geyser.animator.PackedProperty.pack;
 
 public class GeyserAnimationController extends HumanoidAnimationController {
-    private final Set<Identifier> lastUsedProperties = new HashSet<>(1);
+    private static final long LEASE_MS = 10;
+
+    private final Map<Identifier, Long> lastUsedProperties = new ConcurrentHashMap<>(1);
     protected final Set<AvatarEntity> listeners = Sets.newConcurrentHashSet();
     private final Set<String> dirtyBones = new HashSet<>();
 
@@ -60,7 +56,7 @@ public class GeyserAnimationController extends HumanoidAnimationController {
             }
         }
         for (String partKey : this.dirtyBones) {
-            updateBone(avatarEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
+            updateBone(avatarEntity, partKey, new PlayerAnimBone(partKey));
         }
     }
 
@@ -87,16 +83,11 @@ public class GeyserAnimationController extends HumanoidAnimationController {
                         continue;
                     }
 
-                    // Check propertyManager
-                    GeyserEntityPropertyManager propertyManager = avatarEntity.getPropertyManager();
-                    if (propertyManager == null) continue;
                     BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, avatarEntity);
-                    updateBone(propertyManager, partKey, bone);
+                    updateBone(avatarEntity, partKey, bone);
                 }
             }
 
-            // Flush
-            flushPropertiesImmediately();
             if (this.dirtyBones.isEmpty()) this.dirtyBones.addAll(this.activeBones.keySet());
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to animate {}!", this.avatarId, th);
@@ -133,30 +124,30 @@ public class GeyserAnimationController extends HumanoidAnimationController {
         return bone;
     }
 
-    protected void updateBone(GeyserEntityPropertyManager propertyManager, String partKey, PlayerAnimBone bone) {
+    protected void updateBone(AvatarEntity avatarEntity, String partKey, PlayerAnimBone bone) {
         if (!this.bones.containsKey(partKey)) return;
-        updateAxis(propertyManager, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
-        updateAxis(propertyManager, partKey, TransformType.ROTATION,
+        updateAxis(avatarEntity, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
+        updateAxis(avatarEntity, partKey, TransformType.ROTATION,
                 (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
         );
-        updateAxis(propertyManager, partKey, TransformType.SCALE, bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
+        updateAxis(avatarEntity, partKey, TransformType.SCALE, bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
 
         if (BendingGeometry.BENDABLE_BONES.contains(partKey)) {
-            updateBend(propertyManager, partKey + BendingGeometry.BEND_SUFFIX, bone.bend);
+            updateBend(avatarEntity, partKey + BendingGeometry.BEND_SUFFIX, bone.bend);
         }
     }
 
-    protected void updateAxis(GeyserEntityPropertyManager propertyManager, String partKey, TransformType type, float x, float y, float z) {
+    protected void updateAxis(AvatarEntity avatarEntity, String partKey, TransformType type, float x, float y, float z) {
         Map<Axis, Integer> ids = EmotecraftExt.getInstance().getResourcePack().getAxisIds(partKey, type);
-        updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.X), x));
-        updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.Y), y));
-        updateProperty(propertyManager, getAvailableProperty(), pack(ids.get(Axis.Z), z));
+        updateProperty(avatarEntity, pack(ids.get(Axis.X), x));
+        updateProperty(avatarEntity, pack(ids.get(Axis.Y), y));
+        updateProperty(avatarEntity, pack(ids.get(Axis.Z), z));
     }
 
-    protected void updateBend(GeyserEntityPropertyManager propertyManager, String partKey, float bend) {
+    protected void updateBend(AvatarEntity avatarEntity, String partKey, float bend) {
         EmoteResourcePack resourcePack = EmotecraftExt.getInstance().getResourcePack();
 
-        updateProperty(propertyManager, getAvailableProperty(), pack(
+        updateProperty(avatarEntity, pack(
                 resourcePack.getAxisIds(partKey, TransformType.ROTATION).get(Axis.X),
                 (float) Math.toDegrees(bend)
         ));
@@ -164,55 +155,54 @@ public class GeyserAnimationController extends HumanoidAnimationController {
         float radius = 2.0f;
         float angle = Math.abs(bend);
 
-        updateProperty(propertyManager, getAvailableProperty(), pack(
+        updateProperty(avatarEntity, pack(
                 resourcePack.getAxisIds(partKey, TransformType.POSITION).get(Axis.Y),
                 (float) (radius * (1 - Math.cos(angle)))
         ));
-        updateProperty(propertyManager, getAvailableProperty(), pack(
+        updateProperty(avatarEntity, pack(
                 resourcePack.getAxisIds(partKey, TransformType.POSITION).get(Axis.Z),
                 (float) -(radius * Math.sin(angle))
         ));
     }
 
+    @SuppressWarnings("BusyWait")
     private GeyserIntEntityProperty getAvailableProperty() {
-        for (GeyserIntEntityProperty property : EmotecraftExt.getInstance().getResourcePack().getRegisteredProperties()) {
-            if (this.lastUsedProperties.contains(property.identifier())) continue;
-            this.lastUsedProperties.add(property.identifier());
-            return property;
-        }
+        for (;;) {
+            long now = System.currentTimeMillis();
 
-        // Try flush
-        flushPropertiesImmediately();
-        return getAvailableProperty();
+            for (GeyserIntEntityProperty property : EmotecraftExt.getInstance().getResourcePack().getRegisteredProperties()) {
+                if (this.lastUsedProperties.putIfAbsent(property.identifier(), now) == null) {
+                    return property;
+                }
+            }
+
+            long sleepMs = Long.MAX_VALUE;
+            boolean removedAny = false;
+
+            for (var e : this.lastUsedProperties.entrySet()) {
+                long remaining = LEASE_MS - (now - e.getValue());
+
+                if (remaining <= 0) {
+                    removedAny |= this.lastUsedProperties.remove(e.getKey(), e.getValue());
+                } else if (remaining < sleepMs) {
+                    sleepMs = remaining;
+                }
+            }
+
+            if (removedAny) continue;
+
+            if (sleepMs != Long.MAX_VALUE) {
+                try {
+                    Thread.sleep(sleepMs);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
     }
 
-    public static <T> void updateProperty(GeyserEntityPropertyManager propertyManager, @NonNull GeyserEntityProperty<T> property, @Nullable T value) {
-        Objects.requireNonNull(property, "property must not be null!");
-        if (!(property instanceof PropertyType<T, ? extends EntityProperty> propertyType)) {
-            throw new IllegalArgumentException("Invalid property implementation! Got: " + property.getClass().getSimpleName());
-        }
-        propertyType.apply(propertyManager, value);
-    }
-
-    private void flushPropertiesImmediately() {
-        for (AvatarEntity avatarEntity : this.listeners) {
-            GeyserEntityPropertyManager propertyManager = avatarEntity.getPropertyManager();
-            if (propertyManager == null || !propertyManager.hasProperties()) continue;
-
-            SetEntityDataPacket packet = new SetEntityDataPacket();
-            packet.setRuntimeEntityId(avatarEntity.getGeyserId());
-            propertyManager.applyFloatProperties(packet.getProperties().getFloatProperties());
-            propertyManager.applyIntProperties(packet.getProperties().getIntProperties());
-            avatarEntity.getSession().sendUpstreamPacketImmediately(packet);
-        }
-
-        try {
-            Thread.sleep(Duration.ofMillis(10));
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            return;
-        }
-        this.lastUsedProperties.clear();
+    public void updateProperty(AvatarEntity avatarEntity, int value) {
+        avatarEntity.updatePropertiesBatched(updater -> updater.update(getAvailableProperty(), value), true);
     }
 
     @Override
