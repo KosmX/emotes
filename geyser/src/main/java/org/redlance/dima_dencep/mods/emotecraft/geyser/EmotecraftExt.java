@@ -21,6 +21,7 @@ import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.event.bedrock.ClientEmoteEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionDisconnectEvent;
 import org.geysermc.geyser.api.event.bedrock.SessionInitializeEvent;
+import org.geysermc.geyser.api.event.bedrock.SessionSkinApplyEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCommandsEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserPreInitializeEvent;
@@ -31,6 +32,7 @@ import org.geysermc.geyser.util.MinecraftKey;
 import org.geysermc.mcprotocollib.protocol.data.ProtocolState;
 import org.geysermc.mcprotocollib.protocol.packet.common.clientbound.ClientboundCustomPayloadPacket;
 import org.geysermc.mcprotocollib.protocol.packet.common.serverbound.ServerboundCustomPayloadPacket;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry.BendingGeometry;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.commands.FixGeometryCommand;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.GayserHacks;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.fuckery.ProtocolUtils;
@@ -38,6 +40,7 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.ConnectionType;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.handler.GeyserNetworkInstance;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.BedrockEmoteLoader;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.DinnerboneProtocolUtils;
+import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.GeyserEntityUtils;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.resourcepack.EmoteResourcePack;
 
 import java.util.*;
@@ -139,7 +142,7 @@ public class EmotecraftExt implements Extension {
     }
 
     private void onEmotecraftPayload(GeyserConnection session, Key channel, byte[] bytes) {
-        GeyserNetworkInstance networkInstance = EmotecraftExt.INSTANCES.computeIfAbsent(session, GeyserNetworkInstance::new);
+        GeyserNetworkInstance networkInstance = getNetworkInstance(session);
         if (networkInstance.getConnectionType() == ConnectionType.NONE) {
             if (ProtocolUtils.getProtocol((GeyserSession) session).getOutboundState() == ProtocolState.CONFIGURATION) {
                 CommonData.LOGGER.debug("Configuring emotecraft...");
@@ -222,11 +225,28 @@ public class EmotecraftExt implements Extension {
         }
     }
 
+    @Subscribe(postOrder = PostOrder.LAST, ignoreCancelled = true)
+    public void onSessionSkinApply(SessionSkinApplyEvent event) {
+        event.geometry(BendingGeometry.addBoneBends(event.skinData().geometry()));
+
+        try {
+            getNetworkInstance(event.connection()).appliedGeometries.add(
+                    Objects.requireNonNull(GeyserEntityUtils.getAvatarByUUID((GeyserSession) event.connection(), event.uuid())).getGeyserId()
+            );
+        } catch (Throwable th) {
+            CommonData.LOGGER.warn("Failed to apply geomentry!", th);
+        }
+    }
+
     public EmoteResourcePack getResourcePack() {
         return this.resourcePack;
     }
 
     public static EmotecraftExt getInstance() {
         return EmotecraftExt.instance;
+    }
+
+    public static GeyserNetworkInstance getNetworkInstance(GeyserConnection connection) {
+        return EmotecraftExt.INSTANCES.computeIfAbsent(connection, GeyserNetworkInstance::new);
     }
 }

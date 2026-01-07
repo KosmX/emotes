@@ -38,7 +38,15 @@ public class BendingGeometry {
     }
 
     private static void addBoneBends(JsonObject geometry) {
-        String identifier = geometry.getAsJsonObject("description").get("identifier").getAsString();
+        JsonObject description = geometry.getAsJsonObject("description");
+        String identifier = description.get("identifier").getAsString();
+
+        if (description.has("emotecraftBends") && description.get("emotecraftBends").getAsBoolean()) {
+            CommonData.LOGGER.warn("Trying to add bends to '{}' twice!", identifier);
+            return;
+        } else {
+            description.addProperty("emotecraftBends", true);
+        }
         CommonData.LOGGER.debug("Patching '{}' for bends...", identifier);
 
         JsonArray bones = geometry.getAsJsonArray("bones");

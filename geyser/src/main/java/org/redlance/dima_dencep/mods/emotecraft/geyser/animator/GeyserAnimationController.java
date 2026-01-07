@@ -52,15 +52,13 @@ public class GeyserAnimationController extends HumanoidAnimationController {
     }
 
     public void subscribe(AvatarEntity avatarEntity) {
-        if (this.listeners.add(avatarEntity)) {
-            GeometryChanger.changeGeometryToBending(avatarEntity).join();
+        if (this.listeners.add(avatarEntity) && !EmotecraftExt.getNetworkInstance(avatarEntity.getSession()).appliedGeometries.contains(avatarEntity.getGeyserId())) {
             try {
-                Thread.sleep(Duration.ofMillis(10));
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
+                GeometryChanger.changeGeometryToBending(avatarEntity).join();
+            } catch (Throwable th) {
+                CommonData.LOGGER.warn("Failed to apply geometry!", th);
             }
         }
-        BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, avatarEntity);
         for (String partKey : this.dirtyBones) {
             updateBone(avatarEntity.getPropertyManager(), partKey, new PlayerAnimBone(partKey));
         }
@@ -92,6 +90,7 @@ public class GeyserAnimationController extends HumanoidAnimationController {
                     // Check propertyManager
                     GeyserEntityPropertyManager propertyManager = avatarEntity.getPropertyManager();
                     if (propertyManager == null) continue;
+                    BedrockPacketsUtils.sendInstantAnimation(EmoteResourcePack.ANIMATION_NAME, avatarEntity);
                     updateBone(propertyManager, partKey, bone);
                 }
             }

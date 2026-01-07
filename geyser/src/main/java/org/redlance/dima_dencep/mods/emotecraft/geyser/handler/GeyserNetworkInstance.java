@@ -13,6 +13,8 @@ import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
@@ -31,6 +33,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>();
     // private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final UUIDMap<Animation> animations = new UUIDMap<>();
+    public final LongSet appliedGeometries = new LongOpenHashSet();
     private final GeyserConnection session;
 
     private UUID currentEmote;
