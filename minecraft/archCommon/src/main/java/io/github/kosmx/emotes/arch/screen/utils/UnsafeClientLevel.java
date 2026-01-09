@@ -150,4 +150,9 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
     public @NotNull PalettedContainerFactory palettedContainerFactory() {
         return PALETTED_CONTAINER_FACTORY;
     }
+
+    @Override
+    public boolean isClientSide() {
+        return true;
+    }
 }
