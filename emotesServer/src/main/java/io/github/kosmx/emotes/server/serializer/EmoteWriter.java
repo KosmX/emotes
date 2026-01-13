@@ -30,7 +30,7 @@ public class EmoteWriter {
         if (format.onlyEmoteFile()) {
             String fileName = EmoteSerializer.getBaseName(file.getFileName().toString());
 
-            if (animation.data().getRaw("iconData") instanceof ByteBuffer iconData) {
+            if (animation.data().getBinary("iconData") instanceof ByteBuffer iconData) {
                 Path iconPath = exportDir.resolve(fileName + ".png");
                 if (Files.exists(iconPath)) throw new FileAlreadyExistsException(iconPath.toString());
 

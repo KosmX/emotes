@@ -20,24 +20,26 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
     @Override
     public void read(ByteBuf byteBuf, NetData config, byte version) {
         int size = byteBuf.readInt();
-        if (size != 0) {
-            byte[] bytes = new byte[size];
-            byteBuf.readBytes(bytes);
-            config.extraData.put("iconData", ByteBuffer.wrap(bytes));
-        }
+        if (size <= 0) return;
+
+        ByteBuffer buffer = ByteBuffer.allocate(size);
+        byteBuf.readBytes(buffer);
+        buffer.flip();
+        config.extraData.put("iconData", buffer.asReadOnlyBuffer());
     }
 
     @Override
     public void write(ByteBuf byteBuf, NetData config, byte version) {
         assert config.emoteData != null;
-        ByteBuffer iconData = (ByteBuffer)config.emoteData.data().getRaw("iconData");
 
-        try {
-            byteBuf.writeInt(iconData.remaining());
-            byteBuf.writeBytes(iconData);
-        } finally {
-            iconData.position(0);
+        ByteBuffer iconData = config.emoteData.data().getBinary("iconData");
+        if (iconData == null || !iconData.hasRemaining()) {
+            byteBuf.writeInt(0);
+            return;
         }
+
+        byteBuf.writeInt(iconData.remaining());
+        byteBuf.writeBytes(iconData.duplicate());
     }
 
     @Override

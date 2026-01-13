@@ -117,7 +117,7 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public @Nullable Identifier getIconIdentifier() {
-        if (this.emote.data().getRaw("iconData") instanceof ByteBuffer buff && this.iconIdentifier == null) {
+        if (this.emote.data().getBinary("iconData") instanceof ByteBuffer buff && this.iconIdentifier == null) {
             registerIcon(buff);
         }
         return this.iconIdentifier;

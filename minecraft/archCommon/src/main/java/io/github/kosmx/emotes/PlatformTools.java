@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes;
 
-import com.zigythebird.playeranim.PlayerAnimLibPlatform;
+import com.zigythebird.playeranim.PlayerAnimLibService;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.main.config.ClientConfig;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public final class PlatformTools {
-    public static final boolean HAS_SEARCHABLES = PlayerAnimLibPlatform.isModLoaded("searchables");
+    public static final boolean HAS_SEARCHABLES = PlayerAnimLibService.INSTANCE.isModLoaded("searchables");
 
     public static INetworkInstance getClientNetworkController() {
         return ClientNetwork.INSTANCE;
