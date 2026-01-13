@@ -82,6 +82,7 @@ tasks.shadowJar {
     configurations = listOf(commonModule)
     archiveClassifier.set("dev-shadow")
     mergeServiceFiles()
+    exclude("architectury.common.marker")
 }
 
 tasks.remapJar {
