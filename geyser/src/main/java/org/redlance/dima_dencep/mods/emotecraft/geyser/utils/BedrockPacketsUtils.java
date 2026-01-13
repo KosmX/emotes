@@ -21,7 +21,7 @@ public class BedrockPacketsUtils {
         animatePacket.setBlendOutTime(0.0f);
         animatePacket.setStopExpression(stopExpression);
         animatePacket.setController("__runtime_controller");
-        animatePacket.getRuntimeEntityIds().add(playerEntity.getGeyserId());
+        animatePacket.getRuntimeEntityIds().add(playerEntity.geyserId());
         playerEntity.getSession().sendUpstreamPacketImmediately(animatePacket);
     }
 }

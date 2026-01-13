@@ -231,7 +231,7 @@ public class EmotecraftExt implements Extension {
 
         try {
             getNetworkInstance(event.connection()).appliedGeometries.add(
-                    Objects.requireNonNull(GeyserEntityUtils.getAvatarByUUID((GeyserSession) event.connection(), event.uuid())).getGeyserId()
+                    Objects.requireNonNull(GeyserEntityUtils.getAvatarByUUID((GeyserSession) event.connection(), event.uuid())).geyserId()
             );
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to apply geomentry!", th);

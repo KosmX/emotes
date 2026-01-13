@@ -49,7 +49,7 @@ public final class ControllerHolder {
     }
 
     public GeyserAnimationController get(AvatarEntity entity) {
-        GeyserAnimationController controller = this.controllers.computeIfAbsent(entity.getUuid(), GeyserAnimationController::new);
+        GeyserAnimationController controller = this.controllers.computeIfAbsent(entity.uuid(), GeyserAnimationController::new);
         controller.subscribe(entity);
         return controller;
     }

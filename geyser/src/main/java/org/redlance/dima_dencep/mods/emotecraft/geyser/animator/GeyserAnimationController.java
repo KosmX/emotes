@@ -48,7 +48,7 @@ public class GeyserAnimationController extends HumanoidAnimationController {
     }
 
     public void subscribe(AvatarEntity avatarEntity) {
-        if (this.listeners.add(avatarEntity) && !EmotecraftExt.getNetworkInstance(avatarEntity.getSession()).appliedGeometries.contains(avatarEntity.getGeyserId())) {
+        if (this.listeners.add(avatarEntity) && !EmotecraftExt.getNetworkInstance(avatarEntity.getSession()).appliedGeometries.contains(avatarEntity.geyserId())) {
             try {
                 GeometryChanger.changeGeometryToBending(avatarEntity).join();
             } catch (Throwable th) {

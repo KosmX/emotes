@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class GeyserEntityUtils {
     public static @Nullable AvatarEntity getAvatarByUUID(GeyserSession session, UUID uuid) {
-        if (session.entities().playerEntity() instanceof AvatarEntity player && player.getUuid().equals(uuid)) {
+        if (session.entities().playerEntity() instanceof AvatarEntity player && player.uuid().equals(uuid)) {
             return player;
         }
 
@@ -18,7 +18,7 @@ public class GeyserEntityUtils {
         if (player != null) return player; // Fast
 
         for (Entity entity : session.getEntityCache().getEntities().values()) {
-            if (entity instanceof AvatarEntity avatar && avatar.getUuid().equals(uuid)) {
+            if (entity instanceof AvatarEntity avatar && avatar.uuid().equals(uuid)) {
                 return avatar;
             }
         }
@@ -32,7 +32,7 @@ public class GeyserEntityUtils {
         if (session.entities().playerEntity() == entity) {
             return false;
         } else {
-            return session.getEntityCache().getEntityByGeyserId(entity.getGeyserId()) == null;
+            return session.getEntityCache().getEntityByGeyserId(entity.geyserId()) == null;
         }
     }
 }

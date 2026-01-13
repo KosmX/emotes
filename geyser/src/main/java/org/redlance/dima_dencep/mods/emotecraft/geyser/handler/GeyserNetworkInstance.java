@@ -166,7 +166,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
     public void stopEmote(AvatarEntity avatarEntity, @Nullable UUID stopEmoteID) {
         if (stopEmoteID != null) { // TODO check
-            ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(stopEmoteID, avatarEntity.getUuid());
+            ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(stopEmoteID, avatarEntity.uuid());
         }
 
         ControllerHolder.INSTANCE.get(avatarEntity).stop();
@@ -174,7 +174,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
         if (isMainAvatar(avatarEntity) && this.currentEmote != null) {
             if (stopEmoteID == null) { // TODO check
-                ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(this.currentEmote, avatarEntity.getUuid());
+                ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(this.currentEmote, avatarEntity.uuid());
             }
 
             try {
@@ -196,7 +196,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void playEmote(AvatarEntity avatarEntity, Animation animation, float tick, String bedrockId) {
-        ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, tick, avatarEntity.getUuid());
+        ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, tick, avatarEntity.uuid());
 
         if (isMainAvatar(avatarEntity)) {
             try {
@@ -219,7 +219,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public boolean isMainAvatar(AvatarEntity avatarEntity) {
-        return ((AvatarEntity) this.session.entities().playerEntity()).getUuid().equals(avatarEntity.getUuid());
+        return ((AvatarEntity) this.session.entities().playerEntity()).uuid().equals(avatarEntity.uuid());
     }
 
     @Override
