@@ -18,9 +18,10 @@ import java.util.UUID;
 
 public interface IPlayerEntity {
     default void initEmotePerspective() {
-        if (isMainAvatar() && PlatformTools.getConfig().enablePerspective.get() && PlatformTools.getPerspective() == CameraType.FIRST_PERSON) {
+        CameraType changeTo = PlatformTools.getConfig().cameraType.get();
+        if (isMainAvatar() && !changeTo.isFirstPerson() && PlatformTools.getCameraType().isFirstPerson()) {
             emotecraft$getEmote().perspective = true;
-            PlatformTools.setPerspective(PlatformTools.getConfig().getCameraType());
+            PlatformTools.setCameraType(changeTo);
         }
     }
 

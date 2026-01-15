@@ -39,11 +39,11 @@ public final class PlatformTools {
         return (ClientConfig) Serializer.getConfig();
     }
 
-    public static CameraType getPerspective() {
+    public static CameraType getCameraType() {
         return Minecraft.getInstance().options.getCameraType();
     }
 
-    public static void setPerspective(CameraType p) {
+    public static void setCameraType(CameraType p) {
         Minecraft.getInstance().options.setCameraType(p);
     }
 

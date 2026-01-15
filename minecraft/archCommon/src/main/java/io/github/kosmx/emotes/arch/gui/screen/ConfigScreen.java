@@ -98,7 +98,7 @@ public class ConfigScreen extends OptionsSubScreen {
                 Function<Double, Integer> d2i = aDouble -> (int) ((aDouble - floatEntry.min) / range * mapSize);
 
                 options.addBig(new OptionInstance<>(
-                        floatEntry.getName(), (OptionInstance.TooltipSupplier<Integer>) tooltip,
+                        "emotecraft.otherconfig." + floatEntry.getName(), (OptionInstance.TooltipSupplier<Integer>) tooltip,
                         (component, object) -> Options.genericValueLabel(component, Component.literal(formatter.format(floatEntry.getTextVal()))),
                         new OptionInstance.IntRange(0, mapSize),
                         Codec.DOUBLE.xmap(d2i, i2d),
@@ -116,8 +116,6 @@ public class ConfigScreen extends OptionsSubScreen {
         Class<T> enumClass = entry.getEnumClass();
         T[] values = enumClass.getEnumConstants();
 
-        OptionInstance.CaptionBasedToString<T> valueLabel = (component, value) -> Options.genericValueLabel(component, Component.literal(value.name()));
-
         Codec<T> codec = Codec.STRING.xmap(
                 s -> Enum.valueOf(enumClass, s),
                 Object::toString
@@ -126,7 +124,7 @@ public class ConfigScreen extends OptionsSubScreen {
         options.addBig(new OptionInstance<>(
                 "emotecraft.otherconfig." + entry.getName(),
                 (OptionInstance.TooltipSupplier<T>) tooltip,
-                valueLabel,
+                (component, value) -> Component.literal(value.name()),
                 new OptionInstance.Enum<>(List.of(values), codec),
                 codec,
                 entry.get(),

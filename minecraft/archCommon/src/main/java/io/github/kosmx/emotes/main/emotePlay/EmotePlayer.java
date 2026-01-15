@@ -68,7 +68,8 @@ public class EmotePlayer extends PlayerAnimationController {
     }
 
     private void internalStop() {
-        if (this.perspective && PlatformTools.getPerspective() == PlatformTools.getConfig().getCameraType()) {
+        CameraType changeTo = PlatformTools.getConfig().cameraType.get();
+        if (this.perspective && !changeTo.isFirstPerson() && PlatformTools.getCameraType() == changeTo) {
             Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
             this.perspective = false;
         }

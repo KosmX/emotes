@@ -22,8 +22,7 @@ public class ClientConfig extends SerializableConfig {
 
     public final EnumConfigEntry<CloseWheel> closeWheelType = new EnumConfigEntry<>("closeWheelType", CloseWheel.PRESS, true, basics);
     public final ConfigEntry<Boolean> enableWheelKeyboardNav = new ConfigEntry<>("enableWheelKeyboardNav", true, false, basics);
-    public final ConfigEntry<Boolean> enablePerspective = new ConfigEntry<>("perspective", true, false, basics);
-    public final ConfigEntry<Boolean> frontAsTPPerspective = new ConfigEntry<>("default3rdPersonFront", false, false, basics);
+    public final EnumConfigEntry<CameraType> cameraType = new EnumConfigEntry<>("cameraType", CameraType.THIRD_PERSON_FRONT, true, basics);
     public final ConfigEntry<Boolean> checkPose = new ConfigEntry<>("checkPose", true, true, expert);
 
     public final ConfigEntry<Boolean> alwaysOpenEmoteScreen = new ConfigEntry<>("alwaysOpenScreen", false, true, basics);
@@ -87,8 +86,4 @@ public class ClientConfig extends SerializableConfig {
     //------------------------ Random tweak stuff ------------------------//
 
     // public final ConfigEntry<Boolean> hideWarningMessage = new ConfigEntry<>("hideWarning", false, expert, true);
-
-    public CameraType getCameraType() {
-        return frontAsTPPerspective.get() ? CameraType.THIRD_PERSON_FRONT : CameraType.THIRD_PERSON_BACK;
-    }
 }

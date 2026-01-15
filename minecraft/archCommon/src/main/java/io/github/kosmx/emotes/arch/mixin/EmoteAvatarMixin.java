@@ -81,7 +81,7 @@ public abstract class EmoteAvatarMixin extends LivingEntity implements IPlayerEn
         }
 
         if (isPlayingEmote() && isMainAvatar()) {
-            if (emotecraft$getEmote().perspective && PlatformTools.getPerspective() != PlatformTools.getConfig().getCameraType()) {
+            if (emotecraft$getEmote().perspective && PlatformTools.getCameraType() != PlatformTools.getConfig().cameraType.get()) {
                 emotecraft$getEmote().perspective = false;
             }
 

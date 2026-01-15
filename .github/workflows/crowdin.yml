@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        branch: [dev, 1.21.9]
+        branch: [dev]
 
     steps:
     - name: Checkout
