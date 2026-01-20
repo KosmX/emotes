@@ -97,14 +97,14 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         this.mainFolder.entries.clear();
         for (EmoteHolder emoteHolder : list) {
             if (emoteHolder.folder.isEmpty()) {
-                this.mainFolder.entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.get(), new EmoteEntry(emoteHolder));
             } else {
-                createFoldersTree(emoteHolder.folder).entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
+                createFoldersTree(emoteHolder.folder).entries.put(emoteHolder.get(), new EmoteEntry(emoteHolder));
             }
         }
         if (showInvalid) {
             for (EmoteHolder emoteHolder : getEmptyEmotes()) {
-                this.mainFolder.entries.put(emoteHolder.name, new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.get(), new EmoteEntry(emoteHolder));
             }
         }
         filter(VanillaSearch.INSTANCE, false, "");
@@ -373,8 +373,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public static final Identifier FOLDER_OPEN = McUtils.newIdentifier("textures/folder_open.png");
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
-        private final Map<Component, ListEntry> entries = new HashMap<>();
+        private final Map<Object, ListEntry> entries = new HashMap<>();
         private FolderEntry next;
+
+        private FolderEntry(Object obj) {
+            this((Component) obj);
+        }
 
         public FolderEntry(@NotNull Component name) {
             super(name, FOLDER_DESC, Collections.emptyList());
