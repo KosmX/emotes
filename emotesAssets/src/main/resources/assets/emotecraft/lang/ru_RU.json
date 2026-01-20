@@ -73,7 +73,7 @@
   "emotecraft.song_too_big_to_send": "Размер песни слишком большой, отправка на сервер невозможна. Будет отправлена только эмоция",
   "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено.",
   "emotecraft.folder": "Каталог",
-  "emotecraft.folder.main": "основной",
+  "emotecraft.folder.main": "основ.",
   "emotecraft.reloading": "Перезагрузка эмоций...",
   "emotecraft.reloading.done": "Перезагрузка заняла %s секунд!",
   "emotecraft.reloading.wait": "Пожалуйста, подождите, пока анимации перезагрузятся!",
