@@ -27,6 +27,8 @@
   "emotecraft.otherconfig.loadbuiltin.tooltip": "Если Вы зачем-то хотите их отключить...",
   "emotecraft.otherconfig.playersafety": "Не проигрывать эмоции от заглушенных игроков",
   "emotecraft.otherconfig.playersafety.tooltip": "Эмоции от заглушенных игроков не будут показаны (1.16.4+)",
+  "emotecraft.otherconfig.cameraType": "Тип камеры при воспроизведении эмоции",
+  "emotecraft.otherconfig.cameraType.tooltip": "FIRST_PERSON ничего не меняет",
   "emotecraft.otherconfig.enableNSFW": "Разрешить воспроизведение NSFW-эмоций",
   "emotecraft.otherconfig.enableNSFW.tooltip": "NSFW (Not Safe For Work) - неприемлимый контент.\n\nМожет содержать обнажённые изображения, сцены сексуального характера, сцены насилия или другие потенциально неприятные/отталкивающие вещи.",
   "emotecraft.otherconfig.checkPose": "Проверять позы",
