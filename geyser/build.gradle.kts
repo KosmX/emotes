@@ -11,6 +11,11 @@ plugins {
 base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
 version = mod_version
 
+/**
+ * Geyser will always behind the Java version in the main project (unfortunately)
+ */
+val targetGeyserJava = JavaVersion.VERSION_17
+
 val compileApi = configurations.register("compileApi").get()
 configurations.api.configure { extendsFrom(compileApi) }
 
@@ -76,14 +81,19 @@ tasks {
         dependsOn(shadowJar)
 
         val from = project.java_version.majorVersion.toInt()
-        val to = JavaVersion.VERSION_17.majorVersion.toInt()
+        val to = targetGeyserJava.majorVersion.toInt()
 
         multiReleaseOriginal = true
         multiReleaseVersions = (from downTo to).map { JavaVersion.toVersion(it) }
 
-        downgradeTo = JavaVersion.VERSION_17
+        downgradeTo = targetGeyserJava
         classpath = configurations.compileClasspath.get()
         inputFile = shadowJar.get().archiveFile
+    }
+
+    shadeDowngradedApi {
+        downgradeTo = targetGeyserJava
+        shadePath.set({ "com/zigythebird/playeranim/lib/" })
         archiveClassifier.set("")
     }
 
@@ -95,7 +105,7 @@ tasks {
     }
 
     assemble {
-        dependsOn(downgradeJar)
+        dependsOn(shadeDowngradedApi)
     }
 }
 
@@ -106,6 +116,10 @@ java {
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {
+            artifact(tasks.shadeDowngradedApi) {
+                classifier = "java${targetGeyserJava.majorVersion.toInt()}"
+                extension = "jar"
+            }
             artifactId = "emotesGeyser"
             from(components["java"])
             withCustomPom("emotesGeyser", "Minecraft Emotecraft Geyser extension")
@@ -124,7 +138,7 @@ publishing {
 publishMods {
     modLoaders.add("geyser")
 
-    file.set(tasks.downgradeJar.get().archiveFile) // Java 17
+    file.set(tasks.shadeDowngradedApi.get().archiveFile) // Java 17
     // additionalFiles.from(tasks.shadowJar.get().archiveFile) // Java 21
 
     type = ReleaseType./*of(releaseType)*/ALPHA // Force alpha
