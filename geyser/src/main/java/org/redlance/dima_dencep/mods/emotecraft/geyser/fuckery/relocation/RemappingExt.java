@@ -45,7 +45,7 @@ public class RemappingExt implements Extension {
 
     private final Map<String, GeyserExtensionClassLoader> classLoaders = new HashMap<>();
 
-    public RemappingExt() throws Throwable {
+    public RemappingExt() {
         try (GeyserExtensionClassLoader classLoader = getClassLoaders().remove(CommonData.MOD_ID)) {
             GeyserExtensionDescription description = getDescriptionFromClassLoader(classLoader);
             ReflectUtils.setRecordField(description, "main", "org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt");
@@ -78,6 +78,9 @@ public class RemappingExt implements Extension {
         }
     }
 
+    /**
+     * Copied from {@link org.geysermc.geyser.extension.GeyserExtensionLoader#loadExtension(Path, GeyserExtensionDescription)}
+     */
     public GeyserExtensionContainer loadExtension(Path path, GeyserExtensionDescription description) throws Throwable {
         if (path == null) {
             throw new InvalidExtensionException("Path is null");

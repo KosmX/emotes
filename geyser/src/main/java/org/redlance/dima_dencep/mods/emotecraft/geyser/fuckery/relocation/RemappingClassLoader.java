@@ -17,7 +17,7 @@ public final class RemappingClassLoader extends URLClassLoader {
 
     public RemappingClassLoader(ClassLoader parent, Path path, Class<?> geyserAnchor) throws MalformedURLException {
         super(new URL[]{path.toUri().toURL()}, parent);
-        this.index = GeyserRelocationIndex.fromGeyserJar(geyserAnchor, (internalName) -> findResource(internalName + ".class") != null);
+        this.index = GeyserRelocationIndex.fromGeyserJar(geyserAnchor);
         if (!this.index.isEmpty()) CommonData.LOGGER.info("Detected platform-specific Geyser relocations: {}", this.index);
     }
 
