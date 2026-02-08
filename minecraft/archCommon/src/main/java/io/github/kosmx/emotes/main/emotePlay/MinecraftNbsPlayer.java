@@ -37,23 +37,6 @@ public class MinecraftNbsPlayer extends NbsPlayer {
         return !mc.isPaused() && super.shouldTick();
     }
 
-    public @Nullable Component getNowPlaying() {
-        String author = getSong().getAuthorOr(getSong().getOriginalAuthorOr(""));
-        String name = getSong().getTitleOrFileNameOr("");
-
-        if (author.isEmpty()) {
-            if (!name.isEmpty()) {
-                return Component.literal(name);
-            } else {
-                return null;
-            }
-        } else if (!name.isEmpty()) {
-            return Component.literal(String.format("%s - %s", author, name));
-        }
-
-        return null;
-    }
-
     @Override
     protected void playNote(Note note) {
         SoundInstance sound = InstrumentConventer.getInstrument(note, this.avatar.position());

@@ -70,4 +70,14 @@ public abstract class NbsPlayer extends SongPlayer {
         CommonData.LOGGER.warn("An error occurred while playing nbs!", e);
         stop();
     }
+
+    public @Nullable String getNowPlaying() {
+        String name = getSong().getTitleOrFileNameOr(null);
+        if (name == null || name.isEmpty()) return null;
+
+        String author = getSong().getAuthorOr(getSong().getOriginalAuthorOr(null));
+        if (author == null || author.isEmpty()) return name;
+
+        return String.format("%s — %s", author, name);
+    }
 }
