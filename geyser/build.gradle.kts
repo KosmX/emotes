@@ -47,7 +47,7 @@ dependencies {
     compileApi("org.cloudburstmc.fastutil.commons:float-common:8.5.15") {
         isTransitive = false
     }
-    compileApi("org.redlance:common-utils-common:1.0.1") {
+    compileApi("org.redlance.common-utils:common:1.0.6") {
         isTransitive = false
     }
     compileApi("org.ow2.asm:asm:9.9.1")
