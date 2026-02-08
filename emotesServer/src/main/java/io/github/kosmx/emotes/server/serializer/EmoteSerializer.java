@@ -82,8 +82,8 @@ public class EmoteSerializer {
 
             Path song = file.getParent().resolve(baseFileName + ".nbs");
             if (Files.isRegularFile(song)) {
-                try {
-                    Song nbs = NoteBlockLib.readSong(song, SongFormat.NBS);
+                try (InputStream is = Files.newInputStream(song)) {
+                    Song nbs = NoteBlockLib.readSong(is, SongFormat.NBS);
 
                     for (Animation emote : emotes.values()) { // Avoid lambda
                         emote.data().put("song", nbs);

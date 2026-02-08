@@ -48,6 +48,7 @@
   "emotecraft.otherconfig.enableWheelKeyboardNav": "Enable keyboard navigation on the choose wheel",
   "emotecraft.otherconfig.closeWheelType": "How the wheel closes",
   "emotecraft.otherconfig.closeWheelType.tooltip": "HOLD - wheel is open while you hold the button\nPRESS - wheel is always open until you press the button or ESC",
+  "emotecraft.otherconfig.displayNowPlaying": "Display \"Now Playing\" for emotes with songs",
   "emotecraft.emotelist": "All Emotes",
   "emotecraft.no_server": "Server has no version of Emotecraft installed. Other users won't see your emotes if you play any.",
   "emotecraft.different_server": "Server has a different version of Emotecraft installed. Other users may not see your emotes play correctly.",

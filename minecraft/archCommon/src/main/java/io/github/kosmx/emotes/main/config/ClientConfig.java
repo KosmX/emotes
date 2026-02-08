@@ -27,6 +27,7 @@ public class ClientConfig extends SerializableConfig {
 
     public final ConfigEntry<Boolean> alwaysOpenEmoteScreen = new ConfigEntry<>("alwaysOpenScreen", false, true, basics);
     //expert
+    public final ConfigEntry<Boolean> displayNowPlaying = new ConfigEntry<>("displayNowPlaying", true, false, expert);
     public final ConfigEntry<Boolean> alwaysValidate = new ConfigEntry<>("alwaysValidateEmote", false, true, expert);
     public final ConfigEntry<Boolean> enablePlayerSafety = new ConfigEntry<>("playersafety", true, true, expert);
     public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry("stopthreshold", "stopThreshold", 0.04f, true, expert, "options.generic_value", -3.912f, 8f, 0f){
