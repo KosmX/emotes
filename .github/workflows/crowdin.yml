@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '42 0 * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - "emotesAssets/src/main/resources/assets/emotecraft/lang/**"
 
 
 jobs:
