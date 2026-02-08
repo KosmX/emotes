@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Locale;
 
 public class InstrumentConventer {
     public static SoundInstance getInstrument(Note note, Vec3 pos) {
@@ -32,6 +33,7 @@ public class InstrumentConventer {
             if (file.endsWith(".ogg")) {
                 file = file.substring(0, file.length() - 4);
             }
+            file = file.replace("Custom/", "").toLowerCase(Locale.ROOT);
 
             // support for old nbs files that encoded the pling sound as custom instrument
             /*if (file.equalsIgnoreCase("pling")) {
