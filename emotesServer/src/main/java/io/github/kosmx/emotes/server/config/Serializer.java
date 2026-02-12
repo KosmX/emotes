@@ -61,8 +61,8 @@ public class Serializer<T extends SerializableConfig> {
         }
     }
 
-    public T readConfig() {
-        if (this.config == null) {
+    public T readConfig(boolean force) {
+        if (this.config == null || force) {
             CommonData.LOGGER.debug("Loading config...");
             this.config = readConfig(InstanceService.INSTANCE.getConfigPath());
         }
@@ -102,6 +102,6 @@ public class Serializer<T extends SerializableConfig> {
     // Static helpers
 
     public static SerializableConfig getConfig() {
-        return Serializer.INSTANCE.readConfig();
+        return Serializer.INSTANCE.readConfig(false);
     }
 }
