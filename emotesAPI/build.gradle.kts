@@ -10,7 +10,7 @@ dependencies {
     api("com.zigythebird.playeranim:PlayerAnimationLibCore:${project["playeranimlib_version"]}")
     api("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}")
 
-    testImplementation(platform("org.junit:junit-bom:6.0.2"))
+    testImplementation(platform("org.junit:junit-bom:6.0.3"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
