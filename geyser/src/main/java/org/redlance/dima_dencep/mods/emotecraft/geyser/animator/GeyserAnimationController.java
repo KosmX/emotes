@@ -14,6 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.geysermc.geyser.api.entity.property.type.GeyserIntEntityProperty;
 import org.geysermc.geyser.api.util.Identifier;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
+import org.joml.Vector3f;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry.BendingGeometry;
 import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.geometry.GeometryChanger;
@@ -75,7 +76,7 @@ public class GeyserAnimationController extends HumanoidAnimationController {
                     continue;
                 }
 
-                PlayerAnimBone bone = get3DTransform(new PlayerAnimBone(partKey));
+                PlayerAnimBone bone = get3DTransform(partKey);
 
                 for (AvatarEntity avatarEntity : this.listeners) {
                     if (GeyserEntityUtils.unsubscribedFromEntity(avatarEntity)) {
@@ -101,47 +102,48 @@ public class GeyserAnimationController extends HumanoidAnimationController {
     }
 
     @Override
-    public PlayerAnimBone get3DTransform(@NonNull PlayerAnimBone bone) {
-        bone = super.get3DTransform(bone);
+    public void get3DTransform(@NonNull PlayerAnimBone bone) {
+        super.get3DTransform(bone);
 
         String boneName = bone.getName();
         if ("left_arm".equals(boneName) || "right_arm".equals(boneName) || "head".equals(boneName)) {
-            PlayerAnimBone torsoBone = get3DTransform(new PlayerAnimBone("torso"));
-            torsoBone.mulPos(-1);
-            torsoBone.mulRot(-1);
-            torsoBone.setScaleX(1 / bone.getScaleX());
-            torsoBone.setScaleY(1 / bone.getScaleY());
-            torsoBone.setScaleZ(1 / bone.getScaleZ());
+            PlayerAnimBone torsoBone = get3DTransform("torso");
+            torsoBone.position.mul(-1);
+            torsoBone.rotation.mul(-1);
+            torsoBone.scale.x = 1 / bone.scale.x;
+            torsoBone.scale.y = 1 / bone.scale.y;
+            torsoBone.scale.z = 1 / bone.scale.z;
 
             MatrixUtil.applyParentsToChild(bone, Collections.singleton(torsoBone), this::getBonePosition);
         } else if ("left_leg".equals(boneName) || "right_leg".equals(boneName)) {
-            PlayerAnimBone body = get3DTransform(new PlayerAnimBone("body"));
+            PlayerAnimBone body = get3DTransform("body");
             MatrixUtil.applyParentsToChild(bone, Collections.singleton(body), this::getBonePosition);
 
         } else if ("cape".equals(boneName)) {
-            bone.rotX *= -1;
+            bone.rotation.x *= -1;
         }
-        return bone;
     }
 
     protected void updateBone(AvatarEntity avatarEntity, String partKey, PlayerAnimBone bone) {
         if (!this.bones.containsKey(partKey)) return;
-        updateAxis(avatarEntity, partKey, TransformType.POSITION, bone.getPosX(), bone.getPosY(), bone.getPosZ());
-        updateAxis(avatarEntity, partKey, TransformType.ROTATION,
-                (float) Math.toDegrees(bone.getRotX()), (float) Math.toDegrees(bone.getRotY()), (float) Math.toDegrees(bone.getRotZ())
-        );
-        updateAxis(avatarEntity, partKey, TransformType.SCALE, bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
+        updateAxis(avatarEntity, partKey, TransformType.POSITION, bone.position);
+        updateAxis(avatarEntity, partKey, TransformType.ROTATION, new Vector3f(
+                (float) Math.toDegrees(bone.rotation.x),
+                (float) Math.toDegrees(bone.rotation.y),
+                (float) Math.toDegrees(bone.rotation.z)
+        ));
+        updateAxis(avatarEntity, partKey, TransformType.SCALE, bone.scale);
 
-        if (BendingGeometry.BENDABLE_BONES.contains(partKey)) {
+        /*if (BendingGeometry.BENDABLE_BONES.contains(partKey)) { todo
             updateBend(avatarEntity, partKey + BendingGeometry.BEND_SUFFIX, bone.bend);
-        }
+        }*/
     }
 
-    protected void updateAxis(AvatarEntity avatarEntity, String partKey, TransformType type, float x, float y, float z) {
+    protected void updateAxis(AvatarEntity avatarEntity, String partKey, TransformType type, Vector3f vec) {
         Map<Axis, Integer> ids = EmotecraftExt.getInstance().getResourcePack().getAxisIds(partKey, type);
-        updateProperty(avatarEntity, pack(ids.get(Axis.X), x));
-        updateProperty(avatarEntity, pack(ids.get(Axis.Y), y));
-        updateProperty(avatarEntity, pack(ids.get(Axis.Z), z));
+        updateProperty(avatarEntity, pack(ids.get(Axis.X), vec.x));
+        updateProperty(avatarEntity, pack(ids.get(Axis.Y), vec.y));
+        updateProperty(avatarEntity, pack(ids.get(Axis.Z), vec.z));
     }
 
     protected void updateBend(AvatarEntity avatarEntity, String partKey, float bend) {

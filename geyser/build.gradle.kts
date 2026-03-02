@@ -14,14 +14,14 @@ version = mod_version
 /**
  * Geyser will always behind the Java version in the main project (unfortunately)
  */
-val targetGeyserJava = JavaVersion.VERSION_17
+val targetGeyserJava = JavaVersion.VERSION_24
 
 val compileApi = configurations.register("compileApi").get()
 configurations.api.configure { extendsFrom(compileApi) }
 
 dependencies {
-    compileOnly("org.geysermc.geyser:core:${properties["geyser_version"] as String}")
-    implementation("org.geysermc.geyser:standalone:${properties["geyser_version"] as String}")
+    compileOnly("org.geysermc.geyser:core:${project["geyser_version"]}")
+    implementation("org.geysermc.geyser:standalone:${project["geyser_version"]}")
 
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesServer")) {
@@ -47,7 +47,7 @@ dependencies {
     compileApi("org.cloudburstmc.fastutil.commons:float-common:8.5.15") {
         isTransitive = false
     }
-    compileApi("org.redlance.common-utils:reflect:1.0.7") {
+    compileApi("org.redlance.common-utils:reflect:${project["commonutils_version"]}") {
         isTransitive = false
     }
     compileApi("org.ow2.asm:asm:9.9.1")
@@ -56,7 +56,7 @@ dependencies {
 
 tasks {
     processResources {
-        val apiVersion = (project.properties["geyser_version"] as String).removeSuffix("-SNAPSHOT")
+        val apiVersion = project["geyser_version"].removeSuffix("-SNAPSHOT")
 
         inputs.property("version", version)
         inputs.property("description", mod_description)

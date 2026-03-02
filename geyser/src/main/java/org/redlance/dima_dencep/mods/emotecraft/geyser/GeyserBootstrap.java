@@ -1,10 +1,6 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser;
 
 import io.github.kosmx.emotes.common.CommonData;
-import javassist.ByteArrayClassPath;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
 import org.geysermc.geyser.extension.GeyserExtensionContainer;
 import org.geysermc.geyser.platform.standalone.GeyserStandaloneBootstrap;
 import org.redlance.common.utils.ReflectUtils;
@@ -39,7 +35,7 @@ public class GeyserBootstrap {
         }
     }
 
-    public static void main(String[] args) throws ReflectiveOperationException, IOException {
+    /*public static void main(String[] args) throws ReflectiveOperationException, IOException {
         GeyserBootstrap.patchClass(GeyserExtensionContainer.class, "org/geysermc/geyser/extension/GeyserExtensionLoader.class", GeyserBootstrap::patch);
         GeyserStandaloneBootstrap.main(args);
     }
@@ -73,7 +69,7 @@ public class GeyserBootstrap {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
     public static void patchClass(Class<?> nearClass, String name, UnaryOperator<byte[]> patcher) throws ReflectiveOperationException, IOException {
         try (InputStream is = Objects.requireNonNull(nearClass.getClassLoader().getResourceAsStream(name))) {
