@@ -157,7 +157,7 @@ tasks.shadowJar {
     from(tasks.named<AbstractArchiveTask>("remapFabricJar").map { zipTree(it.archiveFile) })
     from(tasks.named<AbstractArchiveTask>("remapNeoforgeJar").map { zipTree(it.archiveFile) })
 
-    archiveBaseName.set(rootProject.archives_base_name)
+    archiveBaseName.set("${archives_base_name}-for-MC${minecraft_version}")
     archiveClassifier.set("")
 
     // Services
