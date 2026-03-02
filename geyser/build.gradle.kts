@@ -47,7 +47,7 @@ dependencies {
     compileApi("org.cloudburstmc.fastutil.commons:float-common:8.5.15") {
         isTransitive = false
     }
-    compileApi("org.redlance.common-utils:common:1.0.7") {
+    compileApi("org.redlance.common-utils:reflect:1.0.7") {
         isTransitive = false
     }
     compileApi("org.ow2.asm:asm:9.9.1")
@@ -81,6 +81,7 @@ tasks {
 
         val from = project.java_version.majorVersion.toInt()
         val to = targetGeyserJava.majorVersion.toInt()
+        onlyIf { from != to }
 
         multiReleaseOriginal = true
         multiReleaseVersions = (from downTo to).map { JavaVersion.toVersion(it) }
@@ -94,6 +95,8 @@ tasks {
         downgradeTo = targetGeyserJava
         shadePath.set({ "org/redlance/dima_dencep/mods/emotecraft/geyser/libs/" })
         archiveClassifier.set("")
+
+        onlyIf { !downgradeJar.get().state.skipped }
     }
 
     jar {
