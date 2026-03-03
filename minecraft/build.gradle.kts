@@ -159,7 +159,7 @@ tasks.shadowJar {
     from(tasks.named<AbstractArchiveTask>("remapNeoforgeJar").map { zipTree(it.archiveFile) })
 
     archiveBaseName.set("${archives_base_name}-for-MC${minecraft_version}")
-    archiveClassifier.set("unoptimized")
+    archiveClassifier.set("")
 
     // Services
     filesMatching("META-INF/services/**") {
@@ -306,3 +306,4 @@ publishMods {
         optional("searchables")
     }
 }
+tasks.publishMods.configure { dependsOn(tasks.getByName("optimizeOutputsOfShadowJar")) }
