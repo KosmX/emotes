@@ -8,6 +8,7 @@ import com.google.gson.JsonSyntaxException;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.server.services.InstanceService;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,23 +21,30 @@ import java.util.function.Consumer;
  * Serialize Emotecraft related jsons but not animations
  */
 public class Serializer<T extends SerializableConfig> {
-    public static Serializer<?> INSTANCE;
+    public static Serializer<? extends CommonConfig> INSTANCE;
 
     protected final ConfigSerializer<T> configSerializer;
     protected final Class<T> configClass;
     private final Consumer<GsonBuilder> consumer;
+    protected final Path configPath;
 
     protected final Gson serializer;
     private T config;
 
+    @ApiStatus.Internal
     public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass) {
-        this(configSuppler, configClass, GsonBuilder::setPrettyPrinting);
+        this(configSuppler, configClass, InstanceService.INSTANCE.getConfigPath());
     }
 
-    protected Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass, Consumer<GsonBuilder> consumer) {
+    public Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass, Path configPath) {
+        this(configSuppler, configClass, GsonBuilder::setPrettyPrinting, configPath);
+    }
+
+    protected Serializer(ConfigSerializer<T> configSuppler, Class<T> configClass, Consumer<GsonBuilder> consumer, Path configPath) {
         this.configSerializer = configSuppler;
         this.configClass = configClass;
         this.consumer = consumer;
+        this.configPath = configPath;
 
         this.serializer = initializeSerializer(new GsonBuilder());
     }
@@ -52,7 +60,7 @@ public class Serializer<T extends SerializableConfig> {
     }
 
     public boolean saveConfig(T config) {
-        try (BufferedWriter writer = Files.newBufferedWriter(InstanceService.INSTANCE.getConfigPath())) {
+        try (BufferedWriter writer = Files.newBufferedWriter(this.configPath)) {
             this.serializer.toJson(config, this.configClass, writer);
             return true;
         } catch(IOException e) {
@@ -64,7 +72,7 @@ public class Serializer<T extends SerializableConfig> {
     public T readConfig(boolean force) {
         if (this.config == null || force) {
             CommonData.LOGGER.debug("Loading config...");
-            this.config = readConfig(InstanceService.INSTANCE.getConfigPath());
+            this.config = readConfig(this.configPath);
         }
         return this.config;
     }
@@ -101,7 +109,7 @@ public class Serializer<T extends SerializableConfig> {
 
     // Static helpers
 
-    public static SerializableConfig getConfig() {
+    public static CommonConfig getConfig() {
         return Serializer.INSTANCE.readConfig(false);
     }
 }

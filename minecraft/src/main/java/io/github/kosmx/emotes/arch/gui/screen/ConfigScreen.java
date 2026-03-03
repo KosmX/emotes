@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ExportMenu;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.SerializableConfig;
+import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
@@ -16,11 +18,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import org.jspecify.annotations.NonNull;
 
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Optional;
 
 /**
  * Config with {@link SerializableConfig.ConfigEntry} objects
@@ -40,8 +43,17 @@ public class ConfigScreen extends OptionsSubScreen {
 
     private static final Component EXPORT = Component.translatable("emotecraft.options.export");
 
+    protected final SerializableConfig config;
+    protected final String namespace;
+
     public ConfigScreen(Screen parent) {
-        super(parent, Minecraft.getInstance().options, TITLE);
+        this(parent, PlatformTools.getConfig(), CommonData.MOD_ID, TITLE);
+    }
+
+    public ConfigScreen(Screen parent, SerializableConfig config, String namespace, Component title) {
+        super(parent, Minecraft.getInstance().options, title);
+        this.config = config;
+        this.namespace = namespace;
     }
 
     @Override
@@ -49,24 +61,28 @@ public class ConfigScreen extends OptionsSubScreen {
         assert this.list != null;
 
         this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_GENERAL, this.font)));
-        PlatformTools.getConfig().basics.forEach(entry -> addConfigEntry(entry, list));
+        this.config.basics.forEach(entry -> addConfigEntry(entry, list));
 
         this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_EXPERT, this.font)));
-        PlatformTools.getConfig().expert.forEach(entry -> addConfigEntry(entry, list));
+        this.config.expert.forEach(entry -> addConfigEntry(entry, list));
 
-        this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_LEGACY, this.font)));
-        PlatformTools.getConfig().legacy.forEach(entry -> addConfigEntry(entry, list));
+        if (config instanceof ClientConfig clientConfig) {
+            this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_LEGACY, this.font)));
+            clientConfig.legacy.forEach(entry -> addConfigEntry(entry, list));
+        }
     }
 
     @Override
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
-        linearLayout.addChild(Button.builder(EmoteMenu.RESET, button -> this.minecraft.setScreen(new ConfirmScreen(
+        boolean addExport = config instanceof ClientConfig;
+
+        linearLayout.addChild(Button.builder(EmoteMenu.RESET, _ -> this.minecraft.setScreen(new ConfirmScreen(
                 this::resetAll, RESET_CONFIG_TITLE, RESET_CONFIG_MSG
-        ))).width(Button.SMALL_WIDTH).build());
-        linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose()).build());
-        linearLayout.addChild(Button.builder(EXPORT, button -> this.minecraft.setScreen(new ExportMenu(this)))
+        ))).width(addExport ? Button.SMALL_WIDTH : Button.DEFAULT_WIDTH).build());
+        linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> onClose()).build());
+        if (addExport) linearLayout.addChild(Button.builder(EXPORT, _ -> this.minecraft.setScreen(new ExportMenu(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
@@ -74,36 +90,28 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @SuppressWarnings("unchecked")
     private <T> void addConfigEntry(SerializableConfig.ConfigEntry<T> entry, OptionsList options) {
-        if (entry.showEntry() || PlatformTools.getConfig().showHiddenConfig.get()) {
+        if (entry.showEntry() || (this.config instanceof ClientConfig clientConfig && clientConfig.showHiddenConfig.get())) {
             OptionInstance.TooltipSupplier<?> tooltip;
             if (entry.hasTooltip) {
-                tooltip = b -> Tooltip.create(
-                        Component.translatable("emotecraft.otherconfig." + entry.getName() + ".tooltip")
+                tooltip = _ -> Tooltip.create(
+                        Component.translatable(this.namespace + ".otherconfig." + entry.getName() + ".tooltip")
                 );
             } else {
                 tooltip = OptionInstance.noTooltip();
             }
 
             if (entry.get() instanceof Boolean b) {
-                options.addBig(OptionInstance.createBoolean("emotecraft.otherconfig." + entry.getName(),
+                options.addBig(OptionInstance.createBoolean(this.namespace + ".otherconfig." + entry.getName(),
                         (OptionInstance.TooltipSupplier<Boolean>) tooltip, b, (aBoolean) -> entry.set((T) aBoolean)
                 ));
             } else if (entry instanceof SerializableConfig.FloatConfigEntry floatEntry) {
-                int mapSize = 1024; //whatever
-                double range = floatEntry.max - floatEntry.min;
-
-                DecimalFormat formatter = new DecimalFormat("0.00");
-
-                Function<Integer, Double> i2d = integer -> integer / (double) mapSize * range + floatEntry.min;
-                Function<Double, Integer> d2i = aDouble -> (int) ((aDouble - floatEntry.min) / range * mapSize);
-
                 options.addBig(new OptionInstance<>(
-                        "emotecraft.otherconfig." + floatEntry.getName(), (OptionInstance.TooltipSupplier<Integer>) tooltip,
-                        (component, object) -> Options.genericValueLabel(component, Component.literal(formatter.format(floatEntry.getTextVal()))),
-                        new OptionInstance.IntRange(0, mapSize),
-                        Codec.DOUBLE.xmap(d2i, i2d),
-                        d2i.apply(floatEntry.getConfigVal()),
-                        integer -> floatEntry.setConfigVal(i2d.apply(integer))
+                        this.namespace + ".otherconfig." + floatEntry.getName(), (OptionInstance.TooltipSupplier<Float>) tooltip,
+                        (component, object) -> Options.genericValueLabel(component, Component.literal(object.toString())),
+                        new FloatRange(floatEntry.min, floatEntry.max),
+                        Codec.FLOAT,
+                        floatEntry.get(),
+                        floatEntry::set
                 ));
             } else if (entry instanceof SerializableConfig.EnumConfigEntry<?> enumEntry) {
                 addEnumEntry(options, tooltip, enumEntry);
@@ -122,9 +130,9 @@ public class ConfigScreen extends OptionsSubScreen {
         );
 
         options.addBig(new OptionInstance<>(
-                "emotecraft.otherconfig." + entry.getName(),
+                this.namespace + ".otherconfig." + entry.getName(),
                 (OptionInstance.TooltipSupplier<T>) tooltip,
-                (component, value) -> Component.literal(value.name()),
+                (_, value) -> Component.literal(value.name()),
                 new OptionInstance.Enum<>(List.of(values), codec),
                 codec,
                 entry.get(),
@@ -133,14 +141,57 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     private void resetAll(boolean bl) {
-        if (bl) {
-            PlatformTools.getConfig().iterate(SerializableConfig.ConfigEntry::resetToDefault);
-        }
+        if (bl) this.config.iterate(SerializableConfig.ConfigEntry::resetToDefault);
         this.minecraft.setScreen(this);
     }
 
     @Override
     public void removed() {
         Serializer.INSTANCE.saveConfig();
+    }
+
+    public record FloatRange(float minInclusive, float maxInclusive, boolean applyValueImmediately) implements FloatRangeBase {
+        public FloatRange(final float minInclusive, final float maxInclusive) {
+            this(minInclusive, maxInclusive, true);
+        }
+
+        @Override
+        public @NonNull Optional<Float> validateValue(final Float value) {
+            return value.compareTo(minInclusive()) >= 0 && value.compareTo(maxInclusive()) <= 0 ? Optional.of(value) : Optional.empty();
+        }
+
+        @Override
+        public @NonNull Codec<Float> codec() {
+            return Codec.floatRange(this.minInclusive, this.maxInclusive);
+        }
+    }
+
+    interface FloatRangeBase extends OptionInstance.SliderableValueSet<Float> {
+        float minInclusive();
+        float maxInclusive();
+
+        @Override
+        default @NonNull Optional<Float> next(final Float current) {
+            return Optional.of(current + 1);
+        }
+
+        @Override
+        default @NonNull Optional<Float> previous(final Float current) {
+            return Optional.of(current - 1);
+        }
+
+        @Override
+        default double toSliderValue(final Float value) {
+            if (value == minInclusive()) {
+                return 0.0;
+            } else {
+                return value == maxInclusive() ? 1.0 : Mth.map(value.intValue() + 0.5, minInclusive(), maxInclusive(), 0.0, 1.0);
+            }
+        }
+
+        @Override
+        default Float fromSliderValue(double slider) {
+            return Mth.map((float) slider, 0.0F, 1.0F, minInclusive(), maxInclusive());
+        }
     }
 }

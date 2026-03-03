@@ -7,6 +7,7 @@ accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE_BACKWARD_SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent SEARCH_HINT Lnet/minecraft/network/chat/Component;
 extendable method net/minecraft/client/gui/components/AbstractWidget render (Lnet/minecraft/client/gui/GuiGraphics;IIF)V
+extendable class net/minecraft/client/OptionInstance$SliderableValueSet
 
 # Mannequins
 accessible method net/minecraft/world/entity/decoration/Mannequin setProfile (Lnet/minecraft/world/item/component/ResolvableProfile;)V
@@ -21,6 +22,4 @@ accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
 accessible field net/minecraft/server/level/ChunkMap$TrackedEntity seenBy Ljava/util/Set;
 
 # Injected interfaces
-inject-interface net/minecraft/world/entity/Avatar com/zigythebird/playeranim/accessors/IAnimatedAvatar
-inject-interface net/minecraft/client/renderer/entity/state/AvatarRenderState com/zigythebird/playeranim/accessors/IAvatarAnimationState
-inject-interface net/minecraft/world/entity/Avatar io/github/kosmx/emotes/main/mixinFunctions/IPlayerEntity
+transitive-inject-interface net/minecraft/world/entity/Avatar io/github/kosmx/emotes/main/mixinFunctions/IPlayerEntity

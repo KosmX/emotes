@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.arch.network.CommonServerNetworkHandler;
 import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.config.ClientConfigSerializer;
+import io.github.kosmx.emotes.server.config.CommonConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -16,7 +17,7 @@ public abstract class EmotecraftMod {
         if (isClient) {
             Serializer.INSTANCE = new Serializer<>(new ClientConfigSerializer(), ClientConfig.class);
         } else {
-            Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
+            Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(CommonConfig::new, CommonConfig.staticConfigVersion), CommonConfig.class);
             UniversalEmoteSerializer.loadEmotes();
         }
     }

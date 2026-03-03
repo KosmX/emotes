@@ -2,9 +2,9 @@ package org.redlance.dima_dencep.mods.emotecraft.geyser;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.tools.MathHelper;
+import io.github.kosmx.emotes.server.config.CommonConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -82,7 +82,7 @@ public class EmotecraftExt implements Extension {
         CommonData.LOGGER.warn("Note that this extension does some horrible hacks on geyser.");
         CommonData.LOGGER.warn("Until custom packet event is added, workarounds cannot be avoided.");
 
-        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class);
+        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(CommonConfig::new, CommonConfig.staticConfigVersion), CommonConfig.class);
         UniversalEmoteSerializer.loadEmotes();
 
         GayserHacks.addCustomJavaTranslator(ClientboundCustomPayloadPacket.class, (session, packet) -> {

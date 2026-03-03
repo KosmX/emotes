@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class ClientConfigSerializer extends ConfigSerializer<ClientConfig> {
     public ClientConfigSerializer() {
-        super(ClientConfig::new);
+        super(ClientConfig::new, ClientConfig.staticConfigVersion);
     }
 
     @Override
