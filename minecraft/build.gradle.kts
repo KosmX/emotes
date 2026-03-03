@@ -4,6 +4,7 @@ plugins {
     id("xyz.wagyourtail.unimined")
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin")
+    id("org.redlance.dima_dencep.gradle.machete") version "1.0.2"
 }
 
 sourceSets {
@@ -158,7 +159,7 @@ tasks.shadowJar {
     from(tasks.named<AbstractArchiveTask>("remapNeoforgeJar").map { zipTree(it.archiveFile) })
 
     archiveBaseName.set("${archives_base_name}-for-MC${minecraft_version}")
-    archiveClassifier.set("")
+    archiveClassifier.set("unoptimized")
 
     // Services
     filesMatching("META-INF/services/**") {
@@ -171,6 +172,15 @@ tasks.shadowJar {
     filesMatching("META-INF/jarjar/metadata.json") {
         filter { it.replace("META-INF/jarjar/", "META-INF/jars/") }
     }
+}
+
+machete {
+    tasks.set(setOf("shadowJar"))
+    sourceFileStriping.enabled = true
+
+    png.compressionLevel.set(9)
+    png.compressorIterations.set(32)
+    png.enabled = false
 }
 
 tasks.jar {
