@@ -8,6 +8,9 @@ plugins {
 }
 
 sourceSets {
+    main { // Fix resources
+        resources.srcDir(project(":emotesAssets").file("src/main/resources"))
+    }
     create("fabric")
     create("neoforge")
 }
