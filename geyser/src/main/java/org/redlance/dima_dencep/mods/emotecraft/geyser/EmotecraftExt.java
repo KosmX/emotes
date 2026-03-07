@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -123,7 +124,7 @@ public class EmotecraftExt implements Extension {
         if (channels.contains(EmotecraftExt.EMOTECRAFT_EMOTE_TYPE)) {
             CommonData.LOGGER.debug("Has emotecraft!");
 
-            ByteBuf byteBuf = Unpooled.buffer();
+            ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
             DinnerboneProtocolUtils.writeChannels(byteBuf, EMOTECRAFT_CHANNELS);
             session.sendDownstreamPacket(new ServerboundCustomPayloadPacket(type, MathHelper.readBytes(byteBuf)));
             byteBuf.release();
