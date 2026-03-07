@@ -92,13 +92,10 @@ dependencies {
     }
 
     // Fabric
-    "fabricImplementation"(fabricApi.fabricModule("fabric-command-api-v2", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-networking-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-key-mapping-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-lifecycle-events-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-rendering-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
-    // Temp
-    "fabricImplementation"(fabricApi.fabricModule("fabric-resource-loader-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
 
     "fabricRuntimeOnly"(fabricApi.fabricModule("fabric-screen-api-v1", project["fabric_api_version"]))
     "fabricCompileOnly"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
