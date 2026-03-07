@@ -5,9 +5,8 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.*;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.PooledByteBufAllocator;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ByteMaps;
 import it.unimi.dsi.fastutil.bytes.Byte2ByteOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,24 +19,17 @@ import java.util.*;
  * Send everything emotes mod data...
  */
 public final class EmotePacket {
-    public static final Byte2ByteMap defaultVersions = new Byte2ByteOpenHashMap();
+    public static final Byte2ByteMap defaultVersions;
     static {
-        AbstractNetworkPacket tmp = new NewAnimPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
-        tmp = new EmoteDataPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
-        tmp = new PlayerDataPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
-        tmp = new DiscoveryPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
-        tmp = new StopPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
-        tmp = new SongPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
-        tmp = new EmoteHeaderPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
-        tmp = new EmoteIconPacket();
-        defaultVersions.put(tmp.getID(), tmp.getVer());
+        Byte2ByteOpenHashMap map = new Byte2ByteOpenHashMap();
+        for (AbstractNetworkPacket packet : new AbstractNetworkPacket[] {
+                new NewAnimPacket(), new EmoteDataPacket(), new PlayerDataPacket(),
+                new DiscoveryPacket(), new StopPacket(), new SongPacket(),
+                new EmoteHeaderPacket(), new EmoteIconPacket()
+        }) {
+            map.put(packet.getID(), packet.getVer());
+        }
+        defaultVersions = Byte2ByteMaps.unmodifiable(map);
     }
 
     private static final NetHashMap SUB_PACKETS = new NetHashMap(
@@ -90,82 +82,71 @@ public final class EmotePacket {
         if (!data.prepareAndValidate()) throw new RuntimeException("no valid data");
     }
 
-    public void write(ByteBuf buf) {
-        write(buf, PooledByteBufAllocator.DEFAULT);
-    }
-
     /**
-     * Write packet to a new ByteBuf
+     * Write packet to a ByteBuf.
      */
-    public void write(ByteBuf buf, ByteBufAllocator allocator) {
+    public void write(ByteBuf buf) {
         if (data.purpose == PacketTask.UNKNOWN) throw new IllegalArgumentException("Can't send packet without any purpose...");
 
-        int sizeSum = 6; // 5 bytes is the header + 1 count
+        int packetStart = buf.writerIndex();
 
-        List<ByteBuf> writable = new ArrayList<>();
+        // Write header with placeholder count
+        buf.writeInt(this.data.versions.getOrDefault(PacketConfig.DISCOVERY_PACKET, CommonData.networkingVersion));
+        buf.writeByte(this.data.purpose.id);
+        int countIndex = buf.writerIndex();
+        buf.writeByte(0); // placeholder, filled in later
+
+        int count = 0;
         try {
             for (AbstractNetworkPacket packet : SUB_PACKETS.values()) {
                 if (!packet.doWrite(this.data)) continue;
                 boolean optional = packet.isOptional();
 
-                ByteBuf packetBuff = null;
+                int subPacketStart = buf.writerIndex();
                 try {
-                    packetBuff = writeSubPacket(packet, allocator);
+                    byte packetVersion = packet.getVer(this.data.versions);
+
+                    buf.writeByte(packet.getID());
+                    buf.writeByte(packetVersion);
+                    int sizeIndex = buf.writerIndex();
+                    buf.writeInt(0); // size placeholder
+
+                    int contentStart = buf.writerIndex();
+                    packet.write(buf, this.data, packetVersion);
+                    int contentSize = buf.writerIndex() - contentStart;
+
+                    // Fill in the real size
+                    buf.setInt(sizeIndex, contentSize);
+
+                    int totalSize = buf.writerIndex() - packetStart;
+                    if (optional && totalSize > this.data.sizeLimit) {
+                        // Rollback this sub-packet
+                        buf.writerIndex(subPacketStart);
+                        this.data.skippedPackets.add(packet.getID());
+                        CommonData.LOGGER.warn("Writing {} skipped!", packet);
+                        continue;
+                    }
+
+                    count++;
                 } catch (IOException ex) {
+                    buf.writerIndex(subPacketStart); // rollback on error
                     if (optional) {
                         CommonData.LOGGER.warn("Exception while writing {} sub-packet!", packet, ex);
                     } else {
                         throw ex;
                     }
                 }
-                if (packetBuff == null) continue;
-
-                int subPacketSize = packetBuff.readableBytes();
-                if (!optional || (sizeSum + subPacketSize) <= this.data.sizeLimit) {
-                    writable.add(packetBuff);
-                    sizeSum += subPacketSize;
-                } else {
-                    this.data.skippedPackets.add(packet.getID());
-                    CommonData.LOGGER.warn("Writing {} skipped!", packet);
-                    packetBuff.release();
-                }
             }
 
+            int sizeSum = buf.writerIndex() - packetStart;
             if (data.strictSizeLimit && sizeSum > data.sizeLimit) throw new RuntimeException(String.format(
                     "Can't send emote, packet's size (%s) is bigger than max allowed (%s)!", sizeSum, data.sizeLimit
             ));
 
-            buf.writeInt(this.data.versions.getOrDefault(PacketConfig.DISCOVERY_PACKET, CommonData.networkingVersion));
-            buf.writeByte(this.data.purpose.id);
-            buf.writeByte(writable.size());
-
-            for (ByteBuf byteBuf : writable) {
-                buf.writeBytes(byteBuf);
-            }
+            // Fill in the real count
+            buf.setByte(countIndex, count);
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
-        } finally {
-            for (ByteBuf byteBuf : writable) {
-                byteBuf.release();
-            }
-        }
-    }
-
-    private ByteBuf writeSubPacket(AbstractNetworkPacket packet, ByteBufAllocator allocator) throws IOException {
-        byte packetVersion = packet.getVer(this.data.versions);
-
-        ByteBuf packetContent = allocator.buffer();
-        try {
-            packet.write(packetContent, this.data, packetVersion);
-
-            ByteBuf byteBuf = allocator.buffer(packetContent.readableBytes() + 6);
-            byteBuf.writeByte(packet.getID());
-            byteBuf.writeByte(packetVersion);
-            byteBuf.writeInt(packetContent.readableBytes());
-            byteBuf.writeBytes(packetContent);
-            return byteBuf;
-        } finally {
-            packetContent.release();
         }
     }
 
