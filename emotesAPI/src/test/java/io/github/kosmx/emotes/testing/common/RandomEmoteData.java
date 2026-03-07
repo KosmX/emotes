@@ -7,10 +7,12 @@ import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import it.unimi.dsi.fastutil.Pair;
+import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.parser.ast.FloatExpression;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class RandomEmoteData {
@@ -26,12 +28,15 @@ public class RandomEmoteData {
         BoneAnimation builder2Bone = new BoneAnimation();
 
         int count = random.nextInt()%118 + 128;
+        List<Expression> prevValue = Collections.emptyList();
         for(int i = 0; i < count; i++) {
             int pos = Math.abs(random.nextInt() % length);
             FloatExpression val = FloatExpression.of(Math.abs(random.nextInt() % length));
             EasingType ease = EasingType.fromId((byte) (random.nextInt() % 48));
-            builder1Bone.positionKeyFrames().xKeyframes().add(new Keyframe(pos, Collections.singletonList(val), Collections.singletonList(val), ease));
-            builder2Bone.positionKeyFrames().xKeyframes().add(new Keyframe(pos, Collections.singletonList(val), Collections.singletonList(val), ease));
+            List<Expression> nextValue = Collections.singletonList(val);
+            builder1Bone.positionKeyFrames().xKeyframes().add(new Keyframe(pos, prevValue.isEmpty() ? nextValue : prevValue, nextValue, ease));
+            builder2Bone.positionKeyFrames().xKeyframes().add(new Keyframe(pos, prevValue.isEmpty() ? nextValue : prevValue, nextValue, ease));
+            prevValue = nextValue;
         }
 
         Animation builder1 = new Animation(new ExtraAnimationData(), length, Animation.LoopType.PLAY_ONCE,

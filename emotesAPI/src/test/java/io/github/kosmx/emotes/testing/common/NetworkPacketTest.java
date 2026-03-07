@@ -23,6 +23,7 @@ public class NetworkPacketTest {
         Pair<Animation, Animation> pair = RandomEmoteData.generateEmotes();
         {
             EmotePacket.Builder builder = new EmotePacket.Builder();
+            builder.setVersion(EmotePacket.defaultVersions);
             builder.configureToStreamEmote(pair.left());
             ByteBuf buf = Unpooled.buffer();
             builder.build().write(buf);
@@ -32,8 +33,8 @@ public class NetworkPacketTest {
 
             NetData data = new EmotePacket(buf).data; //That read expression is kinda funny
             Assertions.assertNotNull(data, "Data should be not null");
-            // Assertions.assertEquals(pair.left().boneAnimations(), data.emoteData.boneAnimations(), "The received data should contain the same emote");
-            // Assertions.assertEquals(pair.left().boneAnimations().hashCode(), data.emoteData.boneAnimations().hashCode(), "The received data should contain the same emote");
+            Assertions.assertEquals(pair.left().boneAnimations(), data.emoteData.boneAnimations(), "The received data should contain the same emote");
+            Assertions.assertEquals(pair.left().boneAnimations().hashCode(), data.emoteData.boneAnimations().hashCode(), "The received data should contain the same emote");
             buf.release();
         }
 

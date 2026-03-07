@@ -1,5 +1,7 @@
 package io.github.kosmx.emotes.common.network;
 
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
 
 public enum PacketTask {
     UNKNOWN(0, false, false, false),
@@ -7,6 +9,13 @@ public enum PacketTask {
     CONFIG(8, false, false, false),
     STOP(10, true, false, true),
     FILE(0x10, true, true, false);
+
+    private static final Byte2ObjectMap<PacketTask> BY_ID = new Byte2ObjectOpenHashMap<>();
+    static {
+        for (PacketTask task : values()) {
+            BY_ID.put(task.id, task);
+        }
+    }
 
     public final byte id;
 
@@ -30,11 +39,9 @@ public enum PacketTask {
         this.exchangeHeader = exchangeHeader;
         this.playerBound = playerBound;
     }
+
     public static PacketTask getTaskFromID(byte b) {
-        for(PacketTask task:PacketTask.values()){
-            if(task.id == b)return task;
-        }
-        return UNKNOWN;
+        return BY_ID.getOrDefault(b, UNKNOWN);
     }
 
     PacketTask(int i, boolean isEmoteStream, boolean exchangeHeader, boolean playerBound) {

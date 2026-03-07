@@ -12,7 +12,7 @@ import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBufAllocator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import org.geysermc.cumulus.form.SimpleForm;
@@ -61,7 +61,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
 
     @Override
     public void sendMessage(EmotePacket packet, @Nullable UUID target) {
-        ByteBuf buf = Unpooled.buffer();
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
             packet.write(buf);
             ((GeyserSession) this.session).sendDownstreamPacket(new ServerboundCustomPayloadPacket(

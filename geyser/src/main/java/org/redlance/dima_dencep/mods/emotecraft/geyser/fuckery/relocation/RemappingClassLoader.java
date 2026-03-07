@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public final class RemappingClassLoader extends URLClassLoader {
     private final GeyserRelocationIndex index;
@@ -19,6 +20,26 @@ public final class RemappingClassLoader extends URLClassLoader {
         super(new URL[]{path.toUri().toURL()}, parent);
         this.index = GeyserRelocationIndex.fromGeyserJar(geyserAnchor);
         if (!this.index.isEmpty()) CommonData.LOGGER.info("Detected platform-specific Geyser relocations: {}", this.index);
+    }
+
+    @Override
+    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        Class<?> already = findLoadedClass(name);
+        if (already != null) {
+            if (resolve) resolveClass(already);
+            return already;
+        }
+
+        URL res = findResource(name.replace('.', '/').concat(".class"));
+        if (res != null) {
+            try {
+                Class<?> c = findClass(name);
+                if (resolve) resolveClass(c);
+                return c;
+            } catch (ClassNotFoundException ignored) {}
+        }
+
+        return super.loadClass(name, resolve);
     }
 
     @Override
@@ -35,15 +56,15 @@ public final class RemappingClassLoader extends URLClassLoader {
             byte[] original = is.readAllBytes();
             byte[] transformed = remapBytecode(original);
 
-            if (!java.util.Arrays.equals(original, transformed)) {
+            if (!Arrays.equals(original, transformed)) {
                 CommonData.LOGGER.info("[Remap] Transforming {}!", name);
             }
 
             return defineClass(name, transformed, 0, transformed.length);
         } catch (RuntimeException re) {
             throw re;
-        } catch (Throwable t) {
-            throw new ClassNotFoundException(name, t);
+        } catch (Exception ex) {
+            throw new ClassNotFoundException(name, ex);
         }
     }
 

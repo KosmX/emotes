@@ -8,7 +8,7 @@ import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBufAllocator;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,7 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
             CommonData.LOGGER.error("Attempt to send a packet of an unsupported entity: {}!", this.avatar);
             return;
         }
-        ByteBuf buf = Unpooled.buffer();
+        ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
             packet.write(buf);
             player.getBukkitEntity().sendPluginMessage(PLUGIN, BukkitWrapper.EMOTE_PACKET, MathHelper.readBytes(buf));
