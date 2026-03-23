@@ -4,7 +4,7 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     id("xyz.wagyourtail.jvmdowngrader") version("1.3.6") apply false
-    id("dev.architectury.loom") version "1.13.467" apply false
+    id("dev.architectury.loom") version "1.13.469" apply false
     id("architectury-plugin") version "3.4.162" apply true
     id("com.gradleup.shadow") version "9.4.0" apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
