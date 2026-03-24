@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.server.services.impl;
 
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.server.services.InstanceService;
+import org.redlance.common.services.ServiceUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,11 +14,11 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public int getPriority() {
-        return ServiceLoaderUtil.LOWEST_PRIORITY;
+        return ServiceUtils.LOWEST_PRIORITY;
     }
 
     @Override
-    public boolean isActive() {
+    public boolean isServiceActive() {
         return true;
     }
 }

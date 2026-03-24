@@ -1,19 +1,19 @@
 package io.github.kosmx.emotes.mc.services;
 
-import io.github.kosmx.emotes.api.services.IEmotecraftService;
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.mc.services.impl.VanillaPermissionService;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
 import org.jetbrains.annotations.NotNull;
+import org.redlance.common.services.AdvancedService;
+import org.redlance.common.services.ServiceUtils;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public interface IPermissionService extends IEmotecraftService {
-    IPermissionService INSTANCE = ServiceLoaderUtil.loadService(IPermissionService.class, VanillaPermissionService::new);
+public interface IPermissionService extends AdvancedService {
+    IPermissionService INSTANCE = ServiceUtils.loadService(IPermissionService.class, VanillaPermissionService::new);
 
     default Predicate<CommandSourceStack> require(@NotNull String permission, PermissionLevel defaultValue) {
         Objects.requireNonNull(permission, "permission");

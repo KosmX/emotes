@@ -1,13 +1,14 @@
 package io.github.kosmx.emotes.api.events.server;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.api.services.IEmotecraftService;
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.common.services.AdvancedService;
+import org.redlance.common.services.ServiceUtils;
+
 import java.util.UUID;
 
-public abstract class ServerEmoteAPI implements IEmotecraftService {
+public abstract class ServerEmoteAPI implements AdvancedService {
 
     /**
      * Set the player to play emote.
@@ -91,7 +92,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
 
     // ---- IMPLEMENTATION ---- //
 
-    protected static final ServerEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ServerEmoteAPI.class);
+    protected static final ServerEmoteAPI INSTANCE = ServiceUtils.loadService(ServerEmoteAPI.class);
 
     protected abstract void setPlayerPlayingEmoteImpl(UUID player, @Nullable Animation KeyframeAnimation, float tick, boolean isForced);
     protected abstract Pair<Animation, Float> getPlayedEmoteImpl(UUID player);
@@ -99,7 +100,7 @@ public abstract class ServerEmoteAPI implements IEmotecraftService {
     protected abstract boolean isForcedEmoteImpl(UUID player);
 
     @Override
-    public boolean isActive() {
+    public boolean isServiceActive() {
         return true;
     }
 }

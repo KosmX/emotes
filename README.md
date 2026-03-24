@@ -29,6 +29,7 @@ Official project (only download the mod from here):
 | 1.21.7-8  | 3.0.x      |
 | 1.21.9-10 | 3.1.x      |
 | 1.21.11   | 3.2.x      |
+| 26.1      | 3.3.x      |
 
 ## Development
 

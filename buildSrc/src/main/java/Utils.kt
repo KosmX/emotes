@@ -98,7 +98,7 @@ fun MavenPublication.addDeps(project: Project, configuration: Configuration, sco
         val dependenciesNode = asElement().getOrCreateChild("dependencies")
 
         val set = configuration.dependencies.toMutableSet()
-        configuration.extendsFrom.forEach { set.addAll(configuration.dependencies.toSet()) }
+        configuration.extendsFrom.forEach { set.addAll(it.dependencies.toSet()) }
         for (dep in set) {
             var group = dep.group
             var artifactId = dep.name
@@ -129,7 +129,6 @@ fun MavenPublication.addDeps(project: Project, configuration: Configuration, sco
             }
         }
     }
-
 }
 
 /**

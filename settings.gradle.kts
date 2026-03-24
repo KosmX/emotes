@@ -1,9 +1,8 @@
 pluginManagement {
     repositories {
-        maven("https://maven.fabricmc.net/")
-        maven("https://maven.architectury.dev/")
-        maven("https://maven.neoforged.net/releases")
         maven("https://repo.redlance.org/public")
+        maven("https://maven.wagyourtail.xyz/releases")
+        maven("https://maven.wagyourtail.xyz/snapshots")
         gradlePluginPortal()
     }
 }
@@ -15,14 +14,11 @@ include("emotesServer")
 include("emotesAssets")
 include("emotesMc")
 
-//Minecraft 1.20 version
+// Minecraft mod
 include("minecraft")
-include("minecraft:archCommon")
-include("minecraft:fabric")
-include("minecraft:neoforge")
 
 // Paper plugin
-include("paper")
+// include("paper")
 
 // Geyser ext
 include("geyser")

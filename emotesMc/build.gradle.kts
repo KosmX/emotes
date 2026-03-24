@@ -1,23 +1,23 @@
-@file:Suppress("UnstableApiUsage")
-
 plugins {
-    id("dev.architectury.loom")
+    id("xyz.wagyourtail.unimined")
     `maven-publish`
 }
 
-loom {
-    silentMojangMappingsLicense()
+unimined.minecraft {
+    version(minecraft_version)
+
+    mappings {
+        devNamespace("official")
+    }
+
+    runs {
+        off = true
+    }
+
+    defaultRemapJar = false
 }
 
-version = mod_version
-
 dependencies {
-    minecraft("com.mojang:minecraft:${minecraft_version}")
-    mappings(loom.layered() {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
-    })
-
     api(project(":emotesServer")) {
         exclude(group = "org.jetbrains", module = "annotations")
 
@@ -35,14 +35,6 @@ java {
 
 tasks.jar {
     archiveClassifier = ""
-}
-
-tasks.remapJar {
-    enabled = false
-}
-
-tasks.remapSourcesJar {
-    enabled = false
 }
 
 publishing {

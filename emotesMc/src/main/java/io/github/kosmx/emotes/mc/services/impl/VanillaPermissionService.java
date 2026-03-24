@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.mc.services.impl;
 
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.NotNull;
+import org.redlance.common.services.ServiceUtils;
 
 import java.util.Optional;
 
@@ -14,12 +14,12 @@ public class VanillaPermissionService implements IPermissionService {
     }
 
     @Override
-    public boolean isActive() {
+    public boolean isServiceActive() {
         return true;
     }
 
     @Override
     public int getPriority() {
-        return ServiceLoaderUtil.LOWEST_PRIORITY;
+        return ServiceUtils.LOWEST_PRIORITY;
     }
 }

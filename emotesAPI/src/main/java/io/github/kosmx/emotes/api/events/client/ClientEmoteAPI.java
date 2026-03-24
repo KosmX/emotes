@@ -1,12 +1,13 @@
 package io.github.kosmx.emotes.api.events.client;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.api.services.IEmotecraftService;
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.common.services.AdvancedService;
+import org.redlance.common.services.ServiceUtils;
+
 import java.util.Collection;
 
-public abstract class ClientEmoteAPI implements IEmotecraftService {
+public abstract class ClientEmoteAPI implements AdvancedService {
     /**
      * Stop play an emote.
      */
@@ -44,14 +45,14 @@ public abstract class ClientEmoteAPI implements IEmotecraftService {
 
     // ---- IMPLEMENTATION ---- //
 
-    protected static final ClientEmoteAPI INSTANCE = ServiceLoaderUtil.loadService(ClientEmoteAPI.class);
+    protected static final ClientEmoteAPI INSTANCE = ServiceUtils.loadService(ClientEmoteAPI.class);
 
     protected abstract boolean playEmoteImpl(Animation animation, float tick);
 
     protected abstract Collection<Animation> clientEmoteListImpl();
 
     @Override
-    public boolean isActive() {
+    public boolean isServiceActive() {
         return true;
     }
 }

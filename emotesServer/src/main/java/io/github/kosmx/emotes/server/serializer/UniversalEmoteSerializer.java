@@ -4,13 +4,13 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.tools.MathHelper;
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.type.*;
 
 import io.github.kosmx.emotes.server.services.InstanceService;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.common.services.ServiceUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +21,8 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class UniversalEmoteSerializer {
-    public static final List<IReader> READERS = ServiceLoaderUtil.loadServicesSorted(IReader.class).toList();
-    public static final List<IWriter> WRITERS = ServiceLoaderUtil.loadServicesSorted(IWriter.class).toList();
+    public static final List<IReader> READERS = ServiceUtils.loadServicesSorted(IReader.class).toList();
+    public static final List<IWriter> WRITERS = ServiceUtils.loadServicesSorted(IWriter.class).toList();
 
     public static final UUIDMap<Animation> SERVER_EMOTES = new UUIDMap<>(); // Emotes have stable hash function.
     public static final UUIDMap<Animation> HIDDEN_SERVER_EMOTES = new UUIDMap<>(); // server-side loaded but NOT streamed emotes.

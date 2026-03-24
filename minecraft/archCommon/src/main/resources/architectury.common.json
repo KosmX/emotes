@@ -1,7 +1,0 @@
-{
-  "injected_interfaces": {
-    "net/minecraft/class_11890": [
-      "io/github/kosmx/emotes/main/mixinFunctions/IPlayerEntity"
-    ]
-  }
-}
