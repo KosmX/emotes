@@ -8,13 +8,14 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.common.services.AdvancedService;
+import org.redlance.common.services.ServiceUtils;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -26,8 +27,8 @@ import java.util.function.Consumer;
  * - receive message (3x for 3 channels)
  * - handle configuration
  */
-public abstract class ClientNetwork extends AbstractNetworkInstance {
-    public static ClientNetwork INSTANCE = ServiceLoaderUtil.loadServices(ClientNetwork.class).findAny().orElseThrow();
+public abstract class ClientNetwork extends AbstractNetworkInstance implements AdvancedService {
+    public static ClientNetwork INSTANCE = ServiceUtils.loadService(ClientNetwork.class);
 
     private boolean isConfiguredNormally;
 

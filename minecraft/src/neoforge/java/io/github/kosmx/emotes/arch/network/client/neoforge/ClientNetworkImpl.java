@@ -17,4 +17,14 @@ public final class ClientNetworkImpl extends ClientNetwork {
     public void sendPlayPacket(CustomPacketPayload payload) {
         ClientPacketDistributor.sendToServer(payload);
     }
+
+    @Override
+    public boolean isServiceActive() {
+        try {
+            Class.forName("net.neoforged.neoforge.client.network.ClientPacketDistributor");
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 }

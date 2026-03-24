@@ -5,7 +5,7 @@ import io.github.kosmx.emotes.arch.screen.utils.PageButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -47,7 +47,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         int centerX = getX() + getWidth() / 2;
         int centerY = getY() + getHeight() / 2;
 
@@ -59,10 +59,10 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
         this.forwardButton.setPosition(centerX - this.forwardButton.getWidth() / 2 + buttonPadding, centerY - this.forwardButton.getHeight() / 2);
         this.backButton.setPosition(centerX - this.backButton.getWidth() / 2 - buttonPadding, centerY - this.backButton.getHeight() / 2);
 
-        guiGraphics.drawString(font, text, centerX - (textWidth / 2), centerY - (font.lineHeight / 2), -1);
+        graphics.text(font, text, centerX - (textWidth / 2), centerY - (font.lineHeight / 2), -1);
 
         for (Renderable renderable : this.elements) {
-            renderable.render(guiGraphics, mouseX, mouseY, partialTick);
+            renderable.extractRenderState(graphics, mouseX, mouseY, a);
         }
     }
 

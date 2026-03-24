@@ -17,7 +17,12 @@ public class FabricEmotesMain implements InstanceService {
     }
 
     @Override
-    public boolean isActive() {
-        return true;
+    public boolean isServiceActive() {
+        try {
+            Class.forName("net.fabricmc.loader.api.FabricLoader");
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }

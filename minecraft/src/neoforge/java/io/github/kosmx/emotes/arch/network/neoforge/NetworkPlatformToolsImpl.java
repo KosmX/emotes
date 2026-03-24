@@ -37,4 +37,14 @@ public final class NetworkPlatformToolsImpl implements NetworkPlatformTools {
     public MinecraftServer getServer() {
         return ServerLifecycleHooks.getCurrentServer();
     }
+
+    @Override
+    public boolean isServiceActive() {
+        try {
+            Class.forName("net.neoforged.neoforge.server.ServerLifecycleHooks");
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 }

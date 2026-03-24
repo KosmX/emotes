@@ -14,7 +14,7 @@ import io.github.kosmx.emotes.mc.McUtils;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -73,23 +73,23 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     @Override
-    protected void renderSelection(GuiGraphics guiGraphics, ListEntry entry, int outerColor) {
+    protected void extractSelection(GuiGraphicsExtractor graphics, ListEntry entry, int outlineColor) {
         if (this.compactMode && scrollable()) {
             int j = entry.getX();
             int k = entry.getY();
             int l = j + entry.getWidth() - 8;
             int m = k + entry.getHeight();
-            guiGraphics.fill(j, k, l, m, outerColor);
-            guiGraphics.fill(j + 1, k + 1, l - 1, m - 1, -16777216);
+            graphics.fill(j, k, l, m, outlineColor);
+            graphics.fill(j + 1, k + 1, l - 1, m - 1, -16777216);
         } else {
-            super.renderSelection(guiGraphics, entry, outerColor);
+            super.extractSelection(graphics, entry, outlineColor);
         }
     }
 
     @Override
-    protected void renderItem(GuiGraphics guiGraphics, int i, int j, float f, ListEntry entry) {
+    protected void extractItem(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, ListEntry entry) {
         try { // Concurrency issues
-            super.renderItem(guiGraphics, i, j, f, entry);
+            super.extractItem(graphics, mouseX, mouseY, a, entry);
         } catch (Throwable ignored) {}
     }
 
@@ -210,22 +210,22 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public void renderContent(GuiGraphics matrices, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
             int maxX = getContentRight() - (compactMode && scrollable() ? 7 : 0);
-            matrices.enableScissor(getX() - 1, getY() - 1, maxX, getY() + getHeight() + 1);
+            graphics.enableScissor(getX() - 1, getY() - 1, maxX, getY() + getHeight() + 1);
             if (hovered) {
-                matrices.requestCursor(isFocused() ? CursorType.DEFAULT : CursorTypes.POINTING_HAND);
-                matrices.fill(getContentX() - 1, getContentY() - 1, maxX, getContentBottom() + 1, ARGB.color(128, 66, 66, 66));
+                graphics.requestCursor(isFocused() ? CursorType.DEFAULT : CursorTypes.POINTING_HAND);
+                graphics.fill(getContentX() - 1, getContentY() - 1, maxX, getContentBottom() + 1, ARGB.color(128, 66, 66, 66));
             }
             int maxBadgesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (getContentX() + 31);
-            int badgeWidth = BageUtils.drawBadges(matrices, minecraft.font, this.bages, maxX, getContentY(), maxBadgesWidth, true);
-            matrices.textRenderer(GuiGraphics.HoveredTextEffects.NONE).acceptScrolling(this.name, getContentX() + 31, getContentX() + 31, maxX - badgeWidth, getContentY(), getContentY() + minecraft.font.lineHeight);
-            matrices.drawString(minecraft.font, this.description, getContentX() + 31, getContentY() + 12, -8355712);
-            renderAdditional(matrices, mouseX, mouseY, hovered, tickDelta);
-            matrices.disableScissor();
+            int badgeWidth = BageUtils.extractBadges(graphics, minecraft.font, this.bages, maxX, getContentY(), maxBadgesWidth, true);
+            graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE).acceptScrolling(this.name, getContentX() + 31, getContentX() + 31, maxX - badgeWidth, getContentY(), getContentY() + minecraft.font.lineHeight);
+            graphics.text(minecraft.font, this.description, getContentX() + 31, getContentY() + 12, -8355712);
+            extractAdditionalContent(graphics, mouseX, mouseY, hovered, a);
+            graphics.disableScissor();
         }
 
-        public abstract void renderAdditional(GuiGraphics matrices, int mouseX, int mouseY, boolean hovered, float tickDelta);
+        protected abstract void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta);
 
         @Override
         public @NotNull Component getNarration() {
@@ -250,27 +250,27 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     }
 
-    public class HeaderEntry extends ListEntry {
+    public final class HeaderEntry extends ListEntry {
         public HeaderEntry() {
             super(CommonComponents.EMPTY, CommonComponents.EMPTY, Collections.emptyList());
         }
 
         @Override
-        public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
             Component path = appendScreenPath(mainFolder, Component.empty());
             if (compactMode) {
-                guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.NONE).acceptScrolling(path,
+                graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE).acceptScrolling(path,
                         getContentX(), getContentX(), getContentRight(), getContentY(), getContentY() + minecraft.font.lineHeight
                 );
             } else {
-                guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.NONE).acceptScrollingWithDefaultCenter(path,
+                graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE).acceptScrollingWithDefaultCenter(path,
                         getContentX(), getContentRight(), getContentY(), getContentY() + minecraft.font.lineHeight
                 );
             }
         }
 
         @Override
-        public void renderAdditional(GuiGraphics matrices, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             // no-op
         }
 
@@ -291,7 +291,11 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         @Override
         public int compareTo(@NotNull ListEntry o) {
-            return 1;
+            if (o instanceof HeaderEntry) {
+                return super.compareTo(o);
+            } else {
+                return 1;
+            }
         }
 
         @Override
@@ -309,19 +313,19 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public void renderAdditional(GuiGraphics matrices, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             if (!this.emote.author.getString().isEmpty()) {
                 Component text = Component.translatable("emotecraft.emote.author")
                         .withStyle(ChatFormatting.GOLD)
                         .append(this.emote.author);
 
-                matrices.drawString(minecraft.font, text, getContentX() + 31, getContentY() + 23, -8355712);
+                graphics.text(minecraft.font, text, getContentX() + 31, getContentY() + 23, -8355712);
             }
 
             Identifier texture = this.emote.getIconIdentifier();
             if (texture != null) {
                 GlStateManager._enableBlend();
-                matrices.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
                 GlStateManager._disableBlend();
             }
         }
@@ -385,8 +389,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public void renderAdditional(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float tickDelta) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, getX(), getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
+        protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float tickDelta) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, getX(), getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
         }
 
         @Override

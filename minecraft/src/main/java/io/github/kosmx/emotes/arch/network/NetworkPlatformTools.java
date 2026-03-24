@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.arch.network;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -13,11 +12,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
+import org.redlance.common.services.AdvancedService;
+import org.redlance.common.services.ServiceUtils;
 
 import java.util.Collection;
 
-public interface NetworkPlatformTools {
-    NetworkPlatformTools INSTANCE = ServiceLoaderUtil.loadServices(NetworkPlatformTools.class).findAny().orElseThrow();
+public interface NetworkPlatformTools extends AdvancedService {
+    NetworkPlatformTools INSTANCE = ServiceUtils.loadService(NetworkPlatformTools.class);
 
     CustomPacketPayload.Type<EmotePacketPayload> EMOTE_CHANNEL_ID = new CustomPacketPayload.Type<>(McUtils.newIdentifier(CommonData.playEmoteID));
     CustomPacketPayload.Type<EmotePacketPayload> STREAM_CHANNEL_ID = new CustomPacketPayload.Type<>(McUtils.newIdentifier(CommonData.emoteStreamID));

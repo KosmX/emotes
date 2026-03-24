@@ -9,7 +9,7 @@ import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget
 import io.github.kosmx.emotes.main.config.CloseWheel;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
@@ -86,7 +86,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     }
 
     @Override
-    protected void renderBlurredBackground(@NonNull GuiGraphics guiGraphics) {
+    protected void extractBlurredBackground(GuiGraphicsExtractor graphics) {
         // no-op
     }
 

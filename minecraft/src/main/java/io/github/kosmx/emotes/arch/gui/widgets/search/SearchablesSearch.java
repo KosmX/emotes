@@ -9,7 +9,7 @@ import com.blamejared.searchables.lang.StringSearcher;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -68,9 +68,9 @@ public class SearchablesSearch implements ISearchEngine {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         if (this.search != null) {
-            this.search.autoComplete().render(guiGraphics, mouseX, mouseY, partialTick);
+            this.search.autoComplete().extractRenderState(graphics, mouseX, mouseY, a);
         }
     }
 

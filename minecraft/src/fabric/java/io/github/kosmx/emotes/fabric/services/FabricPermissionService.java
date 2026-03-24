@@ -14,7 +14,7 @@ public class FabricPermissionService implements IPermissionService {
     }
 
     @Override
-    public boolean isActive() {
+    public boolean isServiceActive() {
         // return FabricLoader.getInstance().isModLoaded("fabric-permissions-api-v0");
         return false;
     }

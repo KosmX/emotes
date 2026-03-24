@@ -33,4 +33,14 @@ public final class NetworkPlatformToolsImpl implements NetworkPlatformTools {
     public MinecraftServer getServer() {
         return EmotecraftFabricMod.SERVER_INSTANCE;
     }
+
+    @Override
+    public boolean isServiceActive() {
+        try {
+            Class.forName("net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking");
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 }

@@ -1,12 +1,12 @@
 package io.github.kosmx.emotes.server.serializer.type;
 
-import io.github.kosmx.emotes.api.services.IEmotecraftService;
+import org.redlance.common.services.AdvancedService;
 
-public interface ISerializer extends IEmotecraftService {
+public interface ISerializer extends AdvancedService {
     String getExtension();
 
     @Override
-    default boolean isActive() {
+    default boolean isServiceActive() {
         return getExtension() != null;
     }
 }

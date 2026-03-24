@@ -36,14 +36,6 @@ allprojects {
                 includeModule("org.lwjgl", "lwjgl-freetype")
             }
         }
-        maven {
-            name = "Maven for PR #2988" // https://github.com/neoforged/NeoForge/pull/2988
-            url = uri("https://prmaven.neoforged.net/NeoForge/pr2988")
-            content {
-                includeModule("net.neoforged", "neoforge")
-                includeModule("net.neoforged", "testframework")
-            }
-        }
         maven("https://repo.opencollab.dev/main/") {
             name = "Geyser"
         }

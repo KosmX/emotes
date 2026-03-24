@@ -1,9 +1,9 @@
 package io.github.kosmx.emotes.main.network;
 
-import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
 import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 public final class ClientPacketManager extends EmotesProxyManager {
 
-    private static final INetworkInstance defaultNetwork = PlatformTools.getClientNetworkController();
+    private static final INetworkInstance defaultNetwork = ClientNetwork.INSTANCE;
     //that casting should always work
 
     public static void init(){

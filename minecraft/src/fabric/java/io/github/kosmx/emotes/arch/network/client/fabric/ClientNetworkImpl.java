@@ -18,9 +18,10 @@ public final class ClientNetworkImpl extends ClientNetwork {
     }
 
     @Override
-    public boolean isActive() {
+    public boolean isServiceActive() {
         try {
-            return super.isActive();
+            Class.forName("net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking");
+            return true;
         } catch (Exception ex) {
             return false;
         }

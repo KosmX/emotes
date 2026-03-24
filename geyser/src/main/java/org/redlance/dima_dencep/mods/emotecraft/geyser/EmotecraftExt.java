@@ -110,7 +110,7 @@ public class EmotecraftExt implements Extension {
             return true;
         });
 
-        final int recommendedJava = 21;
+        final int recommendedJava = 24;
         final int javaVersion = Runtime.version().feature();
         for (int i = javaVersion; i < recommendedJava ; i++) CommonData.LOGGER.error("You are running Java {}, but Java {} or newer is recommended!", javaVersion, recommendedJava);
     }

@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -38,8 +38,8 @@ public class PageButton extends AbstractButton {
     }
 
     @Override
-    protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (this.drawBackground) super.renderDefaultSprite(guiGraphics);
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        if (this.drawBackground) super.extractDefaultSprite(graphics);
 
         int width = this.drawBackground ? PAGE_BUTTON_WIDTH : getWidth();
         int height = this.drawBackground ? PAGE_BUTTON_HEIGHT : getHeight();
@@ -52,7 +52,7 @@ public class PageButton extends AbstractButton {
             y += (getHeight() - height) / 2;
         }
 
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.sprites.get(this.active, this.active && isHoveredOrFocused()), x, y,
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.sprites.get(this.active, this.active && isHoveredOrFocused()), x, y,
                 width, height, ARGB.white(this.alpha)
         );
     }

@@ -18,7 +18,12 @@ public class ForgeEmotesMain implements InstanceService {
     }
 
     @Override
-    public boolean isActive() {
-        return true;
+    public boolean isServiceActive() {
+        try {
+            Class.forName("net.neoforged.fml.loading.FMLPaths");
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }

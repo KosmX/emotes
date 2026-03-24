@@ -11,7 +11,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.client.entity.ClientMannequin;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -63,35 +63,35 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.pose().pushMatrix();
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        graphics.pose().pushMatrix();
 
         if (this.renderBackround) {
             float alpha = Mth.lerp(this.alpha, 0.0F, 0.5F);
-            guiGraphics.fill(getX() + 1, getY() + 1, getRight() - 1, getBottom() - 1, ARGB.colorFromFloat(
+            graphics.fill(getX() + 1, getY() + 1, getRight() - 1, getBottom() - 1, ARGB.colorFromFloat(
                     alpha, 0.0F, 0.0F, 0.0F
             ));
-            WidgetOutliner.renderOutline(guiGraphics, this, ARGB.white(alpha));
+            WidgetOutliner.extractOutline(graphics, this, ARGB.white(alpha));
         }
 
-        guiGraphics.enableScissor(getX(), getY(), getRight(), getBottom());
+        graphics.enableScissor(getX(), getY(), getRight(), getBottom());
 
         try {
             int scale = getHeight() / (this.renderBackround ? 3 : 2);
-            InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.mannequin);
+            InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.mannequin);
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to render entity preview!", th);
         }
 
-        guiGraphics.disableScissor();
-        guiGraphics.pose().popMatrix();
+        graphics.disableScissor();
+        graphics.pose().popMatrix();
 
         if (this.animTime > 0.0F) {
             setAlpha(1.0F - EASING_TRANSFORMER.get(this.animTime));
         }
 
         if (isHovered()) {
-            guiGraphics.requestCursor(isActive() && this.mannequin.isPlayingEmote() ? CursorTypes.RESIZE_ALL : CursorType.DEFAULT);
+            graphics.requestCursor(isActive() && this.mannequin.isPlayingEmote() ? CursorTypes.RESIZE_ALL : CursorType.DEFAULT);
         }
     }
 

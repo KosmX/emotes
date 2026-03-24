@@ -28,7 +28,7 @@ public class QuarkReaderWrapper implements IReader {
     }
 
     @Override
-    public boolean isActive() {
-        return IReader.super.isActive() && Serializer.getConfig().enableQuark.get();
+    public boolean isServiceActive() {
+        return IReader.super.isServiceActive() && Serializer.getConfig().enableQuark.get();
     }
 }

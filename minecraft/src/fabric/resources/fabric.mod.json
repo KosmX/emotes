@@ -41,8 +41,8 @@
     "fabric-key-mapping-api-v1": "*",
     "fabric-lifecycle-events-v1": "*",
     "fabric-rendering-v1": ">=12.5.1+fbe231d52c",
-    "minecraft": ">=26.1-alpha.10",
-    "player_animation_library": ">=1.1.6+dev+mc.26.1-snapshot-10",
+    "minecraft": ">=26.1",
+    "player_animation_library": ">=1.2.0+mc.26.1",
     "fabricloader": ">=0.18.4"
   },
   "breaks": {

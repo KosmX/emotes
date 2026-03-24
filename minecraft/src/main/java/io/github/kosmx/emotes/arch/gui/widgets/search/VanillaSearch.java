@@ -2,7 +2,7 @@ package io.github.kosmx.emotes.arch.gui.widgets.search;
 
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -28,7 +28,7 @@ public class VanillaSearch implements ISearchEngine {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         // no-op
     }
 

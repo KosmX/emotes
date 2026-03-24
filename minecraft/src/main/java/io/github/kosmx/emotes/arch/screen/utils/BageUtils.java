@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.utils;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
@@ -18,23 +18,23 @@ import java.util.List;
 public class BageUtils {
     private static final int SPACE = 3;
 
-    public static int drawBadges(GuiGraphics guiGraphics, Font font, List<Component> text, int x, int y, int width, boolean right) {
+    public static int extractBadges(GuiGraphicsExtractor guiGraphics, Font font, List<Component> text, int x, int y, int width, boolean right) {
         int bageX = right ? SPACE : x;
         for (Component bage : text) {
             int tagWidth = font.width(bage) + 6;
             if (bageX + tagWidth + SPACE < width) {
-                BageUtils.drawBadge(guiGraphics, font, bage, right ? (x - tagWidth) - bageX : bageX, y, tagWidth, -1);
+                BageUtils.extractBadge(guiGraphics, font, bage, right ? (x - tagWidth) - bageX : bageX, y, tagWidth, -1);
                 bageX += tagWidth + SPACE;
             }
         }
         return bageX;
     }
 
-    public static void drawBadge(GuiGraphics guiGraphics, Font font, Component text, int x, int y, int color) {
-        BageUtils.drawBadge(guiGraphics, font, text, x, y, font.width(text) + 6, color);
+    public static void extractBadge(GuiGraphicsExtractor guiGraphics, Font font, Component text, int x, int y, int color) {
+        BageUtils.extractBadge(guiGraphics, font, text, x, y, font.width(text) + 6, color);
     }
 
-    public static void drawBadge(GuiGraphics guiGraphics, Font font, Component text, int x, int y, int tagWidth, int color) {
+    public static void extractBadge(GuiGraphicsExtractor guiGraphics, Font font, Component text, int x, int y, int tagWidth, int color) {
         TextColor textColor = text.getStyle().getColor();
         int outlineColor = BageUtils.getTextColor(textColor, color);
         int fillColor = BageUtils.getShadowColor(text.getStyle(), outlineColor);
@@ -49,7 +49,7 @@ public class BageUtils {
         );
         guiGraphics.fill(x + tagWidth, y, x + tagWidth + 1, y + font.lineHeight, outlineColor);
         guiGraphics.fill(x + 1, y, x + tagWidth, y + font.lineHeight, fillColor);
-        guiGraphics.drawString(font,
+        guiGraphics.text(font,
                 text,
                 (int) (x + 1 + (tagWidth - font.width(text)) / (float) 2),
                 y + 1,

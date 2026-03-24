@@ -6,7 +6,7 @@ accessible field net/minecraft/client/gui/components/AbstractSelectionList INWOR
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE_FORWARD_SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE_BACKWARD_SPRITES Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent SEARCH_HINT Lnet/minecraft/network/chat/Component;
-extendable method net/minecraft/client/gui/components/AbstractWidget render (Lnet/minecraft/client/gui/GuiGraphics;IIF)V
+extendable method net/minecraft/client/gui/components/AbstractWidget extractRenderState (Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V
 extendable class net/minecraft/client/OptionInstance$SliderableValueSet
 
 # Mannequins

@@ -1,8 +1,6 @@
 package io.github.kosmx.emotes;
 
 import com.zigythebird.playeranim.PlayerAnimLibService;
-import io.github.kosmx.emotes.api.proxy.INetworkInstance;
-import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.config.Serializer;
@@ -20,10 +18,6 @@ import java.util.UUID;
 
 public final class PlatformTools {
     public static final boolean HAS_SEARCHABLES = PlayerAnimLibService.INSTANCE.isModLoaded("searchables");
-
-    public static INetworkInstance getClientNetworkController() {
-        return ClientNetwork.INSTANCE;
-    }
 
     public static @Nullable Avatar getAvatarFromUUID(UUID uuid) {
         ClientLevel level = Minecraft.getInstance().level;

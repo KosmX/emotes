@@ -145,7 +145,7 @@ listOf("processResources", "processFabricResources", "processNeoforgeResources")
         inputs.property("version", version)
         inputs.property("description", mod_description)
 
-        filesMatching("fabric.mod.json") {
+        filesMatching(listOf("META-INF/neoforge.mods.toml", "fabric.mod.json")) {
             expand("version" to version, "description" to mod_description)
         }
     }
@@ -167,7 +167,10 @@ tasks.shadowJar {
     mergeServiceFiles()
 
     // Fix fabric jij
-    exclude("META-INF/jarjar/*.jar")
+    filesMatching("META-INF/jarjar/*.jar") {
+        path = path.replace("META-INF/jarjar/", "META-INF/jars/")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
     filesMatching("META-INF/jarjar/metadata.json") {
         filter { it.replace("META-INF/jarjar/", "META-INF/jars/") }
     }

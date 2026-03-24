@@ -1,16 +1,16 @@
 package io.github.kosmx.emotes.server.services;
 
-import io.github.kosmx.emotes.api.services.IEmotecraftService;
-import io.github.kosmx.emotes.common.tools.ServiceLoaderUtil;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.services.impl.InstanceServiceImpl;
+import org.redlance.common.services.AdvancedService;
+import org.redlance.common.services.ServiceUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public interface InstanceService extends IEmotecraftService {
-    InstanceService INSTANCE = ServiceLoaderUtil.loadService(InstanceService.class, InstanceServiceImpl::new);
+public interface InstanceService extends AdvancedService {
+    InstanceService INSTANCE = ServiceUtils.loadService(InstanceService.class, InstanceServiceImpl::new);
 
     Path getGameDirectory();
 

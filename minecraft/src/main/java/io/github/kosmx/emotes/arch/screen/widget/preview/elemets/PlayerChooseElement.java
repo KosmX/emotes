@@ -16,7 +16,7 @@ import io.github.kosmx.emotes.main.EmoteHolder;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
@@ -49,15 +49,15 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, this.isAnimFinishing ? mouseX : 0, this.isAnimFinishing ? mouseY : 0, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractRenderState(graphics, this.isAnimFinishing ? mouseX : 0, this.isAnimFinishing ? mouseY : 0, a);
     }
 
     protected abstract void updateRectangle(float progress);
     protected abstract void getDirectionVector(Vector2f out);
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         boolean doHoverPart = this.parent.controller.doHoverPart(this);
 
         float progress = this.parent instanceof PreviewFastChooseWidget widget ? widget.getAnimTime() : 0.0F;
@@ -65,16 +65,16 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         this.isAnimFinishing = easedProgress > 0.9F;
 
         updateRectangle(easedProgress);
-        renderBackground(guiGraphics);
-        if (isHoveredOrFocused() && doHoverPart) renderHover(guiGraphics);
+        extractBackground(graphics);
+        if (isHoveredOrFocused() && doHoverPart) extractHover(graphics);
 
         EmoteHolder emoteHolder = getEmote();
-        if (this.parent.controller.supportsKeyboardNavigation() && emoteHolder != null) renderTileId(guiGraphics, easedProgress);
+        if (this.parent.controller.supportsKeyboardNavigation() && emoteHolder != null) extractTileId(graphics, easedProgress);
 
         if (emoteHolder != null && PlatformTools.getConfig().showIconsIfPossible.get() && emoteHolder.getIconIdentifier() != null) {
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, emoteHolder.getIconIdentifier(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, emoteHolder.getIconIdentifier(), getX(), getY(), 0.0F, 0.0F, getWidth(), getHeight(), 256, 256, 256, 256);
         } else if (emoteHolder != null || !PlatformTools.getConfig().showIconsIfPossible.get()) {
-            super.renderWidget(guiGraphics, getX() + (getWidth() / 2), getY() + (getHeight() / 2), partialTick);
+            super.extractWidgetRenderState(graphics, getX() + (getWidth() / 2), getY() + (getHeight() / 2), a);
         }
 
         if (isHoveredOrFocused() && emoteHolder != null) {
@@ -83,21 +83,21 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         } else setTooltip(null);
 
         if (isHovered()) {
-            guiGraphics.requestCursor(isActive() && doHoverPart ? emoteHolder != null ? CursorTypes.POINTING_HAND : CursorTypes.RESIZE_ALL : CursorTypes.NOT_ALLOWED);
+            graphics.requestCursor(isActive() && doHoverPart ? emoteHolder != null ? CursorTypes.POINTING_HAND : CursorTypes.RESIZE_ALL : CursorTypes.NOT_ALLOWED);
         }
     }
 
-    protected void renderBackground(GuiGraphics guiGraphics) {
+    protected void extractBackground(GuiGraphicsExtractor graphics) {
         Identifier texture = EmotecraftTexture.MENU_LIST_BACKGROUND.identifier(Minecraft.getInstance().level != null);
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX() + 1, getY() + 1, getRight(), getBottom(), getWidth() - 2, getHeight() - 2, 32, 32);
-        WidgetOutliner.renderOutline(guiGraphics, this, -1);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getX() + 1, getY() + 1, getRight(), getBottom(), getWidth() - 2, getHeight() - 2, 32, 32);
+        WidgetOutliner.extractOutline(graphics, this, -1);
     }
 
-    protected void renderHover(GuiGraphics guiGraphics) {
-        guiGraphics.fill(getX(), getY(), getRight(), getBottom(), ARGB.color(128, 66, 66, 66));
+    protected void extractHover(GuiGraphicsExtractor graphics) {
+        graphics.fill(getX(), getY(), getRight(), getBottom(), ARGB.color(128, 66, 66, 66));
     }
 
-    protected void renderTileId(GuiGraphics gg, float easedProgress) {
+    protected void extractTileId(GuiGraphicsExtractor graphics, float easedProgress) {
         Vector2f dir = new Vector2f();
         getDirectionVector(dir);
         if (dir.x == 0f && dir.y == 0f) return;
@@ -125,7 +125,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
         Font font = Minecraft.getInstance().font;
         String s = Integer.toString(this.id + 1);
-        gg.drawString(font, s, Math.round(px - font.width(s) / 2f), Math.round(py - font.lineHeight / 2f), -1);
+        graphics.text(font, s, Math.round(px - font.width(s) / 2f), Math.round(py - font.lineHeight / 2f), -1);
     }
 
     @Override
