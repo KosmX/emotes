@@ -1,3 +1,4 @@
+import me.modmuss50.mpp.PublishModTask
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
@@ -308,4 +309,12 @@ publishMods {
         optional("searchables")
     }
 }
-tasks.publishMods.configure { dependsOn(tasks.getByName("optimizeOutputsOfShadowJar")) }
+
+afterEvaluate {
+    val optimizeOutputsOfShadowJar = tasks.getByName("optimizeOutputsOfShadowJar")
+
+    tasks.publishMods.configure { dependsOn(optimizeOutputsOfShadowJar) }
+    publishMods.platforms
+        .map { platform -> project.tasks.getByName(platform.taskName) as PublishModTask }
+        .forEach { it.dependsOn(optimizeOutputsOfShadowJar) }
+}
