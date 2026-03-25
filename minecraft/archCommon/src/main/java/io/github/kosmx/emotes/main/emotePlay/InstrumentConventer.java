@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.raphimc.noteblocklib.data.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsCustomInstrument;
 import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.instrument.Instrument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,11 +25,13 @@ import java.util.Locale;
 
 public class InstrumentConventer {
     public static SoundInstance getInstrument(Note note, Vec3 pos) {
-        if (note.getInstrument() instanceof MinecraftInstrument instrument) {
-            NoteBlockInstrument noteBlock = convertToNoteBlock(instrument.mcId());
+        Instrument rawInstrument = note.getInstrument();
+
+        if (rawInstrument instanceof MinecraftInstrument instrument) {
+            NoteBlockInstrument noteBlock = convertToNoteBlock(instrument.mcId(), instrument.mcSoundName());
 
             return createForNoteBlock(noteBlock, pos, note.getVolume(), note.getPitch());
-        } else if (note.getInstrument() instanceof NbsCustomInstrument instrument) {
+        } else if (rawInstrument instanceof NbsCustomInstrument instrument) {
             String file = instrument.getSoundFilePathOr("").replace(File.separatorChar, '/');
             if (file.endsWith(".ogg")) {
                 file = file.substring(0, file.length() - 4);
@@ -53,17 +56,27 @@ public class InstrumentConventer {
             CommonData.LOGGER.warn("Failed parse custom instrument: name={}, file={}", instrument.getNameOr(""), file);
             return new SoundDirectInstance(SoundManager.EMPTY_SOUND, note.getVolume(), note.getPitch(), pos);
         } else {
-            CommonData.LOGGER.warn("Unsupported instrument type: {}", note.getInstrument().getClass().getName());
+            CommonData.LOGGER.warn("Unsupported instrument type: {}", rawInstrument == null ? null : rawInstrument.getClass().getName());
             return createForNoteBlock(NoteBlockInstrument.HARP, pos, note.getVolume(), note.getPitch());
         }
     }
 
-    private static NoteBlockInstrument convertToNoteBlock(int mcId) {
+    private static NoteBlockInstrument convertToNoteBlock(int mcId, String mcSoundName) {
         NoteBlockInstrument[] instruments = NoteBlockInstrument.values();
-        if(mcId >= 0 && mcId < instruments.length){
-            return instruments[mcId];
+        for (NoteBlockInstrument instrument : instruments) {
+            boolean soundEventMatch = false;
+
+            try {
+                soundEventMatch = mcSoundName.equalsIgnoreCase(instrument.getSoundEvent().value().location().getPath());
+            } catch (Exception ignored) {}
+
+            if (soundEventMatch || mcSoundName.equalsIgnoreCase("block.note_block." + instrument.getSerializedName())) {
+                return instrument;
+            }
         }
-        return NoteBlockInstrument.HARP; //I don't want to crash here
+
+        if (mcId >= 0 && mcId < instruments.length) return instruments[mcId];
+        return NoteBlockInstrument.HARP; // I don't want to crash here
     }
 
     private static SoundInstance createForNoteBlock(NoteBlockInstrument instrument, Vec3 pos, float volume, float pitch) {
