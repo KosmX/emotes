@@ -10,7 +10,6 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import net.raphimc.noteblocklib.model.Note;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 @Deprecated
@@ -109,6 +108,7 @@ public class LegacyNBSPacket {
 
         { // Fill generalized song structure with data
             song.getTempoEvents().set(0, song.getTempo() / 100F);
+            final boolean hasSoloLayers = layers.values().stream().anyMatch(layer -> layer.getStatus() == NbsLayer.Status.SOLO);
             for (NbsLayer layer : layers.values()) {
                 for (Map.Entry<Integer, NbsNote> noteEntry : layer.getNotes().entrySet()) {
                     final NbsNote nbsNote = noteEntry.getValue();
@@ -124,6 +124,15 @@ public class LegacyNBSPacket {
 
                     if (nbsNote.getInstrument() < song.getVanillaInstrumentCount()) {
                         note.setInstrument(MinecraftInstrument.fromNbsId((byte) nbsNote.getInstrument()));
+                    } else {
+                        note.setInstrument(MinecraftInstrument.BANJO);
+                        note.setVolume(0F); // Mute custom cuz not supported
+                    }
+
+                    if (layer.getStatus() == NbsLayer.Status.LOCKED) { // Locked layers are muted
+                        note.setVolume(0F);
+                    } else if (hasSoloLayers && layer.getStatus() != NbsLayer.Status.SOLO) { // Non-solo layers are muted if there are solo layers
+                        note.setVolume(0F);
                     }
 
                     song.getNotes().add(noteEntry.getKey(), note);
