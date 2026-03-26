@@ -5,12 +5,10 @@ import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import io.github.kosmx.emotes.common.nbsplayer.NbsPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Avatar;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.note.Note;
+import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.util.TimerHack;
-import org.jetbrains.annotations.Nullable;
 
 public class MinecraftNbsPlayer extends NbsPlayer {
     protected final Avatar avatar;

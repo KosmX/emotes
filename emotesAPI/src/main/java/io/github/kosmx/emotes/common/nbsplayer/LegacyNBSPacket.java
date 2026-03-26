@@ -2,15 +2,18 @@ package io.github.kosmx.emotes.common.nbsplayer;
 
 import io.github.kosmx.emotes.common.network.CommonNetwork;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.noteblocklib.data.MinecraftInstrument;
-import net.raphimc.noteblocklib.format.nbs.NbsDefinitions;
+import net.raphimc.noteblocklib.format.midi.MidiDefinitions;
+import net.raphimc.noteblocklib.format.minecraft.MinecraftInstrument;
 import net.raphimc.noteblocklib.format.nbs.model.NbsLayer;
 import net.raphimc.noteblocklib.format.nbs.model.NbsNote;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
-import net.raphimc.noteblocklib.model.Note;
+import net.raphimc.noteblocklib.model.note.Note;
+import net.raphimc.noteblocklib.util.MathUtil;
 
 import java.io.IOException;
 import java.util.Map;
+
+import static net.raphimc.noteblocklib.format.nbs.NbsDefinitions.*;
 
 @Deprecated
 public class LegacyNBSPacket {
@@ -109,24 +112,28 @@ public class LegacyNBSPacket {
         { // Fill generalized song structure with data
             song.getTempoEvents().set(0, song.getTempo() / 100F);
             final boolean hasSoloLayers = layers.values().stream().anyMatch(layer -> layer.getStatus() == NbsLayer.Status.SOLO);
-            for (NbsLayer layer : layers.values()) {
+            for (Map.Entry<Integer, NbsLayer> entry : layers.entrySet()) {
+                final NbsLayer layer = entry.getValue();
                 for (Map.Entry<Integer, NbsNote> noteEntry : layer.getNotes().entrySet()) {
                     final NbsNote nbsNote = noteEntry.getValue();
 
                     final Note note = new Note();
-                    note.setNbsKey((float) NbsDefinitions.getEffectivePitch(nbsNote) / NbsDefinitions.PITCHES_PER_KEY);
-                    note.setVolume((layer.getVolume() / 100F) * (nbsNote.getVelocity() / 100F));
-                    if (layer.getPanning() == NbsDefinitions.CENTER_PANNING) { // Special case
-                        note.setPanning((nbsNote.getPanning() - NbsDefinitions.CENTER_PANNING) / 100F);
-                    } else {
-                        note.setPanning(((layer.getPanning() - NbsDefinitions.CENTER_PANNING) + (nbsNote.getPanning() - NbsDefinitions.CENTER_PANNING)) / 200F);
-                    }
+                    note.setGroupId(entry.getKey());
+                    final float effectiveKey = (float) (MathUtil.clamp(nbsNote.getKey(), LOWEST_KEY, HIGHEST_KEY) * PITCHES_PER_KEY + nbsNote.getPitch()) / PITCHES_PER_KEY;
+                    note.setMidiKey(MathUtil.clamp(LOWEST_MIDI_KEY + effectiveKey, MidiDefinitions.LOWEST_KEY, MidiDefinitions.HIGHEST_KEY));
 
                     if (nbsNote.getInstrument() < song.getVanillaInstrumentCount()) {
-                        note.setInstrument(MinecraftInstrument.fromNbsId((byte) nbsNote.getInstrument()));
+                        note.setInstrument(MinecraftInstrument.fromNbsId(nbsNote.getInstrument()));
                     } else {
                         note.setInstrument(MinecraftInstrument.BANJO);
                         note.setVolume(0F); // Mute custom cuz not supported
+                    }
+
+                    note.setVolume(MathUtil.clamp(Math.min(layer.getVolume() / 100F, 1F) * (nbsNote.getVelocity() / 100F), 0F, 1F));
+                    if (layer.getPanning() == CENTER_PANNING) { // Special case
+                        note.setPanning(MathUtil.clamp((nbsNote.getPanning() - CENTER_PANNING) / 100F, -1F, 1F));
+                    } else {
+                        note.setPanning(MathUtil.clamp(((layer.getPanning() - CENTER_PANNING) + (nbsNote.getPanning() - CENTER_PANNING)) / 200F, -1F, 1F));
                     }
 
                     if (layer.getStatus() == NbsLayer.Status.LOCKED) { // Locked layers are muted
