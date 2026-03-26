@@ -12,7 +12,7 @@ public class NewAnimPacket extends AbstractNetworkPacket {
 
     @Override
     public byte getVer() {
-        return AnimationBinary.CURRENT_VERSION;
+        return (byte) AnimationBinary.getCurrentVersion();
     }
 
     @Override
