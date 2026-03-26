@@ -7,7 +7,7 @@ import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.format.SongFormat;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.song.Song;
 
 import java.io.File;
 import java.io.InputStream;

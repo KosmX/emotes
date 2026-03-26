@@ -4,7 +4,7 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.serializer.type.IWriter;
 import net.raphimc.noteblocklib.NoteBlockLib;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.song.Song;
 
 import java.io.OutputStream;
 import java.nio.ByteBuffer;

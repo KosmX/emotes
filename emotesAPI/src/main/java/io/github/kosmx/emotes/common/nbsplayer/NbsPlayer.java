@@ -4,8 +4,8 @@ import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.enums.State;
 import io.github.kosmx.emotes.common.CommonData;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
-import net.raphimc.noteblocklib.model.Note;
-import net.raphimc.noteblocklib.model.Song;
+import net.raphimc.noteblocklib.model.note.Note;
+import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.player.SongPlayer;
 import org.jetbrains.annotations.Nullable;
 
