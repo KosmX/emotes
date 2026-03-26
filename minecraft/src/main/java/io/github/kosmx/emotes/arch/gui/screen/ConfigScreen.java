@@ -104,19 +104,26 @@ public class ConfigScreen extends OptionsSubScreen {
                 options.addBig(OptionInstance.createBoolean(this.namespace + ".otherconfig." + entry.getName(),
                         (OptionInstance.TooltipSupplier<Boolean>) tooltip, b, (aBoolean) -> entry.set((T) aBoolean)
                 ));
-            } else if (entry instanceof SerializableConfig.FloatConfigEntry floatEntry) {
-                options.addBig(new OptionInstance<>(
-                        this.namespace + ".otherconfig." + floatEntry.getName(), (OptionInstance.TooltipSupplier<Float>) tooltip,
-                        (component, object) -> Options.genericValueLabel(component, Component.literal(object.toString())),
-                        new FloatRange(floatEntry.min, floatEntry.max),
-                        Codec.FLOAT,
-                        floatEntry.get(),
-                        floatEntry::set
-                ));
+            } else if (entry instanceof SerializableConfig.NumberConfigEntry<?> numberEntry) {
+                addNumberEntry(options, tooltip, numberEntry);
             } else if (entry instanceof SerializableConfig.EnumConfigEntry<?> enumEntry) {
                 addEnumEntry(options, tooltip, enumEntry);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Number & Comparable<T>> void addNumberEntry(OptionsList options, OptionInstance.TooltipSupplier<?> tooltip, SerializableConfig.NumberConfigEntry<T> entry) {
+        NumberRange<T> range = new NumberRange<>(entry);
+        options.addBig(new OptionInstance<>(
+                this.namespace + ".otherconfig." + entry.getName(),
+                (OptionInstance.TooltipSupplier<@NonNull T>) tooltip,
+                (component, object) -> Options.genericValueLabel(component, Component.literal(object.toString())),
+                range,
+                range.codec(),
+                entry.get(),
+                entry::set
+        ));
     }
 
     @SuppressWarnings("unchecked")
@@ -150,48 +157,46 @@ public class ConfigScreen extends OptionsSubScreen {
         Serializer.INSTANCE.saveConfig();
     }
 
-    public record FloatRange(float minInclusive, float maxInclusive, boolean applyValueImmediately) implements FloatRangeBase {
-        public FloatRange(final float minInclusive, final float maxInclusive) {
-            this(minInclusive, maxInclusive, true);
+    public record NumberRange<T extends Number & Comparable<T>>(SerializableConfig.NumberConfigEntry<T> entry, boolean applyValueImmediately) implements OptionInstance.SliderableValueSet<@NonNull T> {
+        public NumberRange(SerializableConfig.NumberConfigEntry<T> entry) {
+            this(entry, true);
         }
 
         @Override
-        public @NonNull Optional<Float> validateValue(final Float value) {
-            return value.compareTo(minInclusive()) >= 0 && value.compareTo(maxInclusive()) <= 0 ? Optional.of(value) : Optional.empty();
+        public @NonNull Optional<@NonNull T> validateValue(final T value) {
+            return value.compareTo(this.entry.min) >= 0 && value.compareTo(this.entry.max) <= 0 ? Optional.of(value) : Optional.empty();
         }
 
         @Override
-        public @NonNull Codec<Float> codec() {
-            return Codec.floatRange(this.minInclusive, this.maxInclusive);
-        }
-    }
-
-    interface FloatRangeBase extends OptionInstance.SliderableValueSet<Float> {
-        float minInclusive();
-        float maxInclusive();
-
-        @Override
-        default @NonNull Optional<Float> next(final Float current) {
-            return Optional.of(current + 1);
+        public @NonNull Codec<T> codec() {
+            var checker = Codec.checkRange(this.entry.min, this.entry.max);
+            return Codec.DOUBLE.xmap(this.entry::fromDouble, Number::doubleValue).flatXmap(checker, checker);
         }
 
         @Override
-        default @NonNull Optional<Float> previous(final Float current) {
-            return Optional.of(current - 1);
+        public @NonNull Optional<@NonNull T> next(final T current) {
+            return Optional.of(this.entry.fromDouble(current.doubleValue() + 1));
         }
 
         @Override
-        default double toSliderValue(final Float value) {
-            if (value == minInclusive()) {
+        public @NonNull Optional<@NonNull T> previous(final T current) {
+            return Optional.of(this.entry.fromDouble(current.doubleValue() - 1));
+        }
+
+        @Override
+        public double toSliderValue(final T value) {
+            if (value.compareTo(this.entry.min) <= 0) {
                 return 0.0;
+            } else if (value.compareTo(this.entry.max) >= 0) {
+                return 1.0;
             } else {
-                return value == maxInclusive() ? 1.0 : Mth.map(value.intValue() + 0.5, minInclusive(), maxInclusive(), 0.0, 1.0);
+                return Mth.map(value.doubleValue(), this.entry.min.doubleValue(), this.entry.max.doubleValue(), 0.0, 1.0);
             }
         }
 
         @Override
-        default Float fromSliderValue(double slider) {
-            return Mth.map((float) slider, 0.0F, 1.0F, minInclusive(), maxInclusive());
+        public T fromSliderValue(double slider) {
+            return this.entry.fromDouble(Mth.map(slider, 0.0, 1.0, this.entry.min.doubleValue(), this.entry.max.doubleValue()));
         }
     }
 }

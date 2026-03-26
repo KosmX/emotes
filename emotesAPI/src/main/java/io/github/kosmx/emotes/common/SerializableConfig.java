@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unused") // API
 public class SerializableConfig {
     public final List<ConfigEntry<?>> basics = new ArrayList<>();
     public final List<ConfigEntry<?>> expert = new ArrayList<>();
@@ -79,27 +80,45 @@ public class SerializableConfig {
         }
     }
 
-    @SuppressWarnings("unused")
-    public static class FloatConfigEntry extends ConfigEntry<Float> {
-        public final float min, max;
+    public static class FloatConfigEntry extends NumberConfigEntry<Float> {
+        public FloatConfigEntry(String name, String oldconfig, Float defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, Float min, Float max) {
+            super(name, oldconfig, defVal, hasTooltip, collection, min, max);
+        }
 
-        public FloatConfigEntry(String name, String oldconfig, Float defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, float min, float max) {
+        public FloatConfigEntry(String name, Float defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, Float min, Float max) {
+            super(name, defVal, hasTooltip, collection, min, max);
+        }
+
+        @Override
+        public Float fromDouble(double value) {
+            return (float) value;
+        }
+    }
+
+    public static abstract class NumberConfigEntry<T extends Number & Comparable<T>> extends ConfigEntry<T> {
+        public final T min, max;
+
+        public NumberConfigEntry(String name, String oldconfig, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, T min, T max) {
             super(name, oldconfig, defVal, hasTooltip, collection);
 
             this.min = min;
             this.max = max;
         }
 
-        public FloatConfigEntry(String name, Float defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, float min, float max) {
+        public NumberConfigEntry(String name, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, T min, T max) {
             this(name, null, defVal, hasTooltip, collection, min, max);
         }
 
         @Override
-        public Float get() {
-            Float value = super.get();
+        public T get() {
+            T value = super.get();
             if (value == null) return null;
-            return Math.min(this.max, Math.max(this.min, value));
+            if (value.compareTo(this.min) < 0) return this.min;
+            if (value.compareTo(this.max) > 0) return this.max;
+            return value;
         }
+
+        public abstract T fromDouble(double value);
     }
 
     @SuppressWarnings("unused")
