@@ -20,7 +20,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,9 +57,7 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     protected void addCategory(String category, List<SerializableConfig.ConfigEntry<?>> entries) {
-        this.list.addSmall(Collections.singletonList(new StringWidget(Component.translatable(
-                this.namespace + ".otherconfig.category." + category
-        ), this.font)));
+        this.list.addHeader(Component.translatable(this.namespace + ".otherconfig.category." + category));
         entries.forEach(entry -> addConfigEntry(entry, this.list));
     }
 
