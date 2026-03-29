@@ -1,22 +1,36 @@
 package io.github.kosmx.emotes.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused") // API
 public class SerializableConfig {
-    public final List<ConfigEntry<?>> basics = new ArrayList<>();
-    public final List<ConfigEntry<?>> expert = new ArrayList<>();
+    private final LinkedHashMap<String, List<ConfigEntry<?>>> categories = new LinkedHashMap<>();
+
+    @Deprecated(forRemoval = true)
+    public final List<ConfigEntry<?>> basics = category("nocategory");
+    @Deprecated(forRemoval = true)
+    public final List<ConfigEntry<?>> expert = category("nocategory");
 
     /**
      * this has a different job... not a config
      */
     public int configVersion;
 
+    protected List<ConfigEntry<?>> category(String name) {
+        return categories.computeIfAbsent(name, k -> new ArrayList<>());
+    }
+
+    public Map<String, List<ConfigEntry<?>>> getCategories() {
+        return Collections.unmodifiableMap(categories);
+    }
+
     public void iterate(Consumer<ConfigEntry<?>> consumer) {
-        this.basics.forEach(consumer);
-        this.expert.forEach(consumer);
+        categories.values().forEach(list -> list.forEach(consumer));
     }
 
     public static class ConfigEntry<T> {

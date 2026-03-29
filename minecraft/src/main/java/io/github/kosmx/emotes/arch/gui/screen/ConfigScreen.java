@@ -34,10 +34,6 @@ import java.util.Optional;
 public class ConfigScreen extends OptionsSubScreen {
     private static final Component TITLE = Component.translatable("emotecraft.otherconfig");
 
-    private static final Component CATEGORY_GENERAL = Component.translatable("emotecraft.otherconfig.category.general");
-    private static final Component CATEGORY_EXPERT = Component.translatable("emotecraft.otherconfig.category.expert");
-    private static final Component CATEGORY_LEGACY = Component.translatable("emotecraft.otherconfig.category.legacy");
-
     private static final Component RESET_CONFIG_TITLE = Component.translatable("emotecraft.resetConfig.title");
     private static final Component RESET_CONFIG_MSG = Component.translatable("emotecraft.resetConfig.message");
 
@@ -59,17 +55,14 @@ public class ConfigScreen extends OptionsSubScreen {
     @Override
     protected void addOptions() {
         assert this.list != null;
+        this.config.getCategories().forEach(this::addCategory);
+    }
 
-        this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_GENERAL, this.font)));
-        this.config.basics.forEach(entry -> addConfigEntry(entry, list));
-
-        this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_EXPERT, this.font)));
-        this.config.expert.forEach(entry -> addConfigEntry(entry, list));
-
-        if (config instanceof ClientConfig clientConfig) {
-            this.list.addSmall(Collections.singletonList(new StringWidget(CATEGORY_LEGACY, this.font)));
-            clientConfig.legacy.forEach(entry -> addConfigEntry(entry, list));
-        }
+    protected void addCategory(String category, List<SerializableConfig.ConfigEntry<?>> entries) {
+        this.list.addSmall(Collections.singletonList(new StringWidget(Component.translatable(
+                this.namespace + ".otherconfig.category." + category
+        ), this.font)));
+        entries.forEach(entry -> addConfigEntry(entry, this.list));
     }
 
     @Override
@@ -89,7 +82,7 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void addConfigEntry(SerializableConfig.ConfigEntry<T> entry, OptionsList options) {
+    protected <T> void addConfigEntry(SerializableConfig.ConfigEntry<T> entry, OptionsList options) {
         if (entry.showEntry() || (this.config instanceof ClientConfig clientConfig && clientConfig.showHiddenConfig.get())) {
             OptionInstance.TooltipSupplier<?> tooltip;
             if (entry.hasTooltip) {
@@ -153,8 +146,9 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     @Override
-    public void removed() {
+    public void onClose() {
         Serializer.INSTANCE.saveConfig();
+        super.onClose();
     }
 
     public record NumberRange<T extends Number & Comparable<T>>(SerializableConfig.NumberConfigEntry<T> entry, boolean applyValueImmediately) implements OptionInstance.SliderableValueSet<@NonNull T> {
