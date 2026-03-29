@@ -59,7 +59,7 @@ public class Serializer<T extends SerializableConfig> {
         return saveConfig(this.config);
     }
 
-    public boolean saveConfig(T config) {
+    protected boolean saveConfig(T config) {
         try (BufferedWriter writer = Files.newBufferedWriter(this.configPath)) {
             this.serializer.toJson(config, this.configClass, writer);
             return true;

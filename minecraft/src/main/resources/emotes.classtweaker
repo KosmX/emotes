@@ -8,6 +8,7 @@ accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookPage PAGE
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent SEARCH_HINT Lnet/minecraft/network/chat/Component;
 extendable method net/minecraft/client/gui/components/AbstractWidget extractRenderState (Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V
 extendable class net/minecraft/client/OptionInstance$SliderableValueSet
+accessible method net/minecraft/client/gui/components/AbstractSelectionList clearEntries ()V
 
 # Mannequins
 accessible method net/minecraft/world/entity/decoration/Mannequin setProfile (Lnet/minecraft/world/item/component/ResolvableProfile;)V

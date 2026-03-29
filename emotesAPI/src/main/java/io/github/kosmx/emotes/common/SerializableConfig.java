@@ -11,11 +11,6 @@ import java.util.function.Consumer;
 public class SerializableConfig {
     private final LinkedHashMap<String, List<ConfigEntry<?>>> categories = new LinkedHashMap<>();
 
-    @Deprecated(forRemoval = true)
-    public final List<ConfigEntry<?>> basics = category("nocategory");
-    @Deprecated(forRemoval = true)
-    public final List<ConfigEntry<?>> expert = category("nocategory");
-
     /**
      * this has a different job... not a config
      */

@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
 import com.mojang.serialization.Codec;
-import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ExportMenu;
 import io.github.kosmx.emotes.common.CommonData;
@@ -39,23 +38,23 @@ public class ConfigScreen extends OptionsSubScreen {
 
     private static final Component EXPORT = Component.translatable("emotecraft.options.export");
 
-    protected final SerializableConfig config;
+    protected final Serializer<?> serializer;
     protected final String namespace;
 
     public ConfigScreen(Screen parent) {
-        this(parent, PlatformTools.getConfig(), CommonData.MOD_ID, TITLE);
+        this(parent, Serializer.INSTANCE, CommonData.MOD_ID, TITLE);
     }
 
-    public ConfigScreen(Screen parent, SerializableConfig config, String namespace, Component title) {
+    public ConfigScreen(Screen parent, Serializer<?> serializer, String namespace, Component title) {
         super(parent, Minecraft.getInstance().options, title);
-        this.config = config;
+        this.serializer = serializer;
         this.namespace = namespace;
     }
 
     @Override
     protected void addOptions() {
         assert this.list != null;
-        this.config.getCategories().forEach(this::addCategory);
+        this.serializer.readConfig(false).getCategories().forEach(this::addCategory);
     }
 
     protected void addCategory(String category, List<SerializableConfig.ConfigEntry<?>> entries) {
@@ -69,7 +68,7 @@ public class ConfigScreen extends OptionsSubScreen {
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
-        boolean addExport = config instanceof ClientConfig;
+        boolean addExport = this.serializer.readConfig(false) instanceof ClientConfig;
 
         linearLayout.addChild(Button.builder(EmoteMenu.RESET, _ -> this.minecraft.setScreen(new ConfirmScreen(
                 this::resetAll, RESET_CONFIG_TITLE, RESET_CONFIG_MSG
@@ -83,7 +82,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @SuppressWarnings("unchecked")
     protected <T> void addConfigEntry(SerializableConfig.ConfigEntry<T> entry, OptionsList options) {
-        if (entry.showEntry() || (this.config instanceof ClientConfig clientConfig && clientConfig.showHiddenConfig.get())) {
+        if (entry.showEntry() || (this.serializer.readConfig(false) instanceof ClientConfig clientConfig && clientConfig.showHiddenConfig.get())) {
             OptionInstance.TooltipSupplier<?> tooltip;
             if (entry.hasTooltip) {
                 tooltip = _ -> Tooltip.create(
@@ -141,13 +140,17 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     private void resetAll(boolean bl) {
-        if (bl) this.config.iterate(SerializableConfig.ConfigEntry::resetToDefault);
+        if (bl) this.serializer.readConfig(false).iterate(SerializableConfig.ConfigEntry::resetToDefault);
         this.minecraft.setScreen(this);
+        if (this.list != null) {
+            this.list.clearEntries();
+            addOptions();
+        }
     }
 
     @Override
     public void onClose() {
-        Serializer.INSTANCE.saveConfig();
+        this.serializer.saveConfig();
         super.onClose();
     }
 
