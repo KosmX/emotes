@@ -44,8 +44,24 @@ unimined.minecraft(sourceSets.getByName("neoforge")) {
         loader("net.neoforged:neoforge:$neoforge_version:universal")
         mixinConfig("emotecraft-arch.mixins.json")
 
-        // accessTransformer(aw2at(file("src/main/resources/emotes.classtweaker")))
-        accessTransformer("src/neoforge/resources/META-INF/accesstransformer.cfg")
+        accessTransformer(provider {
+            val transformed = file("src/main/resources/emotes.classtweaker").readText()
+                .replaceFirst(Regex("""classTweaker\s+v\d+\s+(\S+)"""), "accessWidener v2 $1")
+                .lines()
+                .filter { line ->
+                    !line.trim().startsWith("transitive-inject-interface") && !line.trim().startsWith("inject-interface")
+                }
+                .joinToString("\n")
+
+            val out = layout.buildDirectory.file("generated/emotes.classtweaker").get().asFile
+            try {
+                out.parentFile.mkdirs()
+                out.writeText(transformed)
+                aw2at(out)
+            } finally {
+                out.delete()
+            }
+        }.get())
     }
     defaultRemapJar = true
 }
