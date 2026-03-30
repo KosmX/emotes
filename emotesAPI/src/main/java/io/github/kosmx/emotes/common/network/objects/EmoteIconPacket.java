@@ -5,6 +5,8 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.netty.buffer.ByteBuf;
 import org.redlance.platformtools.webp.decoder.DecodedImage;
+import org.redlance.platformtools.webp.decoder.PlatformWebPDecoder;
+import org.redlance.platformtools.webp.encoder.PlatformWebPEncoder;
 
 import java.io.IOException;
 
@@ -16,16 +18,21 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
 
     @Override
     public byte getVer() {
-        return 0x12;
+        return 0x13;
     }
 
     @Override
     public void read(ByteBuf byteBuf, NetData config, byte version) throws IOException {
         int size = byteBuf.readInt();
-        if (size <= 0) return;
+        if (size == 0 || (size < 0 && version < 0x13)) return;
 
-        byte[] iconData = MathHelper.readBytes(byteBuf, size);
-        config.extraData.put("iconData", DecodedImage.fromPng(iconData));
+        byte[] iconData = MathHelper.readBytes(byteBuf, Math.abs(size));
+
+        if (size < 0) { // Negative size = WebP, positive size = PNG
+            config.extraData.put("iconData", PlatformWebPDecoder.INSTANCE.decode(iconData));
+        } else {
+            config.extraData.put("iconData", DecodedImage.fromPng(iconData));
+        }
     }
 
     @Override
@@ -38,9 +45,15 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
             return;
         }
 
-        byte[] pngData = iconData.toPng();
-        byteBuf.writeInt(pngData.length);
-        byteBuf.writeBytes(pngData);
+        if (version >= 0x13 && PlatformWebPEncoder.INSTANCE.isAvailable()) {
+            byte[] webpData = PlatformWebPEncoder.INSTANCE.encodeLossless(iconData);
+            byteBuf.writeInt(-webpData.length);
+            byteBuf.writeBytes(webpData);
+        } else {
+            byte[] pngData = iconData.toPng();
+            byteBuf.writeInt(pngData.length);
+            byteBuf.writeBytes(pngData);
+        }
     }
 
     @Override
