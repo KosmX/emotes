@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.server.serializer;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.type.*;
@@ -11,6 +10,7 @@ import io.github.kosmx.emotes.server.serializer.type.*;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import org.jetbrains.annotations.Nullable;
 import org.redlance.common.services.ServiceUtils;
+import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -137,8 +137,8 @@ public class UniversalEmoteSerializer {
                 emote.data().put(EmoteSerializer.BUILT_IN_KEY, true);
 
                 InputStream iconStream = UniversalEmoteSerializer.class.getClassLoader().getResourceAsStream("assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
-                if(iconStream != null) {
-                    emote.data().put("iconData", MathHelper.readFromIStream(iconStream));
+                if (iconStream != null) {
+                    emote.data().put("iconData", DecodedImage.fromPng(iconStream));
                     iconStream.close();
                 }
             }

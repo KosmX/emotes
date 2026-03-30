@@ -2,9 +2,11 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
+import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.netty.buffer.ByteBuf;
+import org.redlance.platformtools.webp.decoder.DecodedImage;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 
 public class EmoteIconPacket extends AbstractNetworkPacket{
     @Override
@@ -18,28 +20,27 @@ public class EmoteIconPacket extends AbstractNetworkPacket{
     }
 
     @Override
-    public void read(ByteBuf byteBuf, NetData config, byte version) {
+    public void read(ByteBuf byteBuf, NetData config, byte version) throws IOException {
         int size = byteBuf.readInt();
         if (size <= 0) return;
 
-        ByteBuffer buffer = ByteBuffer.allocate(size);
-        byteBuf.readBytes(buffer);
-        buffer.flip();
-        config.extraData.put("iconData", buffer.asReadOnlyBuffer());
+        byte[] iconData = MathHelper.readBytes(byteBuf, size);
+        config.extraData.put("iconData", DecodedImage.fromPng(iconData));
     }
 
     @Override
-    public void write(ByteBuf byteBuf, NetData config, byte version) {
+    public void write(ByteBuf byteBuf, NetData config, byte version) throws IOException {
         assert config.emoteData != null;
 
-        ByteBuffer iconData = config.emoteData.data().getBinary("iconData");
-        if (iconData == null || !iconData.hasRemaining()) {
+        DecodedImage iconData = config.emoteData.data().getImage("iconData");
+        if (iconData == null) {
             byteBuf.writeInt(0);
             return;
         }
 
-        byteBuf.writeInt(iconData.remaining());
-        byteBuf.writeBytes(iconData.duplicate());
+        byte[] pngData = iconData.toPng();
+        byteBuf.writeInt(pngData.length);
+        byteBuf.writeBytes(pngData);
     }
 
     @Override
