@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - "emotesAssets/src/main/resources/assets/emotecraft/lang/**"
+      - "crowdin.yml"
 
 
 jobs:
