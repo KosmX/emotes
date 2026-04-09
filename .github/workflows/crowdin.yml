@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - "emotesAssets/src/main/resources/assets/emotecraft/lang/**"
+      - "crowdin.yml"
 
 
 jobs:
@@ -30,6 +31,7 @@ jobs:
       with:
         config: "crowdin.yml"
         upload_sources: ${{ matrix.branch == 'dev' }}
+        upload_translations_args: '--import-eq-suggestions'
         upload_translations: ${{ matrix.branch == 'dev' }}
         download_translations: true
 
