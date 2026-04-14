@@ -9,6 +9,7 @@
   "emotecraft.sure2": "Башка эмоция бу төймә белән бәйле!\nСез чыннан да теге эмоциянең төймәсен күчерергә телисезме?",
   "emotecraft.otherconfig.category.general": "Төп көйләүләр",
   "emotecraft.otherconfig.category.expert": "Киңәйтелгән көйләүләр",
+  "emotecraft.otherconfig.category.legacy": "Искергән көйләүләр",
   "emotecraft.otherconfig": "Бүтән көйләүләр",
   "emotecraft.otherconfig.debug": "Төзәтү шарты",
   "emotecraft.otherconfig.validate": "Эмоцияләрне тикшерү",
@@ -50,6 +51,9 @@
   "emotecraft.resetAllKeys.title": "Эмоцияләр өчен барлык төймәләр билгеләнүләрен ташлату",
   "emotecraft.resetAllKeys.message": "Сез чыннан да барлык төймәләр билгеләнүләрен ташлатырга телисезме?",
   "emotecraft.options.export": "Экспорт менюсы",
+  "emotecraft.export": ".%s форматында экспортлау",
+  "emotecraft.export.error": "%s форматында экспортлап булмады...",
+  "emotecraft.export.done": "%s форматында экспортланды!",
   "emotecraft.song_too_big_to_send": "Серверга җибәрү өчен җыр артык зур. Эмоция генә җибәрү...",
   "emotecraft.cant.override.forced": "Сез хәзерге эмоцияне кулланырга мәҗбүр; бу үзгәртелә алмый.",
   "emotecraft.folder": "Папка"
