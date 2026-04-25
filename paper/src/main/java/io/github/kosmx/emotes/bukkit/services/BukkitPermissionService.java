@@ -14,7 +14,7 @@ public class BukkitPermissionService implements IPermissionService {
     }
 
     @Override
-    public boolean isActive() {
+    public boolean isServiceActive() {
         return true;
     }
 }

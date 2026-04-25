@@ -4,8 +4,8 @@ import io.github.kosmx.emotes.bukkit.fuckery.EmotePayloadHandler;
 import io.github.kosmx.emotes.bukkit.fuckery.StreamCodecUtils;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.SerializableConfig;
 import io.github.kosmx.emotes.mc.ServerCommands;
+import io.github.kosmx.emotes.server.config.CommonConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -22,7 +22,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListener {
+public final class BukkitWrapper extends JavaPlugin implements ChannelInitializeListener {
     public final static String EMOTE_PACKET = CommonData.getIDAsString(CommonData.playEmoteID);
 
     @Override
@@ -39,7 +39,7 @@ public class BukkitWrapper extends JavaPlugin implements ChannelInitializeListen
         // Step two
         ChannelInitializeListenerHolder.addListener(Key.key(CommonData.MOD_ID, "listener"), this);
 
-        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(SerializableConfig::new), SerializableConfig.class); //it does register itself
+        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(CommonConfig::new, CommonConfig.staticConfigVersion), CommonConfig.class); //it does register itself
         UniversalEmoteSerializer.loadEmotes();
 
         for (String permission : ServerCommands.PERMISSIONS) {

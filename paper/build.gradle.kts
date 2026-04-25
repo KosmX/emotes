@@ -21,6 +21,10 @@ dependencies {
 
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesMc"))
+
+    compileApi("org.redlance.common-utils:reflect:${project["commonutils_version"]}") {
+        isTransitive = false
+    }
 }
 
 tasks.runServer {

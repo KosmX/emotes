@@ -70,7 +70,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     protected void sendForEveryoneElse(NetData data, BukkitNetworkInstance player) {
         for (Player player1 : player.avatar.getBukkitEntity().getTrackedBy()) {
             BukkitNetworkInstance instance = getPlayerFromUUID(player1.getUniqueId());
-            if (instance == player) continue;
+            if (instance == null || instance == player) continue;
 
             // Bukkit server will filter if I really can send, or not.
             // If else to not spam dumb forge clients.
