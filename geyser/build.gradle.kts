@@ -157,7 +157,7 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.addAll(release_minecraft_versions)
-        displayName = mod_version
-        version = "${mod_version}+${removePreRc(minecraft_version)}-geyser"
+        displayName = "Emotecraft $mod_version for Geyser"
+        version = "$mod_version-geyser"
     }
 }

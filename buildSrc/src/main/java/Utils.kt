@@ -11,13 +11,9 @@ import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.maven
 import org.w3c.dom.Element
 
-
-fun asCurseForgeVersion(full: String, release: String): String {
-    if ("w" in full) { // snapshots
-        return "$release-Snapshot" // release is unknown for snapshot, so use argument
-    } else if ("-" in release) { // rc and pre
-        val majorMinorPatch = release.split("-").first() // extract release
-        return "$majorMinorPatch-Snapshot"
+fun asCurseForgeVersion(release: String): String {
+    if ("-" in release) { // snapshots, rc and pre
+        return "${removePreRc(release)}-Snapshot"
     } else return release // release version
 }
 

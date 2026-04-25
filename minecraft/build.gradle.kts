@@ -104,7 +104,7 @@ dependencies {
     }
 
     // Third-party
-    compileOnly("com.blamejared.searchables:Searchables-common-1.21.11:${project["searchables_version"]}") {
+    compileOnly("com.blamejared.searchables:Searchables-common-26.1.2:${project["searchables_version"]}") {
         isTransitive = false
     }
 
@@ -119,19 +119,19 @@ dependencies {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    /*"fabricImplementation"("me.lucko:fabric-permissions-api:${project["fabric_permissions_api"]}") {
+    "fabricImplementation"("me.lucko:fabric-permissions-api:${project["fabric_permissions_api"]}") {
         // fabricPomCompile(this)
-    }*/
+    }
 
     "fabricImplementation"("com.zigythebird.playeranim:PlayerAnimationLibFabric:${project["playeranimlib_version"]}") {
         fabricPomCompile(this)
     }
 
-    /*"fabricImplementation"("com.blamejared.searchables:Searchables-fabric-${minecraft_version}:${project["searchables_version"]}") {
+    "fabricImplementation"("com.blamejared.searchables:Searchables-fabric-26.1.2:${project["searchables_version"]}") {
         isTransitive = false
     }
 
-    "fabricRuntimeOnly"("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${project["bendablecuboids_version"]}") {
+    /*"fabricRuntimeOnly"("com.zigythebird.bendable_cuboids:BendableCuboidsFabric:${project["bendablecuboids_version"]}") {
         isTransitive = false
         fabricPomCompile(this)
     }*/
@@ -296,8 +296,8 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.addAll(release_minecraft_versions)
-        displayName = mod_version
-        version = "${mod_version}+${removePreRc(minecraft_version)}-fabricneo"
+        version = mod_version
+        displayName = "Emotecraft $mod_version for ${removePreRc(minecraft_version)}"
 
         // requires("fabric-api")
         requires("player-animation-library")
@@ -312,7 +312,7 @@ publishMods {
         projectId = providers.gradleProperty("curseforge_id_fabric")
         projectSlug = providers.gradleProperty("curseforge_slug_fabric")
         changelogType = "markdown"
-        displayName = base.archivesName.get() + "-$mod_version"
+        displayName = "Emotecraft $mod_version for ${removePreRc(minecraft_version)}"
         minecraftVersions.addAll(curseforge_minecraft_versions)
 
         javaVersions.add(project.java_version)

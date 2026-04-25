@@ -57,6 +57,7 @@ public class ConfigScreen extends OptionsSubScreen {
     }
 
     protected void addCategory(String category, List<SerializableConfig.ConfigEntry<?>> entries) {
+        assert this.list != null;
         this.list.addHeader(Component.translatable(this.namespace + ".otherconfig.category." + category));
         entries.forEach(entry -> addConfigEntry(entry, this.list));
     }
@@ -189,7 +190,7 @@ public class ConfigScreen extends OptionsSubScreen {
         }
 
         @Override
-        public T fromSliderValue(double slider) {
+        public @NonNull T fromSliderValue(double slider) {
             return this.entry.fromDouble(Mth.map(slider, 0.0, 1.0, this.entry.min.doubleValue(), this.entry.max.doubleValue()));
         }
     }

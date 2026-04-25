@@ -2,7 +2,7 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     java
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
     id("xyz.jpenilla.run-paper") version "3.0.2"
     `maven-publish`
     id("com.gradleup.shadow")
@@ -17,10 +17,10 @@ val compileApi = configurations.register("compileApi").get()
 configurations.api.configure { extendsFrom(compileApi) }
 
 dependencies {
-    paperweight.paperDevBundle("${minecraft_version}-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("${minecraft_version}+")
 
     compileApi(project(":emotesAssets"))
-    compileApi(project(path = ":emotesMc", configuration = "namedElements"))
+    compileApi(project(":emotesMc"))
 }
 
 tasks.runServer {
@@ -99,15 +99,15 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.addAll(release_minecraft_versions)
-        displayName = mod_version
-        version = "${mod_version}+${removePreRc(minecraft_version)}-paper"
+        displayName = "Emotecraft $mod_version for Paper"
+        version = "$mod_version-paper"
     }
 }
 
 tasks.getByName("publishMods").dependsOn("publishPluginPublicationToHangar")
 
 hangarPublish.publications.register("plugin") {
-    version = "${mod_version}+${minecraft_version}"
+    version = mod_version
     channel = when (releaseType) { // convert to set channel names
         "stable" -> "Release"
         "beta" -> "Beta"

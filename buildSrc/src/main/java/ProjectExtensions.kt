@@ -34,7 +34,7 @@ val Project.release_minecraft_versions: List<String>
 
 val Project.curseforge_minecraft_versions: List<String>
     get() = release_minecraft_versions.stream()
-        .map { asCurseForgeVersion(minecraft_version, it) }
+        .map { asCurseForgeVersion(it) }
         .toList()
 
 val Project.parchment_version

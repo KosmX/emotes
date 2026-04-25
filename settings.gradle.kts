@@ -18,7 +18,7 @@ include("emotesMc")
 include("minecraft")
 
 // Paper plugin
-// include("paper")
+include("paper")
 
 // Geyser ext
 include("geyser")
