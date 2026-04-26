@@ -102,7 +102,7 @@ val ds = publishDiscord {
 
     container {
         color = kotlin.random.Random.nextInt(0x000000, 0x1000000)
-        title = "## ✨ Emotecraft for Minecraft $minecraft_version\n### v$mod_version is out!"
+        title = "## ✨ Emotecraft for Minecraft ${release_minecraft_versions.joinToString(", ")}\n### v$mod_version is out!"
         description = "### Changes:\n${changes.replace("<br>", "\n- ")}"
         thumbnail("https://raw.githubusercontent.com/KosmX/emotes/d97b2df4ab59bbd2740f30497e96f92cb643b2df/emotesAssets/src/main/resources/emotecraft_mod_logo.png")
         timestamp(System.currentTimeMillis())
@@ -115,12 +115,12 @@ val ds = publishDiscord {
         nextRow()
 
         // Paper
-        /*val paper = project(":paper")
+        val paper = project(":paper")
         from(paper, "modrinth", title = "Paper (Modrinth)")
         val hangarProjectName = providers.gradleProperty("hangarProjectName").getOrElse("dima_dencep/emotecraft")
         val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/${paper.mod_version}+${paper.minecraft_version}"
         custom("Paper (Hangar)", hangarLink, Emoji.HANGAR_EMOJI)
-        nextRow()*/
+        nextRow()
 
         // Geyser
         from(":geyser", "modrinth", title = "Geyser (Modrinth)")
