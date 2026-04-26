@@ -1,119 +1,99 @@
 package io.github.kosmx.emotes.main.network;
 
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
-import io.github.kosmx.emotes.api.proxy.EmotesProxyManager;
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.common.network.PacketConfig;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 /**
  * Client emote proxy manager
  * Responsible for calling proxy instances and other stuff
  */
-public final class ClientPacketManager extends EmotesProxyManager {
+@SuppressWarnings("unused") // API
+public final class ClientPacketManager {
+    /**
+     * The list of registered instances.
+     * To register yours use {@link #registerProxyInstance(INetworkInstance)}
+     */
+    private final static ArrayList<INetworkInstance> NETWORK_INSTANCES = new ArrayList<>(1);
 
-    private static final INetworkInstance defaultNetwork = ClientNetwork.INSTANCE;
-    //that casting should always work
-
-    public static void init(){
-        setManager(new ClientPacketManager()); //Some dependency injection
+    private ClientPacketManager() {
+        // that is a utility class :D
     }
 
-    private ClientPacketManager(){} //that is a utility class :D
-
     /**
-     *
-     * @return Use all network instances even if the server has the mod installed
+     * Register your proxy instance
+     * use {@link AbstractNetworkInstance} to create a new instance
+     * @param instance your instance
+     * @return true if registered {@link ArrayList#add(Object)}
      */
-    private static boolean useAlwaysAlt(){
+    public static boolean registerProxyInstance(INetworkInstance instance) {
+        if (!NETWORK_INSTANCES.contains(instance)) return NETWORK_INSTANCES.add(instance);
         return false;
     }
 
-    public static void send(EmotePacket.Builder packetBuilder, UUID target){
+    /**
+     * Unregister your proxy instance
+     * Why were you doing that, you can use {@link INetworkInstance#isActive()} to temporally disable it
+     * @param instance instance to unregister
+     * @return if it was unregistered {@link ArrayList#remove(Object)}
+     */
+    public static boolean unregisterProxyInstance(INetworkInstance instance) {
+        return NETWORK_INSTANCES.remove(instance);
+    }
+
+    public static void send(EmotePacket.Builder packetBuilder, UUID target) {
         ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder);
-        if(!defaultNetwork.isActive() || useAlwaysAlt()){
-            for(INetworkInstance network:networkInstances){
-                if(network.isActive()){
-                    if (target == null || !network.isServerTrackingPlayState()) {
-                        try {
-                            EmotePacket.Builder builder = packetBuilder.copy();
-                            if (!network.sendPlayerID()) builder.removePlayerID();
-                            builder.setSizeLimit(network.maxDataSize(), false);
-                            builder.setVersion(network.getRemoteVersions());
-                            network.sendMessage(builder, target);    //everything is happening on the heap, there won't be any memory leak
-                        } catch(IOException exception) {
-                            CommonData.LOGGER.error("Error while sending packet!", exception);
-                        }
-                    }
-                }
-            }
+
+        boolean isMainActive = ClientNetwork.INSTANCE.isActive();
+        if (isMainActive) { // Always try to send to main
+            ClientPacketManager.sendMessageVia(ClientNetwork.INSTANCE, packetBuilder, target);
         }
-        if(defaultNetwork.isActive() && (target == null || !defaultNetwork.isServerTrackingPlayState())){
-            if(!defaultNetwork.sendPlayerID())packetBuilder.removePlayerID();
-            try {
-                packetBuilder.setSizeLimit(defaultNetwork.maxDataSize(), false);
-                packetBuilder.setVersion(defaultNetwork.getRemoteVersions());
-                defaultNetwork.sendMessage(packetBuilder, target);
-            }
-            catch (IOException exception){
-                CommonData.LOGGER.error("Error while sending packet!", exception);
+
+        if (!isMainActive || isInstanceOutdatedForStreaming(ClientNetwork.INSTANCE)) {
+            for (INetworkInstance network : NETWORK_INSTANCES) {
+                if (!network.isActive()) continue;
+                ClientPacketManager.sendMessageVia(network, packetBuilder.copy(), target);
             }
         }
     }
 
-    @Override
-    protected void dispatchReceive(EmotePacket packet, UUID player, INetworkInstance networkInstance) {
+    private static void sendMessageVia(INetworkInstance network, EmotePacket.Builder packetBuilder, UUID target) {
+        if (target != null && network.isServerTrackingPlayState()) return;
+
+        if (!network.sendPlayerID()) packetBuilder.removePlayerID();
         try {
-            if(!networkInstance.trustReceivedPlayer()){
-                packet.data.player = null;
-            }
-            if(player != null) {
-                packet.data.player = player;
-            }
-            if(packet.data.player == null && packet.data.purpose.playerBound){
-                //this is not exactly IO but something went wrong in IO so it is IO fail
-                throw new IOException("Didn't received any player information");
-            }
-
-            try {
-                ClientEmotePlay.executeMessage(packet.data, networkInstance);
-            } catch (Exception e) {//I don't want to break the whole game with a bad message but I'll warn with the highest level
-                CommonData.LOGGER.error("Critical error has occurred while receiving emote!", e);
-            }
-        } catch (IOException e) {
-            CommonData.LOGGER.warn("Error while receiving packet!", e);
+            packetBuilder.setSizeLimit(network.maxDataSize(), false);
+            packetBuilder.setVersion(network.getRemoteVersions());
+            network.sendMessage(packetBuilder, target);
+        } catch (IOException ex) {
+            CommonData.LOGGER.error("Error while sending packet via {}!", network, ex);
         }
     }
 
-    public static boolean isRemoteAvailable(){
-        return defaultNetwork.isActive();
+    public static boolean isInstanceOutdatedForStreaming(INetworkInstance instance) {
+        return isInstanceOutdated(instance, PacketConfig.NEW_ANIMATION_FORMAT) ||
+                isInstanceOutdated(instance, PacketConfig.NBS_CONFIG);
     }
 
-    public static boolean isRemoteTracking() {
-        return isRemoteAvailable() && defaultNetwork.isServerTrackingPlayState();
+    public static boolean isInstanceOutdated(INetworkInstance instance, byte packet) {
+        Map<Byte, Byte> versions = instance.getRemoteVersions();
+        if (!versions.containsKey(packet)) return true;
+        return versions.get(packet) < EmotePacket.defaultVersions.get(packet);
     }
 
-    public static boolean isAvailableProxy(){
-        for(INetworkInstance instance : networkInstances){
-            if(instance.isActive()){
-                return true;
-            }
+    public static boolean isAvailableProxy() {
+        for (INetworkInstance instance : NETWORK_INSTANCES) {
+            if (instance.isActive()) return true;
         }
         return false;
-    }
-
-    /**
-     * This shall be invoked when disconnecting from the server
-     * @param networkInstance ...
-     */
-    @Override
-    public void onDisconnectFromServer(INetworkInstance networkInstance) {
-        if (networkInstance == null) throw new NullPointerException("network instance must be non-null");
-        EmoteHolder.clearEmotes(networkInstance);
     }
 }

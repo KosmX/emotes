@@ -21,7 +21,7 @@ public class ForgeNetwork {
                 .optional()
                 .playBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER,
                         (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.packet(), playPayloadContext.player()),
-                        (arg, playPayloadContext) -> ClientNetwork.INSTANCE.receiveMessage(arg.packet())
+                        (arg, _) -> ClientNetwork.INSTANCE.receiveMessage(arg.packet(), null)
                 )
 
                 .optional()

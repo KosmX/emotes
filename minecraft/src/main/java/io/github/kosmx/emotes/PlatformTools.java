@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes;
 
 import com.zigythebird.playeranim.PlayerAnimLibService;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.config.Serializer;
@@ -42,10 +43,16 @@ public final class PlatformTools {
     }
 
     public static void addToast(Component title, Component message) {
-        SystemToast.add(Minecraft.getInstance().getToastManager(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
+        SystemToast toast = SystemToast.multiline(Minecraft.getInstance(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
+        Minecraft.getInstance().getToastManager().addToast(toast);
     }
 
     public static void addToast(Component message) {
         PlatformTools.addToast(McUtils.MOD_NAME, message);
+    }
+
+    @SuppressWarnings("unused")
+    public static boolean isEmoteAllowed(Animation emoteData, UUID player) {
+        return !PlatformTools.getConfig().enablePlayerSafety.get() || !Minecraft.getInstance().isBlocked(player);
     }
 }

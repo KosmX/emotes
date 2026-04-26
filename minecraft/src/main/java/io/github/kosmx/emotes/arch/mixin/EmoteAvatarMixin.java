@@ -9,6 +9,7 @@ import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
+import io.github.kosmx.emotes.main.network.BaseClientNetwork;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -68,7 +69,7 @@ public abstract class EmoteAvatarMixin extends LivingEntity implements IPlayerEn
     public void tick(CallbackInfo ci) {
         if (this.emotecraft$age <= 1) { // Emote init with a little delay (40-60 ms)
             if(this.emotecraft$age++ == 1) {
-                Pair<Animation, Float> p = ClientEmotePlay.getEmoteForUUID(getUUID());
+                Pair<Animation, Float> p = BaseClientNetwork.getEmoteForUUID(getUUID());
                 if (p != null) {
                     ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(p.left(), p.right(), getUUID());
                     this.emotecraft$playEmote(p.left(), p.right(), false);

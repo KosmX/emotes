@@ -53,21 +53,9 @@ public abstract class AbstractNetworkInstance implements INetworkInstance {
     }
 
     /**
-     * Receive message, but you don't know who sent this
-     * The bytes data has to contain the identity of the sender
-     * {@link #trustReceivedPlayer()} should return true as you don't have your own identifier system as alternative
-     * @param packet message
-     */
-    public void receiveMessage(EmotePacket packet) {
-        this.receiveMessage(packet, null);
-    }
-
-    /**
      * When the network instance disconnects...
      */
-    protected void disconnect() {
-        EmotesProxyManager.disconnectInstance(this);
-    }
+    protected abstract void disconnect();
 
     /**
      * Default client-side version config,

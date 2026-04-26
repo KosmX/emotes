@@ -5,8 +5,8 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.network.BaseClientNetwork;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
-import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.client.KeyMapping;
@@ -30,11 +30,10 @@ public class EmotecraftClientMod {
 
     protected void onInitializeClient() {
         EmotecraftClientMod.loadEmotes();
-        ClientPacketManager.init(); // initialize proxy service
     }
 
     protected void onClientTick(Minecraft minecraft) {
-        if (tick++ % 21 == 20) ClientEmotePlay.checkQueue();
+        if (tick++ % 21 == 20) BaseClientNetwork.checkQueue();
 
         if (OPEN_MENU_KEY.consumeClick()) {
             if(PlatformTools.getConfig().alwaysOpenEmoteScreen.get() || minecraft.player == minecraft.getCameraEntity()) {

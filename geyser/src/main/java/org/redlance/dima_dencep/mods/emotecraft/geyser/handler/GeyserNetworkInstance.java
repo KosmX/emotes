@@ -72,8 +72,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         }
     }
 
-    @Override
-    public void receiveMessage(EmotePacket packet, UUID player) {
+    public void receiveMessage(EmotePacket packet) {
         try {
             NetData data = packet.data;
             if (!trustReceivedPlayer()) {

@@ -5,8 +5,6 @@ import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.ByteBuffer;
-
 /**
  * Wrapper class for avatars
  */

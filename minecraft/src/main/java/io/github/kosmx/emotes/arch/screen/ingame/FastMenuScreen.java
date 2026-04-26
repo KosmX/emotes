@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.ingame;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
@@ -11,6 +12,7 @@ import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -21,6 +23,8 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
@@ -28,7 +32,8 @@ import java.util.List;
 public class FastMenuScreen extends Screen implements FastChooseController {
     protected static final Component TITLE = Component.translatable("emotecraft.fastmenu");
 
-    private static final Component WARN_NO_EMOTECRAFT = Component.translatable("emotecraft.no_server");
+    private static final Component WARN_NO_SERVER = Component.translatable("emotecraft.no_server").withColor(CommonColors.SOFT_RED);
+    public static final Component WARN_DIFFERENT_SERVER = Component.translatable("emotecraft.different_server").withColor(CommonColors.SOFT_RED);
     private static final Component WARN_ONLY_PROXY = Component.translatable("emotecraft.only_proxy");
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 0, HeaderAndFooterLayout.DEFAULT_HEADER_AND_FOOTER_HEIGHT);
@@ -50,7 +55,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
         } else if (ClientPacketManager.isAvailableProxy()) {
             this.layout.addTitleHeader(FastMenuScreen.WARN_ONLY_PROXY, this.font);
         } else {
-            this.layout.addTitleHeader(FastMenuScreen.WARN_NO_EMOTECRAFT, this.font);
+            this.layout.addTitleHeader(FastMenuScreen.WARN_NO_SERVER, this.font);
         }
 
         this.fastMenu = this.layout.addToContents(new PreviewFastChooseWidget(this, true, 0, 0, 512),
@@ -86,7 +91,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     }
 
     @Override
-    protected void extractBlurredBackground(GuiGraphicsExtractor graphics) {
+    protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
         // no-op
     }
 

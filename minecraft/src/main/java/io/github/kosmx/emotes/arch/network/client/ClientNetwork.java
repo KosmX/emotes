@@ -1,14 +1,16 @@
 package io.github.kosmx.emotes.arch.network.client;
 
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.arch.network.EmotePacketPayload;
 import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
+import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.main.EmoteHolder;
+import io.github.kosmx.emotes.main.network.BaseClientNetwork;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -27,7 +29,7 @@ import java.util.function.Consumer;
  * - receive message (3x for 3 channels)
  * - handle configuration
  */
-public abstract class ClientNetwork extends AbstractNetworkInstance implements AdvancedService {
+public abstract class ClientNetwork extends BaseClientNetwork implements AdvancedService {
     public static ClientNetwork INSTANCE = ServiceUtils.loadService(ClientNetwork.class);
 
     private boolean isConfiguredNormally;
@@ -71,11 +73,11 @@ public abstract class ClientNetwork extends AbstractNetworkInstance implements A
         if (packet.data.purpose == PacketTask.CONFIG) {
             setVersions(packet.data.versions);
             sendC2SConfig(p -> consumer.accept(EmotePacketPayload.playPacket(p.build())));
-            this.isConfiguredNormally = true;
+            onConfigurationDone();
         } else if (packet.data.purpose == PacketTask.FILE) {
             EmoteHolder.addEmoteToList(packet.data.emoteData, this);
         } else {
-            CommonData.LOGGER.warn("Invalid emotes packet type in configuration phase: " + packet.data.purpose);
+            CommonData.LOGGER.warn("Invalid emotes packet type in configuration phase: {}", packet.data.purpose);
         }
     }
 
@@ -101,5 +103,10 @@ public abstract class ClientNetwork extends AbstractNetworkInstance implements A
     @Override
     public int maxDataSize() {
         return super.maxDataSize() - 16; // channel ID is 12, one extra int makes it 16 (string)
+    }
+
+    @Override
+    protected void onConfigurationDone() {
+        this.isConfiguredNormally = true;
     }
 }

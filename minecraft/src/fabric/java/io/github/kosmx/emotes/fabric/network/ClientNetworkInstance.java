@@ -32,15 +32,15 @@ public class ClientNetworkInstance {
         });
 
         // Play
-        ServerboundPlayChannelEvents.REGISTER.register((handler, sender, minecraft, channels) -> {
+        ServerboundPlayChannelEvents.REGISTER.register((_, sender, _, channels) -> {
             if (channels.contains(NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
                 ClientNetwork.INSTANCE.configureOnPlay(sender::sendPacket);
             }
         });
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientNetwork.INSTANCE.disconnect());
+        ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> ClientNetwork.INSTANCE.disconnect());
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID,
-                (buf, context) -> ClientNetwork.INSTANCE.receiveMessage(buf.packet())
+                (buf, _) -> ClientNetwork.INSTANCE.receiveMessage(buf.packet(), null)
         );
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (buf, context) -> {

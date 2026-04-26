@@ -63,17 +63,6 @@ public interface INetworkInstance {
     void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException;
 
     /**
-     * Network instance has received a message, it will send it to EmoteX core to execute
-     * you can set your receive event to invoke this
-     * there are it's other forms in {@link AbstractNetworkInstance}
-     * @param packet received buffer
-     * @param player player who plays the emote, Can be NULL but only if {@link #trustReceivedPlayer()} is true or message is not play or stop
-     */
-    default void receiveMessage(EmotePacket packet, UUID player) {
-        EmotesProxyManager.receiveMessage(packet, player, this);
-    }
-
-    /**
      * Client is sending config message to server. Vanilla clients will answer to the server configuration phase message.
      * This might get invoked multiple times on the same network instance.
      */
