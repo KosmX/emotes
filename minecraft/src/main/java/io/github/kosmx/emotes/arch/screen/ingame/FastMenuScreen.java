@@ -49,9 +49,15 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     @Override
     public void init() {
         this.layout.setHeaderHeight(this.font.lineHeight * 2);
-        if (ClientPacketManager.isRemoteAvailable()) {
-            // this.layout.addTitleHeader(getTitle(), this.font); TODO Do we want this?
-            this.layout.setHeaderHeight(0);
+        if (ClientNetwork.INSTANCE.isActive()) {
+            if (ClientPacketManager.isInstanceOutdatedForStreaming(ClientNetwork.INSTANCE)) {
+                MultiLineTextWidget widget = this.layout.addToHeader(new MultiLineTextWidget(FastMenuScreen.WARN_DIFFERENT_SERVER, this.font)
+                        .setCentered(true).setMaxRows(3).setMaxWidth(Mth.ceil(this.width / 1.2))
+                );
+                this.layout.setHeaderHeight(widget.getHeight());
+            } else {
+                this.layout.setHeaderHeight(0);
+            }
         } else if (ClientPacketManager.isAvailableProxy()) {
             this.layout.addTitleHeader(FastMenuScreen.WARN_ONLY_PROXY, this.font);
         } else {
