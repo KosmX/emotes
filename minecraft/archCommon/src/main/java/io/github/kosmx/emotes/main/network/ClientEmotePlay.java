@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.api.events.client.ClientEmoteAPI;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -116,6 +117,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
             case CONFIG:
                 networkInstance.setVersions(Objects.requireNonNull(data.versions));
                 CommonData.LOGGER.warn("Legacy versions was received: {}", data.versions);
+                if (networkInstance instanceof ClientNetwork base) base.onConfigurationDone();
                 break;
             case FILE:
                 EmoteHolder.addEmoteToList(data.emoteData, networkInstance);

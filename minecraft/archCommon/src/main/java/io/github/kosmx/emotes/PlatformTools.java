@@ -21,10 +21,6 @@ import java.util.UUID;
 public final class PlatformTools {
     public static final boolean HAS_SEARCHABLES = PlayerAnimLibService.INSTANCE.isModLoaded("searchables");
 
-    public static INetworkInstance getClientNetworkController() {
-        return ClientNetwork.INSTANCE;
-    }
-
     public static @Nullable Avatar getAvatarFromUUID(UUID uuid) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return null;
@@ -48,7 +44,8 @@ public final class PlatformTools {
     }
 
     public static void addToast(Component title, Component message) {
-        SystemToast.add(Minecraft.getInstance().getToastManager(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
+        SystemToast toast = SystemToast.multiline(Minecraft.getInstance(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
+        Minecraft.getInstance().getToastManager().addToast(toast);
     }
 
     public static void addToast(Component message) {

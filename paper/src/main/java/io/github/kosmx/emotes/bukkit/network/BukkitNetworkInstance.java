@@ -46,6 +46,11 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
     }
 
     @Override
+    protected void disconnect() {
+        // no-op (client-only)
+    }
+
+    @Override
     public boolean isActive() {
         return this.avatar instanceof ServerPlayer;
     }

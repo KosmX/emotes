@@ -26,6 +26,7 @@ dependencies {
         exclude(module = "fastutil")
         exclude(module = "guava")
         exclude(module = "netty-buffer")
+        exclude(module = "joml")
     }
 }
 
