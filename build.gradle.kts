@@ -118,7 +118,7 @@ val ds = publishDiscord {
         val paper = project(":paper")
         from(paper, "modrinth", title = "Paper (Modrinth)")
         val hangarProjectName = providers.gradleProperty("hangarProjectName").getOrElse("dima_dencep/emotecraft")
-        val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/${paper.mod_version}+${paper.minecraft_version}"
+        val hangarLink = "https://hangar.papermc.io/$hangarProjectName/versions/${paper.mod_version}"
         custom("Paper (Hangar)", hangarLink, Emoji.HANGAR_EMOJI)
         nextRow()
 
