@@ -56,5 +56,9 @@
   "emotecraft.export.done": "%s форматында экспортланды!",
   "emotecraft.song_too_big_to_send": "Серверга җибәрү өчен җыр артык зур. Эмоция генә җибәрү...",
   "emotecraft.cant.override.forced": "Сез хәзерге эмоцияне кулланырга мәҗбүр; бу үзгәртелә алмый.",
-  "emotecraft.folder": "Папка"
+  "emotecraft.folder": "Папка",
+  "emotecraft.emote.crying.name": "Елау",
+  "emotecraft.emote.club_penguin_dance.name": "Клуб пингвин",
+  "emotecraft.emote.clap.name": "Чабу",
+  "emotecraft.emote.clap.description": "чабу-чабу-чабу"
 }
