@@ -1,27 +1,29 @@
 package io.github.kosmx.emotes.common.tools;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-//HashMap but with making my life easier
-public class UUIDMap<T extends Supplier<UUID>> extends HashMap<UUID, T> implements Iterable<T> {
+/**
+ * HashMap but with making my life easier
+ * @param <T>
+ */
+public class UUIDMap<T extends Supplier<UUID>> extends ConcurrentHashMap<UUID, T> implements Iterable<T> {
     public T put(T v){
         return this.put(v.get(), v);
     }
 
     public void addAll(Collection<T> m) {
-        for(T t : m) {
-            this.put(t);
-        }
+        for (T t : m) this.put(t);
     }
 
-
     @Override
-    public Iterator<T> iterator() {
+    public @NonNull Iterator<T> iterator() {
         return this.values().iterator();
     }
 

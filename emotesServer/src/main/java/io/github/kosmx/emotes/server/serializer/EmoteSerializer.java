@@ -10,6 +10,7 @@ import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.model.song.Song;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.FileVisitOption;
@@ -27,24 +28,18 @@ public class EmoteSerializer {
     public static final String BUILT_IN_KEY = "isBuiltin";
     public static final String FILENAME_KEY = "fileName";
 
-    public static void serializeEmotes(UUIDMap<Animation> emotes, Path externalEmotes) {
-        if (!Files.isDirectory(externalEmotes)) {
-            return; // Just skip
-        }
-
+    public static void serializeEmotes(UUIDMap<Animation> emotes, Path externalEmotes) throws IOException {
         try (Stream<Path> paths = Files.walk(externalEmotes, FileVisitOption.FOLLOW_LINKS)) {
-            paths.filter(
+            paths.filter(Files::isRegularFile).filter(
                     file -> UniversalEmoteSerializer.findReader(file.getFileName().toString()).isPresent()
             ).parallel().forEach(file -> {
                 String folderPath = externalEmotes.relativize(file.getParent()).normalize()
-                        .toString().replace(File.separator, "/");
+                        .toString().replace(externalEmotes.getFileSystem().getSeparator(), "/");
                 if (folderPath.startsWith("server") || folderPath.contains("_export")) {
                     return;
                 }
                 emotes.addAll(serializeExternalEmote(file, folderPath).values());
             });
-        } catch (Throwable e) {
-            CommonData.LOGGER.warn("Failed to walk emotes!", e);
         }
     }
 

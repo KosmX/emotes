@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
+@SuppressWarnings("unused") // API
 public class UniversalEmoteSerializer {
     public static final List<IReader> READERS = ServiceUtils.loadServicesSorted(IReader.class).toList();
     public static final List<IWriter> WRITERS = ServiceUtils.loadServicesSorted(IWriter.class).toList();
@@ -112,15 +113,22 @@ public class UniversalEmoteSerializer {
         if (!Files.isDirectory(path)) {
             try {
                 Files.createDirectories(path);
-            } catch(IOException ignored) {
-            }
+            } catch(IOException ignored) {}
         }
 
-        EmoteSerializer.serializeEmotes(Serializer.getConfig().loadEmotesServerSide.get() ? SERVER_EMOTES : HIDDEN_SERVER_EMOTES, path);
+        try {
+            EmoteSerializer.serializeEmotes(Serializer.getConfig().loadEmotesServerSide.get() ? SERVER_EMOTES : HIDDEN_SERVER_EMOTES, path);
+        } catch (IOException e) {
+            CommonData.LOGGER.warn("Failed to walk emotes!", e);
+        }
 
         Path serverEmotesDir = path.resolve("server");
         if (Files.isDirectory(serverEmotesDir)) {
-            EmoteSerializer.serializeEmotes(SERVER_EMOTES, serverEmotesDir);
+            try {
+                EmoteSerializer.serializeEmotes(SERVER_EMOTES, serverEmotesDir);
+            } catch (IOException e) {
+                CommonData.LOGGER.warn("Failed to walk server emotes!", e);
+            }
         }
 
         return UniversalEmoteSerializer.getLoadedEmotes();
