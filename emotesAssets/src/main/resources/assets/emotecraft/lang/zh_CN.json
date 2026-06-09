@@ -27,6 +27,8 @@
   "emotecraft.otherconfig.loadbuiltin.tooltip": "如果你出于某种原因想要移除这些...",
   "emotecraft.otherconfig.playersafety": "隐藏被禁言玩家的表情",
   "emotecraft.otherconfig.playersafety.tooltip": "不会显示被禁言玩家的表情。  (1.16.4+)",
+  "emotecraft.otherconfig.cameraType": "播放表情时相机类型",
+  "emotecraft.otherconfig.cameraType.tooltip": "FIRST_PERSON 没有做任何更改",
   "emotecraft.otherconfig.enableNSFW": "允许 NSFW 表情",
   "emotecraft.otherconfig.enableNSFW.tooltip": "（不宜在工作场所观看）\n\n允许潜在的不雅内容。\n\n可能包含裸体、激烈的性行为、暴力或其他可能令人不安的主题。",
   "emotecraft.otherconfig.checkPose": "检查姿势",
@@ -43,6 +45,10 @@
   "emotecraft.otherconfig.autoFixEmoteStop.tooltip": "如果 stopTick 保留为默认值，表情工艺会将其修改为最后一个关键帧\n仅检查 JSON 表情",
   "emotecraft.otherconfig.alwaysOpenScreen": "即使相机已分离也可以打开表情屏幕",
   "emotecraft.otherconfig.alwaysOpenScreen.tooltip": "即使相机已分离，某些模组（Freecam）也可以控制玩家，此配置将覆盖表情屏幕状态",
+  "emotecraft.otherconfig.enableWheelKeyboardNav": "Enable keyboard navigation on the choose wheel",
+  "emotecraft.otherconfig.closeWheelType": "How the wheel closes",
+  "emotecraft.otherconfig.closeWheelType.tooltip": "HOLD - wheel is open while you hold the button\nPRESS - wheel is always open until you press the button or ESC",
+  "emotecraft.otherconfig.displayNowPlaying": "Display \"Now Playing\" for emotes with songs",
   "emotecraft.emotelist": "所有表情",
   "emotecraft.no_server": "服务器没有已安装的表情工艺版本。其他用户将看不到你播放的任何表情。",
   "emotecraft.different_server": "服务器安装了表情工艺的不同版本。其他用户可能无法看到你的表情正确播放。",
@@ -76,6 +82,8 @@
   "emotecraft.emote.waving.description": "就像打招呼那样！",
   "emotecraft.emote.twerk.name": "抖臀",
   "emotecraft.emote.twerk.description": "电臀舞",
+  "emotecraft.emote.roblox_potion_dance.name": "Roblox potion dance",
+  "emotecraft.emote.roblox_potion_dance.description": "Recreated roblox potion dance",
   "emotecraft.emote.point.name": "指",
   "emotecraft.emote.point.description": "走这边",
   "emotecraft.emote.palm.name": "捂脸",
@@ -91,5 +99,7 @@
   "emotecraft.emote.clap.name": "拍手",
   "emotecraft.emote.clap.description": "拍拍手，鼓鼓掌！",
   "emotecraft.emote.backflip.name": "后空翻",
-  "emotecraft.emote.backflip.description": "让你做一个后空翻"
+  "emotecraft.emote.backflip.description": "让你做一个后空翻",
+  "emotecraft.dataloss.msg": "Possible loss of animation data",
+  "emotecraft.dataloss.descr": "Writing in this format may result in data loss or incorrect playback of the final file!\nAre you sure you want to do this?"
 }
