@@ -35,7 +35,7 @@ public class FullMenuScreen extends EmoteSubScreen {
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
                 .build()
         );
-        linearLayout.addChild(Button.builder(FullMenuScreen.CONFIG, button -> this.minecraft.setScreen(new EmoteMenu(this)))
+        linearLayout.addChild(Button.builder(FullMenuScreen.CONFIG, button -> this.minecraft.gui.setScreen(new EmoteMenu(this)))
                 .build()
         );
     }

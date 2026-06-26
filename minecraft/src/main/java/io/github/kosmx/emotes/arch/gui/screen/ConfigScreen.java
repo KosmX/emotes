@@ -68,11 +68,11 @@ public class ConfigScreen extends OptionsSubScreen {
 
         boolean addExport = this.serializer.readConfig(false) instanceof ClientConfig;
 
-        linearLayout.addChild(Button.builder(EmoteMenu.RESET, _ -> this.minecraft.setScreen(new ConfirmScreen(
+        linearLayout.addChild(Button.builder(EmoteMenu.RESET, _ -> this.minecraft.gui.setScreen(new ConfirmScreen(
                 this::resetAll, RESET_CONFIG_TITLE, RESET_CONFIG_MSG
         ))).width(addExport ? Button.SMALL_WIDTH : Button.DEFAULT_WIDTH).build());
         linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> onClose()).build());
-        if (addExport) linearLayout.addChild(Button.builder(EXPORT, _ -> this.minecraft.setScreen(new ExportMenu(this)))
+        if (addExport) linearLayout.addChild(Button.builder(EXPORT, _ -> this.minecraft.gui.setScreen(new ExportMenu(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
@@ -139,7 +139,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     private void resetAll(boolean bl) {
         if (bl) this.serializer.readConfig(false).iterate(SerializableConfig.ConfigEntry::resetToDefault);
-        this.minecraft.setScreen(this);
+        this.minecraft.gui.setScreen(this);
         if (this.list != null) {
             this.list.clearEntries();
             addOptions();
