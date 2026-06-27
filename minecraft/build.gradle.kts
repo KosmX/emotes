@@ -16,7 +16,6 @@ sourceSets {
     create("neoforge")
 }
 
-
 unimined.minecraft(sourceSets.main.get()) {
     version(minecraft_version)
 
