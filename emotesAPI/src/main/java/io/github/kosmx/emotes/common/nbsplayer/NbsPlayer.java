@@ -61,6 +61,12 @@ public abstract class NbsPlayer extends SongPlayer {
         }
     }
 
+    @Override
+    public void stop() {
+        super.stop();
+        this.firstSongPlayed = false;
+    }
+
     public boolean isFirstSongPlayed() {
         return this.firstSongPlayed;
     }
