@@ -41,4 +41,5 @@ public final class PacketConfig {
     public static final byte ICON_PACKET = (byte) 0x12;
     public static final byte PLAYER_DATA_PACKET = (byte) 1;
     public static final byte STOP_PACKET = (byte) 10;
+    public static final byte REMOVE_EMOTE_PACKET = (byte) 5;
 }

@@ -132,6 +132,10 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 this.animations.add(data.emoteData);
                 break;
 
+            case REMOVE:
+                for (UUID id : data.removeEmoteIds) this.animations.remove(id);
+                break;
+
             case UNKNOWN:
                 CommonData.LOGGER.warn("Packet execution is not possible unknown purpose");
                 break;

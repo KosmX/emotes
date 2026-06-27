@@ -93,7 +93,11 @@ public class UniversalEmoteSerializer {
         writer.write(emote, stream, fileName);
     }
 
-    public static UUIDMap<Animation> loadEmotes() {
+    /**
+     * @return UUIDs of emotes that are removed after a reload
+     */
+    public static Set<UUID> loadEmotes() {
+        Set<UUID> oldServerEmotes = new HashSet<>(SERVER_EMOTES.keySet());
         SERVER_EMOTES.clear();
         HIDDEN_SERVER_EMOTES.clear();
 
@@ -131,10 +135,11 @@ public class UniversalEmoteSerializer {
             }
         }
 
-        return UniversalEmoteSerializer.getLoadedEmotes();
+        oldServerEmotes.removeAll(SERVER_EMOTES.keySet());
+        return oldServerEmotes;
     }
 
-    private static void serializeInternalJson(String name){
+    private static void serializeInternalJson(String name) {
         if (!Serializer.getConfig().loadBuiltinEmotes.get()) {
             return;
         }

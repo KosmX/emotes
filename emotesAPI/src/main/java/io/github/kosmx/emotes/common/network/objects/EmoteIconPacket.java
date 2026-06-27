@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.nio.ByteBuffer;
 
-public class EmoteIconPacket extends AbstractNetworkPacket{
+public class EmoteIconPacket extends AbstractNetworkPacket {
     @Override
     public byte getID() {
         return PacketConfig.ICON_PACKET;

@@ -196,6 +196,12 @@ public class EmoteHolder implements Supplier<UUID> {
         return newEmote;
     }
 
+    public static void removeEmotesFromList(List<UUID> removeEmoteIds, @Nullable INetworkInstance fromInstance) {
+        list.removeIf(emoteHolder ->
+                emoteHolder.fromInstance == fromInstance && removeEmoteIds.contains(emoteHolder.get())
+        );
+    }
+
     /**
      * Check if the emote can be played by the main player
      * @param emote emote to play

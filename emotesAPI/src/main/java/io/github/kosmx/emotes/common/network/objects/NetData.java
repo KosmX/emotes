@@ -7,9 +7,8 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.bytes.ByteSet;
 import org.jetbrains.annotations.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+
+import java.util.*;
 
 /*
  * It won't be public until a success read.....
@@ -25,6 +24,7 @@ public final class NetData {
     public PacketTask purpose = PacketTask.UNKNOWN;
     @Nullable
     public UUID stopEmoteID = null;
+    public final List<UUID> removeEmoteIds = new ArrayList<>(0);
     @Nullable
     public Animation emoteData = null;
     public float tick = 0;

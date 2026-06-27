@@ -71,13 +71,23 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Ab
     }
 
     @Override
-    protected void sendForEveryoneElse(NetData data, AbstractServerNetwork player) {
+    protected void sendForTrackedBy(NetData data, AbstractServerNetwork player) {
         for (ServerPlayer target : NetworkPlatformTools.INSTANCE.getTrackedBy(player.getAvatar())) {
             AbstractServerNetwork targetInstance = getPlayerNetworkInstance(target);
             if (targetInstance == player) continue;
 
             if (NetworkPlatformTools.INSTANCE.canSendPlay(target, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
-                sendForPlayer(data, player, targetInstance);
+                sendForPlayer(data, targetInstance);
+            }
+        }
+    }
+
+    @Override
+    protected void sendForEveryone(NetData data) {
+        for (ServerPlayer player : NetworkPlatformTools.INSTANCE.getServer().getPlayerList().getPlayers()) {
+            AbstractServerNetwork targetInstance = getPlayerNetworkInstance(player);
+            if (NetworkPlatformTools.INSTANCE.canSendPlay(player, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
+                sendForPlayer(data, targetInstance);
             }
         }
     }

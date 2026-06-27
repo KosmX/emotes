@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
+import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -110,8 +111,10 @@ public final class ServerCommands {
                 .then(literal("reload")
                         .requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.reload", PermissionLevel.ADMINS) && isDedicated)
                         .executes(
-                        context -> {
-                            UniversalEmoteSerializer.loadEmotes(); //Reload server-side emotes
+                        _ -> {
+                            Set<UUID> removedIds = UniversalEmoteSerializer.loadEmotes(); // Reload server-side emotes
+                            if (removedIds.isEmpty()) return 0;
+                            AbstractServerEmotePlay.getInstance().updateClientEmotes(removedIds);
                             return 0;
                         }
                 ))
