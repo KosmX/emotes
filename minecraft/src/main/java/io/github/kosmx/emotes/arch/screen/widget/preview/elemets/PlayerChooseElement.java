@@ -26,6 +26,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.joml.Vector2f;
+import org.jspecify.annotations.NonNull;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -49,7 +50,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractRenderState(graphics, this.isAnimFinishing ? mouseX : 0, this.isAnimFinishing ? mouseY : 0, a);
     }
 
@@ -192,12 +193,12 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     }
 
     @Override
-    protected boolean isValidClickButton(MouseButtonInfo button) {
+    protected boolean isValidClickButton(@NonNull MouseButtonInfo button) {
         return this.parent.controller.isValidClickButton(button);
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean bl) {
+    public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean bl) {
         if (super.mouseClicked(event, bl)) {
             return this.parent.controller.onClick(this, event, bl);
         }
@@ -205,7 +206,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     }
 
     @Override
-    public void playDownSound(SoundManager handler) {
+    public void playDownSound(@NonNull SoundManager handler) {
         if (!this.parent.controller.doHoverPart(this)) return;
         playButtonClickSound(handler);
     }

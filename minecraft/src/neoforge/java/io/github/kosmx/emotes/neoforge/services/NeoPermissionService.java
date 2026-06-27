@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.neoforge.services;
 
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.mc.ServerCommands;
+import io.github.kosmx.emotes.mc.PermissionKeys;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.Identifier;
@@ -45,7 +45,7 @@ public class NeoPermissionService implements IPermissionService {
 
     @SubscribeEvent
     public static void onRegisterPermissionNodes(PermissionGatherEvent.Nodes event) {
-        for (Identifier permission : ServerCommands.PERMISSIONS) {
+        for (Identifier permission : PermissionKeys.PERMISSIONS) {
             PermissionNode<Boolean> node = new PermissionNode<>(permission, PermissionTypes.BOOLEAN,
                     (_, _, _) -> false
             );
