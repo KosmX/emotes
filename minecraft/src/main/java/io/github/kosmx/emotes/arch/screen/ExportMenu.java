@@ -52,9 +52,9 @@ public class ExportMenu extends Screen {
                     return;
                 }
 
-                this.minecraft.setScreen(new ConfirmScreen(choice -> {
+                this.minecraft.gui.setScreen(new ConfirmScreen(choice -> {
                     if (choice) exportEmotesInFormat(serializer);
-                    this.minecraft.setScreen(this);
+                    this.minecraft.gui.setScreen(this);
                 }, DATA_LOSS_MSG, DATA_LOSS_DESCR) {
                     @Override
                     protected void addButtons(LinearLayout layout) {
@@ -116,6 +116,6 @@ public class ExportMenu extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
     }
 }

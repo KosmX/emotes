@@ -73,7 +73,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        linearLayout.addChild(Button.builder(FullMenuScreen.TITLE, button -> this.minecraft.setScreen(new FullMenuScreen(this)))
+        linearLayout.addChild(Button.builder(FullMenuScreen.TITLE, button -> this.minecraft.gui.setScreen(new FullMenuScreen(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
@@ -165,7 +165,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parent);
+        this.minecraft.gui.setScreen(this.parent);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     public boolean onClick(IChooseElement element, InputWithModifiers event, boolean unused) {
         if(element.getEmote() != null){
             boolean bl = element.getEmote().playEmote();
-            if (bl) Minecraft.getInstance().setScreen(null);
+            if (bl) Minecraft.getInstance().gui.setScreen(null);
             return bl;
         }
         return false;

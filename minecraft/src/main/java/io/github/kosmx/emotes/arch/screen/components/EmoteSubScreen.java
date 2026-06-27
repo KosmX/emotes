@@ -200,7 +200,7 @@ public abstract class EmoteSubScreen extends Screen {
             PlatformTools.addToast(EmoteListener.RELOADING_WAIT);
             return;
         }
-        this.minecraft.setScreen(this.lastScreen);
+        this.minecraft.gui.setScreen(this.lastScreen);
     }
 
     @Override

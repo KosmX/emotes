@@ -21,15 +21,7 @@ Official project (only download the mod from here):
 **Don't download it from any other source!**
 
 ### Minecraft versions table
-| Minecraft | Emotecraft |
-|-----------|------------|
-| 1.21.1    | 2.4.x      |
-| 1.21.4    | 2.5.x      |
-| 1.21.5    | 2.6.x      |
-| 1.21.7-8  | 3.0.x      |
-| 1.21.9-10 | 3.1.x      |
-| 1.21.11   | 3.2.x      |
-| 26.1      | 3.3.x      |
+See [SECURITY.md](SECURITY.md)
 
 ## Development
 

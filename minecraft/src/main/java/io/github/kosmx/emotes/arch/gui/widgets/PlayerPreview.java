@@ -21,20 +21,21 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class PlayerPreview extends AbstractWidget implements LayoutElement {
     private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_OUT_QUART.buildTransformer(null);
 
-    protected final boolean renderBackround;
+    protected final boolean renderBackground;
     protected ClientMannequin mannequin;
 
     protected float animTime = 1.0F;
 
-    public PlayerPreview(GameProfile profile, int x, int y, int width, int height, boolean renderBackround) {
+    public PlayerPreview(GameProfile profile, int x, int y, int width, int height, boolean renderBackground) {
         super(x, y, width, height, CommonComponents.EMPTY);
 
         this.mannequin = new UnsafeMannequin(null, profile);
-        this.renderBackround = renderBackround;
+        this.renderBackground = renderBackground;
         setAlpha(0.0F);
     }
 
@@ -66,7 +67,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         graphics.pose().pushMatrix();
 
-        if (this.renderBackround) {
+        if (this.renderBackground) {
             float alpha = Mth.lerp(this.alpha, 0.0F, 0.5F);
             graphics.fill(getX() + 1, getY() + 1, getRight() - 1, getBottom() - 1, ARGB.colorFromFloat(
                     alpha, 0.0F, 0.0F, 0.0F
@@ -77,7 +78,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
         graphics.enableScissor(getX(), getY(), getRight(), getBottom());
 
         try {
-            int scale = getHeight() / (this.renderBackround ? 3 : 2);
+            int scale = getHeight() / (this.renderBackground ? 3 : 2);
             InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, getX(), getY(), getRight(), getBottom(), Mth.lerpInt(this.alpha, 0, scale), 0.0625F, mouseX, mouseY, this.mannequin);
         } catch (Throwable th) {
             CommonData.LOGGER.warn("Failed to render entity preview!", th);
@@ -96,7 +97,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {
         defaultButtonNarrationText(narrationElementOutput);
     }
 
@@ -120,7 +121,7 @@ public class PlayerPreview extends AbstractWidget implements LayoutElement {
     }
 
     @Override
-    public void playDownSound(SoundManager handler) {
+    public void playDownSound(@NonNull SoundManager handler) {
         // no-op
     }
 }

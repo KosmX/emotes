@@ -4,6 +4,7 @@ import com.google.gson.internal.UnsafeAllocator;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.extract.LevelExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.IdMapper;
@@ -45,8 +46,8 @@ public class UnsafeClientLevel extends ClientLevel implements LevelEntityGetter<
      * To avoid calling the constructor, we use unsafe
      */
     @SuppressWarnings("unused")
-    private UnsafeClientLevel(ClientPacketListener connection, ClientLevelData levelData, ResourceKey<Level> dimension, Holder<DimensionType> dimensionTypeRegistration, int viewDistance, int serverSimulationDistance, LevelRenderer levelRenderer, boolean isDebug, long biomeZoomSeed, int seaLevel) {
-        super(connection, levelData, dimension, dimensionTypeRegistration, viewDistance, serverSimulationDistance, levelRenderer, isDebug, biomeZoomSeed, seaLevel);
+    public UnsafeClientLevel(ClientPacketListener connection, ClientLevelData levelData, ResourceKey<Level> dimension, Holder<DimensionType> dimensionType, int serverChunkRadius, int serverSimulationDistance, LevelExtractor levelExtractor, boolean isDebug, long biomeZoomSeed, int seaLevel) {
+        super(connection, levelData, dimension, dimensionType, serverChunkRadius, serverSimulationDistance, levelExtractor, isDebug, biomeZoomSeed, seaLevel);
     }
 
     @Override

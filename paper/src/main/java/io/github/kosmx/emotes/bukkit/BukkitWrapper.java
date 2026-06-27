@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.bukkit.fuckery.EmotePayloadHandler;
 import io.github.kosmx.emotes.bukkit.fuckery.StreamCodecUtils;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.mc.PermissionKeys;
 import io.github.kosmx.emotes.mc.ServerCommands;
 import io.github.kosmx.emotes.server.config.CommonConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
@@ -16,6 +17,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.key.Key;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
+import net.minecraft.resources.Identifier;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
@@ -42,8 +44,8 @@ public final class BukkitWrapper extends JavaPlugin implements ChannelInitialize
         Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(CommonConfig::new, CommonConfig.staticConfigVersion), CommonConfig.class); //it does register itself
         UniversalEmoteSerializer.loadEmotes();
 
-        for (String permission : ServerCommands.PERMISSIONS) {
-            Bukkit.getPluginManager().addPermission(new Permission(permission));
+        for (Identifier permission : PermissionKeys.PERMISSIONS) {
+            Bukkit.getPluginManager().addPermission(new Permission(permission.getPath()));
         }
 
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event ->

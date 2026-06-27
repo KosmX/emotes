@@ -1,9 +1,10 @@
 package io.github.kosmx.emotes.neoforge.services;
 
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.mc.ServerCommands;
+import io.github.kosmx.emotes.mc.PermissionKeys;
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -21,10 +22,10 @@ import java.util.Optional;
 
 @EventBusSubscriber(modid = CommonData.MOD_ID, value = Dist.DEDICATED_SERVER)
 public class NeoPermissionService implements IPermissionService {
-    private static final Map<String, PermissionNode<Boolean>> NODES = new HashMap<>();
+    private static final Map<Identifier, PermissionNode<Boolean>> NODES = new HashMap<>();
 
     @Override
-    public Optional<Boolean> getPermissionValue(@NotNull CommandSourceStack source, @NotNull String permission) {
+    public Optional<Boolean> getPermissionValue(@NotNull CommandSourceStack source, @NotNull Identifier permission) {
         if (!NeoPermissionService.NODES.containsKey(permission) || !source.isPlayer()) {
             return Optional.empty();
         }
@@ -44,9 +45,9 @@ public class NeoPermissionService implements IPermissionService {
 
     @SubscribeEvent
     public static void onRegisterPermissionNodes(PermissionGatherEvent.Nodes event) {
-        for (String permission : ServerCommands.PERMISSIONS) {
-            PermissionNode<Boolean> node = new PermissionNode<>(CommonData.MOD_ID, permission, PermissionTypes.BOOLEAN,
-                    (arg, uUID, permissionDynamicContexts) -> false
+        for (Identifier permission : PermissionKeys.PERMISSIONS) {
+            PermissionNode<Boolean> node = new PermissionNode<>(permission, PermissionTypes.BOOLEAN,
+                    (_, _, _) -> false
             );
 
             event.addNodes(node);

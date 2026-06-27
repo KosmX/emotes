@@ -104,7 +104,7 @@ dependencies {
     }
 
     // Third-party
-    compileOnly("com.blamejared.searchables:Searchables-common-26.1.2:${project["searchables_version"]}") {
+    compileOnly("com.blamejared.searchables:Searchables-common-26.2:${project["searchables_version"]}") {
         isTransitive = false
     }
 
@@ -113,21 +113,18 @@ dependencies {
     "fabricImplementation"(fabricApi.fabricModule("fabric-key-mapping-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-lifecycle-events-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-rendering-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
+    "fabricImplementation"(fabricApi.fabricModule("fabric-permission-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
 
     "fabricRuntimeOnly"(fabricApi.fabricModule("fabric-screen-api-v1", project["fabric_api_version"]))
     "fabricCompileOnly"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
-    "fabricImplementation"("me.lucko:fabric-permissions-api:${project["fabric_permissions_api"]}") {
-        // fabricPomCompile(this)
-    }
-
     "fabricImplementation"("com.zigythebird.playeranim:PlayerAnimationLibFabric:${project["playeranimlib_version"]}") {
         fabricPomCompile(this)
     }
 
-    "fabricImplementation"("com.blamejared.searchables:Searchables-fabric-26.1.2:${project["searchables_version"]}") {
+    "fabricImplementation"("com.blamejared.searchables:Searchables-fabric-26.2:${project["searchables_version"]}") {
         isTransitive = false
     }
 

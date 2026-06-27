@@ -37,7 +37,7 @@ public class EmotecraftClientMod {
 
         if (OPEN_MENU_KEY.consumeClick()) {
             if(PlatformTools.getConfig().alwaysOpenEmoteScreen.get() || minecraft.player == minecraft.getCameraEntity()) {
-                minecraft.setScreen(new FastMenuScreen(null));
+                minecraft.gui.setScreen(new FastMenuScreen(null));
             }
         }
 
