@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
@@ -324,12 +323,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
             Identifier texture = this.emote.getIconIdentifier();
             if (texture != null) {
-                // I have no idea what this is or how it works :P -Zigy
-                for (int i = 0; i < 8; i++)
-                    GlStateManager._enableBlend(i);
                 graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
-                for (int i = 0; i < 8; i++)
-                    GlStateManager._disableBlend(i);
             }
         }
 
