@@ -34,7 +34,7 @@ side = "BOTH"
 [[dependencies.emotecraft]]
 modId="player_animation_library"
 type="required"
-versionRange="[1.2.1+mc.26.1,)"
+versionRange="[1.2.4+mc.26.1,)"
 ordering="NONE"
 side="BOTH"
 

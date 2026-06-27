@@ -20,13 +20,14 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNetworkInstance> implements PluginMessageListener, Listener {
     private static final BukkitWrapper PLUGIN = BukkitWrapper.getPlugin(BukkitWrapper.class);
 
-    private final HashMap<UUID, BukkitNetworkInstance> players = new HashMap<>();
+    private final Map<UUID, BukkitNetworkInstance> players = new ConcurrentHashMap<>();
 
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message) {
@@ -67,7 +68,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     }
 
     @Override
-    protected void sendForEveryoneElse(NetData data, BukkitNetworkInstance player) {
+    protected void sendForTrackedBy(NetData data, BukkitNetworkInstance player) {
         for (Player player1 : player.avatar.getBukkitEntity().getTrackedBy()) {
             BukkitNetworkInstance instance = getPlayerFromUUID(player1.getUniqueId());
             if (instance == null || instance == player) continue;
@@ -75,9 +76,14 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
             // Bukkit server will filter if I really can send, or not.
             // If else to not spam dumb forge clients.
             if (player1.getListeningPluginChannels().contains(BukkitWrapper.EMOTE_PACKET)) {
-                sendForPlayer(data, player, instance);
+                sendForPlayer(data, instance);
             }
         }
+    }
+
+    @Override
+    protected void sendForEveryone(NetData data) {
+        for (BukkitNetworkInstance instance : this.players.values()) sendForPlayer(data, instance);
     }
 
     @EventHandler

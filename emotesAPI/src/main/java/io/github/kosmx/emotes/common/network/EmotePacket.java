@@ -25,7 +25,7 @@ public final class EmotePacket {
         for (AbstractNetworkPacket packet : new AbstractNetworkPacket[] {
                 new NewAnimPacket(), new EmoteDataPacket(), new PlayerDataPacket(),
                 new DiscoveryPacket(), new StopPacket(), new SongPacket(),
-                new EmoteHeaderPacket(), new EmoteIconPacket()
+                new EmoteHeaderPacket(), new EmoteIconPacket(), new RemoveEmotesPacket()
         }) {
             map.put(packet.getID(), packet.getVer());
         }
@@ -38,7 +38,7 @@ public final class EmotePacket {
             new PlayerDataPacket(),
             new StopPacket(),
             new EmoteHeaderPacket(),
-            new SongPacket(), new EmoteIconPacket()
+            new SongPacket(), new EmoteIconPacket(), new RemoveEmotesPacket()
     );
 
     public final NetData data;
@@ -204,6 +204,13 @@ public final class EmotePacket {
             data.purpose = PacketTask.FILE;
             data.sizeLimit = Integer.MAX_VALUE;
             data.emoteData = emoteData;
+            return this;
+        }
+
+        public Builder configureToRemoveEmote(Set<UUID> emoteIds) {
+            if (data.purpose != PacketTask.UNKNOWN) throw new IllegalArgumentException("already configured?!");
+            data.purpose = PacketTask.REMOVE;
+            data.removeEmoteIds.addAll(emoteIds);
             return this;
         }
 

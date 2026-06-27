@@ -8,7 +8,8 @@ public enum PacketTask {
     STREAM(1, true, false, true),
     CONFIG(8, false, false, false),
     STOP(10, true, false, true),
-    FILE(0x10, true, true, false);
+    FILE(0x10, true, true, false),
+    REMOVE(2, false, false, false);
 
     private static final Byte2ObjectMap<PacketTask> BY_ID = new Byte2ObjectOpenHashMap<>();
     static {

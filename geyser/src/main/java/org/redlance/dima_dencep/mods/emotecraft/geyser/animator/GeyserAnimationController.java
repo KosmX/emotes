@@ -37,7 +37,7 @@ public class GeyserAnimationController extends HumanoidAnimationController {
     protected final UUID avatarId;
 
     protected GeyserAnimationController(UUID avatarId) {
-        super((controller, state, animationSetter) -> PlayState.STOP, MolangLoader::createNewEngine);
+        super((_, _, _) -> PlayState.STOP, MolangLoader::createNewEngine);
         this.avatarId = avatarId;
     }
 
@@ -124,6 +124,7 @@ public class GeyserAnimationController extends HumanoidAnimationController {
         }
     }
 
+    @SuppressWarnings("removal")
     protected void updateBone(AvatarEntity avatarEntity, String partKey, PlayerAnimBone bone) {
         if (!this.bones.containsKey(partKey)) return;
         updateAxis(avatarEntity, partKey, TransformType.POSITION, bone.position);
@@ -134,9 +135,9 @@ public class GeyserAnimationController extends HumanoidAnimationController {
         ));
         updateAxis(avatarEntity, partKey, TransformType.SCALE, bone.scale);
 
-        /*if (BendingGeometry.BENDABLE_BONES.contains(partKey)) { todo
+        if (BendingGeometry.BENDABLE_BONES.contains(partKey)) {
             updateBend(avatarEntity, partKey + BendingGeometry.BEND_SUFFIX, bone.bend);
-        }*/
+        }
     }
 
     protected void updateAxis(AvatarEntity avatarEntity, String partKey, TransformType type, Vector3f vec) {

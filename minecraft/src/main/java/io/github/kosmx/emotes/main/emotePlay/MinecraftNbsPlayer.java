@@ -28,7 +28,7 @@ public class MinecraftNbsPlayer extends NbsPlayer {
     protected boolean shouldTick() {
         if (this.avatar instanceof UnsafeMannequin) return super.shouldTick();
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level != this.avatar.level()) {
+        if (this.avatar.isRemoved() || (mc.player != null && this.avatar.isInvisibleTo(mc.player))) {
             stop();
             return false;
         }

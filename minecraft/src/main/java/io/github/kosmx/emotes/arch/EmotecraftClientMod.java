@@ -48,7 +48,7 @@ public class EmotecraftClientMod {
 
     public static CompletableFuture<Void> loadEmotes() {
         return CompletableFuture.supplyAsync(UniversalEmoteSerializer::loadEmotes, Util.ioPool())
-                .thenAccept(emotes -> {
+                .thenAccept(_ -> {
                     EmoteHolder.clearEmotes();
                     EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes(), null);
                 })
