@@ -10,8 +10,7 @@ import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import java.io.IOException;
 import java.util.Map;
 
-@Deprecated
-public class LegacyNBSPacket {
+public final class LegacyNBSPacket {
     public static void write(NbsSong song, ByteBuf buf) {
         buf.writeInt(1); //reserved for later use/changes
         buf.writeByte((byte) 0);
@@ -107,7 +106,7 @@ public class LegacyNBSPacket {
         }
         song.setLength((short) length);
 
-        // // Fill generalized song structure with data
+        // Fill generalized song structure with data
         NbsConverter.fillGeneralData(song);
     }
 }
