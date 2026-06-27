@@ -1,13 +1,12 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.serializer.type.IWriter;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.model.song.Song;
+import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,12 +29,12 @@ public class EmoteWriter {
         if (format.onlyEmoteFile()) {
             String fileName = EmoteSerializer.getBaseName(file.getFileName().toString());
 
-            if (animation.data().getBinary("iconData") instanceof ByteBuffer iconData) {
+            if (animation.data().getImage("iconData") instanceof DecodedImage iconData) {
                 Path iconPath = exportDir.resolve(fileName + ".png");
                 if (Files.exists(iconPath)) throw new FileAlreadyExistsException(iconPath.toString());
 
                 try (OutputStream iconStream = Files.newOutputStream(iconPath)) {
-                    iconStream.write(MathHelper.safeGetBytesFromBuffer(iconData));
+                    iconStream.write(iconData.toPng());
                     iconStream.flush();
                 }
             }

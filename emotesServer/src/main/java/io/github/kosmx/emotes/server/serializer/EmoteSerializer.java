@@ -3,16 +3,15 @@ package io.github.kosmx.emotes.server.serializer;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import net.raphimc.noteblocklib.NoteBlockLib;
 import net.raphimc.noteblocklib.format.SongFormat;
 import net.raphimc.noteblocklib.model.song.Song;
+import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,10 +64,10 @@ public class EmoteSerializer {
             Path icon = file.getParent().resolve(baseFileName + ".png");
             if (Files.isRegularFile(icon)) {
                 try (InputStream iconStream = Files.newInputStream(icon)) {
-                    final ByteBuffer byteBuffer = MathHelper.readFromIStream(iconStream);
+                    final DecodedImage image = DecodedImage.fromPng(iconStream);
 
                     for (Animation emote : emotes.values()) { // Avoid lambda
-                        emote.data().put("iconData", byteBuffer);
+                        emote.data().put("iconData", image);
                     }
                 } catch (Throwable th) {
                     CommonData.LOGGER.warn("Error while reading icon: {}", icon.getFileName(), th);

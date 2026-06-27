@@ -10,7 +10,6 @@ import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
@@ -28,10 +27,11 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -117,27 +117,29 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public @Nullable Identifier getIconIdentifier() {
-        if (this.emote.data().getBinary("iconData") instanceof ByteBuffer buff && this.iconIdentifier == null) {
-            registerIcon(buff);
-        }
-        return this.iconIdentifier;
-    }
-
-    private void registerIcon(ByteBuffer buffer) {
-        RenderSystem.assertOnRenderThread();
-
-        try (InputStream stream = new ByteArrayInputStream(MathHelper.safeGetBytesFromBuffer((buffer)))) {
-            this.iconIdentifier = McUtils.newIdentifier("icon" + hashCode());
-
-            Minecraft.getInstance().getTextureManager().register(this.iconIdentifier,
-                    new DynamicTexture(this.iconIdentifier::toString, NativeImage.read(stream))
-            );
-        } catch (Throwable th) {
+        try {
+            if (this.emote.data().getImage("iconData") instanceof DecodedImage image && this.iconIdentifier == null) {
+                registerIcon(image.toPng());
+            }
+         }catch (Throwable th) {
             CommonData.LOGGER.warn("Can't open emote {} icon!", emote, th);
             /*if (!PlatformTools.getConfig().neverRemoveBadIcon.get()) {
                 this.iconIdentifier = null;
                 this.emote.data().remove("iconData");
             }*/
+        }
+        return this.iconIdentifier;
+    }
+
+    private void registerIcon(byte[] buf) throws IOException {
+        RenderSystem.assertOnRenderThread();
+
+        try (InputStream stream = new ByteArrayInputStream(buf)) {
+            this.iconIdentifier = McUtils.newIdentifier("icon" + hashCode());
+
+            Minecraft.getInstance().getTextureManager().register(this.iconIdentifier,
+                    new DynamicTexture(this.iconIdentifier::toString, NativeImage.read(stream))
+            );
         }
     }
 
