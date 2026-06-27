@@ -16,6 +16,7 @@ sourceSets {
     create("neoforge")
 }
 
+
 unimined.minecraft(sourceSets.main.get()) {
     version(minecraft_version)
 
@@ -104,7 +105,7 @@ dependencies {
     }
 
     // Third-party
-    compileOnly("com.blamejared.searchables:Searchables-common-26.1.2:${project["searchables_version"]}") {
+    compileOnly("com.blamejared.searchables:Searchables-common-26.2:${project["searchables_version"]}") {
         isTransitive = false
     }
 
@@ -127,7 +128,7 @@ dependencies {
         fabricPomCompile(this)
     }
 
-    "fabricImplementation"("com.blamejared.searchables:Searchables-fabric-26.1.2:${project["searchables_version"]}") {
+    "fabricImplementation"("com.blamejared.searchables:Searchables-fabric-26.2:${project["searchables_version"]}") {
         isTransitive = false
     }
 

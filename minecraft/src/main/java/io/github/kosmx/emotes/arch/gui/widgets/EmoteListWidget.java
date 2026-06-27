@@ -324,9 +324,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
             Identifier texture = this.emote.getIconIdentifier();
             if (texture != null) {
-                GlStateManager._enableBlend();
+                // I have no idea what this is or how it works :P -Zigy
+                for (int i = 0; i < 8; i++)
+                    GlStateManager._enableBlend(i);
                 graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
-                GlStateManager._disableBlend();
+                for (int i = 0; i < 8; i++)
+                    GlStateManager._disableBlend(i);
             }
         }
 

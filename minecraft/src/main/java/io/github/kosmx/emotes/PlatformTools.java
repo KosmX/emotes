@@ -43,8 +43,7 @@ public final class PlatformTools {
     }
 
     public static void addToast(Component title, Component message) {
-        SystemToast toast = SystemToast.multiline(Minecraft.getInstance(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
-        Minecraft.getInstance().getToastManager().addToast(toast);
+        SystemToast.addOrUpdate(Minecraft.getInstance().gui.toastManager(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
     }
 
     public static void addToast(Component message) {

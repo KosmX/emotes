@@ -97,7 +97,7 @@ public class EmotePlayer extends PlayerAnimationController {
         if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning() && !this.muteNbs) {
             if (PlatformTools.getConfig().displayNowPlaying.get() && !(this.avatar instanceof UnsafeMannequin)) {
                 String nowPlaying = this.song.getNowPlaying();
-                if (nowPlaying != null) Minecraft.getInstance().gui.setNowPlaying(Component.literal(nowPlaying));
+                if (nowPlaying != null) Minecraft.getInstance().gui.hud.setNowPlaying(Component.literal(nowPlaying));
             }
             this.song.setPaused(getAnimationState() == State.PAUSED);
             this.song.start();

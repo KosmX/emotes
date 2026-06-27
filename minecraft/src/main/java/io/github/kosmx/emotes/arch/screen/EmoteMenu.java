@@ -120,7 +120,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, button -> this.minecraft.setScreen(new ConfigScreen(this)))
+        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, button -> this.minecraft.gui.setScreen(new ConfigScreen(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
@@ -132,12 +132,12 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
             PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocusedEmote().getUuid());
             onPressed(this.list.getSelected());
         } else {
-            this.minecraft.setScreen(new ConfirmScreen(aBoolean -> {
+            this.minecraft.gui.setScreen(new ConfirmScreen(aBoolean -> {
                 if (aBoolean) {
                     PlatformTools.getConfig().emoteKeyMap.clear(); //reset :D
                     onPressed(this.list.getSelected());
                 }
-                this.minecraft.setScreen(EmoteMenu.this);
+                this.minecraft.gui.setScreen(EmoteMenu.this);
                 }, RESET_ALL_TITLE, RESET_ALL_MSG.copy().append(" (" + PlatformTools.getConfig().emoteKeyMap.size() + ")")
             ));
         }
@@ -205,11 +205,11 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
         if (this.list != null && this.list.getFocused() != null) {
             bl = true;
             if (!applyKey(false, this.list.getFocusedEmote(), key)) {
-                this.minecraft.setScreen(new ConfirmScreen(choice -> {
+                this.minecraft.gui.setScreen(new ConfirmScreen(choice -> {
                     if (choice) {
                         applyKey(true, this.list.getFocusedEmote(), key);
                     }
-                    this.minecraft.setScreen(this);
+                    this.minecraft.gui.setScreen(this);
                 }, SURE, SURE2));
             }
         }
