@@ -33,14 +33,6 @@ import static net.minecraft.commands.Commands.*;
  * status?
  */
 public final class ServerCommands {
-    public static final List<String> PERMISSIONS = List.of(
-            "emotes.play.player",
-            "emotes.stop.player",
-            "emotes.stop.forced",
-            "emotes.play.showhidden",
-            "emotes.reload"
-    );
-
     @SuppressWarnings("unused")
     public static <T> void register(CommandDispatcher<T> dispatcher, CommandBuildContext registryAccess, Commands.CommandSelection environment) {
         register(dispatcher, environment == CommandSelection.DEDICATED);
@@ -55,7 +47,7 @@ public final class ServerCommands {
                                 .executes(context -> {
                                     UUID player = context.getSource().getPlayerOrException().getUUID();
 
-                                    boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", PermissionLevel.GAMEMASTERS);
+                                    boolean admin = IPermissionService.INSTANCE.check(context.getSource(), PermissionKeys.STOP_FORCED, PermissionLevel.GAMEMASTERS);
                                     if (!admin && ServerEmoteAPI.isForcedEmote(player)) {
                                         throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
                                     }
@@ -65,7 +57,7 @@ public final class ServerCommands {
                                     return 0;
                                 })
                                 .then(argument("avatar", EntityArgument.entities())
-                                        .requires(IPermissionService.INSTANCE.require("emotes.play.player", PermissionLevel.MODERATORS))
+                                        .requires(IPermissionService.INSTANCE.require(PermissionKeys.PLAY_PLAYER, PermissionLevel.MODERATORS))
                                         .executes(context -> {
                                             ServerEmoteAPI.playEmote(
                                                     ServerCommands.getAvatar(context, "avatar").getUUID(),
@@ -88,7 +80,7 @@ public final class ServerCommands {
                 )
                 .then(literal("stop")
                         .executes(context -> {
-                            boolean admin = IPermissionService.INSTANCE.check(context.getSource(), "emotes.stop.forced", PermissionLevel.GAMEMASTERS);
+                            boolean admin = IPermissionService.INSTANCE.check(context.getSource(), PermissionKeys.STOP_FORCED, PermissionLevel.GAMEMASTERS);
                             var player = context.getSource().getPlayerOrException().getUUID();
                             if (admin || !ServerEmoteAPI.isForcedEmote(player)) {
                                 ServerEmoteAPI.playEmote(player, null, false);
@@ -97,7 +89,7 @@ public final class ServerCommands {
                             throw new SimpleCommandExceptionType(Component.literal("Can't stop forced emote without admin rights")).create();
                         })
                         .then(argument("avatar", EntityArgument.entity())
-                                .requires(IPermissionService.INSTANCE.require("emotes.stop.player", PermissionLevel.MODERATORS))
+                                .requires(IPermissionService.INSTANCE.require(PermissionKeys.STOP_PLAYER, PermissionLevel.MODERATORS))
                                 .executes(context -> {
                                     ServerEmoteAPI.playEmote(
                                             ServerCommands.getAvatar(context, "avatar").getUUID(),
@@ -109,7 +101,7 @@ public final class ServerCommands {
                         )
                 )
                 .then(literal("reload")
-                        .requires(ctx -> IPermissionService.INSTANCE.check(ctx, "emotes.reload", PermissionLevel.ADMINS) && isDedicated)
+                        .requires(ctx -> IPermissionService.INSTANCE.check(ctx, PermissionKeys.RELOAD, PermissionLevel.ADMINS) && isDedicated)
                         .executes(
                         _ -> {
                             Set<UUID> removedIds = UniversalEmoteSerializer.loadEmotes(); // Reload server-side emotes
@@ -123,7 +115,7 @@ public final class ServerCommands {
     }
 
     private static Map<UUID, Animation> getEmotes(CommandContext<CommandSourceStack> context) {
-        return IPermissionService.INSTANCE.check(context.getSource(), "emotes.play.showhidden", PermissionLevel.MODERATORS) ? UniversalEmoteSerializer.getLoadedEmotes() : UniversalEmoteSerializer.SERVER_EMOTES;
+        return IPermissionService.INSTANCE.check(context.getSource(), PermissionKeys.SHOW_HIDDEN, PermissionLevel.MODERATORS) ? UniversalEmoteSerializer.getLoadedEmotes() : UniversalEmoteSerializer.SERVER_EMOTES;
     }
 
     public static Avatar getAvatar(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {

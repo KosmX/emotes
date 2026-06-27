@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.mc.services;
 
 import io.github.kosmx.emotes.mc.services.impl.VanillaPermissionService;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionLevel;
 import org.jetbrains.annotations.NotNull;
@@ -15,14 +16,15 @@ import java.util.function.Predicate;
 public interface IPermissionService extends AdvancedService {
     IPermissionService INSTANCE = ServiceUtils.loadService(IPermissionService.class, VanillaPermissionService::new);
 
-    default Predicate<CommandSourceStack> require(@NotNull String permission, PermissionLevel defaultValue) {
+    default Predicate<CommandSourceStack> require(@NotNull Identifier permission, PermissionLevel defaultValue) {
         Objects.requireNonNull(permission, "permission");
         return player -> check(player, permission, defaultValue);
     }
 
-    default boolean check(@NotNull CommandSourceStack source, @NotNull String permission, PermissionLevel defaultValue) {
-        return getPermissionValue(source, permission).orElseGet(() -> source.permissions().hasPermission(new Permission.HasCommandLevel(defaultValue)));
+    default boolean check(@NotNull CommandSourceStack source, @NotNull Identifier permission, PermissionLevel defaultValue) {
+        return getPermissionValue(source, permission)
+                .orElseGet(() -> source.permissions().hasPermission(new Permission.HasCommandLevel(defaultValue)));
     }
 
-    Optional<Boolean> getPermissionValue(@NotNull CommandSourceStack source, @NotNull String permission);
+    Optional<Boolean> getPermissionValue(@NotNull CommandSourceStack source, @NotNull Identifier permission);
 }

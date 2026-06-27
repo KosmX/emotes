@@ -113,14 +113,11 @@ dependencies {
     "fabricImplementation"(fabricApi.fabricModule("fabric-key-mapping-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-lifecycle-events-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-rendering-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
+    "fabricImplementation"(fabricApi.fabricModule("fabric-permission-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
 
     "fabricRuntimeOnly"(fabricApi.fabricModule("fabric-screen-api-v1", project["fabric_api_version"]))
     "fabricCompileOnly"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
-    }
-
-    "fabricImplementation"("me.lucko:fabric-permissions-api:${project["fabric_permissions_api"]}") {
-        // fabricPomCompile(this)
     }
 
     "fabricImplementation"("com.zigythebird.playeranim:PlayerAnimationLibFabric:${project["playeranimlib_version"]}") {

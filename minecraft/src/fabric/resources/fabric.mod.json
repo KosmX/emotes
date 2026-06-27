@@ -45,6 +45,9 @@
     "player_animation_library": ">=1.2.4+mc.26.1",
     "fabricloader": ">=0.19.2"
   },
+  "recommends": {
+    "fabric-permission-api-v1": "*"
+  },
   "breaks": {
     "bendable_cuboids": "<2.0.1+mc.1.21.11",
     "grimac": "*"

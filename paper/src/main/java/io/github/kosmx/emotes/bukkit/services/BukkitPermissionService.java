@@ -2,15 +2,16 @@ package io.github.kosmx.emotes.bukkit.services;
 
 import io.github.kosmx.emotes.mc.services.IPermissionService;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public class BukkitPermissionService implements IPermissionService {
     @Override
-    public Optional<Boolean> getPermissionValue(@NotNull CommandSourceStack source, @NotNull String permission) {
+    public Optional<Boolean> getPermissionValue(@NotNull CommandSourceStack source, @NotNull Identifier permission) {
         if (!source.isPlayer()) return Optional.empty();
-        return Optional.of(source.getBukkitSender().hasPermission(permission));
+        return Optional.of(source.getBukkitSender().hasPermission(permission.getPath()));
     }
 
     @Override
