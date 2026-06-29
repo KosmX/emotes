@@ -36,7 +36,11 @@ public class EmotePlayer extends PlayerAnimationController {
     protected void setAnimation(RawAnimation rawAnimation, float startAnimFrom) {
         State state = getAnimationState();
         super.setAnimation(rawAnimation, startAnimFrom);
-        this.animationState = state;
+        // Only restore the previous state (e.g. PAUSED) while the controller is still
+        // actually playing. If super.setAnimation stopped it (currentAnimation == null),
+        // keep STOPPED instead of resurrecting RUNNING with no animation, which would
+        // crash processCurrentAnimation with a NullPointerException.
+        if (getCurrentAnimationInstance() != null) this.animationState = state;
     }
 
     @Override
