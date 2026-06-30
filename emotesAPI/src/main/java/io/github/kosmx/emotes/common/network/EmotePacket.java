@@ -55,10 +55,18 @@ public final class EmotePacket {
 
         short count = byteBuf.readUnsignedByte();
         for (int i = 0; i < count; i++) {
+            if (byteBuf.readableBytes() < 6) {
+                throw new RuntimeException("Invalid sub-packet header");
+            }
+
             AbstractNetworkPacket packet = SUB_PACKETS.get(byteBuf.readByte());
             byte subVersion = byteBuf.readByte();
             int size = byteBuf.readInt();
             int currentPos = byteBuf.readerIndex();
+
+            if (size < 0 || size > byteBuf.readableBytes()) {
+                throw new RuntimeException("Invalid sub-packet size: " + size);
+            }
 
             if (packet != null) {
                 try {
