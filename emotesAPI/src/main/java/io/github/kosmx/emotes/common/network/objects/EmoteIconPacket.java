@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.common.network.objects;
 
-import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.netty.buffer.ByteBuf;
@@ -28,7 +27,7 @@ public class EmoteIconPacket extends AbstractNetworkPacket {
         int size = byteBuf.readInt();
         if (size <= 0) return;
 
-        if (size > byteBuf.readableBytes() || size > CommonData.MAX_PACKET_SIZE) {
+        if (size > byteBuf.readableBytes()) {
             throw new IOException("Invalid icon packet size: " + size);
         }
 
