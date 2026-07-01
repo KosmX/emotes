@@ -124,7 +124,7 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 break;
             case UNKNOWN:
             default:
-                CommonData.LOGGER.error("Packet execution is not possible unknown purpose");
+                CommonData.LOGGER.error("Packet execution is not possible: {} purpose!", data.purpose);
                 break;
         }
     }
