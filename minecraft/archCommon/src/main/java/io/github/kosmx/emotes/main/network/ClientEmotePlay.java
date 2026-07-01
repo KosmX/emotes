@@ -121,7 +121,9 @@ public class ClientEmotePlay extends ClientEmoteAPI {
                 break;
             case FILE:
                 EmoteHolder.addEmoteToList(data.emoteData, networkInstance);
+                break;
             case UNKNOWN:
+            default:
                 CommonData.LOGGER.error("Packet execution is not possible unknown purpose");
                 break;
         }
