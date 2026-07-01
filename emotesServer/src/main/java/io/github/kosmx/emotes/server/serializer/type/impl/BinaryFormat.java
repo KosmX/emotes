@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.server.serializer.type.impl;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.serializer.type.EmoteSerializerException;
@@ -22,7 +23,7 @@ public class BinaryFormat implements IReader, IWriter {
         try {
             buf.writeBytes(stream.readAllBytes());
 
-            NetData data = new EmotePacket(buf).data;
+            NetData data = new EmotePacket(buf, PacketBound.CLIENT).data;
             if (data.purpose != PacketTask.FILE || data.emoteData == null) {
                 throw new EmoteSerializerException("Binary emote is invalid", getExtension());
             }
@@ -38,7 +39,7 @@ public class BinaryFormat implements IReader, IWriter {
     public void write(Animation emote, OutputStream stream, String filename) throws EmoteSerializerException {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
-            new EmotePacket.Builder().strictSizeLimit(false).configureToSaveEmote(emote).build().write(buf);
+            new EmotePacket.Builder().strictSizeLimit(false).configureToSaveEmote(emote).build().write(buf, PacketBound.CLIENT);
             buf.readBytes(stream, buf.readableBytes());
         } catch (Throwable e){
             throw new EmoteSerializerException("Something went wrong", getExtension(), e);

@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.testing.common;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -26,12 +27,12 @@ public class NetworkPacketTest {
             builder.setVersion(EmotePacket.defaultVersions);
             builder.configureToStreamEmote(pair.left());
             ByteBuf buf = Unpooled.buffer();
-            builder.build().write(buf);
+            builder.build().write(buf, PacketBound.CLIENT);
 
             //The array has been sent, hope, it will arrive correctly.
             //Assume it has happened, create a new ByteBuffer and read it.
 
-            NetData data = new EmotePacket(buf).data; //That read expression is kinda funny
+            NetData data = new EmotePacket(buf, PacketBound.CLIENT).data; //That read expression is kinda funny
             Assertions.assertNotNull(data, "Data should be not null");
             Assertions.assertEquals(pair.left().boneAnimations(), data.emoteData.boneAnimations(), "The received data should contain the same emote");
             Assertions.assertEquals(pair.left().boneAnimations().hashCode(), data.emoteData.boneAnimations().hashCode(), "The received data should contain the same emote");
@@ -43,12 +44,12 @@ public class NetworkPacketTest {
             EmotePacket.Builder builder = new EmotePacket.Builder();
             builder.configureToSendStop(randID);
             ByteBuf buf = Unpooled.buffer();
-            builder.build().write(buf);
+            builder.build().write(buf, PacketBound.CLIENT);
 
             //The array has been sent, hope, it will arrive correctly.
             //Assume it has happened, create a new ByteBuffer and read it.
 
-            NetData data = new EmotePacket(buf).data;
+            NetData data = new EmotePacket(buf, PacketBound.CLIENT).data;
             Assertions.assertEquals(randID, data.stopEmoteID);
         }
 
@@ -59,12 +60,12 @@ public class NetworkPacketTest {
             builder.configureToSendStop(randID);
             builder.configureToStreamEmote(pair.left());
             ByteBuf buf = Unpooled.buffer();
-            builder.build().write(buf);
+            builder.build().write(buf, PacketBound.CLIENT);
 
             //The array has been sent, hope, it will arrive correctly.
             //Assume it has happened, create a new ByteBuffer and read it.
 
-            NetData data = new EmotePacket(buf).data;
+            NetData data = new EmotePacket(buf, PacketBound.CLIENT).data;
             shouldRemainFalse = true; //That line should not bu used
         }catch (Exception ignored){
 

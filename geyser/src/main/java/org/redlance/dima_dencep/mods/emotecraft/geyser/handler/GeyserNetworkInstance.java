@@ -6,6 +6,7 @@ import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
@@ -63,7 +64,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     public void sendMessage(EmotePacket packet, @Nullable UUID target) {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
-            packet.write(buf);
+            packet.write(buf, PacketBound.SERVER);
             ((GeyserSession) this.session).sendDownstreamPacket(new ServerboundCustomPayloadPacket(
                     EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, MathHelper.readBytes(buf)
             ));

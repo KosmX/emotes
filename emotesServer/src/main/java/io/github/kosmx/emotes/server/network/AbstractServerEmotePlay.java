@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.config.Serializer;
@@ -31,7 +32,7 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     protected abstract P getPlayerFromUUID(UUID player);
 
     public void receiveMessage(ByteBuf bytes, P instance) throws IOException {
-        receiveMessage(new EmotePacket(bytes), instance);
+        receiveMessage(new EmotePacket(bytes, PacketBound.SERVER), instance);
     }
 
     @SuppressWarnings("deprecation")

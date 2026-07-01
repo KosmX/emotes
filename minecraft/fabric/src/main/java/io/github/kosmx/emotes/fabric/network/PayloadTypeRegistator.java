@@ -9,15 +9,15 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class PayloadTypeRegistator {
     public static void init() {
-        register(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER);
-        register(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER);
+        register(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_S2C, EmotePacketPayload.EMOTE_CHANNEL_READER_C2S);
+        register(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER_S2C, EmotePacketPayload.STREAM_CHANNEL_READER_C2S);
     }
 
-    private static void register(CustomPacketPayload.Type<EmotePacketPayload> type, StreamCodec<FriendlyByteBuf, EmotePacketPayload> codec) {
-        PayloadTypeRegistry.configurationS2C().register(type, codec);
-        PayloadTypeRegistry.configurationC2S().register(type, codec);
+    private static void register(CustomPacketPayload.Type<EmotePacketPayload> type, StreamCodec<FriendlyByteBuf, EmotePacketPayload> s2c, StreamCodec<FriendlyByteBuf, EmotePacketPayload> c2s) {
+        PayloadTypeRegistry.configurationS2C().register(type, s2c);
+        PayloadTypeRegistry.configurationC2S().register(type, c2s);
 
-        PayloadTypeRegistry.playS2C().register(type, codec);
-        PayloadTypeRegistry.playC2S().register(type, codec);
+        PayloadTypeRegistry.playS2C().register(type, s2c);
+        PayloadTypeRegistry.playC2S().register(type, c2s);
     }
 }

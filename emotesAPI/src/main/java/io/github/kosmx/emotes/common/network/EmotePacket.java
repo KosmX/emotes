@@ -48,21 +48,31 @@ public final class EmotePacket {
         this.data = data;
     }
 
-    public EmotePacket(@NotNull ByteBuf byteBuf) {
+    public EmotePacket(@NotNull ByteBuf byteBuf, PacketBound target) {
+        if (byteBuf.readableBytes() < 6) throw new RuntimeException("Invalid packet header");
         if (byteBuf.readInt() > CommonData.networkingVersion) throw new RuntimeException("Can't read newer version");
         this.data = new NetData();
         this.data.purpose = PacketTask.getTaskFromID(byteBuf.readByte());
 
         short count = byteBuf.readUnsignedByte();
         for (int i = 0; i < count; i++) {
+            if (byteBuf.readableBytes() < 6) {
+                throw new RuntimeException("Invalid sub-packet header");
+            }
+
             AbstractNetworkPacket packet = SUB_PACKETS.get(byteBuf.readByte());
             byte subVersion = byteBuf.readByte();
             int size = byteBuf.readInt();
             int currentPos = byteBuf.readerIndex();
 
-            if (packet != null) {
+            if (size < 0 || size > byteBuf.readableBytes()) {
+                throw new RuntimeException("Invalid sub-packet size: " + size);
+            }
+
+            if (packet != null && packet.boundsTo().contains(target)) {
                 try {
-                    packet.read(byteBuf, this.data, subVersion);
+                    // Slice to the sub-packet boundary so a reader can't run past its own data
+                    packet.read(byteBuf.slice(currentPos, size), this.data, subVersion);
                 } catch (Throwable th) {
                     if (packet.isOptional()) {
                         CommonData.LOGGER.warn("Invalid {} sub-packet received!", packet, th);
@@ -70,13 +80,9 @@ public final class EmotePacket {
                         throw new RuntimeException("Invalid " + packet + " sub-packet received", th);
                     }
                 }
-
-                if (byteBuf.readerIndex() != size + currentPos) {
-                    byteBuf.readerIndex(currentPos + size);
-                }
-            } else {
-                byteBuf.readerIndex(currentPos + size);
             }
+
+            byteBuf.readerIndex(currentPos + size);
         }
 
         if (!data.prepareAndValidate()) throw new RuntimeException("no valid data");
@@ -85,7 +91,7 @@ public final class EmotePacket {
     /**
      * Write packet to a ByteBuf.
      */
-    public void write(ByteBuf buf) {
+    public void write(ByteBuf buf, PacketBound target) {
         if (data.purpose == PacketTask.UNKNOWN) throw new IllegalArgumentException("Can't send packet without any purpose...");
 
         int packetStart = buf.writerIndex();
@@ -99,7 +105,7 @@ public final class EmotePacket {
         int count = 0;
         try {
             for (AbstractNetworkPacket packet : SUB_PACKETS.values()) {
-                if (!packet.doWrite(this.data)) continue;
+                if (!packet.doWrite(this.data) || !packet.boundsTo().contains(target)) continue;
                 boolean optional = packet.isOptional();
 
                 int subPacketStart = buf.writerIndex();
