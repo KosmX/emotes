@@ -72,4 +72,32 @@ public class NetworkPacketTest {
         }
         Assertions.assertFalse(shouldRemainFalse, "Writer didn't thrown exception");
     }
+
+    @Test
+    @DisplayName("PacketBound directional filtering")
+    public void boundTest() {
+        Animation emote = RandomEmoteData.generateEmotes().left();
+
+        // A FILE emote carries the header sub-packet, which is bound TO_CLIENT only.
+        EmotePacket packet = new EmotePacket.Builder()
+                .strictSizeLimit(false).configureToSaveEmote(emote).build();
+
+        ByteBuf client = Unpooled.buffer();
+        packet.write(client, PacketBound.CLIENT);
+        ByteBuf server = Unpooled.buffer();
+        packet.write(server, PacketBound.SERVER);
+
+        // Write side: the TO_CLIENT header is emitted only towards the client.
+        Assertions.assertTrue(client.readableBytes() > server.readableBytes(),
+                "Client-bound packet must include the TO_CLIENT header sub-packet");
+
+        // Read side: both directions decode to a valid emote, and reading a client-bound
+        // packet as the server skips the header sub-packet instead of choking on it.
+        Assertions.assertNotNull(new EmotePacket(client.duplicate(), PacketBound.CLIENT).data.emoteData);
+        Assertions.assertNotNull(new EmotePacket(client.duplicate(), PacketBound.SERVER).data.emoteData);
+        Assertions.assertNotNull(new EmotePacket(server.duplicate(), PacketBound.SERVER).data.emoteData);
+
+        client.release();
+        server.release();
+    }
 }
