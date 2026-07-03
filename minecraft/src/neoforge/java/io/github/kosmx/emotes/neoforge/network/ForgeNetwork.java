@@ -17,60 +17,61 @@ import java.io.IOException;
 public class ForgeNetwork {
     @SubscribeEvent
     public static void registerPlay(final RegisterPayloadHandlersEvent event) {
+        // A single StreamCodec can only filter for one direction, so each channel is registered
+        // per-direction: S2C codecs use PacketBound.CLIENT, C2S codecs use PacketBound.SERVER.
         event.registrar("emotecraft") // Play networking
                 .optional()
-                .playBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER,
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.packet(), playPayloadContext.player()),
-                        (arg, _) -> ClientNetwork.INSTANCE.receiveMessage(arg.packet(), null)
+                .playToServer(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_C2S,
+                        (arg, ctx) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.packet(), ctx.player())
+                )
+                .optional()
+                .playToClient(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_S2C,
+                        (arg, ctx) -> ClientNetwork.INSTANCE.receiveMessage(arg.packet(), null)
                 )
 
                 .optional()
-                .playBidirectional(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER,
-                        (arg, playPayloadContext) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.packet(), playPayloadContext.player()),
-                        (arg, playPayloadContext) -> {
-                            try {
-                                ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), playPayloadContext.listener()::send);
-                            } catch (IOException e) {
-                                CommonData.LOGGER.error("", e);
-                            }
-                        }
+                .playToServer(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER_C2S,
+                        (arg, ctx) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.packet(), ctx.player())
+                )
+                .optional()
+                .playToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER_S2C,
+                        (arg, ctx) -> NetworkPlatformTools.tryReceive(
+                                () -> ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), ctx.listener()::send)
+                        )
                 )
 
                 .optional()
-                .configurationBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER,
-                        (arg, configurationPayloadContext) -> {
+                .configurationToServer(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_C2S,
+                        (arg, ctx) -> {
                             try {
                                 var message = arg.packet().data;
                                 if (message.purpose != PacketTask.CONFIG) throw new IOException("Wrong packet type for config task");
 
-                                ((EmotesMixinConnection) configurationPayloadContext.connection()).emotecraft$setVersions(message.versions);
+                                ((EmotesMixinConnection) ctx.connection()).emotecraft$setVersions(message.versions);
                                 UniversalEmoteSerializer.preparePackets(message.versions)
                                         .map(NetworkPlatformTools::playPacket)
-                                        .forEach(configurationPayloadContext.connection()::send);
+                                        .forEach(ctx.connection()::send);
 
-                                configurationPayloadContext.finishCurrentTask(ConfigTask.TYPE);
-                            } catch (IOException e) {
-                                CommonData.LOGGER.error("", e);
-                                configurationPayloadContext.disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
-                            }
-                        },
-                        (arg, configurationPayloadContext) -> {
-                            try {
-                                ClientNetwork.INSTANCE.receiveConfigMessage(arg.packet(), configurationPayloadContext.listener()::send);
-                            } catch (IOException e) {
-                                CommonData.LOGGER.error("", e);
+                                ctx.finishCurrentTask(ConfigTask.TYPE);
+                            } catch (Exception e) {
+                                CommonData.LOGGER.error("Invalid Emotecraft packet!", e);
+                                ctx.disconnect(Component.literal(CommonData.MOD_ID + ": " + (e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName())));
                             }
                         }
                 )
+                .optional()
+                .configurationToClient(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_S2C,
+                        (arg, ctx) -> NetworkPlatformTools.tryReceive(
+                                () -> ClientNetwork.INSTANCE.receiveConfigMessage(arg.packet(), ctx.listener()::send)
+                        )
+                )
 
                 .optional()
-                .configurationToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER, (arg, configurationPayloadContext) -> {
-                    try {
-                        ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), configurationPayloadContext.listener()::send);
-                    } catch (IOException e) {
-                        CommonData.LOGGER.error("", e);
-                    }
-                });
+                .configurationToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER_S2C,
+                        (arg, ctx) -> NetworkPlatformTools.tryReceive(
+                                () -> ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), ctx.listener()::send)
+                        )
+                );
     }
 
     @SubscribeEvent

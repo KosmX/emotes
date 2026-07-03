@@ -4,6 +4,7 @@ import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.network.EmotePlayTracker;
 import io.github.kosmx.emotes.server.network.IServerNetworkInstance;
@@ -38,7 +39,7 @@ public class BukkitNetworkInstance extends AbstractNetworkInstance implements IS
         }
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
-            packet.write(buf);
+            packet.write(buf, PacketBound.CLIENT);
             player.getBukkitEntity().sendPluginMessage(PLUGIN, BukkitWrapper.EMOTE_PACKET, MathHelper.readBytes(buf));
         } finally {
             buf.release();

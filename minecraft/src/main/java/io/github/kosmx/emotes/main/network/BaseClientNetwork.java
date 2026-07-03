@@ -88,7 +88,8 @@ public abstract class BaseClientNetwork extends AbstractNetworkInstance {
                 EmoteHolder.removeEmotesFromList(data.removeEmoteIds, networkInstance);
                 break;
             case UNKNOWN:
-                CommonData.LOGGER.error("Packet execution is not possible unknown purpose");
+            default:
+                CommonData.LOGGER.error("Packet execution is not possible: {} purpose!", data.purpose);
                 break;
         }
     }
