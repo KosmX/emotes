@@ -38,9 +38,9 @@ public final class ServerNetworkStuff {
                         .forEach(context.responseSender()::sendPacket);
 
                 ((FabricServerConfigurationPacketListenerImpl)context.packetListener()).completeTask(ConfigTask.TYPE); // And, we're done here
-            } catch (IOException e) {
-                CommonData.LOGGER.error("", e);
-                context.packetListener().disconnect(Component.literal(CommonData.MOD_ID + ": " + e.getMessage()));
+            } catch (Exception e) {
+                CommonData.LOGGER.error("Invalid Emotecraft packet!", e);
+                context.packetListener().disconnect(Component.literal(CommonData.MOD_ID + ": " + (e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName())));
             }
         });
 

@@ -3,6 +3,7 @@ package org.redlance.dima_dencep.mods.emotecraft.geyser;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.config.CommonConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
@@ -152,8 +153,13 @@ public class EmotecraftExt implements Extension {
             networkInstance.setConnectionType(ConnectionType.BACKEND);
         }
         ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
-        networkInstance.receiveMessage(new EmotePacket(byteBuf));
-        byteBuf.release();
+        try {
+            networkInstance.receiveMessage(new EmotePacket(byteBuf, PacketBound.CLIENT));
+        } catch (Exception e) {
+            CommonData.LOGGER.error("Invalid Emotecraft packet!", e);
+        } finally {
+            byteBuf.release();
+        }
     }
 
     @Subscribe

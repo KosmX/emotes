@@ -1,10 +1,13 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.netty.buffer.ByteBuf;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Set;
 
 public class EmoteIconPacket extends AbstractNetworkPacket {
     @Override
@@ -18,9 +21,17 @@ public class EmoteIconPacket extends AbstractNetworkPacket {
     }
 
     @Override
-    public void read(ByteBuf byteBuf, NetData config, byte version) {
+    public void read(ByteBuf byteBuf, NetData config, byte version) throws IOException {
+        if (byteBuf.readableBytes() < Integer.BYTES) {
+            throw new IOException("Invalid icon packet: missing size");
+        }
+
         int size = byteBuf.readInt();
         if (size <= 0) return;
+
+        if (size > byteBuf.readableBytes()) {
+            throw new IOException("Invalid icon packet size: " + size);
+        }
 
         ByteBuffer buffer = ByteBuffer.allocate(size);
         byteBuf.readBytes(buffer);
@@ -50,5 +61,10 @@ public class EmoteIconPacket extends AbstractNetworkPacket {
     @Override
     public boolean isOptional() {
         return true;
+    }
+
+    @Override
+    public Set<PacketBound> boundsTo() {
+        return PacketBound.TO_CLIENT;
     }
 }

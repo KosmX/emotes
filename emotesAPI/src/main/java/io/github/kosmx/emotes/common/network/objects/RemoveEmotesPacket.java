@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import com.zigythebird.playeranimcore.network.NetworkUtils;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.netty.buffer.ByteBuf;
@@ -8,6 +9,7 @@ import team.unnamed.mocha.util.network.ProtocolUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class RemoveEmotesPacket extends AbstractNetworkPacket {
@@ -38,5 +40,10 @@ public class RemoveEmotesPacket extends AbstractNetworkPacket {
     @Override
     public boolean doWrite(NetData config) {
         return config.purpose == PacketTask.REMOVE && !config.removeEmoteIds.isEmpty();
+    }
+
+    @Override
+    public Set<PacketBound> boundsTo() {
+        return PacketBound.TO_CLIENT;
     }
 }

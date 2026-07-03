@@ -1,10 +1,12 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.CommonNetwork;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.netty.buffer.ByteBuf;
 
 import java.util.List;
+import java.util.Set;
 
 public class EmoteHeaderPacket extends AbstractNetworkPacket{
     @Override
@@ -44,5 +46,10 @@ public class EmoteHeaderPacket extends AbstractNetworkPacket{
     @Override
     public boolean doWrite(NetData config) {
         return config.emoteData != null && config.purpose.exchangeHeader;
+    }
+
+    @Override
+    public Set<PacketBound> boundsTo() {
+        return PacketBound.TO_CLIENT;
     }
 }
