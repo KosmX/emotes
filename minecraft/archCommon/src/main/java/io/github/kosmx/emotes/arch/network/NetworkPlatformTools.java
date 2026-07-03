@@ -39,4 +39,21 @@ public interface NetworkPlatformTools {
     static @NotNull Packet<?> streamPacket(@NotNull EmotePacket packet) {
         return createClientboundPacket(STREAM_CHANNEL_ID, packet);
     }
+
+    @FunctionalInterface
+    interface PacketReceiver {
+        void receive() throws Exception;
+    }
+
+    /**
+     * Runs a packet receiver, logging (instead of propagating) any failure so a malformed
+     * packet can't take down the connection handler.
+     */
+    static void tryReceive(@NotNull PacketReceiver receiver) {
+        try {
+            receiver.receive();
+        } catch (Exception e) {
+            CommonData.LOGGER.error("Invalid Emotecraft packet!", e);
+        }
+    }
 }

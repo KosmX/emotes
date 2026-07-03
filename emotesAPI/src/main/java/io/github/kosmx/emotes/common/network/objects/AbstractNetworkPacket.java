@@ -1,9 +1,11 @@
 package io.github.kosmx.emotes.common.network.objects;
 
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractNetworkPacket {
     public abstract byte getID();
@@ -21,5 +23,9 @@ public abstract class AbstractNetworkPacket {
 
     public boolean isOptional() {
         return false;
+    }
+
+    public Set<PacketBound> boundsTo() {
+        return PacketBound.BOTH;
     }
 }

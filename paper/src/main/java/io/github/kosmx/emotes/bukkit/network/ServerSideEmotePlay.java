@@ -37,7 +37,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
                 try {
                     this.receiveMessage(byteBuf, playerNetwork);
                 } catch (Exception e) {
-                    CommonData.LOGGER.error("", e);
+                    CommonData.LOGGER.error("Invalid Emotecraft packet from {}!", player.getName(), e);
                 } finally {
                     byteBuf.release();
                 }
