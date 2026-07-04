@@ -60,6 +60,15 @@ public final class BukkitWrapper extends JavaPlugin implements ChannelInitialize
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EMOTE_PACKET);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance());
         getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
+        if (Bukkit.getServerConfig().isProxyEnabled()) {
+            CommonData.LOGGER.error("*************************************************************************************");
+            CommonData.LOGGER.error("Emotecraft detected that this server is running behind a proxy. " +
+                    "By default proxies limit plugin messages to 32767 bytes, which is too small for larger emotes and can kick players. " +
+                    "On Velocity, add the JVM argument \"-Dvelocity.max-plugin-message-payload-size=1048576\" to raise the limit. " +
+                    "See https://docs.zigythebird.com/emotecraft/gettingstarted/proxies for details."
+            );
+            CommonData.LOGGER.error("*************************************************************************************");
+        }
     }
 
     @Override
