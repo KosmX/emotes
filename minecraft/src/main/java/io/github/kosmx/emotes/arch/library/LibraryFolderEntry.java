@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.library;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -14,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
-import org.redlance.emotecraftlibrary.sdk.EmoteLibraryClient;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryException;
 import org.redlance.emotecraftlibrary.sdk.GameEmoteInfo;
 import org.redlance.emotecraftlibrary.sdk.LibraryListener;
@@ -31,13 +31,23 @@ import java.util.function.Predicate;
 
 public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implements LibraryListener, BiConsumer<AutoCloseable, Throwable> {
     public static final Identifier EMOTECRAFT_LIBRARY_ICON = McUtils.newIdentifier("textures/redlance_emotes_icon.png");
+    private static final int PAGE_SIZE = 10;
+    private static final Component END = Component.translatable("emotecraft.library.end");
 
     private final EmoteListWidget widget;
     private final MutableComponent status;
 
     private final Map<UUID, LibraryEmoteEntry> searchResults = new HashMap<>();
     private CompletableFuture<AutoCloseable> connection;
-    private boolean removed;
+    private int emoteOrder;
+    private int likedOffset;
+    private boolean likedLastPage;
+
+    private String searchQuery;
+    private List<UUID> searchResultIds;
+    private int searchOffset;
+    private boolean searchLastPage;
+    private LoadingEntry searchLoading;
 
     public LibraryFolderEntry(EmoteListWidget widget) {
         widget.super(AcceptPrivacyScreen.TITLE, Component.empty());
@@ -51,7 +61,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
             return; // The live connection is already opening or open.
         }
 
-        this.connection = EmoteLibrary.executeAuthorized(client -> client.openLiveConnection(this));
+        this.connection = EmoteLibrary.executeAuthorized(client -> client.openLiveConnection(this, Minecraft.getInstance()));
         getOrPutLoadingEntry().addForWait(this.connection);
         this.connection.whenComplete(this);
     }
@@ -59,7 +69,6 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
     @Override
     protected void onRemoved() {
         super.onRemoved();
-        this.removed = true;
 
         this.searchResults.values().forEach(LibraryEmoteEntry::onRemoved);
         this.searchResults.clear();
@@ -100,43 +109,63 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
 
     @Override
     public void onReset() {
-        getOrPutLoadingEntry().addForWait(EmoteLibrary.executeAuthorized(EmoteLibraryClient::listLiked)
+        getOrPutLoadingEntry().addForWait(EmoteLibrary.executeAuthorized(client -> client.listLiked(0, PAGE_SIZE))
                 .whenCompleteAsync((resp, th) -> {
                     if (th != null) return;
                     clearChildren();
+                    this.emoteOrder = 0;
                     putAll(resp.getData());
+                    this.likedOffset = resp.getMeta().getNextOffset();
+                    this.likedLastPage = resp.getMeta().isLastPage();
                     this.widget.refreshFilter();
                 }, Minecraft.getInstance())
         );
     }
 
+    private void loadMoreLiked() {
+        int offset = this.likedOffset;
+        EmoteLibrary.executeAuthorized(client -> client.listLiked(offset, PAGE_SIZE))
+                .whenCompleteAsync((resp, th) -> {
+                    if (th != null) return;
+                    putAll(resp.getData());
+                    this.likedOffset = resp.getMeta().getNextOffset();
+                    this.likedLastPage = resp.getMeta().isLastPage();
+                    this.widget.refreshFilter();
+                }, Minecraft.getInstance());
+    }
+
+    /** Registers liked-emote pagination on the given widget (called while the folder is the open one). */
+    public void paginateLiked(EmoteListWidget widget) {
+        if (this.likedLastPage) {
+            widget.setFooter(new LoadingEntry(widget, END));
+        } else if (this.likedOffset > 0) { // Only once the first page has loaded.
+            widget.requestLoadMore(this::loadMoreLiked);
+        }
+    }
+
     @Override
     public void onAdd(List<GameEmoteInfo> list) {
-        Minecraft.getInstance().execute(() -> {
-            putAll(list);
-            this.widget.refreshFilter();
-        });
+        putAll(list);
+        this.widget.refreshFilter();
     }
 
     @Override
     public void onRemove(List<UUID> list) {
-        Minecraft.getInstance().execute(() -> {
-            for (UUID removal : list) removeChild(removal);
-            this.widget.refreshFilter();
-        });
+        for (UUID removal : list) removeChild(removal);
+        this.widget.refreshFilter();
     }
 
     private void putAll(List<GameEmoteInfo> list) {
         for (GameEmoteInfo info : list) {
-            this.entries.put(info.getId(), getOrCreate(info));
+            LibraryEmoteEntry entry = getOrCreate(info);
+            entry.order = this.emoteOrder++;
+            this.entries.put(info.getId(), entry);
         }
     }
 
     @Override
     public void onError(EmoteLibraryException e, boolean b) {
-        Minecraft.getInstance().execute(() ->
-                getOrPutLoadingEntry().addForWait(CompletableFuture.failedFuture(e))
-        );
+        getOrPutLoadingEntry().addForWait(CompletableFuture.failedFuture(e));
     }
 
     @Override
@@ -163,23 +192,67 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
 
     @Override
     public void searchFor(String search, Predicate<EmoteListWidget.ListEntry> matcher, Consumer<EmoteListWidget.ListEntry> results) {
-        LoadingEntry entry = getOrPutLoadingEntry();
-        results.accept(entry);
+        if (PlatformTools.getConfig().cloudLibraryStatus.get() != LibraryStatus.ENABLED) {
+            return; // Privacy not accepted yet — don't hit the server (would fail with "not enabled").
+        }
 
-        entry.addForWait(EmoteLibrary.executeAuthorized(client -> client.search(search, 0, 10 /* TODO proper limit */))
+        if (!Objects.equals(search, this.searchQuery)) { // New query: reset and fetch the first page.
+            this.searchQuery = search;
+            this.searchResultIds = null;
+            this.searchOffset = 0;
+            this.searchLastPage = false;
+            this.searchLoading = new LoadingEntry(this.widget);
+            loadSearchPage();
+        }
+
+        if (this.searchResultIds == null) {
+            results.accept(this.searchLoading);
+        } else {
+            for (UUID id : this.searchResultIds) {
+                // A result may be a liked entry (this.entries) or a search-only one (searchResults).
+                if (this.entries.getOrDefault(id, this.searchResults.get(id)) instanceof LibraryEmoteEntry entry) {
+                    results.accept(entry);
+                }
+            }
+
+            if (this.searchLastPage) {
+                this.widget.setFooter(new LoadingEntry(this.widget, END));
+            } else {
+                this.widget.requestLoadMore(this::loadSearchPage);
+            }
+        }
+    }
+
+    private void loadSearchPage() {
+        String search = this.searchQuery;
+        int offset = this.searchOffset;
+        boolean firstPage = this.searchResultIds == null;
+
+        var future = EmoteLibrary.executeAuthorized(client -> client.search(search, offset, PAGE_SIZE))
                 .whenCompleteAsync((resp, th) -> {
-                    if (this.removed) { return; } // The folder was removed while the search was in flight.
+                    if (!Objects.equals(search, this.searchQuery)) {
+                        return; // A newer query superseded this one.
+                    }
 
                     if (th != null) {
                         CommonData.LOGGER.warn("Failed to search!", th);
-                        return;
+                        return; // Keep the loading entry, which now renders the error.
                     }
 
+                    List<UUID> ids = this.searchResultIds != null ? new ArrayList<>(this.searchResultIds) : new ArrayList<>();
                     for (GameEmoteInfo info : resp.getData()) {
-                        results.accept(getOrCreate(info));
+                        getOrCreate(info);
+                        ids.add(info.getId());
                     }
-                }, Minecraft.getInstance())
-        );
+                    this.searchResultIds = ids;
+                    this.searchOffset = resp.getMeta().getNextOffset();
+                    this.searchLastPage = resp.getMeta().isLastPage();
+                    this.widget.refreshFilter(); // Re-render with the results (drops the loading entry).
+                }, Minecraft.getInstance());
+
+        if (firstPage) {
+            this.searchLoading.addForWait(future);
+        }
     }
 
     private LibraryEmoteEntry getOrCreate(GameEmoteInfo info) {
@@ -201,6 +274,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         private CompletableFuture<ClientAsset.Texture> texture;
 
         private CompletableFuture<Animation> emoteFuture;
+        private int order;
 
         public LibraryEmoteEntry(EmoteListWidget widget, GameEmoteInfo info) {
             widget.super(
@@ -296,8 +370,8 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
 
         @Override
         public int compareTo(@NotNull EmoteListWidget.ListEntry o) {
-            if (o instanceof LibraryEmoteEntry) {
-                return super.compareTo(o);
+            if (o instanceof LibraryEmoteEntry entry) {
+                return Integer.compare(this.order, entry.order); // Keep the order the library sent them in.
             } else {
                 return 1;
             }

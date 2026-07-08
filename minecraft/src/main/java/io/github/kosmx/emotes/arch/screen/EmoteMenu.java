@@ -67,9 +67,12 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     protected void addContents() {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
-        this.list = linearLayout.addChild(newEmoteListWidget(), LayoutSettings::alignVerticallyBottom);
-        this.list.setCompactMode(true);
-        addOptions();
+        if (this.list == null) {
+            this.list = newEmoteListWidget();
+            this.list.setCompactMode(true);
+            addOptions();
+        }
+        linearLayout.addChild(this.list, LayoutSettings::alignVerticallyBottom);
 
         GridLayout gridLayout = linearLayout.addChild(new GridLayout());
         gridLayout.defaultCellSetting().padding(4, Button.DEFAULT_SPACING / 3, 4, 0);

@@ -67,7 +67,6 @@ public class FullMenuScreen extends EmoteSubScreen {
 
     @Override
     protected void repositionElements() {
-        addOptions();
         super.repositionElements();
         this.layout.arrangeElements();
     }

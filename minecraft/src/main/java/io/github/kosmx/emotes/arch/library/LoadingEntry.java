@@ -24,10 +24,16 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
     private final Set<CompletableFuture<?>> futures = ConcurrentHashMap.newKeySet();
 
     protected final EmoteListWidget widget;
+    private final Component message;
 
     public LoadingEntry(EmoteListWidget widget) {
-        widget.super(LOADING, CommonComponents.EMPTY, Collections.emptyList());
+        this(widget, null);
+    }
+
+    public LoadingEntry(EmoteListWidget widget, Component message) {
+        widget.super(message != null ? message : LOADING, CommonComponents.EMPTY, Collections.emptyList());
         this.widget = widget;
+        this.message = message;
     }
 
     protected <T> CompletableFuture<T> addForWait(CompletableFuture<T> future) {
@@ -41,7 +47,12 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
     public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
         if (this.futures.isEmpty()) {
             this.widget.active = true;
-            super.extractContent(graphics, mouseX, mouseY, hovered, a);
+            if (this.message != null) {
+                Font font = Minecraft.getInstance().font;
+                graphics.centeredText(font, this.message, getContentX() + getContentWidth() / 2, getContentYMiddle() - font.lineHeight / 2, -1);
+            } else {
+                super.extractContent(graphics, mouseX, mouseY, hovered, a);
+            }
             return;
         }
 

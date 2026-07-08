@@ -12,6 +12,7 @@
   "emotecraft.library.privacy.privacy": "Privacy Policy",
   "emotecraft.library.privacy.website": "website",
   "emotecraft.library.privacy.setup": "For the library to work, open the %1$s and either sign in with Microsoft or link your Minecraft account in the dashboard.",
+  "emotecraft.library.end": "— That's all —",
   "emotecraft.sure": "Overwriting keybind",
   "emotecraft.sure2": "Another emote already has this keybind.\nDo you want to overwrite that emote with this?",
   "emotecraft.otherconfig.category.general": "Basic Options",

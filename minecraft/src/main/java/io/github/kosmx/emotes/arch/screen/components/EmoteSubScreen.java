@@ -76,6 +76,7 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     protected void init() {
+        this.layout.removeChildren(); // The frames accumulate otherwise; widgets below are reused across resizes.
         this.addTitle();
         this.addPlayerPreview();
         this.addContents();
@@ -85,19 +86,23 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addTitle() {
-        this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, RecipeBookComponent.SEARCH_HINT,
-                () -> Objects.requireNonNull(this.list).getEmotes()
-        ));
-        this.searchBox.setHint(RecipeBookComponent.SEARCH_HINT);
-        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(
-                string.isBlank() ? null : this.searchEngine, string
-        ));
+        if (this.searchBox == null) {
+            this.searchBox = this.searchEngine.createEditBox(this.font, RecipeBookComponent.SEARCH_HINT,
+                    () -> Objects.requireNonNull(this.list).getEmotes()
+            );
+            this.searchBox.setHint(RecipeBookComponent.SEARCH_HINT);
+            this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(
+                    string.isBlank() ? null : this.searchEngine, string
+            ));
+        }
+        this.layout.addToHeader(this.searchBox);
     }
 
     protected void addPlayerPreview() {
-        this.preview = this.layout.addToContents(new PlayerPreview(
-                this.minecraft.getGameProfile(), 0, 0, 0, 0, true
-        ), layoutSettings -> layoutSettings.alignHorizontallyLeft().paddingLeft(Button.DEFAULT_SPACING));
+        if (this.preview == null) {
+            this.preview = new PlayerPreview(this.minecraft.getGameProfile(), 0, 0, 0, 0, true);
+        }
+        this.layout.addToContents(this.preview, layoutSettings -> layoutSettings.alignHorizontallyLeft().paddingLeft(Button.DEFAULT_SPACING));
     }
 
     protected EmoteListWidget newEmoteListWidget() {
@@ -116,8 +121,8 @@ public abstract class EmoteSubScreen extends Screen {
                     minecraft.gui.setScreen(new AcceptPrivacyScreen(EmoteSubScreen.this, () -> {
                         PlatformTools.getConfig().cloudLibraryStatus.set(LibraryStatus.ENABLED);
                         Serializer.INSTANCE.saveConfig();
+                        minecraft.gui.setScreen(EmoteSubScreen.this); // Re-show first, then navigate on the now-active screen.
                         setLastFolder(libraryFolder);
-                        minecraft.gui.setScreen(EmoteSubScreen.this);
                     }));
                     return false;
                 }
@@ -139,8 +144,11 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addContents() {
-        this.list = this.layout.addToContents(newEmoteListWidget());
-        addOptions();
+        if (this.list == null) {
+            this.list = newEmoteListWidget();
+            addOptions();
+        }
+        this.layout.addToContents(this.list);
     }
 
     protected abstract void addOptions();

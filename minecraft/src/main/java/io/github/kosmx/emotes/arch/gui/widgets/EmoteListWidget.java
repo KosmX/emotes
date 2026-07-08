@@ -41,7 +41,9 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
     private final LibraryFolderEntry libraryEntry = new LibraryFolderEntry(this);
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
+    private final List<Runnable> loadMore = new ArrayList<>();
     private FolderEntry lastClickedFolder;
+    private ListEntry footer;
     private boolean compactMode;
 
     private final PageButton backButton = new PageButton(Button.DEFAULT_HEIGHT, Button.DEFAULT_HEIGHT, RecipeBookPage.PAGE_BACKWARD_SPRITES, true, button -> {
@@ -99,6 +101,17 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         } catch (Throwable ignored) {}
     }
 
+    @Override
+    public void extractWidgetRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, a);
+        // Load the next chunk once scrolled near the end (or immediately while the content doesn't fill the viewport).
+        if (!this.loadMore.isEmpty() && scrollAmount() >= maxScrollAmount() * 0.8) {
+            List<Runnable> pending = new ArrayList<>(this.loadMore);
+            this.loadMore.clear();
+            pending.forEach(Runnable::run);
+        }
+    }
+
     public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid) {
         this.releaseEntries();
         this.mainFolder.entries.clear();
@@ -129,6 +142,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public void filter(@Nullable ISearchEngine engine, String search) {
+        this.loadMore.clear();
+        this.footer = null;
         clearEntries();
         addEntry(new HeaderEntry(), (int)(9.0F * 1.5F));
         setSelected(null);
@@ -136,8 +151,32 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             engine.filter(this.mainFolder, search, this::addEntry);
         } else {
             getEmotes().forEach(this::addEntry);
+            if (openFolder() instanceof LibraryFolderEntry library) {
+                library.paginateLiked(this);
+            }
+        }
+        if (this.footer != null) {
+            addEntry(this.footer);
         }
         refreshScrollAmount();
+    }
+
+    /** Registers a callback invoked once the list is scrolled near its end. Cleared on every {@link #filter}. */
+    public void requestLoadMore(Runnable action) {
+        this.loadMore.add(action);
+    }
+
+    /** Sets an entry appended after the current contents (e.g. an end-of-list marker). Cleared on every {@link #filter}. */
+    public void setFooter(@Nullable ListEntry footer) {
+        this.footer = footer;
+    }
+
+    private FolderEntry openFolder() {
+        FolderEntry folder = this.mainFolder;
+        while (folder.next != null && folder.entries.containsValue(folder.next)) {
+            folder = folder.next;
+        }
+        return folder;
     }
 
     public void refreshFilter() {}
