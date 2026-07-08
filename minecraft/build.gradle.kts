@@ -103,6 +103,12 @@ dependencies {
         neoforgePomCompile(this)
     }
 
+    implementation("org.redlance.emotecraftlibrary:game-sdk:${project["redlanceemotes_version"]}") {
+        platformInclude(this)
+        "fabricImplementation"(this)
+        "neoforgeImplementation"(this)
+    }
+
     // Third-party
     compileOnly("com.blamejared.searchables:Searchables-common-26.2:${project["searchables_version"]}") {
         isTransitive = false

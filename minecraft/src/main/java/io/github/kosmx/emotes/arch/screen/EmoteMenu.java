@@ -127,9 +127,9 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     }
 
     private void resetKeyAction(Button button){
-        if(resetOnlySelected) {
-            if (this.list == null || this.list.getFocused() == null) return;
-            PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocusedEmote().getUuid());
+        if (resetOnlySelected) {
+            if (this.list == null || !(this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry)) return;
+            PlatformTools.getConfig().emoteKeyMap.removeL(entry.getUuid());
             onPressed(this.list.getSelected());
         } else {
             this.minecraft.gui.setScreen(new ConfirmScreen(aBoolean -> {
@@ -155,11 +155,11 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     protected void onPressed(EmoteListWidget.ListEntry selected) {
         if (this.resetButton == null) return;
 
-        this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteEntry;
+        this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteLikeEntry;
 
-        if (selected instanceof EmoteListWidget.EmoteEntry entry) {
-            this.setKeyButton.setMessage(getKey(entry.getEmote().getUuid()).getDisplayName());
-            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(entry.getEmote().getUuid());
+        if (selected instanceof EmoteListWidget.EmoteLikeEntry entry) {
+            this.setKeyButton.setMessage(getKey(entry.getUuid()).getDisplayName());
+            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(entry.getUuid());
         } else {
             this.resetOnlySelected = false;
         }
@@ -202,12 +202,12 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
 
     private boolean setKey(InputConstants.Key key){
         boolean bl = false;
-        if (this.list != null && this.list.getFocused() != null) {
+        if (this.list != null && this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry) {
             bl = true;
-            if (!applyKey(false, this.list.getFocusedEmote(), key)) {
+            if (!applyKey(false, entry.getUuid(), key)) {
                 this.minecraft.gui.setScreen(new ConfirmScreen(choice -> {
                     if (choice) {
-                        applyKey(true, this.list.getFocusedEmote(), key);
+                        applyKey(true, entry.getUuid(), key);
                     }
                     this.minecraft.gui.setScreen(this);
                 }, SURE, SURE2));
@@ -216,7 +216,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
         return bl;
     }
 
-    private boolean applyKey(boolean force, EmoteHolder emote, InputConstants.Key key){
+    private boolean applyKey(boolean force, UUID emote, InputConstants.Key key){
         boolean bl = true;
         for(EmoteHolder emoteHolder : EmoteHolder.list){
             if(! key.equals(InputConstants.UNKNOWN) && getKey(emoteHolder.getUuid()).equals(key)){
@@ -227,8 +227,8 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
                 }
             }
         }
-        if(bl || force){
-            PlatformTools.getConfig().emoteKeyMap.put(emote.getUuid(), key);
+        if (bl || force) {
+            PlatformTools.getConfig().emoteKeyMap.put(emote, key);
             onPressed(this.list.getSelected());
         }
         this.activeKeyTime = 0;
@@ -274,10 +274,10 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
         if (event.input() == 1) {
             element.clearEmote();
             return true;
-        } else if (list != null && list.getFocused() != null) {
-            element.setEmote(list.getFocusedEmote());
+        } else if (list != null && list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry) {
+            element.setEmote(entry);
             return true;
-        }else{
+        } else{
             return false;
         }
     }

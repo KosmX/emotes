@@ -1,8 +1,10 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
+import com.zigythebird.playeranim.util.ClientUtil;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.mixinFunctions.IPlayerEntity;
@@ -12,6 +14,7 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 public class FullMenuScreen extends EmoteSubScreen {
     protected static final Component TITLE = Component.translatable("emotecraft.emotelist");
@@ -32,26 +35,27 @@ public class FullMenuScreen extends EmoteSubScreen {
 
         if (this.list != null) linearLayout.addChild(this.list.createBackButton());
 
-        linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
+        linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, _ -> onClose())
                 .build()
         );
-        linearLayout.addChild(Button.builder(FullMenuScreen.CONFIG, button -> this.minecraft.gui.setScreen(new EmoteMenu(this)))
+        linearLayout.addChild(Button.builder(FullMenuScreen.CONFIG, _ -> this.minecraft.gui.setScreen(new EmoteMenu(this)))
                 .build()
         );
     }
 
     @Override
     protected void onPressed(EmoteListWidget.ListEntry selected) {
-        if (selected instanceof EmoteListWidget.EmoteEntry entry &&
-                entry.getEmote().playEmote() &&
-                this.lastScreen instanceof FastMenuScreen fast
-        ) {
-            this.lastScreen = fast.parent;
+        if (selected instanceof EmoteListWidget.EmoteLikeEntry entry) {
+            entry.getEmote().whenComplete((animation, throwable) -> {
+                if (throwable != null) CommonData.LOGGER.error("Failed to load emote!", throwable);
+                EmoteHolder.playEmote(ClientUtil.getClientPlayer(), animation);
+            });
+            if (this.lastScreen instanceof FastMenuScreen fast) this.lastScreen = fast.parent;
         }
     }
 
     @Override
-    protected void extractBlurredBackground(GuiGraphicsExtractor graphics) {
+    protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
         if (this.minecraft.player instanceof IPlayerEntity entity &&
                 EmotePlayer.isRunningEmote(entity.emotecraft$getEmote())
         ) {

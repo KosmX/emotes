@@ -6,6 +6,7 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.screen.utils.EmotecraftTexture;
 import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
@@ -159,7 +160,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
     }
 
     @Override
-    public void setEmote(EmoteHolder emote) {
+    public void setEmote(EmoteListWidget.EmoteLikeEntry emote) {
         PlatformTools.getConfig().fastMenuEmotes[parent.getCurrentPage()][id] = emote == null ? null : emote.getUuid();
     }
 

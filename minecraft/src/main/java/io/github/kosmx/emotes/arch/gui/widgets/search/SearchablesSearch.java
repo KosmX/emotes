@@ -4,9 +4,9 @@ import com.blamejared.searchables.api.SearchableComponent;
 import com.blamejared.searchables.api.SearchableType;
 import com.blamejared.searchables.api.autcomplete.AutoCompletingEditBox;
 import com.blamejared.searchables.api.context.ContextVisitor;
-import com.blamejared.searchables.api.context.SearchContext;
 import com.blamejared.searchables.lang.StringSearcher;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -17,8 +17,9 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public class SearchablesSearch implements ISearchEngine {
     public static final SearchableType<EmoteListWidget.ListEntry> SEARCHABLE = new SearchableType.Builder<EmoteListWidget.ListEntry>()
@@ -39,12 +40,12 @@ public class SearchablesSearch implements ISearchEngine {
                             .filter(str -> !str.isEmpty())
             ))
             .component(SearchableComponent.create("author",
-                    entry -> entry instanceof EmoteListWidget.EmoteEntry holder ? Optional.ofNullable(holder.emote.author)
+                    entry -> entry instanceof EmoteListWidget.EmoteLikeEntry holder ? Optional.ofNullable(holder.author)
                             .map(Component::getString)
                             .filter(str -> !str.isEmpty()) : Optional.empty()
             ))
             .component(SearchableComponent.create(EmoteSerializer.FILENAME_KEY,
-                    entry -> entry instanceof EmoteListWidget.EmoteEntry holder ? Optional.ofNullable(holder.emote.fileName)
+                    entry -> entry instanceof EmoteHolder.EmoteHolderEntry holder ? Optional.ofNullable(holder.holder.fileName)
                             .map(Component::getString)
                             .filter(str -> !str.isEmpty()) : Optional.empty()
             ))
@@ -75,13 +76,11 @@ public class SearchablesSearch implements ISearchEngine {
     }
 
     @Override
-    public Stream<EmoteListWidget.ListEntry> filter(Stream<EmoteListWidget.ListEntry> entries, String search) {
-        Optional<SearchContext<EmoteListWidget.ListEntry>> context = StringSearcher.search(search, new ContextVisitor<>());
-        return entries.filter(
-                context.map(tSearchContext ->
-                        tSearchContext.createPredicate(SEARCHABLE)
-                ).orElse(t -> true)
-        );
+    public void filter(EmoteListWidget.ListEntry mainFolder, String search, Consumer<EmoteListWidget.ListEntry> results) {
+        Predicate<EmoteListWidget.ListEntry> context = StringSearcher.search(search, new ContextVisitor<EmoteListWidget.ListEntry>())
+                .map(tSearchContext -> tSearchContext.createPredicate(SEARCHABLE))
+                .orElse(_ -> true);
+        mainFolder.searchFor(search, context, results);
     }
 
     public static class FixedAutoCompletingEditBox<T> extends AutoCompletingEditBox<T> {

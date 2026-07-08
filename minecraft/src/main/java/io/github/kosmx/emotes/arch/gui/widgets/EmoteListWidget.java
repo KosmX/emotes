@@ -3,9 +3,10 @@ package io.github.kosmx.emotes.arch.gui.widgets;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
-import io.github.kosmx.emotes.arch.gui.widgets.search.VanillaSearch;
+import io.github.kosmx.emotes.arch.library.LibraryFolderEntry;
 import io.github.kosmx.emotes.arch.screen.utils.BageUtils;
 import io.github.kosmx.emotes.arch.screen.utils.PageButton;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -27,18 +28,24 @@ import net.minecraft.util.ARGB;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
     private static final List<Component> LAST_OPENED_PATH = new CopyOnWriteArrayList<>();
 
+    private final LibraryFolderEntry libraryEntry = new LibraryFolderEntry(this);
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
     private FolderEntry lastClickedFolder;
     private boolean compactMode;
 
     private final PageButton backButton = new PageButton(Button.DEFAULT_HEIGHT, Button.DEFAULT_HEIGHT, RecipeBookPage.PAGE_BACKWARD_SPRITES, true, button -> {
+        if (!EmoteListWidget.this.active) return;
         setLastFolder(null);
         if (this.lastClickedFolder == null) {
             setScrollAmount(0);
@@ -72,7 +79,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     @Override
-    protected void extractSelection(GuiGraphicsExtractor graphics, ListEntry entry, int outlineColor) {
+    protected void extractSelection(@NonNull GuiGraphicsExtractor graphics, @NonNull ListEntry entry, int outlineColor) {
         if (this.compactMode && scrollable()) {
             int j = entry.getX();
             int k = entry.getY();
@@ -86,27 +93,31 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     @Override
-    protected void extractItem(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, ListEntry entry) {
+    protected void extractItem(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, @NonNull ListEntry entry) {
         try { // Concurrency issues
             super.extractItem(graphics, mouseX, mouseY, a, entry);
         } catch (Throwable ignored) {}
     }
 
     public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid) {
+        this.releaseEntries();
         this.mainFolder.entries.clear();
+        if (PlatformTools.getConfig().cloudLibraryStatus.get().showEntry) {
+            this.mainFolder.entries.put("emotecraftlibrary", this.libraryEntry);
+        }
         for (EmoteHolder emoteHolder : list) {
             if (emoteHolder.folder.isEmpty()) {
-                this.mainFolder.entries.put(emoteHolder.get(), new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.get(), new EmoteHolder.EmoteHolderEntry(this, emoteHolder));
             } else {
-                createFoldersTree(emoteHolder.folder).entries.put(emoteHolder.get(), new EmoteEntry(emoteHolder));
+                createFoldersTree(emoteHolder.folder).entries.put(emoteHolder.get(), new EmoteHolder.EmoteHolderEntry(this, emoteHolder));
             }
         }
         if (showInvalid) {
             for (EmoteHolder emoteHolder : getEmptyEmotes()) {
-                this.mainFolder.entries.put(emoteHolder.get(), new EmoteEntry(emoteHolder));
+                this.mainFolder.entries.put(emoteHolder.get(), new EmoteHolder.EmoteHolderEntry(this, emoteHolder));
             }
         }
-        filter(VanillaSearch.INSTANCE, false, "");
+        filter(null, "");
 
         for (Component folderName : LAST_OPENED_PATH) {
             ListEntry child = Objects.requireNonNullElse(this.lastClickedFolder, this.mainFolder).entries.get(folderName);
@@ -117,12 +128,26 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     }
 
-    public void filter(ISearchEngine engine, boolean isSearchActive, String search) {
+    public void filter(@Nullable ISearchEngine engine, String search) {
         clearEntries();
         addEntry(new HeaderEntry(), (int)(9.0F * 1.5F));
         setSelected(null);
-        engine.filter(getEmotes(isSearchActive).stream(), search).forEach(this::addEntry);
+        if (engine != null) {
+            engine.filter(this.mainFolder, search, this::addEntry);
+        } else {
+            getEmotes().forEach(this::addEntry);
+        }
         refreshScrollAmount();
+    }
+
+    public void refreshFilter() {}
+
+    /**
+     * Notifies every entry (recursively) that it is being removed from the list, e.g. when the list
+     * is rebuilt or the screen is closed. Library folders use this to close their live connection.
+     */
+    public void releaseEntries() {
+        this.mainFolder.entries.values().forEach(ListEntry::onRemoved);
     }
 
     public FolderEntry createFoldersTree(List<Component> folders) {
@@ -143,16 +168,16 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return empties;
     }
 
-    public List<ListEntry> getEmotes(boolean isSearchActive) {
+    public List<ListEntry> getEmotes() {
         List<ListEntry> emotes = new ArrayList<>();
-        this.mainFolder.collectEmotes(isSearchActive, emotes);
+        this.mainFolder.collectEmotes(emotes::add);
 
         emotes.sort(ListEntry::compareTo);
         return Collections.unmodifiableList(emotes);
     }
 
     @Override
-    public void updateSize(int width, HeaderAndFooterLayout layout) {
+    public void updateSize(int width, @NonNull HeaderAndFooterLayout layout) {
         super.updateSize(width, layout);
         if (this.compactMode) {
             layout.arrangeElements();
@@ -163,14 +188,6 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     @Override
     public void updateSizeAndPosition(int width, int height, int x, int y) {
         super.updateSizeAndPosition(compactMode ? width / 3 : width, height, x, y);
-    }
-
-    @Nullable
-    public EmoteHolder getFocusedEmote() {
-        if (getFocused() instanceof EmoteEntry emote) {
-            return emote.getEmote();
-        }
-        return null;
     }
 
     @Override
@@ -197,7 +214,21 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return false;
     }
 
+    @Override
+    public void addEntryToTop(@NonNull ListEntry entry) {
+        super.addEntryToTop(entry);
+    }
+
+    @Override
+    public void removeEntryFromTop(@NonNull ListEntry entry) {
+        super.removeEntryFromTop(entry);
+    }
+
     public abstract class ListEntry extends ObjectSelectionList.Entry<ListEntry> implements Comparable<ListEntry> {
+        protected static final int START_OFFSET = 33;
+        protected static final int DESCRIPTION_Y = 12;
+        protected static final int SUBTEXT_Y = 23;
+
         public final Component name;
         public final Component description;
         public final List<Component> bages;
@@ -216,10 +247,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                 graphics.requestCursor(isFocused() ? CursorType.DEFAULT : CursorTypes.POINTING_HAND);
                 graphics.fill(getContentX() - 1, getContentY() - 1, maxX, getContentBottom() + 1, ARGB.color(128, 66, 66, 66));
             }
-            int maxBadgesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (getContentX() + 31);
-            int badgeWidth = BageUtils.extractBadges(graphics, minecraft.font, this.bages, maxX, getContentY(), maxBadgesWidth, true);
-            graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE).acceptScrolling(this.name, getContentX() + 31, getContentX() + 31, maxX - badgeWidth, getContentY(), getContentY() + minecraft.font.lineHeight);
-            graphics.text(minecraft.font, this.description, getContentX() + 31, getContentY() + 12, -8355712);
+            int lineHeight = minecraft.font.lineHeight;
+            int top = getContentY() + contentShift(); // Vertically center the whole text block within the row.
+
+            int maxBadgesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (getContentX() + START_OFFSET);
+            int badgeWidth = BageUtils.extractBadges(graphics, minecraft.font, this.bages, maxX, top, maxBadgesWidth, true);
+            graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE).acceptScrolling(this.name, getContentX() + START_OFFSET, getContentX() + START_OFFSET, maxX - badgeWidth, top, top + lineHeight);
+            graphics.text(minecraft.font, this.description, getContentX() + START_OFFSET, top + DESCRIPTION_Y, -8355712);
             extractAdditionalContent(graphics, mouseX, mouseY, hovered, a);
             graphics.disableScissor();
         }
@@ -231,11 +265,41 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             return this.name;
         }
 
+        /** Called when this entry becomes active in the list (a folder is opened, or an emote is shown). */
+        protected void onOpen() {}
+
+        /** Called when this entry is removed from the list (its parent folder is cleared or rebuilt). */
+        protected void onRemoved() {}
+
+        /** @return {@code true} when {@link #extractAdditionalContent} draws a line below the name (e.g. the author). */
+        protected boolean hasSubtext() {
+            return false;
+        }
+
+        /** Vertical offset that centers the name/description/sub-text block within the row. */
+        protected int contentShift() {
+            int lineHeight = minecraft.font.lineHeight;
+            int blockBottom;
+            if (hasSubtext()) {
+                blockBottom = subtextY() + lineHeight;
+            } else if (!StringUtils.isBlank(this.description.getString())) {
+                blockBottom = DESCRIPTION_Y + lineHeight;
+            } else {
+                blockBottom = lineHeight;
+            }
+            return Math.max(0, (getContentBottom() - getContentY() - blockBottom) / 2);
+        }
+
+        /** Y-offset within the text block at which {@link #extractAdditionalContent} draws its sub-line. */
+        protected int subtextY() {
+            return StringUtils.isBlank(this.description.getString()) ? DESCRIPTION_Y : SUBTEXT_Y;
+        }
+
         public boolean matches(String string) {
             return name.getString().toLowerCase().contains(string.toLowerCase());
         }
 
-        protected abstract void collectEmotes(boolean isSearchActive, List<ListEntry> collection);
+        protected abstract void collectEmotes(Consumer<ListEntry> collection);
 
         @Override
         public abstract boolean equals(Object obj);
@@ -247,6 +311,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public int compareTo(@NotNull EmoteListWidget.ListEntry o) {
             return this.name.getString().compareTo(o.name.getString());
         }
+
+        public abstract void searchFor(String search, Predicate<ListEntry> matcher, Consumer<ListEntry> results);
     }
 
     public final class HeaderEntry extends ListEntry {
@@ -274,7 +340,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        protected void collectEmotes(boolean isSearchActive, List<ListEntry> collection) {
+        protected void collectEmotes(Consumer<ListEntry> collection) {
             // no-op
         }
 
@@ -298,75 +364,70 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
+        public void searchFor(String search, Predicate<ListEntry> matcher, Consumer<ListEntry> results) {
+            // no-op
+        }
+
+        @Override
         public boolean matches(String string) {
             return false;
         }
     }
 
-    public class EmoteEntry extends ListEntry {
-        public final EmoteHolder emote;
+    public abstract class EmoteLikeEntry extends ListEntry {
+        public final Component author;
 
-        public EmoteEntry(EmoteHolder emote) {
-            super(emote.name, emote.description, emote.bages);
-            this.emote = emote;
+        public EmoteLikeEntry(@NotNull Component name, Component description, Component author, List<Component> bages) {
+            super(name, description, bages);
+            this.author = author;
         }
 
         @Override
         protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            if (!this.emote.author.getString().isEmpty()) {
+            if (hasSubtext()) {
                 Component text = Component.translatable("emotecraft.emote.author")
                         .withStyle(ChatFormatting.GOLD)
-                        .append(this.emote.author);
+                        .append(this.author);
 
-                graphics.text(minecraft.font, text, getContentX() + 31, getContentY() + 23, -8355712);
+                graphics.text(minecraft.font, text, getContentX() + START_OFFSET, getContentY() + contentShift() + subtextY(), -8355712);
             }
-
-            Identifier texture = this.emote.getIconIdentifier();
-            if (texture != null) {
-                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
-            }
-        }
-
-        public EmoteHolder getEmote() {
-            return this.emote;
         }
 
         @Override
-        public @NotNull Component getNarration() {
-            return this.emote.name;
+        protected boolean hasSubtext() {
+            return !this.author.getString().isEmpty();
         }
+
+        public abstract CompletableFuture<Animation> getEmote();
 
         @Override
         public boolean matches(String string) {
             return super.matches(string) ||
-                    description.getString().toLowerCase().contains(string.toLowerCase()) ||
-                    (emote.fileName != null && emote.fileName.getString().toLowerCase().contains(string.toLowerCase())) ||
-                    emote.author.getString().equalsIgnoreCase(string);
+                    this.description.getString().toLowerCase().contains(string.toLowerCase()) ||
+                    this.author.getString().equalsIgnoreCase(string);
         }
 
         @Override
-        protected void collectEmotes(boolean excludeFolders, List<ListEntry> collection) {
-            collection.add(this);
+        protected void collectEmotes(Consumer<ListEntry> collection) {
+            collection.accept(this);
         }
 
         @Override
-        public boolean equals(Object obj) {
-            return obj instanceof EmoteEntry entry && this.emote.equals(entry.emote);
-        }
+        public abstract boolean equals(Object obj);
 
         @Override
-        public int hashCode() {
-            return this.emote.hashCode();
-        }
+        public abstract int hashCode();
 
         @Override
         public int compareTo(@NotNull ListEntry o) {
-            if (o instanceof EmoteEntry) {
+            if (o instanceof EmoteLikeEntry) {
                 return super.compareTo(o);
             } else {
                 return 1;
             }
         }
+
+        public abstract UUID getUuid();
     }
 
     public class FolderEntry extends ListEntry {
@@ -374,15 +435,15 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public static final Identifier FOLDER_OPEN = McUtils.newIdentifier("textures/folder_open.png");
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
-        private final Map<Object, ListEntry> entries = new HashMap<>();
+        protected final Map<Object, ListEntry> entries = new HashMap<>();
         private FolderEntry next;
 
         private FolderEntry(Object obj) {
-            this((Component) obj);
+            this((Component) obj, FOLDER_DESC);
         }
 
-        public FolderEntry(@NotNull Component name) {
-            super(name, FOLDER_DESC, Collections.emptyList());
+        public FolderEntry(@NotNull Component name, @NotNull Component description) {
+            super(name, description, Collections.emptyList());
         }
 
         @Override
@@ -391,24 +452,24 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        protected void collectEmotes(boolean isSearchActive, List<ListEntry> collection) {
+        protected void collectEmotes(Consumer<ListEntry> collection) {
             if (this.next == null || !this.entries.containsValue(this.next)) {
                 for (var entry : this.entries.values()) {
                     if (entry instanceof FolderEntry folder) {
                         boolean isInvalid = StringUtils.isBlank(this.name.getString());
-                        if (!isInvalid) collection.add(folder);
+                        if (!isInvalid) collection.accept(folder);
 
-                        if (isSearchActive || isInvalid) {
+                        if (isInvalid) {
                             for (var folderEntry : folder.entries.values()) {
-                                folderEntry.collectEmotes(isSearchActive, collection);
+                                folderEntry.collectEmotes(collection);
                             }
                         }
                     } else {
-                        entry.collectEmotes(isSearchActive, collection);
+                        entry.collectEmotes(collection);
                     }
                 }
             } else {
-                this.next.collectEmotes(isSearchActive, collection);
+                this.next.collectEmotes(collection);
             }
         }
 
@@ -426,9 +487,33 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public boolean setSelectedFolder(FolderEntry folder) {
             if (folder == null || this.entries.containsValue(folder)) {
                 this.next = folder;
+                if (folder != null) {
+                    folder.onOpen();
+                }
                 return true;
             }
             return false;
+        }
+
+        @Override
+        protected void onRemoved() {
+            for (ListEntry entry : this.entries.values()) {
+                entry.onRemoved();
+            }
+        }
+
+        /** Removes and notifies every child entry. */
+        protected void clearChildren() {
+            this.entries.values().forEach(ListEntry::onRemoved);
+            this.entries.clear();
+        }
+
+        /** Removes and notifies the child mapped to {@code key}, if present. */
+        protected void removeChild(Object key) {
+            ListEntry removed = this.entries.remove(key);
+            if (removed != null) {
+                removed.onRemoved();
+            }
         }
 
         public FolderEntry getOrCreateFolder(Component name) {
@@ -451,6 +536,21 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
                 return super.compareTo(o);
             } else {
                 return -1;
+            }
+        }
+
+        @Override
+        public void searchFor(String search, Predicate<ListEntry> matcher, Consumer<ListEntry> results) {
+            if (this.next != null && this.entries.containsValue(this.next)) {
+                this.next.searchFor(search, matcher, results);
+            } else {
+                for (var entry : this.entries.values()) {
+                    if (entry instanceof FolderEntry folder && StringUtils.isBlank(this.name.getString())) {
+                        for (var folderEntry : folder.entries.values()) folderEntry.searchFor(search, matcher, results);
+                    } else {
+                        entry.searchFor(search, matcher, results);
+                    }
+                }
             }
         }
     }

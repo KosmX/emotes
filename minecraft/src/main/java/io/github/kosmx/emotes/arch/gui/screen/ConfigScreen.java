@@ -1,6 +1,9 @@
 package io.github.kosmx.emotes.arch.gui.screen;
 
 import com.mojang.serialization.Codec;
+import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.library.AcceptPrivacyScreen;
+import io.github.kosmx.emotes.arch.library.LibraryStatus;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ExportMenu;
 import io.github.kosmx.emotes.common.CommonData;
@@ -10,6 +13,7 @@ import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -98,6 +102,8 @@ public class ConfigScreen extends OptionsSubScreen {
                 addNumberEntry(options, tooltip, numberEntry);
             } else if (entry instanceof SerializableConfig.EnumConfigEntry<?> enumEntry) {
                 addEnumEntry(options, tooltip, enumEntry);
+            } else {
+                CommonData.LOGGER.warn("Unknown config entry: {}", entry);
             }
         }
     }
@@ -126,6 +132,22 @@ public class ConfigScreen extends OptionsSubScreen {
                 Object::toString
         );
 
+        final OptionInstance.ValueUpdateListener<T> onValueUpdate;
+        if (entry == PlatformTools.getConfig().cloudLibraryStatus) {
+            onValueUpdate = newValue -> {
+                if (newValue == LibraryStatus.ENABLED && entry.get() != LibraryStatus.ENABLED) {
+                    minecraft.gui.setScreen(new AcceptPrivacyScreen(this, () -> {
+                        entry.set(newValue);
+                        minecraft.gui.setScreen(this);
+                    }));
+                } else {
+                    entry.set(newValue);
+                }
+            };
+        } else {
+            onValueUpdate = entry::set;
+        }
+
         options.addBig(new OptionInstance<>(
                 this.namespace + ".otherconfig." + entry.getName(),
                 (OptionInstance.TooltipSupplier<T>) tooltip,
@@ -133,8 +155,14 @@ public class ConfigScreen extends OptionsSubScreen {
                 new OptionInstance.Enum<>(List.of(values), codec),
                 codec,
                 entry.get(),
-                entry::set
+                onValueUpdate
         ));
+    }
+
+    @Override
+    protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
+        if (minecraft.gui.screen() instanceof AcceptPrivacyScreen) return;
+        super.extractBlurredBackground(graphics);
     }
 
     private void resetAll(boolean bl) {

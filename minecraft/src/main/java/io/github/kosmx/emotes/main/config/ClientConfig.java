@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.main.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.kosmx.emotes.arch.library.LibraryStatus;
 import io.github.kosmx.emotes.common.tools.BiMap;
 import io.github.kosmx.emotes.server.config.CommonConfig;
 import net.minecraft.client.CameraType;
@@ -30,6 +31,7 @@ public class ClientConfig extends CommonConfig {
     public final ConfigEntry<Boolean> showHiddenConfig = new ConfigEntry<>("showHiddenConfig", false, true, category("expert"), false);
     // public final ConfigEntry<Boolean> neverRemoveBadIcon = new ConfigEntry<>("neverRemoveBadIcon", false, expert, true);
     // public final ConfigEntry<Boolean> exportBuiltin = new ConfigEntry<>("exportBuiltin", false, expert, true);
+    public final EnumConfigEntry<LibraryStatus> cloudLibraryStatus = new EnumConfigEntry<>("cloudLibraryStatus", LibraryStatus.SHOW_FOLDER, false, category("library"), false);
 
     //------------------------ Client-only overrides ------------------------//
 

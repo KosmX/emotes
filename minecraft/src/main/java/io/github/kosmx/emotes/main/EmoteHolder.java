@@ -9,6 +9,7 @@ import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
@@ -16,7 +17,9 @@ import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.CommonComponents;
@@ -33,7 +36,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -87,7 +93,7 @@ public class EmoteHolder implements Supplier<UUID> {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    private static List<Component> computeBages(List<String> bages) {
+    public static List<Component> computeBages(List<String> bages) {
         if (bages == null || bages.isEmpty()) return Collections.emptyList();
         List<Component> components = new ArrayList<>(bages.size());
         for (String element : bages) {
@@ -127,7 +133,7 @@ public class EmoteHolder implements Supplier<UUID> {
         RenderSystem.assertOnRenderThread();
 
         try (InputStream stream = new ByteArrayInputStream(MathHelper.safeGetBytesFromBuffer((buffer)))) {
-            this.iconIdentifier = McUtils.newIdentifier("icon" + hashCode());
+            this.iconIdentifier = McUtils.newIdentifier("icon/" + hashCode());
 
             Minecraft.getInstance().getTextureManager().register(this.iconIdentifier,
                     new DynamicTexture(this.iconIdentifier::toString, NativeImage.read(stream))
@@ -288,6 +294,50 @@ public class EmoteHolder implements Supplier<UUID> {
                             ExtraAnimationData.NAME_KEY, "{\"color\":\"red\",\"text\":\"INVALID\"}"
             ), 0, Animation.LoopType.PLAY_ONCE, Collections.emptyMap(), UniversalAnimLoader.NO_KEYFRAMES, new HashMap<>(), new HashMap<>()));
             emote.data().put(ExtraAnimationData.UUID_KEY, uuid);
+        }
+    }
+
+    public final static class EmoteHolderEntry extends EmoteListWidget.EmoteLikeEntry {
+        public final EmoteHolder holder;
+
+        public EmoteHolderEntry(EmoteListWidget widget, @NotNull EmoteHolder holder) {
+            widget.super(holder.name, holder.description, holder.author, holder.bages);
+            this.holder = holder;
+        }
+
+        @Override
+        protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            super.extractAdditionalContent(graphics, mouseX, mouseY, hovered, tickDelta);
+
+            Identifier texture = this.holder.getIconIdentifier();
+            if (texture != null) {
+                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
+            }
+        }
+
+        @Override
+        public CompletableFuture<Animation> getEmote() {
+            return CompletableFuture.completedFuture(this.holder.emote);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof EmoteHolderEntry entry && this.holder.equals(entry.holder);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.holder.hashCode();
+        }
+
+        @Override
+        public void searchFor(String search, Predicate<EmoteListWidget.ListEntry> matcher, Consumer<EmoteListWidget.ListEntry> results) {
+            if (matcher.test(this)) results.accept(this);
+        }
+
+        @Override
+        public UUID getUuid() {
+            return this.holder.get();
         }
     }
 }
