@@ -10,14 +10,14 @@ plugins {
     id("io.papermc.hangar-publish-plugin") version "0.1.4"
 }
 
-base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
+base.archivesName = "${project["archives_base_name"]}-${name}-for-MC${project["minecraft_version"]}"
 version = mod_version
 
 val compileApi = configurations.register("compileApi").get()
 configurations.api.configure { extendsFrom(compileApi) }
 
 dependencies {
-    paperweight.paperDevBundle("${minecraft_version}+")
+    paperweight.paperDevBundle("${project["minecraft_version"]}+")
 
     compileApi(project(":emotesAssets"))
     compileApi(project(":emotesMc"))
@@ -28,16 +28,16 @@ dependencies {
 }
 
 tasks.runServer {
-    minecraftVersion(minecraft_version)
+    minecraftVersion(project["minecraft_version"])
 }
 
 tasks.processResources {
     inputs.property("version", version)
-    inputs.property("description", mod_description)
-    inputs.property("mcversion", minecraft_version)
+    inputs.property("description", project["mod_description"])
+    inputs.property("mcversion", project["minecraft_version"])
 
     filesMatching("paper-plugin.yml") {
-        expand("version" to version, "description" to mod_description, "mcversion" to minecraft_version)
+        expand("version" to version, "description" to project["mod_description"], "mcversion" to project["minecraft_version"])
     }
 }
 
@@ -105,6 +105,7 @@ publishMods {
         minecraftVersions.addAll(release_minecraft_versions)
         displayName = "Emotecraft $mod_version for Paper"
         version = "$mod_version-paper"
+        environment = SERVER_ONLY
     }
 }
 

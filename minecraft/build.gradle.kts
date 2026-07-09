@@ -1,11 +1,11 @@
-import me.modmuss50.mpp.PublishModTask
+import io.github.p03w.machete.tasks.OptimizeJarsTask
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
     id("xyz.wagyourtail.unimined")
     id("com.gradleup.shadow")
     id("me.modmuss50.mod-publish-plugin")
-    id("org.redlance.dima_dencep.gradle.machete") version "1.0.2"
+    id("org.redlance.dima_dencep.gradle.machete") version "2.0.0"
 }
 
 sourceSets {
@@ -17,10 +17,10 @@ sourceSets {
 }
 
 unimined.minecraft(sourceSets.main.get()) {
-    version(minecraft_version)
+    version(project["minecraft_version"])
 
     fabric {
-        loader(fabric_loader_version)
+        loader(project["fabric_loader_version"])
         accessWidener(file("src/main/resources/emotes.classtweaker"))
     }
 
@@ -31,7 +31,7 @@ unimined.minecraft(sourceSets.getByName("fabric")) {
     combineWith(sourceSets.main.get())
 
     fabric {
-        loader(fabric_loader_version)
+        loader(project["fabric_loader_version"])
         accessWidener(file("src/main/resources/emotes.classtweaker"))
     }
     defaultRemapJar = true
@@ -41,7 +41,7 @@ unimined.minecraft(sourceSets.getByName("neoforge")) {
     combineWith(sourceSets.main.get())
 
     neoForge {
-        loader("net.neoforged:neoforge:$neoforge_version:universal")
+        loader("net.neoforged:neoforge:${project["neoforge_version"]}:universal")
         mixinConfig("emotecraft-arch.mixins.json")
 
         accessTransformer(provider {
@@ -163,10 +163,10 @@ dependencies {
 listOf("processResources", "processFabricResources", "processNeoforgeResources").forEach { name ->
     tasks.named<ProcessResources>(name) {
         inputs.property("version", version)
-        inputs.property("description", mod_description)
+        inputs.property("description", project["mod_description"])
 
         filesMatching(listOf("META-INF/neoforge.mods.toml", "fabric.mod.json")) {
-            expand("version" to version, "description" to mod_description)
+            expand("version" to version, "description" to project["mod_description"])
         }
     }
 }
@@ -177,8 +177,8 @@ tasks.shadowJar {
     from(tasks.named<AbstractArchiveTask>("remapFabricJar").map { zipTree(it.archiveFile) })
     from(tasks.named<AbstractArchiveTask>("remapNeoforgeJar").map { zipTree(it.archiveFile) })
 
-    archiveBaseName.set("${archives_base_name}-for-MC${minecraft_version}")
-    archiveClassifier.set("")
+    archiveBaseName.set("${project["archives_base_name"]}-for-MC${project["minecraft_version"]}")
+    archiveClassifier.set("fat")
 
     // Services
     filesMatching("META-INF/services/**") {
@@ -196,14 +196,18 @@ tasks.shadowJar {
     }
 }
 
-machete {
-    tasks.set(setOf("shadowJar"))
+val optimizeJar = tasks.register<OptimizeJarsTask>("optimizeJar") {
+    input.set(tasks.shadowJar.flatMap { it.archiveFile })
+    output.set(layout.buildDirectory.file("libs/${project["archives_base_name"]}-for-MC${project["minecraft_version"]}-${version}.jar"))
+
     sourceFileStriping.enabled = true
 
     png.compressionLevel.set(9)
     png.compressorIterations.set(32)
     png.enabled = false
 }
+
+tasks.named("assemble") { finalizedBy(optimizeJar) }
 
 tasks.jar {
     archiveClassifier.set("dev")
@@ -218,7 +222,7 @@ listOf("fabric", "neoforge").forEach { name ->
         from(sourceSets.main.get().allSource)
         from(sourceSets.getByName(name).allSource)
 
-        archiveBaseName.set(rootProject.archives_base_name)
+        archiveBaseName.set(rootProject["archives_base_name"])
         archiveClassifier.set("${name}-sources")
     }
 }
@@ -283,7 +287,7 @@ publishMods {
     modLoaders.add("fabric")
     modLoaders.add("neoforge")
 
-    file.set(tasks.shadowJar.get().archiveFile)
+    file.set(optimizeJar.get().output)
 
     type = ReleaseType.of(releaseType)
     changelog = changes
@@ -300,7 +304,8 @@ publishMods {
         projectId = providers.gradleProperty("modrinth_id")
         minecraftVersions.addAll(release_minecraft_versions)
         version = mod_version
-        displayName = "Emotecraft $mod_version for ${removePreRc(minecraft_version)}"
+        displayName = "Emotecraft $mod_version for ${removePreRc(project["minecraft_version"])}"
+        environment = CLIENT_OR_SERVER_PREFERS_BOTH
 
         // requires("fabric-api")
         requires("player-animation-library")
@@ -309,49 +314,35 @@ publishMods {
         // optional("fabric-permissions-api")
     }
 
-    curseforge("curseforgeFabric") {
+    val cfOptions = curseforgeOptions {
         announcementTitle = "CurseForge (Fabric/NeoForge)"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        projectId = providers.gradleProperty("curseforge_id_fabric")
-        projectSlug = providers.gradleProperty("curseforge_slug_fabric")
         changelogType = "markdown"
-        displayName = "Emotecraft $mod_version for ${removePreRc(minecraft_version)}"
+        displayName = "Emotecraft $mod_version for ${removePreRc(project["minecraft_version"])}"
         minecraftVersions.addAll(curseforge_minecraft_versions)
 
         javaVersions.add(project.java_version)
-        clientRequired = true
-        serverRequired = true
+        client = true
+        server = true
 
-        requires("fabric-api")
         requires("player-animation-library")
         optional("bendable-cuboids")
         optional("searchables")
+    }
+
+    curseforge("curseforgeFabric") {
+        from(cfOptions)
+
+        projectId = providers.gradleProperty("curseforge_id_fabric")
+        projectSlug = providers.gradleProperty("curseforge_slug_fabric")
+
+        requires("fabric-api")
     }
 
     curseforge("curseforgeNeo") {
-        announcementTitle = "CurseForge (Fabric/NeoForge)"
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        from(cfOptions)
+
         projectId = providers.gradleProperty("curseforge_id_forge")
         projectSlug = providers.gradleProperty("curseforge_slug_forge")
-        changelogType = "markdown"
-        displayName = "Emotecraft $mod_version for ${removePreRc(minecraft_version)}"
-        minecraftVersions.addAll(curseforge_minecraft_versions)
-
-        javaVersions.add(project.java_version)
-        clientRequired = true
-        serverRequired = true
-
-        requires("player-animation-library")
-        optional("bendable-cuboids")
-        optional("searchables")
     }
-}
-
-afterEvaluate {
-    val optimizeOutputsOfShadowJar = tasks.getByName("optimizeOutputsOfShadowJar")
-
-    tasks.publishMods.configure { dependsOn(optimizeOutputsOfShadowJar) }
-    publishMods.platforms
-        .map { platform -> project.tasks.getByName(platform.taskName) as PublishModTask }
-        .forEach { it.dependsOn(optimizeOutputsOfShadowJar) }
 }

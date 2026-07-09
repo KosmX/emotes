@@ -4,7 +4,7 @@ plugins {
 }
 
 unimined.minecraft {
-    version(minecraft_version)
+    version(project["minecraft_version"])
 
     mappings {
         devNamespace("official")

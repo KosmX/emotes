@@ -60,9 +60,9 @@ allprojects {
 
 releaseType = ENV["RELEASE_TYPE"] ?: "alpha"
 changes = ENV["CHANGELOG"]?.replace("\\n", "\n") ?: ""
-mod_version = version_base
+mod_version = project["version_base"]
 if (releaseType != "stable") {
-    mod_version = "${version_base}-${releaseType[0]}.${ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: getGitShortRevision()}"
+    mod_version = "${project["version_base"]}-${releaseType[0]}.${ENV["BUILD_NUMBER"]?.let { "build.$it" } ?: getGitShortRevision()}"
 }
 version = mod_version
 

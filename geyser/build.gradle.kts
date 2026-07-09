@@ -8,7 +8,7 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
-base.archivesName = "${archives_base_name}-${name}-for-MC${minecraft_version}"
+base.archivesName = "${project["archives_base_name"]}-${name}-for-MC${project["minecraft_version"]}"
 version = mod_version
 
 /**
@@ -59,11 +59,11 @@ tasks {
         val apiVersion = project["geyser_version"].removeSuffix("-SNAPSHOT")
 
         inputs.property("version", version)
-        inputs.property("description", mod_description)
+        inputs.property("description", project["mod_description"])
         inputs.property("apiversion", apiVersion)
 
         filesMatching("extension.yml") {
-            expand("version" to version, "description" to mod_description, "apiversion" to apiVersion)
+            expand("version" to version, "description" to project["mod_description"], "apiversion" to apiVersion)
         }
     }
 
@@ -159,5 +159,6 @@ publishMods {
         minecraftVersions.addAll(release_minecraft_versions)
         displayName = "Emotecraft $mod_version for Geyser"
         version = "$mod_version-geyser"
+        environment = SERVER_ONLY
     }
 }
