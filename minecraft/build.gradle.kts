@@ -306,7 +306,7 @@ publishMods {
         // optional("fabric-permissions-api")
     }
 
-    curseforge {
+    curseforge("curseforgeFabric") {
         announcementTitle = "CurseForge (Fabric/NeoForge)"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = providers.gradleProperty("curseforge_id_fabric")
@@ -319,7 +319,25 @@ publishMods {
         clientRequired = true
         serverRequired = true
 
-        // requires("fabric-api")
+        requires("fabric-api")
+        requires("player-animation-library")
+        optional("bendable-cuboids")
+        optional("searchables")
+    }
+
+    curseforge("curseforgeNeo") {
+        announcementTitle = "CurseForge (Fabric/NeoForge)"
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = providers.gradleProperty("curseforge_id_forge")
+        projectSlug = providers.gradleProperty("curseforge_slug_forge")
+        changelogType = "markdown"
+        displayName = "Emotecraft $mod_version for ${removePreRc(minecraft_version)}"
+        minecraftVersions.addAll(curseforge_minecraft_versions)
+
+        javaVersions.add(project.java_version)
+        clientRequired = true
+        serverRequired = true
+
         requires("player-animation-library")
         optional("bendable-cuboids")
         optional("searchables")
