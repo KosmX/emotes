@@ -30,7 +30,6 @@ import org.joml.Vector2f;
 import org.jspecify.annotations.NonNull;
 
 import java.time.Duration;
-import java.util.UUID;
 
 public abstract class PlayerChooseElement extends PlayerPreview implements IChooseElement {
     private static final Float2FloatFunction EASING_TRANSFORMER = EasingType.EASE_IN_CIRC.buildTransformer(null);
@@ -142,16 +141,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     @Override
     public EmoteHolder getEmote() {
-        UUID uuid = PlatformTools.getConfig().fastMenuEmotes[parent.getCurrentPage()][id];
-        if (uuid != null) {
-            EmoteHolder emote = EmoteHolder.list.get(uuid);
-            if (emote == null && this.parent.controller.doesShowInvalid()) {
-                emote = new EmoteHolder.Empty(uuid);
-            }
-            return emote;
-        } else {
-            return null;
-        }
+        return PlatformTools.getConfig().fastMenuEmotes[parent.getCurrentPage()][id];
     }
 
     @Override
@@ -161,7 +151,15 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     @Override
     public void setEmote(EmoteListWidget.EmoteLikeEntry emote) {
-        PlatformTools.getConfig().fastMenuEmotes[parent.getCurrentPage()][id] = emote == null ? null : emote.getUuid();
+        int page = parent.getCurrentPage();
+        if (emote == null) {
+            PlatformTools.getConfig().fastMenuEmotes[page][id] = null;
+            return;
+        }
+        // Snapshot the emote itself (a local one resolves instantly, a library one is fetched once) so the slot works offline.
+        emote.getEmote().whenCompleteAsync((animation, th) -> {
+            if (th == null) PlatformTools.getConfig().fastMenuEmotes[page][id] = new EmoteHolder(animation);
+        }, Minecraft.getInstance());
     }
 
     @Override

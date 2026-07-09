@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.zigythebird.playeranimcore.animation.Animation;
@@ -11,7 +10,6 @@ import io.github.kosmx.emotes.arch.screen.utils.BageUtils;
 import io.github.kosmx.emotes.arch.screen.utils.PageButton;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -195,14 +193,17 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return last;
     }
 
+    /**
+     * @return key-bound emotes not shown anywhere else in the current view — neither in {@link EmoteHolder#list}
+     * (local/server emotes) nor already loaded by the library folder — so they stay manageable without duplicating.
+     */
     public Iterable<EmoteHolder> getEmptyEmotes() {
-        Collection<EmoteHolder> empties = new LinkedList<>();
-        for(Pair<UUID, InputConstants.Key> pair : PlatformTools.getConfig().emoteKeyMap) {
-            if (!EmoteHolder.list.containsKey(pair.left())) {
-                empties.add(new EmoteHolder.Empty(pair.left()));
-            }
+        Collection<EmoteHolder> extras = new LinkedList<>();
+        for (EmoteHolder holder : PlatformTools.getConfig().keyBinds.values()) {
+            UUID id = holder.getUuid();
+            if (!EmoteHolder.list.containsKey(id) && !this.libraryEntry.hasLoaded(id)) extras.add(holder);
         }
-        return empties;
+        return extras;
     }
 
     public List<ListEntry> getEmotes() {

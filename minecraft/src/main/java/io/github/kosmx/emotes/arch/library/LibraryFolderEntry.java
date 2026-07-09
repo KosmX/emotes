@@ -146,6 +146,11 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         }
     }
 
+    /** @return whether this folder has the given liked emote loaded, so a bound copy of it isn't shown elsewhere too. */
+    public boolean hasLoaded(UUID id) {
+        return this.entries.get(id) instanceof LibraryEmoteEntry;
+    }
+
     @Override
     public void onReset() {
         int generation = this.connectionGeneration;

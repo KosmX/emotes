@@ -8,8 +8,9 @@ public class CommonConfig extends SerializableConfig {
      * 2 - PlayerSafetyOption
      * 3 - Kale Ko changed a build-in emote, EmoteFixer to keep bound
      * 4 - using Uuids instead of hash.
+     * 5 - key binds / wheel store the emote itself (animation) instead of a UUID.
      */
-    public final static int staticConfigVersion = 4;
+    public final static int staticConfigVersion = 5;
 
     // public final ConfigEntry<Boolean> showDebug = new ConfigEntry<>("debug", "showDebug", true, false, category("expert"));
     public final ConfigEntry<Boolean> validateEmote = new ConfigEntry<>("validate", false, true, category("expert"));

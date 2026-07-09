@@ -2,10 +2,12 @@ package io.github.kosmx.emotes.main.config;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.arch.library.LibraryStatus;
-import io.github.kosmx.emotes.common.tools.BiMap;
+import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.config.CommonConfig;
 import net.minecraft.client.CameraType;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class ClientConfig extends CommonConfig {
@@ -46,8 +48,14 @@ public class ClientConfig extends CommonConfig {
     //public List<EmoteHolder> emotesWithKey = new ArrayList<>();
     //public final EmoteHolder[] fastMenuEmotes = new EmoteHolder[8];
 
-    public BiMap<UUID, InputConstants.Key> emoteKeyMap = new BiMap<>();
-    public UUID[][] fastMenuEmotes = new UUID[15][8];
+    // Bindings store the emote itself (serialized as an animation), not a UUID: they survive updates/re-imports and
+    // work offline, and a library emote is identical to a local one once bound. See ClientConfigSerializer.
+    public Map<InputConstants.Key, EmoteHolder> keyBinds = new HashMap<>();
+    public EmoteHolder[][] fastMenuEmotes = new EmoteHolder[15][8];
+
+    // Set only when an old UUID-based config is read; resolved to holders once emotes finish loading, then cleared.
+    public Map<InputConstants.Key, UUID> legacyKeyBinds;
+    public UUID[][] legacyFastMenu;
 
     //------------------------ Random tweak stuff ------------------------//
 

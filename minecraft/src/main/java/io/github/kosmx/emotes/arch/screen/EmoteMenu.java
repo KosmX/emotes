@@ -26,6 +26,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
@@ -132,16 +133,16 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     private void resetKeyAction(Button button){
         if (resetOnlySelected) {
             if (this.list == null || !(this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry)) return;
-            PlatformTools.getConfig().emoteKeyMap.removeL(entry.getUuid());
+            unbind(entry.getUuid());
             onPressed(this.list.getSelected());
         } else {
             this.minecraft.gui.setScreen(new ConfirmScreen(aBoolean -> {
                 if (aBoolean) {
-                    PlatformTools.getConfig().emoteKeyMap.clear(); //reset :D
+                    PlatformTools.getConfig().keyBinds.clear(); //reset :D
                     onPressed(this.list.getSelected());
                 }
                 this.minecraft.gui.setScreen(EmoteMenu.this);
-                }, RESET_ALL_TITLE, RESET_ALL_MSG.copy().append(" (" + PlatformTools.getConfig().emoteKeyMap.size() + ")")
+                }, RESET_ALL_TITLE, RESET_ALL_MSG.copy().append(" (" + PlatformTools.getConfig().keyBinds.size() + ")")
             ));
         }
     }
@@ -162,7 +163,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
 
         if (selected instanceof EmoteListWidget.EmoteLikeEntry entry) {
             this.setKeyButton.setMessage(getKey(entry.getUuid()).getDisplayName());
-            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(entry.getUuid());
+            this.resetOnlySelected = isBound(entry.getUuid());
         } else {
             this.resetOnlySelected = false;
         }
@@ -171,9 +172,9 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
             this.resetButton.active = true;
             this.resetButton.setMessage(RESET_ONE);
         } else {
-            if (!PlatformTools.getConfig().emoteKeyMap.isEmpty()) {
+            if (!PlatformTools.getConfig().keyBinds.isEmpty()) {
                 this.resetButton.active = true;
-                this.resetButton.setMessage(RESET_ALL.copy().append(" (" + PlatformTools.getConfig().emoteKeyMap.size() + ")"));
+                this.resetButton.setMessage(RESET_ALL.copy().append(" (" + PlatformTools.getConfig().keyBinds.size() + ")"));
             } else {
                 this.resetButton.active = false;
                 this.resetButton.setMessage(RESET_ONE);
@@ -204,47 +205,53 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     }
 
     private boolean setKey(InputConstants.Key key){
-        boolean bl = false;
-        if (this.list != null && this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry) {
-            bl = true;
-            if (!applyKey(false, entry.getUuid(), key)) {
+        if (this.list == null || !(this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry)) return false;
+        // Resolve the emote itself (local instantly, library fetched once), then bind it — the binding stores the emote, not a UUID.
+        entry.getEmote().whenCompleteAsync((animation, th) -> {
+            if (th != null) return;
+            EmoteHolder holder = new EmoteHolder(animation);
+            if (!applyKey(false, holder, key)) {
                 this.minecraft.gui.setScreen(new ConfirmScreen(choice -> {
-                    if (choice) {
-                        applyKey(true, entry.getUuid(), key);
-                    }
+                    if (choice) applyKey(true, holder, key);
                     this.minecraft.gui.setScreen(this);
                 }, SURE, SURE2));
             }
-        }
-        return bl;
+        }, this.minecraft);
+        return true;
     }
 
-    private boolean applyKey(boolean force, UUID emote, InputConstants.Key key){
-        boolean bl = true;
-        for(EmoteHolder emoteHolder : EmoteHolder.list){
-            if(! key.equals(InputConstants.UNKNOWN) && getKey(emoteHolder.getUuid()).equals(key)){
-                bl = false;
-                if(force){
-                    //emoteHolder.keyBinding = TmpGetters.getDefaults().getUnknownKey();
-                    PlatformTools.getConfig().emoteKeyMap.removeL(emoteHolder.getUuid());
-                }
-            }
+    private boolean applyKey(boolean force, EmoteHolder emote, InputConstants.Key key){
+        Map<InputConstants.Key, EmoteHolder> keyBinds = PlatformTools.getConfig().keyBinds;
+
+        EmoteHolder current = key.equals(InputConstants.UNKNOWN) ? null : keyBinds.get(key);
+        if (current != null && !current.getUuid().equals(emote.getUuid()) && !force) {
+            return false; // key already taken by another emote — caller asks to confirm the override
         }
-        if (bl || force) {
-            PlatformTools.getConfig().emoteKeyMap.put(emote, key);
-            onPressed(this.list.getSelected());
+
+        unbind(emote.getUuid());                 // one key per emote: drop its previous bind
+        if (!key.equals(InputConstants.UNKNOWN)) {
+            keyBinds.put(key, emote);            // one emote per key: overwrites any conflicting bind
         }
+        onPressed(this.list.getSelected());
         this.activeKeyTime = 0;
-        return bl;
+        return true;
     }
 
+    /** @return the key {@code emoteId} is bound to, matching by emote id against the stored holders, or UNKNOWN. */
     @NotNull
-    public static InputConstants.Key getKey(UUID emoteID) {
-        InputConstants.Key key;
-        if((key = PlatformTools.getConfig().emoteKeyMap.getR(emoteID)) == null){
-            return InputConstants.UNKNOWN;
+    public static InputConstants.Key getKey(UUID emoteId) {
+        for (Map.Entry<InputConstants.Key, EmoteHolder> entry : PlatformTools.getConfig().keyBinds.entrySet()) {
+            if (entry.getValue().getUuid().equals(emoteId)) return entry.getKey();
         }
-        return key;
+        return InputConstants.UNKNOWN;
+    }
+
+    private static boolean isBound(UUID emoteId) {
+        return getKey(emoteId) != InputConstants.UNKNOWN;
+    }
+
+    private static void unbind(UUID emoteId) {
+        PlatformTools.getConfig().keyBinds.values().removeIf(holder -> holder.getUuid().equals(emoteId));
     }
 
     @Override

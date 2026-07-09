@@ -273,13 +273,10 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public static void handleKeyPress(InputConstants.Key key) {
-        if (EmoteHolder.canRunEmote(ClientUtil.getClientPlayer())) {
-            UUID uuid = PlatformTools.getConfig().emoteKeyMap.getL(key);
-            if (uuid != null) {
-                EmoteHolder emoteHolder = list.get(uuid);
-                if (emoteHolder != null) emoteHolder.playEmote();
-            }
-        }
+        if (!EmoteHolder.canRunEmote(ClientUtil.getClientPlayer())) return;
+
+        EmoteHolder emoteHolder = PlatformTools.getConfig().keyBinds.get(key);
+        if (emoteHolder != null) emoteHolder.playEmote();
     }
 
     public static EmoteHolder getNonNull(@NotNull UUID emote) {
