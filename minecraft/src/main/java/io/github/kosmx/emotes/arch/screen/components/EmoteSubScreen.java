@@ -5,8 +5,12 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
+import io.github.kosmx.emotes.arch.library.AcceptPrivacyScreen;
+import io.github.kosmx.emotes.arch.library.LibraryFolderEntry;
+import io.github.kosmx.emotes.arch.library.LibraryStatus;
 import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
 import io.github.kosmx.emotes.server.serializer.EmoteWriter;
 import io.github.kosmx.emotes.server.services.InstanceService;
@@ -20,8 +24,8 @@ import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -72,6 +76,7 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     protected void init() {
+        this.layout.removeChildren(); // The frames accumulate otherwise; widgets below are reused across resizes.
         this.addTitle();
         this.addPlayerPreview();
         this.addContents();
@@ -81,17 +86,23 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected void addTitle() {
-        this.searchBox = this.layout.addToHeader(this.searchEngine.createEditBox(this.font, RecipeBookComponent.SEARCH_HINT,
-                () -> Objects.requireNonNull(this.list).getEmotes(isSearchActive())
-        ));
-        this.searchBox.setHint(RecipeBookComponent.SEARCH_HINT);
-        this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(this.searchEngine, isSearchActive(), string));
+        if (this.searchBox == null) {
+            this.searchBox = this.searchEngine.createEditBox(this.font, RecipeBookComponent.SEARCH_HINT,
+                    () -> Objects.requireNonNull(this.list).getEmotes()
+            );
+            this.searchBox.setHint(RecipeBookComponent.SEARCH_HINT);
+            this.searchBox.setResponder((string) -> Objects.requireNonNull(this.list).filter(
+                    string.isBlank() ? null : this.searchEngine, string
+            ));
+        }
+        this.layout.addToHeader(this.searchBox);
     }
 
     protected void addPlayerPreview() {
-        this.preview = this.layout.addToContents(new PlayerPreview(
-                this.minecraft.getGameProfile(), 0, 0, 0, 0, true
-        ), layoutSettings -> layoutSettings.alignHorizontallyLeft().paddingLeft(Button.DEFAULT_SPACING));
+        if (this.preview == null) {
+            this.preview = new PlayerPreview(this.minecraft.getGameProfile(), 0, 0, 0, 0, true);
+        }
+        this.layout.addToContents(this.preview, layoutSettings -> layoutSettings.alignHorizontallyLeft().paddingLeft(Button.DEFAULT_SPACING));
     }
 
     protected EmoteListWidget newEmoteListWidget() {
@@ -106,6 +117,15 @@ public abstract class EmoteSubScreen extends Screen {
 
             @Override
             public boolean setLastFolder(FolderEntry folder) {
+                if (folder instanceof LibraryFolderEntry libraryFolder && PlatformTools.getConfig().cloudLibraryStatus.get() != LibraryStatus.ENABLED) {
+                    minecraft.gui.setScreen(new AcceptPrivacyScreen(EmoteSubScreen.this, () -> {
+                        PlatformTools.getConfig().cloudLibraryStatus.set(LibraryStatus.ENABLED);
+                        Serializer.INSTANCE.saveConfig();
+                        minecraft.gui.setScreen(EmoteSubScreen.this); // Re-show first, then navigate on the now-active screen.
+                        setLastFolder(libraryFolder);
+                    }));
+                    return false;
+                }
                 if (super.setLastFolder(folder)) {
                     if (searchBox != null) searchBox.setValue("");
                     if (preview != null) preview.getMannequin().stopEmote();
@@ -113,12 +133,22 @@ public abstract class EmoteSubScreen extends Screen {
                 }
                 return false;
             }
+
+            @Override
+            public void refreshFilter() {
+                if (searchBox == null) return;
+                String search = searchBox.getValue();
+                filter(search.isBlank() ? null : searchEngine, search);
+            }
         };
     }
 
     protected void addContents() {
-        this.list = this.layout.addToContents(newEmoteListWidget());
-        addOptions();
+        if (this.list == null) {
+            this.list = newEmoteListWidget();
+            addOptions();
+        }
+        this.layout.addToContents(this.list);
     }
 
     protected abstract void addOptions();
@@ -128,7 +158,7 @@ public abstract class EmoteSubScreen extends Screen {
 
         if (this.list != null) linearLayout.addChild(this.list.createBackButton());
         linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE,
-                button -> onClose()
+                _ -> onClose()
         ).width(200).build());
     }
 
@@ -167,8 +197,14 @@ public abstract class EmoteSubScreen extends Screen {
             if (this.list.getSelected() == hovered) {
                 hovered = null;
             }
-            if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
-                this.preview.playAnimation(emote.emote.emote, Animation.LoopType.DEFAULT, true);
+            if (hovered instanceof EmoteListWidget.EmoteLikeEntry emote) {
+                emote.getEmote().whenCompleteAsync((animation, throwable) -> {
+                    if (throwable != null) {
+                        CommonData.LOGGER.error("Failed to load emote!", throwable);
+                        return;
+                    }
+                    this.preview.playAnimation(animation, Animation.LoopType.DEFAULT, true);
+                }, this.minecraft);
             } else if (hovered instanceof EmoteListWidget.FolderEntry) {
                 this.preview.getMannequin().stopEmote();
             }
@@ -181,6 +217,7 @@ public abstract class EmoteSubScreen extends Screen {
         if (this.watcher != null) this.watcher.blockWhileLoading();
         super.removed();
         if (this.preview != null) this.preview.getMannequin().stopEmote();
+        if (this.list != null) this.list.releaseEntries();
     }
 
     private void closeWatcher() {
@@ -209,7 +246,7 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractRenderState(graphics, mouseX, mouseY, a);
         this.searchEngine.extractRenderState(graphics, mouseX, mouseY, a);
     }
@@ -244,7 +281,9 @@ public abstract class EmoteSubScreen extends Screen {
         }
     }
 
-    public boolean isSearchActive() {
-        return this.searchBox != null && !StringUtils.isBlank(this.searchBox.getValue());
+    @Override
+    protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
+        if (AcceptPrivacyScreen.isShowing(this.minecraft)) return;
+        super.extractBlurredBackground(graphics);
     }
 }

@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
+import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -10,7 +11,7 @@ public interface IChooseElement extends GuiEventListener, Renderable {
     @Nullable
     EmoteHolder getEmote();
     void clearEmote();
-    void setEmote(EmoteHolder emote);
+    void setEmote(EmoteListWidget.EmoteLikeEntry emote);
 
     void removed();
 }

@@ -103,6 +103,12 @@ dependencies {
         neoforgePomCompile(this)
     }
 
+    implementation("org.redlance.emotecraftlibrary:game-sdk:${project["redlanceemotes_version"]}") {
+        platformInclude(this)
+        "fabricImplementation"(this)
+        "neoforgeImplementation"(this)
+    }
+
     // Third-party
     compileOnly("com.blamejared.searchables:Searchables-common-26.2:${project["searchables_version"]}") {
         isTransitive = false
@@ -116,7 +122,7 @@ dependencies {
     "fabricImplementation"(fabricApi.fabricModule("fabric-permission-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
 
     "fabricRuntimeOnly"(fabricApi.fabricModule("fabric-screen-api-v1", project["fabric_api_version"]))
-    "fabricCompileOnly"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
+    "fabricImplementation"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 

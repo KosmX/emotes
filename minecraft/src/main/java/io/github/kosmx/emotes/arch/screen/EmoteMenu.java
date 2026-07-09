@@ -26,6 +26,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
@@ -67,9 +68,12 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     protected void addContents() {
         LinearLayout linearLayout = this.layout.addToContents(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
-        this.list = linearLayout.addChild(newEmoteListWidget(), LayoutSettings::alignVerticallyBottom);
-        this.list.setCompactMode(true);
-        addOptions();
+        if (this.list == null) {
+            this.list = newEmoteListWidget();
+            this.list.setCompactMode(true);
+            addOptions();
+        }
+        linearLayout.addChild(this.list, LayoutSettings::alignVerticallyBottom);
 
         GridLayout gridLayout = linearLayout.addChild(new GridLayout());
         gridLayout.defaultCellSetting().padding(4, Button.DEFAULT_SPACING / 3, 4, 0);
@@ -127,18 +131,18 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     }
 
     private void resetKeyAction(Button button){
-        if(resetOnlySelected) {
-            if (this.list == null || this.list.getFocused() == null) return;
-            PlatformTools.getConfig().emoteKeyMap.removeL(this.list.getFocusedEmote().getUuid());
+        if (resetOnlySelected) {
+            if (this.list == null || !(this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry)) return;
+            unbind(entry.getUuid());
             onPressed(this.list.getSelected());
         } else {
             this.minecraft.gui.setScreen(new ConfirmScreen(aBoolean -> {
                 if (aBoolean) {
-                    PlatformTools.getConfig().emoteKeyMap.clear(); //reset :D
+                    PlatformTools.getConfig().keyBinds.clear(); //reset :D
                     onPressed(this.list.getSelected());
                 }
                 this.minecraft.gui.setScreen(EmoteMenu.this);
-                }, RESET_ALL_TITLE, RESET_ALL_MSG.copy().append(" (" + PlatformTools.getConfig().emoteKeyMap.size() + ")")
+                }, RESET_ALL_TITLE, RESET_ALL_MSG.copy().append(" (" + PlatformTools.getConfig().keyBinds.size() + ")")
             ));
         }
     }
@@ -155,11 +159,11 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     protected void onPressed(EmoteListWidget.ListEntry selected) {
         if (this.resetButton == null) return;
 
-        this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteEntry;
+        this.setKeyButton.active = this.resetButton.active = selected instanceof EmoteListWidget.EmoteLikeEntry;
 
-        if (selected instanceof EmoteListWidget.EmoteEntry entry) {
-            this.setKeyButton.setMessage(getKey(entry.getEmote().getUuid()).getDisplayName());
-            this.resetOnlySelected = PlatformTools.getConfig().emoteKeyMap.containsL(entry.getEmote().getUuid());
+        if (selected instanceof EmoteListWidget.EmoteLikeEntry entry) {
+            this.setKeyButton.setMessage(getKey(entry.getUuid()).getDisplayName());
+            this.resetOnlySelected = isBound(entry.getUuid());
         } else {
             this.resetOnlySelected = false;
         }
@@ -168,9 +172,9 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
             this.resetButton.active = true;
             this.resetButton.setMessage(RESET_ONE);
         } else {
-            if (!PlatformTools.getConfig().emoteKeyMap.isEmpty()) {
+            if (!PlatformTools.getConfig().keyBinds.isEmpty()) {
                 this.resetButton.active = true;
-                this.resetButton.setMessage(RESET_ALL.copy().append(" (" + PlatformTools.getConfig().emoteKeyMap.size() + ")"));
+                this.resetButton.setMessage(RESET_ALL.copy().append(" (" + PlatformTools.getConfig().keyBinds.size() + ")"));
             } else {
                 this.resetButton.active = false;
                 this.resetButton.setMessage(RESET_ONE);
@@ -201,47 +205,53 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     }
 
     private boolean setKey(InputConstants.Key key){
-        boolean bl = false;
-        if (this.list != null && this.list.getFocused() != null) {
-            bl = true;
-            if (!applyKey(false, this.list.getFocusedEmote(), key)) {
+        if (this.list == null || !(this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry)) return false;
+        // Resolve the emote itself (local instantly, library fetched once), then bind it — the binding stores the emote, not a UUID.
+        entry.getEmote().whenCompleteAsync((animation, th) -> {
+            if (th != null) return;
+            EmoteHolder holder = new EmoteHolder(animation);
+            if (!applyKey(false, holder, key)) {
                 this.minecraft.gui.setScreen(new ConfirmScreen(choice -> {
-                    if (choice) {
-                        applyKey(true, this.list.getFocusedEmote(), key);
-                    }
+                    if (choice) applyKey(true, holder, key);
                     this.minecraft.gui.setScreen(this);
                 }, SURE, SURE2));
             }
-        }
-        return bl;
+        }, this.minecraft);
+        return true;
     }
 
     private boolean applyKey(boolean force, EmoteHolder emote, InputConstants.Key key){
-        boolean bl = true;
-        for(EmoteHolder emoteHolder : EmoteHolder.list){
-            if(! key.equals(InputConstants.UNKNOWN) && getKey(emoteHolder.getUuid()).equals(key)){
-                bl = false;
-                if(force){
-                    //emoteHolder.keyBinding = TmpGetters.getDefaults().getUnknownKey();
-                    PlatformTools.getConfig().emoteKeyMap.removeL(emoteHolder.getUuid());
-                }
-            }
+        Map<InputConstants.Key, EmoteHolder> keyBinds = PlatformTools.getConfig().keyBinds;
+
+        EmoteHolder current = key.equals(InputConstants.UNKNOWN) ? null : keyBinds.get(key);
+        if (current != null && !current.getUuid().equals(emote.getUuid()) && !force) {
+            return false; // key already taken by another emote — caller asks to confirm the override
         }
-        if(bl || force){
-            PlatformTools.getConfig().emoteKeyMap.put(emote.getUuid(), key);
-            onPressed(this.list.getSelected());
+
+        unbind(emote.getUuid());                 // one key per emote: drop its previous bind
+        if (!key.equals(InputConstants.UNKNOWN)) {
+            keyBinds.put(key, emote);            // one emote per key: overwrites any conflicting bind
         }
+        onPressed(this.list.getSelected());
         this.activeKeyTime = 0;
-        return bl;
+        return true;
     }
 
+    /** @return the key {@code emoteId} is bound to, matching by emote id against the stored holders, or UNKNOWN. */
     @NotNull
-    public static InputConstants.Key getKey(UUID emoteID) {
-        InputConstants.Key key;
-        if((key = PlatformTools.getConfig().emoteKeyMap.getR(emoteID)) == null){
-            return InputConstants.UNKNOWN;
+    public static InputConstants.Key getKey(UUID emoteId) {
+        for (Map.Entry<InputConstants.Key, EmoteHolder> entry : PlatformTools.getConfig().keyBinds.entrySet()) {
+            if (entry.getValue().getUuid().equals(emoteId)) return entry.getKey();
         }
-        return key;
+        return InputConstants.UNKNOWN;
+    }
+
+    private static boolean isBound(UUID emoteId) {
+        return getKey(emoteId) != InputConstants.UNKNOWN;
+    }
+
+    private static void unbind(UUID emoteId) {
+        PlatformTools.getConfig().keyBinds.values().removeIf(holder -> holder.getUuid().equals(emoteId));
     }
 
     @Override
@@ -274,10 +284,10 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
         if (event.input() == 1) {
             element.clearEmote();
             return true;
-        } else if (list != null && list.getFocused() != null) {
-            element.setEmote(list.getFocusedEmote());
+        } else if (list != null && list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry) {
+            element.setEmote(entry);
             return true;
-        }else{
+        } else{
             return false;
         }
     }

@@ -8,8 +8,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public class VanillaSearch implements ISearchEngine {
     public static final VanillaSearch INSTANCE = new VanillaSearch();
@@ -33,7 +33,7 @@ public class VanillaSearch implements ISearchEngine {
     }
 
     @Override
-    public Stream<EmoteListWidget.ListEntry> filter(Stream<EmoteListWidget.ListEntry> entries, String search) {
-        return entries.filter(entry -> entry.matches(search.toLowerCase()));
+    public void filter(EmoteListWidget.ListEntry mainFolder, String search, Consumer<EmoteListWidget.ListEntry> results) {
+        mainFolder.searchFor(search, entry -> entry.matches(search.toLowerCase()), results);
     }
 }

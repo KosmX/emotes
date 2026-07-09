@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.server.services;
 
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.services.impl.InstanceServiceImpl;
 import org.redlance.common.services.AdvancedService;
@@ -13,6 +14,10 @@ public interface InstanceService extends AdvancedService {
     InstanceService INSTANCE = ServiceUtils.loadService(InstanceService.class, InstanceServiceImpl::new);
 
     Path getGameDirectory();
+
+    default Path getCacheDirectory() {
+        return getGameDirectory().resolve(CommonData.MOD_ID);
+    }
 
     default Path getExternalEmoteDir() {
         return getGameDirectory().resolve(Serializer.getConfig().emotesDir.get());

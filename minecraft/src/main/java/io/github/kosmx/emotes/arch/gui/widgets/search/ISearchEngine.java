@@ -8,14 +8,14 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public interface ISearchEngine extends Renderable {
     EditBox createEditBox(Font font, Component message, Supplier<List<EmoteListWidget.ListEntry>> entries);
     boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY);
 
-    Stream<EmoteListWidget.ListEntry> filter(Stream<EmoteListWidget.ListEntry> entries, String search);
+    void filter(EmoteListWidget.ListEntry mainFolder, String search, Consumer<EmoteListWidget.ListEntry> results);
 
     static ISearchEngine getInstance() {
         return PlatformTools.HAS_SEARCHABLES ? new SearchablesSearch() : VanillaSearch.INSTANCE;
