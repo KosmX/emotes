@@ -319,13 +319,13 @@ publishMods {
         clientRequired = true
         serverRequired = true
 
-        requires("fabric-api")
+        // requires("fabric-api")
         requires("player-animation-library")
         optional("bendable-cuboids")
         optional("searchables")
     }
 
-    curseforge("curseforgeNeo") {
+    /*curseforge("curseforgeNeo") {
         announcementTitle = "CurseForge (Fabric/NeoForge)"
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = providers.gradleProperty("curseforge_id_forge")
@@ -341,7 +341,7 @@ publishMods {
         requires("player-animation-library")
         optional("bendable-cuboids")
         optional("searchables")
-    }
+    }*/
 }
 
 afterEvaluate {
