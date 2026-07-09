@@ -336,13 +336,13 @@ publishMods {
         projectId = providers.gradleProperty("curseforge_id_fabric")
         projectSlug = providers.gradleProperty("curseforge_slug_fabric")
 
-        requires("fabric-api")
+        // requires("fabric-api")
     }
 
-    curseforge("curseforgeNeo") {
+    /*curseforge("curseforgeNeo") {
         from(cfOptions)
 
         projectId = providers.gradleProperty("curseforge_id_forge")
         projectSlug = providers.gradleProperty("curseforge_slug_forge")
-    }
+    }*/
 }
