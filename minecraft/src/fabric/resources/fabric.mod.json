@@ -15,7 +15,7 @@
   ],
   "contact": {
     "issues": "https://github.com/KosmX/emotes/issues",
-    "homepage": "https://docs.zigythebird.com/emotecraft/gettingstarted",
+    "homepage": "https://emotes.redlance.org",
     "sources": "https://github.com/KosmX/emotes"
   },
   "license": "GPL3",
@@ -55,10 +55,15 @@
   "custom": {
     "modmenu": {
       "links": {
+        "emotecraft.library.privacy.title": "https://emotes.redlance.org",
+        "modmenu.crowdin": "https://crowdin.com/project/emotecraft",
+        "modmenu.wiki": "https://docs.zigythebird.com/emotecraft",
         "modmenu.curseforge": "https://curseforge.com/minecraft/mc-mods/emotecraft",
+        "modmenu.modrinth": "https://modrinth.com/mod/emotecraft",
         "modmenu.discord": "https://discord.gg/6NfdRuE",
         "modmenu.github_releases": "https://github.com/KosmX/emotes/releases",
-        "modmenu.modrinth": "https://modrinth.com/mod/emotecraft"
+        "modmenu.kofi": "https://ko-fi.com/dima_dencep",
+        "modmenu.donate": "https://boosty.to/dima_dencep"
       }
     }
   }

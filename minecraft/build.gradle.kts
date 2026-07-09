@@ -122,7 +122,7 @@ dependencies {
     "fabricImplementation"(fabricApi.fabricModule("fabric-permission-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
 
     "fabricRuntimeOnly"(fabricApi.fabricModule("fabric-screen-api-v1", project["fabric_api_version"]))
-    "fabricCompileOnly"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
+    "fabricImplementation"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
     }
 
