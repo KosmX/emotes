@@ -4,10 +4,12 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.EmotecraftModPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import org.jspecify.annotations.NonNull;
@@ -43,7 +45,9 @@ final class EmoteLibrary {
                 }
             });
 
-    private static final EmoteLibraryClient EMOTE_LIBRARY_CLIENT = new EmoteLibraryClient("http://localhost:25566/");
+    private static final EmoteLibraryClient EMOTE_LIBRARY_CLIENT = new EmoteLibraryClient("http://localhost:25566/", String.format("%s/%s (%s; mc%s)",
+            CommonData.MOD_NAME, EmotecraftModPlatform.INSTANCE.getModVersion(CommonData.MOD_ID), EmotecraftModPlatform.INSTANCE.getPlatformName(), SharedConstants.getCurrentVersion().name()
+    ));
 
     public static <R> CompletableFuture<R> executeAuthorized(Function<EmoteLibraryClient, R> request) {
         return CompletableFuture.supplyAsync(() -> request.apply(EMOTE_LIBRARY_CLIENT), EXECUTOR)
