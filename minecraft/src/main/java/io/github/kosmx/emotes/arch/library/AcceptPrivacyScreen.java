@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.library;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
@@ -35,6 +36,11 @@ public class AcceptPrivacyScreen extends Screen {
             .append(Component.translatable("emotecraft.library.privacy.setup",
                     link("emotecraft.library.privacy.website", WEBSITE_URI)
             ));
+
+    /** @return whether this privacy screen is the one currently displayed, so a background screen can skip blurring under it. */
+    public static boolean isShowing(Minecraft minecraft) {
+        return minecraft.gui.screen() instanceof AcceptPrivacyScreen;
+    }
 
     private static Component link(String key, URI uri) {
         return Component.translatable(key).withStyle(style -> style

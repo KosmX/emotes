@@ -46,10 +46,13 @@ public class FullMenuScreen extends EmoteSubScreen {
     @Override
     protected void onPressed(EmoteListWidget.ListEntry selected) {
         if (selected instanceof EmoteListWidget.EmoteLikeEntry entry) {
-            entry.getEmote().whenComplete((animation, throwable) -> {
-                if (throwable != null) CommonData.LOGGER.error("Failed to load emote!", throwable);
+            entry.getEmote().whenCompleteAsync((animation, throwable) -> {
+                if (throwable != null) {
+                    CommonData.LOGGER.error("Failed to load emote!", throwable);
+                    return;
+                }
                 EmoteHolder.playEmote(ClientUtil.getClientPlayer(), animation);
-            });
+            }, this.minecraft);
             if (this.lastScreen instanceof FastMenuScreen fast) this.lastScreen = fast.parent;
         }
     }

@@ -35,7 +35,11 @@ final class EmoteLibrary {
                     return EmoteLibrary.executeAuthorized(client -> client.getBinary(key, EmotePacket.defaultVersions))
                             .thenApply(is ->
                                     UniversalEmoteSerializer.readData(is, "emote.emotecraft").values().iterator().next()
-                            );
+                            )
+                            .whenComplete((_, throwable) -> {
+                                // Don't let a transient failure stay cached forever — evict so the next request retries.
+                                if (throwable != null) ANIMATION_CACHE.invalidate(key);
+                            });
                 }
             });
 

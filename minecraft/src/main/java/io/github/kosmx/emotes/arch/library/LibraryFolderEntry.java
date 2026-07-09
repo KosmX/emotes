@@ -11,8 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.ClientAsset;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryException;
@@ -25,23 +25,25 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implements LibraryListener, BiConsumer<AutoCloseable, Throwable> {
+public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implements LibraryListener {
     public static final Identifier EMOTECRAFT_LIBRARY_ICON = McUtils.newIdentifier("textures/redlance_emotes_icon.png");
     private static final int PAGE_SIZE = 10;
     private static final Component END = Component.translatable("emotecraft.library.end");
 
     private final EmoteListWidget widget;
-    private final MutableComponent status;
 
     private final Map<UUID, LibraryEmoteEntry> searchResults = new HashMap<>();
     private CompletableFuture<AutoCloseable> connection;
+    // Bumped on every open/close. Async callbacks capture it and bail if it changed, so a stale connection's
+    // listener callbacks and in-flight fetches can't mutate state after the folder was reopened or discarded.
+    private int connectionGeneration;
     private int emoteOrder;
     private int likedOffset;
     private boolean likedLastPage;
+    private Throwable likedError;
 
     private String searchQuery;
     private List<UUID> searchResultIds;
@@ -50,8 +52,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
     private LoadingEntry searchLoading;
 
     public LibraryFolderEntry(EmoteListWidget widget) {
-        widget.super(AcceptPrivacyScreen.TITLE, Component.empty());
-        this.status = (MutableComponent) this.description;
+        widget.super(AcceptPrivacyScreen.TITLE, CommonComponents.EMPTY);
         this.widget = widget;
     }
 
@@ -61,17 +62,55 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
             return; // The live connection is already opening or open.
         }
 
-        this.connection = EmoteLibrary.executeAuthorized(client -> client.openLiveConnection(this, Minecraft.getInstance()));
+        int generation = ++this.connectionGeneration;
+        this.connection = EmoteLibrary.executeAuthorized(client -> client.openLiveConnection(gated(generation), Minecraft.getInstance()));
         getOrPutLoadingEntry().addForWait(this.connection);
-        this.connection.whenComplete(this);
+    }
+
+    /** @return whether {@code generation} still names the live connection — false once the folder was reopened or discarded. */
+    private boolean isCurrent(int generation) {
+        return generation == this.connectionGeneration;
+    }
+
+    /**
+     * Wraps this folder as a listener bound to one connection: it drops every callback once that connection is
+     * no longer the live one, so a stale connection that hasn't finished closing can't mutate the reopened folder.
+     */
+    private LibraryListener gated(int generation) {
+        return new LibraryListener() {
+            @Override
+            public void onReset() {
+                if (isCurrent(generation)) LibraryFolderEntry.this.onReset();
+            }
+
+            @Override
+            public void onAdd(List<GameEmoteInfo> list) {
+                if (isCurrent(generation)) LibraryFolderEntry.this.onAdd(list);
+            }
+
+            @Override
+            public void onRemove(List<UUID> list) {
+                if (isCurrent(generation)) LibraryFolderEntry.this.onRemove(list);
+            }
+
+            @Override
+            public void onError(EmoteLibraryException error, boolean fatal) {
+                if (isCurrent(generation)) LibraryFolderEntry.this.onError(error, fatal);
+            }
+        };
     }
 
     @Override
     protected void onRemoved() {
         super.onRemoved();
 
+        this.connectionGeneration++; // mute the current connection's callbacks and any in-flight liked fetches
+
         this.searchResults.values().forEach(LibraryEmoteEntry::onRemoved);
         this.searchResults.clear();
+        this.searchQuery = null; // superseded — also mutes any in-flight search callback (it checks searchQuery)
+        this.searchResultIds = null;
+        this.searchLoading = null;
 
         if (this.connection != null) {
             this.connection.whenComplete((closeable, _) -> close(closeable));
@@ -109,11 +148,13 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
 
     @Override
     public void onReset() {
+        int generation = this.connectionGeneration;
         getOrPutLoadingEntry().addForWait(EmoteLibrary.executeAuthorized(client -> client.listLiked(0, PAGE_SIZE))
                 .whenCompleteAsync((resp, th) -> {
-                    if (th != null) return;
+                    if (!isCurrent(generation) || th != null) return;
                     clearChildren();
                     this.emoteOrder = 0;
+                    this.likedError = null;
                     putAll(resp.getData());
                     this.likedOffset = resp.getMeta().getNextOffset();
                     this.likedLastPage = resp.getMeta().isLastPage();
@@ -123,10 +164,16 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
     }
 
     private void loadMoreLiked() {
+        int generation = this.connectionGeneration;
         int offset = this.likedOffset;
         EmoteLibrary.executeAuthorized(client -> client.listLiked(offset, PAGE_SIZE))
                 .whenCompleteAsync((resp, th) -> {
-                    if (th != null) return;
+                    if (!isCurrent(generation)) return;
+                    if (th != null) {
+                        this.likedError = th; // surface it as a footer instead of silently stalling pagination
+                        this.widget.refreshFilter();
+                        return;
+                    }
                     putAll(resp.getData());
                     this.likedOffset = resp.getMeta().getNextOffset();
                     this.likedLastPage = resp.getMeta().isLastPage();
@@ -134,9 +181,12 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
                 }, Minecraft.getInstance());
     }
 
-    /** Registers liked-emote pagination on the given widget (called while the folder is the open one). */
-    public void paginateLiked(EmoteListWidget widget) {
-        if (this.likedLastPage) {
+    /** Sets up liked-emote pagination on the open folder each time the list is rebuilt (see {@link EmoteListWidget.FolderEntry#paginate}). */
+    @Override
+    public void paginate(EmoteListWidget widget) {
+        if (this.likedError != null) {
+            widget.setFooter(LoadingEntry.error(widget, this.likedError)); // a page failed — show it, stop paging until onReset
+        } else if (this.likedLastPage) {
             widget.setFooter(new LoadingEntry(widget, END));
         } else if (this.likedOffset > 0) { // Only once the first page has loaded.
             widget.requestLoadMore(this::loadMoreLiked);
@@ -164,30 +214,23 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
     }
 
     @Override
-    public void onError(EmoteLibraryException e, boolean b) {
+    public void onError(EmoteLibraryException e, boolean fatal) {
+        if (!fatal) {
+            return; // Transient (network/5xx): the SDK reconnects itself with backoff and re-syncs via onReset().
+        }
+
+        // Fatal (session expired/revoked): the SDK stopped reconnecting. Surface the error and drop the dead
+        // connection so re-opening the library re-authorizes and reopens the stream (onOpen guards on connection != null).
         getOrPutLoadingEntry().addForWait(CompletableFuture.failedFuture(e));
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof LibraryFolderEntry;
-    }
-
-    @Override
-    public int compareTo(@NotNull EmoteListWidget.ListEntry o) {
-        if (o instanceof LibraryFolderEntry) {
-            return super.compareTo(o);
-        } else {
-            return -1;
+        if (this.connection != null) {
+            this.connection.whenComplete((closeable, _) -> close(closeable));
+            this.connection = null;
         }
     }
 
     @Override
-    public void accept(AutoCloseable closeable, Throwable throwable) {
-        this.status.getSiblings().clear();
-        if (throwable != null) {
-            this.status.append(throwable.toString());
-        }
+    protected int sortPriority() {
+        return 1; // The library folder sorts ahead of regular folders. equals/hashCode: inherited name-based (singleton).
     }
 
     @Override
@@ -267,7 +310,6 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
     }
 
     public final class LibraryEmoteEntry extends EmoteListWidget.EmoteLikeEntry {
-        private final EmoteListWidget widget;
         private final GameEmoteInfo info;
         private final Identifier icon;
         private final Path iconPath;
@@ -283,11 +325,12 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
                     McUtils.fromJson(info.getAuthor()),
                     EmoteHolder.computeBages(info.getTags())
             );
-            this.widget = widget;
 
             this.info = info;
-            this.icon = McUtils.newIdentifier("libraryicon/" + info.getIconHash());
-            this.iconPath = InstanceService.INSTANCE.getCacheDirectory().resolve(this.icon.getPath());
+            // Texture id is per-emote so releasing one entry's icon never yanks another's when two emotes share an
+            // icon hash; the on-disk cache file stays keyed by hash so the download is still deduplicated.
+            this.icon = McUtils.newIdentifier("libraryicon/" + info.getId());
+            this.iconPath = InstanceService.INSTANCE.getCacheDirectory().resolve("libraryicon/" + info.getIconHash());
         }
 
         @Override
@@ -326,7 +369,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
             boolean loading = this.emoteFuture != null && !this.emoteFuture.isDone();
             boolean failed = this.emoteFuture != null && this.emoteFuture.isCompletedExceptionally();
 
-            this.widget.active = !loading;
+            LibraryFolderEntry.this.widget.active = !loading;
             if (loading || failed) {
                 int centerX = getContentX() + getContentWidth() / 2;
                 int centerY = getContentYMiddle();
@@ -373,7 +416,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
             if (o instanceof LibraryEmoteEntry entry) {
                 return Integer.compare(this.order, entry.order); // Keep the order the library sent them in.
             } else {
-                return 1;
+                return super.compareTo(o); // Falls back to the shared priority order (emotes after folders).
             }
         }
 

@@ -26,6 +26,9 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
     protected final EmoteListWidget widget;
     private final Component message;
 
+    // Last failed operation. Kept as a single field (not a pile of failed futures) so repeated errors don't accumulate.
+    private volatile Throwable error;
+
     public LoadingEntry(EmoteListWidget widget) {
         this(widget, null);
     }
@@ -36,55 +39,64 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
         this.message = message;
     }
 
+    /** A standalone entry that renders {@code error} (e.g. a footer for a failed pagination request). */
+    public static LoadingEntry error(EmoteListWidget widget, Throwable error) {
+        LoadingEntry entry = new LoadingEntry(widget);
+        entry.addForWait(CompletableFuture.failedFuture(error));
+        return entry;
+    }
+
     protected <T> CompletableFuture<T> addForWait(CompletableFuture<T> future) {
+        this.error = null; // a fresh operation supersedes any previous error
         this.futures.add(future);
         return future.whenComplete((_, th) -> {
-            if (th == null) this.futures.remove(future);
+            this.futures.remove(future);
+            if (th != null) this.error = th;
         });
     }
 
     @Override
     public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
-        if (this.futures.isEmpty()) {
-            this.widget.active = true;
-            if (this.message != null) {
-                Font font = Minecraft.getInstance().font;
-                graphics.centeredText(font, this.message, getContentX() + getContentWidth() / 2, getContentYMiddle() - font.lineHeight / 2, -1);
-            } else {
-                super.extractContent(graphics, mouseX, mouseY, hovered, a);
-            }
-            return;
-        }
-
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(this.futures.toArray(CompletableFuture[]::new));
-
         int centerX = getContentX() + getContentWidth() / 2;
         int centerY = getContentYMiddle();
 
-        if (!allOf.isDone()) {
+        if (!this.futures.isEmpty()) { // still loading
             this.widget.active = false;
-        } else {
-            this.widget.active = true;
-            if (!allOf.isCompletedExceptionally()) {
-                super.extractContent(graphics, mouseX, mouseY, hovered, a);
-                return;
-            }
+            Font font = Minecraft.getInstance().font;
+            graphics.centeredText(font, LOADING, centerX, centerY - font.lineHeight, -1);
+            graphics.centeredText(font, LoadingDotsText.get(Util.getMillis()), centerX, centerY, -1);
+            return;
         }
 
-        extractFutureErrors(graphics, allOf, centerX, centerY, getContentWidth());
+        this.widget.active = true;
+        Throwable error = this.error;
+        if (error != null) {
+            renderError(graphics, error, centerX, centerY, getContentWidth());
+        } else if (this.message != null) {
+            Font font = Minecraft.getInstance().font;
+            graphics.centeredText(font, this.message, centerX, centerY - font.lineHeight / 2, -1);
+        } else {
+            super.extractContent(graphics, mouseX, mouseY, hovered, a);
+        }
     }
 
+    /** Renders {@code future}'s state (loading dots while pending, wrapped error text once failed) centered. */
     protected static void extractFutureErrors(GuiGraphicsExtractor graphics, CompletableFuture<?> future, int centerX, int centerY, int maxWidth) {
-        Font font = Minecraft.getInstance().font;
         if (!future.isDone()) {
+            Font font = Minecraft.getInstance().font;
             graphics.centeredText(font, LOADING, centerX, centerY - font.lineHeight, -1);
             graphics.centeredText(font, LoadingDotsText.get(Util.getMillis()), centerX, centerY, -1);
         } else if (future.isCompletedExceptionally()) {
-            List<FormattedCharSequence> lines = font.split(Component.literal(EmoteLibraryException.reason(future.exceptionNow())), maxWidth);
-            int startY = centerY - lines.size() * font.lineHeight / 2;
-            for (int i = 0; i < lines.size(); i++) {
-                graphics.centeredText(font, lines.get(i), centerX, startY + i * font.lineHeight, -1);
-            }
+            renderError(graphics, future.exceptionNow(), centerX, centerY, maxWidth);
+        }
+    }
+
+    private static void renderError(GuiGraphicsExtractor graphics, Throwable throwable, int centerX, int centerY, int maxWidth) {
+        Font font = Minecraft.getInstance().font;
+        List<FormattedCharSequence> lines = font.split(Component.literal(EmoteLibraryException.reason(throwable)), maxWidth);
+        int startY = centerY - lines.size() * font.lineHeight / 2;
+        for (int i = 0; i < lines.size(); i++) {
+            graphics.centeredText(font, lines.get(i), centerX, startY + i * font.lineHeight, -1);
         }
     }
 
@@ -92,6 +104,7 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
     protected void onRemoved() {
         this.widget.active = true;
         this.futures.clear();
+        this.error = null;
     }
 
     @Override
@@ -102,6 +115,11 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
     @Override
     protected void collectEmotes(Consumer<EmoteListWidget.ListEntry> collection) {
         collection.accept(this);
+    }
+
+    @Override
+    protected int sortPriority() {
+        return 0; // Loading/error rows sort ahead of every other entry type.
     }
 
     @Override

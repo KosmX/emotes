@@ -198,10 +198,13 @@ public abstract class EmoteSubScreen extends Screen {
                 hovered = null;
             }
             if (hovered instanceof EmoteListWidget.EmoteLikeEntry emote) {
-                emote.getEmote().whenComplete((animation, throwable) -> {
-                    if (throwable != null) CommonData.LOGGER.error("Failed to load emote!", throwable);
+                emote.getEmote().whenCompleteAsync((animation, throwable) -> {
+                    if (throwable != null) {
+                        CommonData.LOGGER.error("Failed to load emote!", throwable);
+                        return;
+                    }
                     this.preview.playAnimation(animation, Animation.LoopType.DEFAULT, true);
-                });
+                }, this.minecraft);
             } else if (hovered instanceof EmoteListWidget.FolderEntry) {
                 this.preview.getMannequin().stopEmote();
             }
@@ -280,7 +283,7 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
-        if (minecraft.gui.screen() instanceof AcceptPrivacyScreen) return;
+        if (AcceptPrivacyScreen.isShowing(this.minecraft)) return;
         super.extractBlurredBackground(graphics);
     }
 }

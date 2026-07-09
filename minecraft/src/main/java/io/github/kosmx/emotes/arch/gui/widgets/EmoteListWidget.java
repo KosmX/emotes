@@ -151,9 +151,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             engine.filter(this.mainFolder, search, this::addEntry);
         } else {
             getEmotes().forEach(this::addEntry);
-            if (openFolder() instanceof LibraryFolderEntry library) {
-                library.paginateLiked(this);
-            }
+            openFolder().paginate(this);
         }
         if (this.footer != null) {
             addEntry(this.footer);
@@ -253,16 +251,6 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         return false;
     }
 
-    @Override
-    public void addEntryToTop(@NonNull ListEntry entry) {
-        super.addEntryToTop(entry);
-    }
-
-    @Override
-    public void removeEntryFromTop(@NonNull ListEntry entry) {
-        super.removeEntryFromTop(entry);
-    }
-
     public abstract class ListEntry extends ObjectSelectionList.Entry<ListEntry> implements Comparable<ListEntry> {
         protected static final int START_OFFSET = 33;
         protected static final int DESCRIPTION_Y = 12;
@@ -271,11 +259,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public final Component name;
         public final Component description;
         public final List<Component> bages;
+        private final boolean descriptionBlank;
 
         public ListEntry(@NotNull Component name, Component description, List<Component> bages) {
             this.name = name;
             this.description = description;
             this.bages = bages;
+            this.descriptionBlank = StringUtils.isBlank(description.getString()); // description is final; avoid rebuilding the string every frame
         }
 
         @Override
@@ -321,7 +311,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             int blockBottom;
             if (hasSubtext()) {
                 blockBottom = subtextY() + lineHeight;
-            } else if (!StringUtils.isBlank(this.description.getString())) {
+            } else if (!this.descriptionBlank) {
                 blockBottom = DESCRIPTION_Y + lineHeight;
             } else {
                 blockBottom = lineHeight;
@@ -331,7 +321,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         /** Y-offset within the text block at which {@link #extractAdditionalContent} draws its sub-line. */
         protected int subtextY() {
-            return StringUtils.isBlank(this.description.getString()) ? DESCRIPTION_Y : SUBTEXT_Y;
+            return this.descriptionBlank ? DESCRIPTION_Y : SUBTEXT_Y;
         }
 
         public boolean matches(String string) {
@@ -346,9 +336,18 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         @Override
         public abstract int hashCode();
 
+        /**
+         * Lower sorts first. Gives every entry type a single, total sort order (loading &lt; library folder &lt;
+         * folder &lt; emote), so mixing types in one {@link #compareTo} never violates the comparator contract.
+         */
+        protected int sortPriority() {
+            return 100;
+        }
+
         @Override
         public int compareTo(@NotNull EmoteListWidget.ListEntry o) {
-            return this.name.getString().compareTo(o.name.getString());
+            int cmp = Integer.compare(sortPriority(), o.sortPriority());
+            return cmp != 0 ? cmp : this.name.getString().compareTo(o.name.getString());
         }
 
         public abstract void searchFor(String search, Predicate<ListEntry> matcher, Consumer<ListEntry> results);
@@ -394,15 +393,6 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public int compareTo(@NotNull ListEntry o) {
-            if (o instanceof HeaderEntry) {
-                return super.compareTo(o);
-            } else {
-                return 1;
-            }
-        }
-
-        @Override
         public void searchFor(String search, Predicate<ListEntry> matcher, Consumer<ListEntry> results) {
             // no-op
         }
@@ -415,10 +405,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
     public abstract class EmoteLikeEntry extends ListEntry {
         public final Component author;
+        private final boolean hasSubtext;
 
         public EmoteLikeEntry(@NotNull Component name, Component description, Component author, List<Component> bages) {
             super(name, description, bages);
             this.author = author;
+            this.hasSubtext = !author.getString().isEmpty(); // author is final; avoid re-rendering the string every frame
         }
 
         @Override
@@ -434,7 +426,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         @Override
         protected boolean hasSubtext() {
-            return !this.author.getString().isEmpty();
+            return this.hasSubtext;
         }
 
         public abstract CompletableFuture<Animation> getEmote();
@@ -458,12 +450,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public abstract int hashCode();
 
         @Override
-        public int compareTo(@NotNull ListEntry o) {
-            if (o instanceof EmoteLikeEntry) {
-                return super.compareTo(o);
-            } else {
-                return 1;
-            }
+        protected int sortPriority() {
+            return 3; // Emotes sort after folders.
         }
 
         public abstract UUID getUuid();
@@ -570,13 +558,15 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         @Override
-        public int compareTo(@NotNull ListEntry o) {
-            if (o instanceof FolderEntry) {
-                return super.compareTo(o);
-            } else {
-                return -1;
-            }
+        protected int sortPriority() {
+            return 2; // Folders sort before emotes.
         }
+
+        /**
+         * Called on the currently open folder each time the (unfiltered) list is rebuilt, so a folder can
+         * append its own footer or register lazy pagination. No-op by default; {@link LibraryFolderEntry} overrides it.
+         */
+        public void paginate(EmoteListWidget widget) {}
 
         @Override
         public void searchFor(String search, Predicate<ListEntry> matcher, Consumer<ListEntry> results) {

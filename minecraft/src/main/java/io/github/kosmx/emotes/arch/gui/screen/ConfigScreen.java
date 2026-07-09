@@ -161,7 +161,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @Override
     protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
-        if (minecraft.gui.screen() instanceof AcceptPrivacyScreen) return;
+        if (AcceptPrivacyScreen.isShowing(this.minecraft)) return;
         super.extractBlurredBackground(graphics);
     }
 
