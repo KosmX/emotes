@@ -111,7 +111,7 @@ val ds = publishDiscord {
     links {
         // Fabric/NeoForge
         from(":minecraft", "modrinth", title = "Fabric/NeoForge (Modrinth)")
-        from(":minecraft", "curseforgeNeo", title = "Fabric/Neoforge (CurseForge)")
+        from(":minecraft", "curseforgeFabric", title = "Fabric/Neoforge (CurseForge)")
         nextRow()
 
         // Paper
