@@ -13,7 +13,13 @@ on:
       changelog:
         description: 'changelog'
         required: false
+        type: string
         default: ''
+      discord:
+        description: 'Publish announcement to Discord'
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -47,6 +53,7 @@ jobs:
           BUILD_NUMBER: ${{github.run_number}}
           RELEASE_TYPE: ${{github.event.inputs.type}}
           CHANGELOG: ${{github.event.inputs.changelog}}
+          SEND_DISCORD: ${{github.event.inputs.discord}}
           CURSEFORGE_TOKEN: ${{secrets.CURSEFORGE}}
           MODRINTH_TOKEN: ${{secrets.MODRINTH}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

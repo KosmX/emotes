@@ -88,6 +88,10 @@ publishMods {
 
 val ds = publishDiscord {
     onlyIf {
+        val enabled = providers.environmentVariable("SEND_DISCORD")
+            .map(String::toBoolean).getOrElse(true)
+        if (!enabled) return@onlyIf false
+
         val explicit = gradle.startParameter.taskNames.contains(name)
         if (explicit) return@onlyIf true
 
