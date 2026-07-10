@@ -17,31 +17,23 @@ import java.io.IOException;
 public class ForgeNetwork {
     @SubscribeEvent
     public static void registerPlay(final RegisterPayloadHandlersEvent event) {
-        // A single StreamCodec can only filter for one direction, so each channel is registered
-        // per-direction: S2C codecs use PacketBound.CLIENT, C2S codecs use PacketBound.SERVER.
         event.registrar("emotecraft") // Play networking
                 .optional()
-                .playToServer(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_C2S,
-                        (arg, ctx) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.packet(), ctx.player())
-                )
-                .optional()
-                .playToClient(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_S2C,
+                .playBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, null,
+                        (arg, ctx) -> CommonServerNetworkHandler.getInstance().receiveMessage(arg.packet(), ctx.player()),
                         (arg, ctx) -> ClientNetwork.INSTANCE.receiveMessage(arg.packet())
                 )
 
                 .optional()
-                .playToServer(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER_C2S,
-                        (arg, ctx) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.packet(), ctx.player())
-                )
-                .optional()
-                .playToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER_S2C,
+                .playBidirectional(NetworkPlatformTools.STREAM_CHANNEL_ID, null,
+                        (arg, ctx) -> CommonServerNetworkHandler.getInstance().receiveStreamMessage(arg.packet(), ctx.player()),
                         (arg, ctx) -> NetworkPlatformTools.tryReceive(
                                 () -> ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), ctx.listener()::send)
                         )
                 )
 
                 .optional()
-                .configurationToServer(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_C2S,
+                .configurationBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, null,
                         (arg, ctx) -> {
                             try {
                                 var message = arg.packet().data;
@@ -57,17 +49,14 @@ public class ForgeNetwork {
                                 CommonData.LOGGER.error("Invalid Emotecraft packet!", e);
                                 ctx.disconnect(Component.literal(CommonData.MOD_ID + ": " + (e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName())));
                             }
-                        }
-                )
-                .optional()
-                .configurationToClient(NetworkPlatformTools.EMOTE_CHANNEL_ID, EmotePacketPayload.EMOTE_CHANNEL_READER_S2C,
+                        },
                         (arg, ctx) -> NetworkPlatformTools.tryReceive(
                                 () -> ClientNetwork.INSTANCE.receiveConfigMessage(arg.packet(), ctx.listener()::send)
                         )
                 )
 
                 .optional()
-                .configurationToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, EmotePacketPayload.STREAM_CHANNEL_READER_S2C,
+                .configurationToClient(NetworkPlatformTools.STREAM_CHANNEL_ID, null,
                         (arg, ctx) -> NetworkPlatformTools.tryReceive(
                                 () -> ClientNetwork.INSTANCE.receiveStreamMessage(arg.packet(), ctx.listener()::send)
                         )
