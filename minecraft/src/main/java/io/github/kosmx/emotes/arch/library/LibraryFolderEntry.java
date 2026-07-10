@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.arch.library;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
@@ -65,6 +66,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         int generation = ++this.connectionGeneration;
         this.connection = EmoteLibrary.executeAuthorized(client -> client.openLiveConnection(gated(generation), Minecraft.getInstance()));
         getOrPutLoadingEntry().addForWait(this.connection);
+        this.connection.whenComplete((_, th) -> { if (th != null) onLoadError(th); }); // couldn't open the stream
     }
 
     /** @return whether {@code generation} still names the live connection — false once the folder was reopened or discarded. */
@@ -151,12 +153,30 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         return this.entries.get(id) instanceof LibraryEmoteEntry;
     }
 
+    /** A folder-load failure: show the modal, and if it's actionable (can't proceed here) drop the dead connection and close the folder. */
+    private void onLoadError(Throwable th) {
+        if (!LibraryModals.show(th)) return; // non-actionable — leave the folder to auto-retry / render the error inline
+
+        Minecraft.getInstance().execute(() -> { // render thread: bail out of the folder back to the root
+            this.connectionGeneration++; // mute the dead connection's callbacks
+            if (this.connection != null) {
+                this.connection.whenComplete((closeable, _) -> close(closeable));
+                this.connection = null; // so reopening the folder reconnects (and re-shows this if still failing)
+            }
+            this.widget.setLastFolder(null);
+        });
+    }
+
     @Override
     public void onReset() {
         int generation = this.connectionGeneration;
         getOrPutLoadingEntry().addForWait(EmoteLibrary.executeAuthorized(client -> client.listLiked(0, PAGE_SIZE))
                 .whenCompleteAsync((resp, th) -> {
-                    if (!isCurrent(generation) || th != null) return;
+                    if (!isCurrent(generation)) return;
+                    if (th != null) {
+                        onLoadError(th);
+                        return;
+                    }
                     clearChildren();
                     this.emoteOrder = 0;
                     this.likedError = null;
@@ -176,6 +196,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
                     if (!isCurrent(generation)) return;
                     if (th != null) {
                         this.likedError = th; // surface it as a footer instead of silently stalling pagination
+                        LibraryModals.show(th);
                         this.widget.refreshFilter();
                         return;
                     }
@@ -283,6 +304,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
                     }
 
                     if (th != null) {
+                        LibraryModals.show(th);
                         CommonData.LOGGER.warn("Failed to search!", th);
                         return; // Keep the loading entry, which now renders the error.
                     }
@@ -395,7 +417,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         @Override
         public CompletableFuture<Animation> getEmote() {
             try {
-                return emoteFuture = EmoteLibrary.ANIMATION_CACHE.get(this.info.getId());
+                return this.emoteFuture = EmoteLibrary.ANIMATION_CACHE.get(this.info.getId());
             } catch (ExecutionException e) {
                 return CompletableFuture.failedFuture(e);
             }

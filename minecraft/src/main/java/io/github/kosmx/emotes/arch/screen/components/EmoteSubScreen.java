@@ -5,9 +5,10 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
-import io.github.kosmx.emotes.arch.library.AcceptPrivacyScreen;
+import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
 import io.github.kosmx.emotes.arch.library.LibraryFolderEntry;
 import io.github.kosmx.emotes.arch.library.LibraryStatus;
+import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.server.config.Serializer;
@@ -48,6 +49,8 @@ public abstract class EmoteSubScreen extends Screen {
     public EmoteListener watcher;
     @Nullable
     protected PlayerPreview preview;
+    @Nullable
+    protected EmoteListWidget.EmoteLikeEntry previewed; // emote currently loaded into the preview — avoid re-fetching it every tick
     @Nullable
     protected EmoteListWidget list;
     protected HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
@@ -198,15 +201,23 @@ public abstract class EmoteSubScreen extends Screen {
                 hovered = null;
             }
             if (hovered instanceof EmoteListWidget.EmoteLikeEntry emote) {
-                emote.getEmote().whenCompleteAsync((animation, throwable) -> {
-                    if (throwable != null) {
-                        CommonData.LOGGER.error("Failed to load emote!", throwable);
-                        return;
-                    }
-                    this.preview.playAnimation(animation, Animation.LoopType.DEFAULT, true);
-                }, this.minecraft);
-            } else if (hovered instanceof EmoteListWidget.FolderEntry) {
-                this.preview.getMannequin().stopEmote();
+                if (emote != this.previewed) { // hovered emote changed — load it once, not on every tick
+                    this.previewed = emote;
+                    emote.getEmote().whenCompleteAsync((animation, throwable) -> {
+                        if (this.previewed != emote) return; // hovered away before it finished loading
+                        if (throwable != null) {
+                            // Passive hover — the emote's own row shows the error inline; no modal here.
+                            CommonData.LOGGER.error("Failed to load emote!", throwable);
+                            return;
+                        }
+                        this.preview.playAnimation(animation, Animation.LoopType.DEFAULT, true);
+                    }, this.minecraft);
+                }
+            } else {
+                this.previewed = null;
+                if (hovered instanceof EmoteListWidget.FolderEntry) {
+                    this.preview.getMannequin().stopEmote();
+                }
             }
             this.preview.tick();
         }
@@ -283,7 +294,7 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
-        if (AcceptPrivacyScreen.isShowing(this.minecraft)) return;
+        if (BaseModalScreen.isShowing(this.minecraft)) return;
         super.extractBlurredBackground(graphics);
     }
 }

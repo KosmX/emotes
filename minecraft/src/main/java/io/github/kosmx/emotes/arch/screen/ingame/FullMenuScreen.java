@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.ingame;
 
 import com.zigythebird.playeranim.util.ClientUtil;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.library.LibraryModals;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
 import io.github.kosmx.emotes.common.CommonData;
@@ -48,6 +49,7 @@ public class FullMenuScreen extends EmoteSubScreen {
         if (selected instanceof EmoteListWidget.EmoteLikeEntry entry) {
             entry.getEmote().whenCompleteAsync((animation, throwable) -> {
                 if (throwable != null) {
+                    LibraryModals.show(throwable);
                     CommonData.LOGGER.error("Failed to load emote!", throwable);
                     return;
                 }

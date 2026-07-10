@@ -2,8 +2,9 @@ package io.github.kosmx.emotes.arch.gui.screen;
 
 import com.mojang.serialization.Codec;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.arch.library.AcceptPrivacyScreen;
+import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
 import io.github.kosmx.emotes.arch.library.LibraryStatus;
+import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ExportMenu;
 import io.github.kosmx.emotes.common.CommonData;
@@ -161,7 +162,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @Override
     protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
-        if (AcceptPrivacyScreen.isShowing(this.minecraft)) return;
+        if (BaseModalScreen.isShowing(this.minecraft)) return;
         super.extractBlurredBackground(graphics);
     }
 

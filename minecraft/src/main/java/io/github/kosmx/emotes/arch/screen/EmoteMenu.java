@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.library.LibraryModals;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
@@ -208,7 +209,10 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
         if (this.list == null || !(this.list.getFocused() instanceof EmoteListWidget.EmoteLikeEntry entry)) return false;
         // Resolve the emote itself (local instantly, library fetched once), then bind it — the binding stores the emote, not a UUID.
         entry.getEmote().whenCompleteAsync((animation, th) -> {
-            if (th != null) return;
+            if (th != null) {
+                LibraryModals.show(th);
+                return;
+            }
             EmoteHolder holder = new EmoteHolder(animation);
             if (!applyKey(false, holder, key)) {
                 this.minecraft.gui.setScreen(new ConfirmScreen(choice -> {

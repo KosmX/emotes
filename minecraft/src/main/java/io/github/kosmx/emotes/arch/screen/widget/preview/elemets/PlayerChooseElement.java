@@ -8,6 +8,7 @@ import com.zigythebird.playeranimcore.easing.EasingType;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
+import io.github.kosmx.emotes.arch.library.LibraryModals;
 import io.github.kosmx.emotes.arch.screen.utils.EmotecraftTexture;
 import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
@@ -158,7 +159,11 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
         }
         // Snapshot the emote itself (a local one resolves instantly, a library one is fetched once) so the slot works offline.
         emote.getEmote().whenCompleteAsync((animation, th) -> {
-            if (th == null) PlatformTools.getConfig().fastMenuEmotes[page][id] = new EmoteHolder(animation);
+            if (th != null) {
+                LibraryModals.show(th);
+                return;
+            }
+            PlatformTools.getConfig().fastMenuEmotes[page][id] = new EmoteHolder(animation);
         }, Minecraft.getInstance());
     }
 

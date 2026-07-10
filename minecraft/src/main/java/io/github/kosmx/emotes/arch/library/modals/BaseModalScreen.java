@@ -1,64 +1,30 @@
-package io.github.kosmx.emotes.arch.library;
+package io.github.kosmx.emotes.arch.library.modals;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.GridLayout;
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LinearLayout;
-import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.friends.FriendsOverlayScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 
-public class AcceptPrivacyScreen extends Screen {
-    private static final URI TERMS_URI = URI.create("https://emotes.redlance.org/terms");
-    private static final URI PRIVACY_URI = URI.create("https://emotes.redlance.org/privacy");
-    private static final URI WEBSITE_URI = URI.create("https://emotes.redlance.org");
-
-    public static final Component TITLE = Component.translatable("emotecraft.library.privacy.title")
-            .withStyle(ChatFormatting.BOLD);
-    private static final Component BODY = Component.empty()
-            .append(Component.translatable("emotecraft.library.privacy.description",
-                    link("emotecraft.library.privacy.terms", TERMS_URI),
-                    link("emotecraft.library.privacy.privacy", PRIVACY_URI)
-            ))
-            .append("\n\n")
-            .append(Component.translatable("emotecraft.library.privacy.setup",
-                    link("emotecraft.library.privacy.website", WEBSITE_URI)
-            ));
-
-    /** @return whether this privacy screen is the one currently displayed, so a background screen can skip blurring under it. */
-    public static boolean isShowing(Minecraft minecraft) {
-        return minecraft.gui.screen() instanceof AcceptPrivacyScreen;
-    }
-
-    private static Component link(String key, URI uri) {
-        return Component.translatable(key).withStyle(style -> style
-                .withUnderlined(true)
-                .withColor(ChatFormatting.BLUE)
-                .withClickEvent(new ClickEvent.OpenUrl(uri))
-        );
-    }
-
+public abstract class BaseModalScreen extends Screen {
     private final @Nullable Screen backgroundScreen;
-    private final Runnable onAccept;
-
     private @Nullable LinearLayout layout;
 
-    public AcceptPrivacyScreen(final @Nullable Screen backgroundScreen, Runnable onAccept) {
-        super(Component.empty());
+    protected BaseModalScreen(Component title, @Nullable Screen backgroundScreen) {
+        super(title);
         this.backgroundScreen = backgroundScreen;
-        this.onAccept = onAccept;
     }
 
     @Override
@@ -69,6 +35,8 @@ public class AcceptPrivacyScreen extends Screen {
         }
     }
 
+    protected abstract LayoutElement addBody();
+
     @Override
     protected void init() {
         if (this.backgroundScreen != null) {
@@ -77,36 +45,23 @@ public class AcceptPrivacyScreen extends Screen {
 
         this.layout = LinearLayout.vertical();
 
-        this.layout.addChild(new MultiLineTextWidget(TITLE, this.font).setMaxWidth(240).setCentered(true),
+        this.layout.addChild(new MultiLineTextWidget(this.title, this.font).setMaxWidth(240).setCentered(true),
                 settings -> settings.alignHorizontallyCenter().padding(2, 2, 2, 4)
         );
 
-        MultiLineTextWidget body = new MultiLineTextWidget(BODY, this.font).setMaxWidth(240).setCentered(true);
-        body.setComponentClickHandler(style -> {
-            if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
-                ConfirmLinkScreen.confirmLinkNow(this, uri);
-            }
-        });
-        this.layout.addChild(body,
+        this.layout.addChild(addBody(),
                 settings -> settings.alignHorizontallyCenter().padding(2, 2, 2, 5)
         );
 
         GridLayout gridLayout = this.layout.addChild(new GridLayout());
         gridLayout.defaultCellSetting().padding(2, 0, 2, 2);
-        GridLayout.RowHelper buttons = gridLayout.createRowHelper(2);
-
-        buttons.addChild(Button.builder(CommonComponents.GUI_BACK, _ -> onClose())
-                .width(Button.SMALL_WIDTH)
-                .build()
-        );
-        buttons.addChild(Button.builder(CommonComponents.GUI_PROCEED, _ -> onAccept.run())
-                .width(Button.SMALL_WIDTH)
-                .build()
-        );
+        addButtons(gridLayout);
 
         this.layout.visitWidgets(this::addRenderableWidget);
         this.repositionElements();
     }
+
+    protected abstract void addButtons(GridLayout gridLayout);
 
     @Override
     protected void repositionElements() {
@@ -150,7 +105,7 @@ public class AcceptPrivacyScreen extends Screen {
             return super.mouseClicked(event, doubleClick);
         }
 
-        this.minecraft.gui.setScreen(this.backgroundScreen);
+        onClose();
         return true;
     }
 
@@ -162,5 +117,18 @@ public class AcceptPrivacyScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    /** @return whether this privacy screen is the one currently displayed, so a background screen can skip blurring under it. */
+    public static boolean isShowing(Minecraft minecraft) {
+        return minecraft.gui.screen() instanceof BaseModalScreen;
+    }
+
+    protected static Component link(String key, URI uri) {
+        return Component.translatable(key).withStyle(style -> style
+                .withUnderlined(true)
+                .withColor(ChatFormatting.BLUE)
+                .withClickEvent(new ClickEvent.OpenUrl(uri))
+        );
     }
 }

@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.arch.library;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.mojang.authlib.exceptions.AuthenticationException;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.EmotecraftModPlatform;
 import io.github.kosmx.emotes.PlatformTools;
@@ -15,6 +16,7 @@ import net.minecraft.client.User;
 import org.jspecify.annotations.NonNull;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryClient;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryException;
+import org.redlance.emotecraftlibrary.sdk.JoinServer;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +25,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-final class EmoteLibrary {
+final class EmoteLibrary implements JoinServer {
     private static final Executor EXECUTOR = Executors.newCachedThreadPool(Thread.ofVirtual()
             .name("emotecraft-library-", 0)
             .factory()
@@ -49,27 +51,48 @@ final class EmoteLibrary {
             CommonData.MOD_NAME, EmotecraftModPlatform.INSTANCE.getModVersion(CommonData.MOD_ID), EmotecraftModPlatform.INSTANCE.getPlatformName(), SharedConstants.getCurrentVersion().name()
     ));
 
+    private static final EmoteLibrary JOIN_SERVER = new EmoteLibrary();
+
     public static <R> CompletableFuture<R> executeAuthorized(Function<EmoteLibraryClient, R> request) {
         return CompletableFuture.supplyAsync(() -> request.apply(EMOTE_LIBRARY_CLIENT), EXECUTOR)
                 .exceptionallyCompose(throwable -> {
-                    if (throwable instanceof CompletionException ex) throwable = ex.getCause();
+                    throwable = unwrap(throwable);
                     if (throwable instanceof EmoteLibraryException.SessionExpired || throwable instanceof EmoteLibraryException.NotAuthorized || throwable instanceof EmoteLibraryException.AuthFailed) {
                         return CompletableFuture.runAsync(() -> {
                             if (PlatformTools.getConfig().cloudLibraryStatus.get() != LibraryStatus.ENABLED) {
                                 throw new EmoteLibraryException("EmoteLibrary not enabled!");
                             }
-                            User user = Minecraft.getInstance().getUser();
-                            EMOTE_LIBRARY_CLIENT.authorizeJava(user.getAccessToken(), user.getProfileId(), user.getName());
+                            EMOTE_LIBRARY_CLIENT.authorizeJava(JOIN_SERVER);
                         }, EXECUTOR).thenApply((_) -> request.apply(EMOTE_LIBRARY_CLIENT)).whenComplete((_, th) -> {
                             if (th != null) CommonData.LOGGER.warn("Failed to send emotecraft library request!", th);
                         });
                     }
                     CommonData.LOGGER.warn("Failed to send emotecraft library request!", throwable);
-                    throw new RuntimeException(throwable);
+                    throw new CompletionException(throwable);
                 });
+    }
+
+    /** Peels the {@link CompletionException} wrappers off a future's failure to reach the real cause (e.g. an SDK error). */
+    static Throwable unwrap(Throwable throwable) {
+        while (throwable instanceof CompletionException && throwable.getCause() != null) {
+            throwable = throwable.getCause();
+        }
+        return throwable;
     }
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(EMOTE_LIBRARY_CLIENT::close, "emote-library-shoutdown-hook"));
+    }
+
+    @Override
+    public String join(String serverId) {
+        try {
+            Minecraft mc = Minecraft.getInstance();
+            User user = mc.getUser();
+            mc.services().sessionService().joinServer(user.getProfileId(), user.getAccessToken(), serverId);
+            return user.getName();
+        } catch (AuthenticationException e) {
+            throw new EmoteLibraryException.AuthFailed(EmoteLibraryException.reason(e), e);
+        }
     }
 }
