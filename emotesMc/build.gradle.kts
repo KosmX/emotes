@@ -10,6 +10,11 @@ unimined.minecraft {
         devNamespace("official")
     }
 
+    source {
+        sourceGenerator.javaVersion = java_version
+        sourceGenerator.generator("1.12.0")
+    }
+
     runs {
         off = true
     }
