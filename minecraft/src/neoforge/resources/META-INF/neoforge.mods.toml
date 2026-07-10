@@ -16,6 +16,8 @@ description='''${description}'''
 
 [[mixins]]
 config = "emotecraft-arch.mixins.json"
+[[mixins]]
+config = "emotecraft-neo.mixins.json"
 
 [[dependencies.emotecraft]]
 modId = "neoforge"

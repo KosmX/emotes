@@ -24,6 +24,11 @@ unimined.minecraft(sourceSets.main.get()) {
         accessWidener(file("src/main/resources/emotes.classtweaker"))
     }
 
+    source {
+        sourceGenerator.javaVersion = java_version
+        sourceGenerator.generator("1.12.0")
+    }
+
     defaultRemapJar = false
 }
 
@@ -42,7 +47,7 @@ unimined.minecraft(sourceSets.getByName("neoforge")) {
 
     neoForge {
         loader("net.neoforged:neoforge:${project["neoforge_version"]}:universal")
-        mixinConfig("emotecraft-arch.mixins.json")
+        mixinConfig("emotecraft-arch.mixins.json", "emotecraft-neo.mixins.json")
 
         accessTransformer(provider {
             val transformed = file("src/main/resources/emotes.classtweaker").readText()
