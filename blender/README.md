@@ -1,7 +1,7 @@
 # Player Animation Tools
 
 The `.blend` files are [Blender](https://www.blender.org/) projects.  
-To use `emote_creator_bend_item_scale.blend` you need Blender version at least 5.0. For `emote_creator` and `emote_creator_bend` you can use Blender version from 2.83 up to 4.x. 
+`emote_creator.blend` is the rig for blender 5.2+ and only for the latest version of Emotecraft!
 [Emotecraft wiki](https://docs.zigythebird.com/emotecraft/creatingemotes/) if you're stuck.  
 
 `.bbmodel` files are models for [Blockbench](https://blockbench.net/). You can use them as well.  
