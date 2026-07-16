@@ -264,8 +264,11 @@ def collect_animation_data(baking_error_threshold,
     #    for bone in rig_object.pose.bones:
     #        for c in ["location", "rotation_euler", "scale"]:
     #            bone.keyframe_insert(c, frame=0)
+        for bone in rig_object.pose.bones:
+            if bone.name in export_bones: bone.select = True
+        bpy.ops.object.mode_set(mode='POSE')
         bpy.ops.nla.bake(
-                only_selected=False,
+                only_selected=True,
                 frame_start=export_frame_start,
                 frame_end= export_frame_end+1,
                 step=1,
@@ -274,7 +277,7 @@ def collect_animation_data(baking_error_threshold,
                 bake_types={'POSE'},
                 channel_types={'LOCATION', 'ROTATION', 'SCALE', 'PROPS'}
         )
-
+        bpy.ops.object.mode_set(mode='OBJECT')
         baked_action = rig_object.animation_data.action
 
         baked_slot = rig_object.animation_data.action_slot
