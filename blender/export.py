@@ -16,12 +16,10 @@ description = ""
 author = "3APA3EH"
 
 isLoop = action.use_cyclic
-speed = 1.0 # make the animation {speed} times faster
-baking_error_threshold = 0.01 # how much error is fine when converting baked animation to bezier keyframes
+baking_error_threshold = 0.001 # how much error is fine when converting baked animation to bezier keyframes
                               # 0: just make every keyframe bezier; >0: curve is allowed to be off by this much
-                              # even the default 0.01 greatly reduces the amount of keyframes
 
-#from what bones to export read the animation
+#from what bones to read the animation
 export_bones = [
             "body",
             "body_control",
@@ -66,7 +64,7 @@ badges = [
 # how many decimal places to keep in values
 value_precision = 3
 
-framerate = bpy.data.scenes["Scene"].render.fps/bpy.data.scenes["Scene"].render.fps_base
+framerate = scene.render.fps/scene.render.fps_base
 
 
 
@@ -77,7 +75,7 @@ collect_animation_data = bpy.data.texts['collect_animation_data.py'].as_module()
 create_emote = bpy.data.texts['set_up_bedrock.py'].as_module().create_emote
 
 print(f"Exporting {filename}.json!")
-is_vanilla = bpy.data.objects["export_armature"].pose.bones["settings"]["vanilla"]
+is_vanilla = rig_object.pose.bones["settings"]["vanilla"]
 
 preview_frame = scene.frame_current
 scene.frame_set(0)
@@ -93,7 +91,6 @@ emote = create_emote(filename,
                      scene.frame_start,
                      int(action.frame_start),
                      int(action.frame_end),
-                     speed,
                      isLoop,
                      name, author, description, badges,
                      export_bones,

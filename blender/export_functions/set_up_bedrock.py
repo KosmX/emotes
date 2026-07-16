@@ -40,7 +40,7 @@ def get_bone_axis_difference(arm: bpy.types.Object, bone_name: str, mode: str):
     return result
 
 
-def fcurves_to_mode_dict(fcurves: list[bpy.types.Curve], speed, is_bend: bool=False):
+def fcurves_to_mode_dict(fcurves: list[bpy.types.Curve], is_bend: bool=False):
     def build_frame_map(fcurve: bpy.types.Curve):
         if fcurve == None:
             return {}
@@ -53,7 +53,7 @@ def fcurves_to_mode_dict(fcurves: list[bpy.types.Curve], speed, is_bend: bool=Fa
         all_frames |= set(m.keys())
     result = {}
     for frame in sorted(all_frames):
-        time = round(frame / speed / framerate, 3)
+        time = round(frame / framerate, 3)
         if not is_bend:
             result[time] = {
                 "vector": [
@@ -73,13 +73,13 @@ def fcurves_to_mode_dict(fcurves: list[bpy.types.Curve], speed, is_bend: bool=Fa
     return result
 
 
-def get_bezier_args(keyframe, mode, multiplier, speed):
+def get_bezier_args(keyframe, mode, multiplier):
     framerate = bpy.data.scenes["Scene"].render.fps/bpy.data.scenes["Scene"].render.fps_base
     
     handle_left_y = (keyframe.handle_left.y - keyframe.co.y)*multiplier
-    handle_left_x = (keyframe.handle_left.x - keyframe.co.x)/framerate/speed
+    handle_left_x = (keyframe.handle_left.x - keyframe.co.x)/framerate
     handle_right_y = (keyframe.handle_right.y - keyframe.co.y)*multiplier
-    handle_right_x = (keyframe.handle_right.x - keyframe.co.x)/framerate/speed
+    handle_right_x = (keyframe.handle_right.x - keyframe.co.x)/framerate
     
     if mode == "position":
         handle_left_y *= 4
@@ -91,14 +91,14 @@ def get_bezier_args(keyframe, mode, multiplier, speed):
     return list(map(lambda x: round(x, 6), [handle_left_y, handle_left_x, handle_right_y, handle_right_x]))
 
 
-def get_easingArgs(keyframe, mode, multiplier, speed,value_precision, force_bezier=False):
+def get_easingArgs(keyframe, mode, multiplier,value_precision, force_bezier=False):
     if keyframe == "pal.disabled":
         return None
     if force_bezier:
-        return get_bezier_args(keyframe, mode, multiplier, speed)
+        return get_bezier_args(keyframe, mode, multiplier)
     match keyframe.interpolation:
         case "BEZIER":
-            return get_bezier_args(keyframe, mode, multiplier, speed)
+            return get_bezier_args(keyframe, mode, multiplier)
         case "ELASTIC":
             return [round(keyframe.period/keyframe.amplitude, value_precision)] #not accurate, but good enough I guess
         case "BACK":
@@ -167,25 +167,25 @@ def get_easing_list(keyframes: list[bpy.types.Keyframe]):
     return [get_bedrock_easing(keyframe) for keyframe in keyframes]
 
 
-def get_easingArgs_list(keyframes: list[bpy.types.Keyframe], mode: str, sign: float, speed, value_precision):
-    return [get_easingArgs(keyframes[i], mode, round(sign[i]), speed, value_precision) for i in range(len(keyframes))]
+def get_easingArgs_list(keyframes: list[bpy.types.Keyframe], mode: str, sign: float, value_precision):
+    return [get_easingArgs(keyframes[i], mode, round(sign[i]), value_precision) for i in range(len(keyframes))]
 
 
-def write_mode(bone_name: str, mode: str, animation_data, speed, rig_object, value_precision, default_bones, export_bones):
+def write_mode(bone_name: str, mode: str, animation_data, rig_object, value_precision, default_bones, export_bones):
     is_vanilla = bpy.data.objects["export_armature"].pose.bones["settings"]["vanilla"]
     if mode == 'bend' and is_vanilla: return
     if mode == 'bend':
         if f"{bone_name}_bend" not in default_bones or f"{bone_name}_bend" not in export_bones: # bone isn't bendable or isn't selected for export
             return None
         
-        mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_bend"]["rotation"], speed, is_bend=True)
+        mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_bend"]["rotation"], is_bend=True)
     elif is_vanilla and bone_name in ["left_arm", "right_arm", "left_leg", "right_leg"]:
         if f"{bone_name}_bend" not in default_bones or f"{bone_name}_bend" not in export_bones: # bone isn't bendable or isn't selected for export
             return None
         
-        mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_vanilla"][mode], speed)
+        mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_vanilla"][mode])
     else:
-        mode_dict = fcurves_to_mode_dict(animation_data[bone_name][mode], speed)
+        mode_dict = fcurves_to_mode_dict(animation_data[bone_name][mode])
     
     if len(mode_dict) == 0:
         return None
@@ -199,14 +199,14 @@ def write_mode(bone_name: str, mode: str, animation_data, speed, rig_object, val
     first_keyframes = mode_dict[first_time]["vector"]
     
     prev_easings = get_easing_list(first_keyframes)
-    prev_easingArgss = get_easingArgs_list(first_keyframes, mode, sign, speed, value_precision)
+    prev_easingArgss = get_easingArgs_list(first_keyframes, mode, sign, value_precision)
     
     for time in mode_dict:
         
         keyframes = mode_dict[time]["vector"]
         
         current_easings = get_easing_list(keyframes)
-        current_easingArgss = get_easingArgs_list(keyframes, mode, sign, speed,value_precision)
+        current_easingArgss = get_easingArgs_list(keyframes, mode, sign,value_precision)
         
         vector = [0,0,0]
         for channel in 0,1,2:
@@ -256,12 +256,12 @@ def write_mode(bone_name: str, mode: str, animation_data, speed, rig_object, val
             
             if reordered_prev_easingArgss[channel] != None:
                 if reordered_current_easings[channel] == 'bezier' or reordered_prev_easings[channel] == 'bezier': 
-                    final_easings[f"easingArgs{axis}"] = get_easingArgs(keyframes[bb_channel[channel]], mode, round(sign[channel]),speed,value_precision, force_bezier=True)
+                    final_easings[f"easingArgs{axis}"] = get_easingArgs(keyframes[bb_channel[channel]], mode, round(sign[channel]),value_precision, force_bezier=True)
                 else:
                     final_easings[f"easingArgs{axis}"] = reordered_prev_easingArgss[channel]
                     
             if final_easings[f"easing{axis}"] == 'bezier': 
-                easingArgs = get_easingArgs(keyframes[bb_channel[channel]], mode, round(sign[channel]), speed,value_precision, force_bezier=True)
+                easingArgs = get_easingArgs(keyframes[bb_channel[channel]], mode, round(sign[channel]),value_precision, force_bezier=True)
                 final_easings[f"easingArgs{axis}"] = easingArgs
                 prev_easingArgss[channel] = easingArgs   
             else:
@@ -291,7 +291,6 @@ def create_emote(filename,
                  loop_return_frame,
                  export_frame_start,
                  export_frame_end,
-                 speed,
                  isLoop,
                  name, author, description, badges,
                  export_bones,
@@ -308,9 +307,9 @@ def create_emote(filename,
         "parents": {},
         "animations": {
             filename: {
-                "loopTick": round((loop_return_frame-export_frame_start)/framerate/speed, 3),
+                "loopTick": round((loop_return_frame-export_frame_start)/framerate, 3),
                 "loop": isLoop,
-                "animation_length": round((export_frame_end-export_frame_start)/framerate/speed, 3),
+                "animation_length": round((export_frame_end-export_frame_start)/framerate, 3),
                 "player_animation_library": {
                     "name": name,
                     "author": author,
@@ -356,7 +355,7 @@ def create_emote(filename,
         
         emote["animations"][filename]["bones"][bone_name] = {}
         for mode in ["position", "rotation", "bend", "scale"]:
-            k = write_mode(bone_name, mode, animation_data, speed, rig_object,value_precision,default_bones, export_bones)
+            k = write_mode(bone_name, mode, animation_data, rig_object,value_precision,default_bones, export_bones)
             if k is None: continue
             emote["animations"][filename]["bones"][bone_name][mode] = k
     bpy.ops.object.mode_set(mode='POSE')     
