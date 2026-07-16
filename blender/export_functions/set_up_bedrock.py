@@ -308,7 +308,7 @@ def create_emote(filename,
         "parents": {},
         "animations": {
             filename: {
-                "loopTick": round(loop_return_frame/framerate/speed, 3),
+                "loopTick": round((loop_return_frame-export_frame_start)/framerate/speed, 3),
                 "loop": isLoop,
                 "animation_length": round((export_frame_end-export_frame_start)/framerate/speed, 3),
                 "player_animation_library": {

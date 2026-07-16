@@ -2,19 +2,20 @@ import sys, bpy, json
 from pathlib import Path
 project_dir = Path(bpy.data.filepath).parent
 rig_object = bpy.data.objects["export_armature"]
+action = rig_object.animation_data.action
 scene = bpy.context.scene
 
 emote_save_folder = project_dir
 blender_save_folder = project_dir
 
 prefix = ""
-filename = prefix + bpy.context.active_object.animation_data.action.name
+filename = prefix + action.name
 
 name = f"{filename}"
 description = ""
 author = "3APA3EH"
 
-isLoop = rig_object.animation_data.action.use_cyclic
+isLoop = action.use_cyclic
 speed = 1.0 # make the animation {speed} times faster
 baking_error_threshold = 0.01 # how much error is fine when converting baked animation to bezier keyframes
                               # 0: just make every keyframe bezier; >0: curve is allowed to be off by this much
@@ -83,15 +84,15 @@ scene.frame_set(0)
 
 animation_data, work_action = collect_animation_data(baking_error_threshold,
                        isLoop, 
-                       scene.frame_start,
-                       scene.frame_end,
+                       int(action.frame_start),
+                       int(action.frame_end),
                        export_bones
                        )
 
 emote = create_emote(filename,
-                     int(rig_object.animation_data.action.frame_start),
                      scene.frame_start,
-                     scene.frame_end,
+                     int(action.frame_start),
+                     int(action.frame_end),
                      speed,
                      isLoop,
                      name, author, description, badges,
