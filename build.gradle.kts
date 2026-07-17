@@ -5,7 +5,7 @@ import me.modmuss50.mpp.ReleaseType
 plugins {
     id("xyz.wagyourtail.jvmdowngrader") version("1.3.6") apply false
     id("xyz.wagyourtail.unimined") version "1.4.2-SNAPSHOT" apply false
-    id("com.gradleup.shadow") version "9.5.1" apply false
+    id("com.gradleup.shadow") version "9.6.0" apply false
     id("me.modmuss50.mod-publish-plugin") version "2.1.1"
     id("org.redlance.dima_dencep.gradle.PublishToDiscord") version "1.0.8"
 }
