@@ -14,6 +14,7 @@ public abstract class ConfigTask implements ConfigurationTask {
 
     @Override
     public void start(@NotNull Consumer<Packet<?>> consumer) {
+        CommonData.LOGGER.info("Sending configuration packets...");
         try {
             EmotePacket packet = INetworkInstance.createConfigPacket(true).build();
             consumer.accept(convert(packet)); // Config init

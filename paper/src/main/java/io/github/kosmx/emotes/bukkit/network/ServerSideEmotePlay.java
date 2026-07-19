@@ -47,7 +47,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     public void onPongMessageReceived(ServerConfigurationPacketListenerImpl impl, int time) {
         if (time == PaperConfigTask.PING_MAGIC_INT && PaperConfigTask.ON_CONFIG.remove(impl.connection)) {
-            CommonData.LOGGER.error("Client doesn't support emotes, ignoring!");
+            CommonData.LOGGER.warn("Client doesn't support emotes, ignoring!"); // No disconnect, vanilla clients can connect
             impl.finishCurrentTask(PaperConfigTask.TYPE);
         }
     }
@@ -62,7 +62,6 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
         ByteBuf byteBuf = Unpooled.wrappedBuffer(message);
         try {
             PaperConfigTask.ON_CONFIG.remove(listener.connection);
-            CommonData.LOGGER.info("Emotecraft is configuring client...");
             this.configs.computeIfAbsent(listener.connection, _ -> new ConfigNetworkInstance())
                     .receiveConfigMessage(new EmotePacket(byteBuf, PacketBound.SERVER), emotePacket -> listener.send(BukkitNetworkInstance.convertEmotePacket(emotePacket)));
             listener.finishCurrentTask(PaperConfigTask.TYPE); // And, we're done here

@@ -21,7 +21,7 @@ public final class ServerNetworkStuff {
             if (ServerConfigurationNetworking.canSend(handler, NetworkPlatformTools.EMOTE_CHANNEL_ID)) {
                 ((FabricServerConfigurationPacketListenerImpl)handler).addTask(new McConfigTask());
             } else { // No disconnect, vanilla clients can connect
-                CommonData.LOGGER.debug("Client doesn't support emotes, ignoring");
+                CommonData.LOGGER.warn("Client doesn't support emotes, ignoring!");
             }
         });
 

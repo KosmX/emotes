@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.server.network.instance;
 
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
@@ -22,6 +23,7 @@ public record ConfigNetworkInstance(Map<Byte, Byte> versions) {
         NetData message = packet.data;
         if (message.purpose != PacketTask.CONFIG) throw new IOException("Wrong packet type for config task");
         setVersions(message.versions);
+        CommonData.LOGGER.info("A reply has been received from the client: {}", versions());
 
         UniversalEmoteSerializer.preparePackets()
                 .map(builder -> builder.setVersion(versions()).build())

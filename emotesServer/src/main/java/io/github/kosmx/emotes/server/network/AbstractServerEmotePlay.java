@@ -33,6 +33,7 @@ public abstract class AbstractServerEmotePlay<P extends ServerNetworkInstance> e
                 stopEmote(instance, packet.data);
                 break;
             case CONFIG: // deprecated case
+                CommonData.LOGGER.info("The {} does not support the new configuration!", instance);
                 instance.setVersions(packet.data.versions);
                 instance.presenceResponse();
                 break;

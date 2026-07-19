@@ -100,6 +100,7 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
     @Override
     protected void onConfigurationDone() {
         this.isConfiguredNormally = true;
+        CommonData.LOGGER.info("The configuration of the {} is complete! {}", getClass().getName(), getVersions());
         if (ClientPacketManager.isInstanceOutdatedForStreaming(this)) {
             PlatformTools.addToast(FastMenuScreen.WARN_DIFFERENT_SERVER);
         }

@@ -60,7 +60,7 @@ public class ForgeNetwork {
         if (event.getListener().hasChannel(NetworkPlatformTools.EMOTE_CHANNEL_ID)) {
             event.register(new McConfigTask());
         } else {
-            CommonData.LOGGER.debug("Client doesn't support emotes, ignoring");
+            CommonData.LOGGER.warn("Client doesn't support emotes, ignoring!");
         }
     }
 }
