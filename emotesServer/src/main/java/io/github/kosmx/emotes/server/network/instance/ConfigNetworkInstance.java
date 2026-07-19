@@ -36,6 +36,7 @@ public record ConfigNetworkInstance(Map<Byte, Byte> versions) {
      * @param map version/config map
      */
     public void setVersions(Map<Byte, Byte> map) {
+        if (this == IMMUTABLE) return; // shared immutable config for connection-less avatars, nothing to negotiate
         this.versions.clear();
         this.versions.putAll(map);
     }

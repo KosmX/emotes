@@ -86,6 +86,11 @@ public abstract class ServerNetworkInstance implements INetworkInstance {
     }
 
     @Override
+    public void setVersions(Map<Byte, Byte> map) {
+        this.configInstance.setVersions(map); // routed through ConfigNetworkInstance to stay safe on the immutable avatar config
+    }
+
+    @Override
     public boolean isTrackingPlayState() {
         return true;
     }

@@ -52,6 +52,14 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
         }
     }
 
+    /**
+     * Drop config-phase bookkeeping for a connection that closed (or finished config) so the static/lasting maps don't leak.
+     */
+    public void onConnectionClosed(Connection connection) {
+        PaperConfigTask.ON_CONFIG.remove(connection);
+        this.configs.remove(connection);
+    }
+
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void onPluginMessageReceived(@NotNull String channel, @NotNull PlayerConnection connection, byte @NotNull [] message) {
@@ -59,9 +67,10 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
         if (!(connection instanceof PlayerConfigurationConnection configuration)) return;
 
         ServerConfigurationPacketListenerImpl listener = (ServerConfigurationPacketListenerImpl) StreamCodecUtils.PACKET_LISTENER.get(configuration);
+        // Whoever wins ON_CONFIG.remove owns finishing the task; prevents a double finishCurrentTask if a pong races in
+        if (!PaperConfigTask.ON_CONFIG.remove(listener.connection)) return;
         ByteBuf byteBuf = Unpooled.wrappedBuffer(message);
         try {
-            PaperConfigTask.ON_CONFIG.remove(listener.connection);
             this.configs.computeIfAbsent(listener.connection, _ -> new ConfigNetworkInstance())
                     .receiveConfigMessage(new EmotePacket(byteBuf, PacketBound.SERVER), emotePacket -> listener.send(BukkitNetworkInstance.convertEmotePacket(emotePacket)));
             listener.finishCurrentTask(PaperConfigTask.TYPE); // And, we're done here

@@ -67,6 +67,8 @@ public final class ClientPacketManager {
     private static void sendMessageVia(INetworkInstance network, EmotePacket.Builder packetBuilder, UUID target) {
         if (target != null && network.isTrackingPlayState()) return;
 
+        // Strip the sender id only when the other side tracks play-state and re-maps the sender from the connection itself.
+        // Non-tracking receivers (e.g. Geyser) don't re-map and rely on this field, so it must be kept for them.
         if (network.isTrackingPlayState()) packetBuilder.removePlayerID();
         try {
             if (target != null) packetBuilder.configureTarget(target);

@@ -38,7 +38,12 @@ public interface INetworkInstance {
     void disconnect();
 
     default void sendMessage(NetData data, boolean updateVersions) {
-        sendMessage(new EmotePacket.Builder(data.copy()), updateVersions);
+        // Guard every send: a single failing recipient must not abort a broadcast loop
+        try {
+            sendMessage(new EmotePacket.Builder(data.copy()), updateVersions);
+        } catch (Exception e) {
+            CommonData.LOGGER.warn("Failed to send packet via {}!", this, e);
+        }
     }
 
     /**

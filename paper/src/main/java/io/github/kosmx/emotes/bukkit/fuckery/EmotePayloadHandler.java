@@ -68,7 +68,8 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
                     ServerSideEmotePlay.getInstance().registerPlayer(impl.player); // Force register
                     ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, impl.getCraftPlayer(), data);
                 } else if (listener != null) {
-                    throw new IllegalArgumentException("Invalid listener: " + listener.getClass().getName());
+                    // Never throw from inside a netty decoder: it would tear down the connection. Just drop our payload.
+                    CommonData.LOGGER.warn("Received an emote payload on an unexpected listener: {}", listener.getClass().getName());
                 }
                 return;
             }
@@ -80,6 +81,15 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
         in.readerIndex(readerIndex);
         out.add(in.retain());
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // Clean up config-phase bookkeeping for connections that drop before completing/aborting the emote config task
+        if (ctx.pipeline().get("packet_handler") instanceof Connection connection) {
+            ServerSideEmotePlay.getInstance().onConnectionClosed(connection);
+        }
+        super.channelInactive(ctx);
     }
 
     /**
