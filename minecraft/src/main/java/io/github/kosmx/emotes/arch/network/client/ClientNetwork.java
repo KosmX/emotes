@@ -19,8 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import org.redlance.common.services.AdvancedService;
 import org.redlance.common.services.ServiceUtils;
 
-import java.io.IOException;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -40,20 +38,15 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        if (target != null) builder.configureTarget(target);
+    public void sendMessage(EmotePacket.Builder builder, boolean updateVersions) {
+        if (updateVersions) builder.setVersion(getVersions());
 
-        var writer = builder.build();
-        sendMessage(writer, null);
+        EmotePacket writer = builder.build();
+        sendPlayPacket(EmotePacketPayload.playPacket(writer));
 
         if (writer.data.emoteData != null && writer.data.emoteData.data().has("song") && writer.data.skippedPackets.contains(PacketConfig.NBS_CONFIG)) {
             PlatformTools.addToast(Component.translatable("emotecraft.song_too_big_to_send"));
         }
-    }
-
-    @Override
-    public void sendMessage(EmotePacket byteBuffer, @Nullable UUID target) {
-        sendPlayPacket(EmotePacketPayload.playPacket(byteBuffer));
     }
 
     public abstract boolean isServerChannelOpen(Identifier id);
@@ -65,14 +58,14 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
      * @param configPacketConsumer if config phase, packet consumer
      */
     @SuppressWarnings("unused")
-    public void receiveStreamMessage(@NotNull EmotePacket packet, @Nullable Consumer<CustomPacketPayload> configPacketConsumer) throws IOException {
+    public void receiveStreamMessage(@NotNull EmotePacket packet, @Nullable Consumer<CustomPacketPayload> configPacketConsumer) {
         CommonData.LOGGER.error("Streaming message received!"); // TODO
     }
 
-    public void receiveConfigMessage(@NotNull EmotePacket packet, @NotNull Consumer<CustomPacketPayload> consumer) throws IOException {
+    public void receiveConfigMessage(@NotNull EmotePacket packet, @NotNull Consumer<CustomPacketPayload> consumer) {
         if (packet.data.purpose == PacketTask.CONFIG) {
             setVersions(packet.data.versions);
-            sendC2SConfig(p -> consumer.accept(EmotePacketPayload.playPacket(p.build())));
+            consumer.accept(EmotePacketPayload.playPacket(createConfigurationPacket(false).build()));
             onConfigurationDone();
         } else if (packet.data.purpose == PacketTask.FILE) {
             EmoteHolder.addEmoteToList(packet.data.emoteData, this);
@@ -89,8 +82,7 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
     public void configureOnPlay(@NotNull Consumer<CustomPacketPayload> consumer) {
         if (!this.isConfiguredNormally && isActive()) {
             CommonData.LOGGER.warn("The server failed to configure the client, attempting to configure...");
-
-            sendC2SConfig(p -> consumer.accept(EmotePacketPayload.playPacket(p.build())));
+            consumer.accept(EmotePacketPayload.playPacket(createConfigurationPacket(false).build()));
         }
     }
 

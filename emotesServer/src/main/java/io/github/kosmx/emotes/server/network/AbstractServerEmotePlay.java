@@ -4,14 +4,12 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketBound;
-import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.config.Serializer;
-import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
+import io.github.kosmx.emotes.server.network.instance.ServerNetworkInstance;
 
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
@@ -23,12 +21,10 @@ import java.util.UUID;
 /**
  * This will be used for modded servers
  */
-public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> extends ServerEmoteAPI {
+public abstract class AbstractServerEmotePlay<P extends ServerNetworkInstance> extends ServerEmoteAPI {
     protected boolean doValidate() {
         return Serializer.getConfig().validateEmote.get();
     }
-
-    protected abstract UUID getUUIDFromPlayer(P player);
 
     protected abstract P getPlayerFromUUID(UUID player);
 
@@ -36,7 +32,6 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
         receiveMessage(new EmotePacket(bytes, PacketBound.SERVER), instance);
     }
 
-    @SuppressWarnings("deprecation")
     public void receiveMessage(EmotePacket packet, P instance) throws IOException {
         CommonData.LOGGER.trace("[emotes server] Received data from: {} data: {}", instance, packet);
         switch (packet.data.purpose){
@@ -65,17 +60,19 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
     @SuppressWarnings("ConstantConditions")
     protected void handleStreamEmote(NetData data, P instance) throws IOException {
         if (!data.valid && doValidate()) {
-            EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, getUUIDFromPlayer(instance));
+            EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, instance.getUUID());
             if (result != EventResult.FAIL) {
-                EmotePacket.Builder stopMSG = new EmotePacket.Builder().configureToSendStop(data.emoteData.uuid()).configureTarget(getUUIDFromPlayer(instance)).setSizeLimit(0x100000, true);
-                if(instance != null)instance.sendMessage(stopMSG, null);
+                EmotePacket.Builder stopMSG = new EmotePacket.Builder()
+                        .configureToSendStop(data.emoteData.uuid())
+                        .configureTarget(instance.getUUID());
+                if (instance != null) instance.sendMessage(stopMSG, true);
                 return;
             }
         }
-        if (data.player != null && instance.trackPlayState()) {
+        if (data.player != null && instance.isTrackingPlayState()) {
             CommonData.LOGGER.warn("Player {} does not respect server-side emote tracking", instance);
         }
-        if (instance.getEmoteTracker().isForced()) {
+        if (instance.isForced()) {
             CommonData.LOGGER.warn("Player {} is disobeying force play flag and tried to override it", instance);
             return;
         }
@@ -88,37 +85,41 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      * @param player source player
      */
     protected void streamEmote(NetData data, P player, boolean isForced, boolean isFromPlayer) {
-        player.getEmoteTracker().setPlayedEmote(data.emoteData, isForced);
-        ServerEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, getUUIDFromPlayer(player));
+        player.setPlayedEmote(data.emoteData, isForced);
+        ServerEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(data.emoteData, data.tick, player.getUUID());
         data.isForced = isForced;
-        data.player = getUUIDFromPlayer(player);
+        data.player = player.getUUID();
         data.strictSizeLimit = false;
         sendForTrackedBy(data, player);
         if (!isFromPlayer) {
-            sendForPlayer(data, player);
+            player.sendMessage(data, true);
         }
     }
 
     protected void stopEmote(P player, @Nullable NetData originalMessage) {
-        Pair<Animation, Float> emote = player.getEmoteTracker().getPlayedEmote();
-        player.getEmoteTracker().setPlayedEmote(null, false);
+        Pair<Animation, Float> emote = player.getPlayedEmote();
+        player.setPlayedEmote(null, false);
         if (emote != null) {
-            ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.left().uuid(), getUUIDFromPlayer(player));
-            NetData data = new EmotePacket.Builder().configureToSendStop(emote.left().uuid(), getUUIDFromPlayer(player)).build().data;
+            ServerEmoteEvents.EMOTE_STOP_BY_USER.invoker().onStopEmote(emote.left().uuid(), player.getUUID());
+            NetData data = new EmotePacket.Builder().configureToSendStop(emote.left().uuid(), player.getUUID()).build().data;
 
             sendForTrackedBy(data, player);
             if (originalMessage == null) { //If the stop is not from the player, server needs to notify the player too
                 data.isForced = true;
-                sendForPlayer(data, player);
+                player.sendMessage(data, true);
             }
         }
     }
 
     public void playerStartTracking(P tracked, P tracker) {
         if (tracked == null || tracker == null) return;
-        Pair<Animation, Float> playedEmote = tracked.getEmoteTracker().getPlayedEmote();
+        Pair<Animation, Float> playedEmote = tracked.getPlayedEmote();
         if (playedEmote != null) {
-            sendForPlayer(new EmotePacket.Builder().configureToStreamEmote(playedEmote.left()).configureEmoteTick(playedEmote.right()).configureTarget(getUUIDFromPlayer(tracked)).build().data, tracker);
+            tracker.sendMessage(new EmotePacket.Builder()
+                    .configureToStreamEmote(playedEmote.left())
+                    .configureEmoteTick(playedEmote.right())
+                    .configureTarget(tracked.getUUID()), true
+            );
         }
     }
 
@@ -138,34 +139,12 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
 
     @Override
     protected Pair<Animation, Float> getPlayedEmoteImpl(UUID player) {
-        return getPlayerFromUUID(player).getEmoteTracker().getPlayedEmote();
+        return getPlayerFromUUID(player).getPlayedEmote();
     }
 
     @Override
     protected boolean isForcedEmoteImpl(UUID player) {
-        return getPlayerFromUUID(player).getEmoteTracker().isForced();
-    }
-
-    @Deprecated
-    public void presenceResponse(AbstractNetworkInstance instance, boolean trackPlayState) {
-        try {
-            instance.sendMessage(getS2CConfigPacket(trackPlayState), null);
-        } catch(IOException e) {
-            CommonData.LOGGER.error("Failed to send config to client!", e);
-        }
-        if (instance.getRemoteVersions().getOrDefault(PacketConfig.HEADER_PACKET, (byte)0) >= 0) {
-            UniversalEmoteSerializer.preparePackets(instance.getRemoteVersions()).forEach(buffer ->
-                    instance.sendMessage(buffer, null)
-            );
-        }
-    }
-
-    public EmotePacket.Builder getS2CConfigPacket(boolean trackPlayState) {
-        NetData configData = new EmotePacket.Builder().configureToConfigExchange().build().data;
-        if (trackPlayState) {
-            configData.versions.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)0x01);
-        }
-        return new EmotePacket.Builder(configData);
+        return getPlayerFromUUID(player).isForced();
     }
 
     /**
@@ -175,22 +154,6 @@ public abstract class AbstractServerEmotePlay<P extends IServerNetworkInstance> 
      */
     protected abstract void sendForTrackedBy(NetData data, P player);
     protected abstract void sendForEveryone(NetData data);
-
-    /**
-     * Send a message to target. This will send a message even if target doesn't see player
-     * @param data message
-     * @param target target entity
-     */
-    protected void sendForPlayer(NetData data, P target) {
-        if (!target.isActive()) return;
-        try {
-            EmotePacket.Builder packetBuilder = new EmotePacket.Builder(data.copy());
-            packetBuilder.setVersion(target.getRemoteVersions());
-            target.sendMessage(packetBuilder, null);
-        } catch (Exception e) {
-            CommonData.LOGGER.warn("Failed to send packet!", e);
-        }
-    }
 
     public void updateClientEmotes(Set<UUID> removedIds) {
         NetData data = new EmotePacket.Builder()

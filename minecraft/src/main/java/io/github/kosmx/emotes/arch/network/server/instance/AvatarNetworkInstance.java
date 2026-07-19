@@ -1,4 +1,4 @@
-package io.github.kosmx.emotes.arch.network;
+package io.github.kosmx.emotes.arch.network.server.instance;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import net.minecraft.world.entity.Avatar;
@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Wrapper class for avatars
  */
-public final class AvatarServerPlayNetwork extends AbstractServerNetwork {
+public final class AvatarNetworkInstance extends McServerNetworkInstance {
     @NotNull
     private final Avatar avatar;
 
-    public AvatarServerPlayNetwork(@NotNull Avatar avatar) {
+    public AvatarNetworkInstance(@NotNull Avatar avatar) {
         super();
 
         if (avatar instanceof Player) throw new UnsupportedOperationException("For players, use ModdedServerPlayNetwork!");
@@ -20,13 +20,13 @@ public final class AvatarServerPlayNetwork extends AbstractServerNetwork {
     }
 
     @Override
-    protected @NotNull EmotesMixinConnection getServerConnection() {
-        throw new UnsupportedOperationException("Only players can have a connection!");
+    public @NotNull Avatar getAvatar() {
+        return this.avatar;
     }
 
     @Override
-    protected @NotNull Avatar getAvatar() {
-        return this.avatar;
+    public void disconnect() {
+        // no-op
     }
 
     @Override

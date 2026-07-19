@@ -26,5 +26,10 @@ accessible field net/minecraft/server/level/ChunkMap entityMap Lit/unimi/dsi/fas
 accessible class net/minecraft/server/level/ChunkMap$TrackedEntity
 accessible field net/minecraft/server/level/ChunkMap$TrackedEntity seenBy Ljava/util/Set;
 
+# Network
+accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl connection Lnet/minecraft/network/Connection;
+
 # Injected interfaces
 transitive-inject-interface net/minecraft/world/entity/Avatar io/github/kosmx/emotes/main/mixinFunctions/IPlayerEntity
+transitive-inject-interface net/minecraft/server/network/ServerGamePacketListenerImpl io/github/kosmx/emotes/arch/network/EmotesMixinNetwork
+transitive-inject-interface net/minecraft/network/Connection io/github/kosmx/emotes/arch/network/EmotesMixinNetwork

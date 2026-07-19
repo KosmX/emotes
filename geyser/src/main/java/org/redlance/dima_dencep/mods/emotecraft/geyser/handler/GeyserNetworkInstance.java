@@ -7,7 +7,6 @@ import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketBound;
-import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
@@ -45,7 +44,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     @Override
-    public HashMap<Byte, Byte> getRemoteVersions() {
+    public HashMap<Byte, Byte> getVersions() {
         return this.versions;
     }
 
@@ -56,15 +55,11 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     @Override
-    public void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException {
-        super.sendMessage(builder.setVersion(getRemoteVersions()), target);
-    }
-
-    @Override
-    public void sendMessage(EmotePacket packet, @Nullable UUID target) {
+    public void sendMessage(EmotePacket.Builder packet, boolean updateVersions) {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
-            packet.write(buf, PacketBound.SERVER);
+            if (updateVersions) packet.setVersion(getVersions());
+            packet.build().write(buf, PacketBound.SERVER);
             ((GeyserSession) this.session).sendDownstreamPacket(new ServerboundCustomPayloadPacket(
                     EmotecraftExt.EMOTECRAFT_EMOTE_TYPE, MathHelper.readBytes(buf)
             ));
@@ -76,9 +71,6 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     public void receiveMessage(EmotePacket packet) {
         try {
             NetData data = packet.data;
-            if (!trustReceivedPlayer()) {
-                data.player = null;
-            }
             if (data.player == null && data.purpose.playerBound) {
                 throw new IOException("Didn't received any player information");
             }
@@ -156,7 +148,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
             builder.button(FormUtils.createButtonComponent(animation, this.session.locale()));
         }
 
-        SimpleForm simpleForm = builder.validResultHandler((form, response) -> {
+        SimpleForm simpleForm = builder.validResultHandler((_, response) -> {
             UUID emoteId = FormUtils.extractAnimationFromButton(response.clickedButton());
             Animation animation = this.animations.getOrDefault(emoteId, UniversalEmoteSerializer.getEmote(emoteId));
             if (animation != null) playEmote(animation, 0, null);
@@ -165,7 +157,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void stopEmote(@Nullable UUID stopEmoteID) {
-        stopEmote((AvatarEntity) this.session.entities().playerEntity(), stopEmoteID);
+        stopEmote((AvatarEntity) this.session.playerEntity(), stopEmoteID);
     }
 
     public void stopEmote(AvatarEntity avatarEntity, @Nullable UUID stopEmoteID) {
@@ -181,12 +173,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
                 ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(this.currentEmote, avatarEntity.uuid());
             }
 
-            try {
-                sendMessage(new EmotePacket.Builder().configureToSendStop(this.currentEmote), null);
-            } catch (IOException e) {
-                CommonData.LOGGER.warn("Failed to stop animation!", e);
-            }
-
+            sendMessage(new EmotePacket.Builder().configureToSendStop(this.currentEmote), true);
             this.currentEmote = null;
         }
     }
@@ -196,23 +183,19 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public void playEmote(Animation animation, float tick, String bedrockId) {
-        playEmote((AvatarEntity) this.session.entities().playerEntity(), animation, tick, bedrockId);
+        playEmote((AvatarEntity) this.session.playerEntity(), animation, tick, bedrockId);
     }
 
     public void playEmote(AvatarEntity avatarEntity, Animation animation, float tick, String bedrockId) {
         ClientEmoteEvents.EMOTE_PLAY.invoker().onEmotePlay(animation, tick, avatarEntity.uuid());
 
         if (isMainAvatar(avatarEntity)) {
-            try {
-                sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), null);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            sendMessage(new EmotePacket.Builder().configureToStreamEmote(animation), true);
             this.currentEmote = animation.get();
         }
 
         if (avatarEntity instanceof PlayerEntity player && bedrockId != null) {
-            this.session.entities().showEmote(player, bedrockId); // TODO support tick?
+            this.session.showEmote(player, bedrockId); // TODO support tick?
         } else {
             ControllerHolder.INSTANCE.get(avatarEntity).triggerAnimation(animation, tick);
         }
@@ -223,7 +206,7 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     }
 
     public boolean isMainAvatar(AvatarEntity avatarEntity) {
-        return ((AvatarEntity) this.session.entities().playerEntity()).uuid().equals(avatarEntity.uuid());
+        return ((AvatarEntity) this.session.playerEntity()).uuid().equals(avatarEntity.uuid());
     }
 
     @Override
@@ -231,24 +214,8 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
         return this.session != null;
     }
 
-    @Override
-    public boolean isServerTrackingPlayState() {
-        return this.versions.get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
-    }
-
-    @Override
-    public boolean sendPlayerID() {
-        return !isServerTrackingPlayState();
-    }
-
     public void sendC2SConfig() {
-        sendC2SConfig(payload -> {
-            try {
-                sendMessage(payload, null);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        sendMessage(createConfigurationPacket(false), false);
     }
 
     public void setConnectionType(ConnectionType type) {

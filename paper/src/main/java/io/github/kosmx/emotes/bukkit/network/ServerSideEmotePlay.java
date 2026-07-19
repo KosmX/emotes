@@ -1,12 +1,16 @@
 package io.github.kosmx.emotes.bukkit.network;
 
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
+import io.github.kosmx.emotes.bukkit.fuckery.StreamCodecUtils;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.papermc.paper.connection.PlayerConnection;
+import io.papermc.paper.event.connection.configuration.PlayerConnectionInitialConfigureEvent;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
+import net.minecraft.server.network.ConfigurationTask;
 import net.minecraft.world.entity.Avatar;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftMannequin;
@@ -21,6 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,27 +35,33 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     private final Map<UUID, BukkitNetworkInstance> players = new ConcurrentHashMap<>();
 
     @Override
+    @SuppressWarnings("UnstableApiUsage")
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull PlayerConnection connection, byte @NotNull [] message) {
+        System.out.println(connection);
+        onPluginMessageReceived(channel, (UUID) null, message);
+    }
+
+    @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message) {
+        onPluginMessageReceived(channel, player.getUniqueId(), message);
+    }
+
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull UUID player, byte @NotNull [] message) {
         if (channel.equals(BukkitWrapper.EMOTE_PACKET)) {
-            BukkitNetworkInstance playerNetwork = this.players.get(player.getUniqueId());
+            BukkitNetworkInstance playerNetwork = this.players.get(player);
             if (playerNetwork != null) {
                 ByteBuf byteBuf = Unpooled.wrappedBuffer(message);
                 try {
                     this.receiveMessage(byteBuf, playerNetwork);
                 } catch (Exception e) {
-                    CommonData.LOGGER.error("Invalid Emotecraft packet from {}!", player.getName(), e);
+                    CommonData.LOGGER.error("Invalid Emotecraft packet from {}!", player, e);
                 } finally {
                     byteBuf.release();
                 }
             } else {
-                CommonData.LOGGER.warn("Player {} is not registered!", player.getName());
+                CommonData.LOGGER.warn("Player {} is not registered!", player);
             }
         }
-    }
-
-    @Override
-    public UUID getUUIDFromPlayer(BukkitNetworkInstance player) {
-        return player.avatar.getUUID();
     }
 
     @Override
@@ -76,14 +87,14 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
             // Bukkit server will filter if I really can send, or not.
             // If else to not spam dumb forge clients.
             if (player1.getListeningPluginChannels().contains(BukkitWrapper.EMOTE_PACKET)) {
-                sendForPlayer(data, instance);
+                instance.sendMessage(data, true);
             }
         }
     }
 
     @Override
     protected void sendForEveryone(NetData data) {
-        for (BukkitNetworkInstance instance : this.players.values()) sendForPlayer(data, instance);
+        for (BukkitNetworkInstance instance : this.players.values()) instance.sendMessage(data, true);
     }
 
     @EventHandler
@@ -101,7 +112,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         BukkitNetworkInstance instance = this.players.remove(event.getPlayer().getUniqueId());
-        if (instance != null) instance.closeConnection();
+        if (instance != null) instance.disconnect();
     }
 
     @EventHandler
@@ -109,6 +120,13 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
         if (((CraftEntity) event.getEntity()).getHandle() instanceof Avatar avatar) {
             playerStartTracking(getPlayerFromUUID(avatar.getUUID()), getPlayerFromUUID(event.getPlayer().getUniqueId()));
         }
+    }
+
+    @EventHandler
+    @SuppressWarnings({"UnstableApiUsage", "unchecked"})
+    public void onPlayerConnectionInitialConfigure(PlayerConnectionInitialConfigureEvent event) {
+        ((Queue<ConfigurationTask>) StreamCodecUtils.CONFIGURATION_TASKS.get(StreamCodecUtils.PACKET_LISTENER.get(event.getConnection())))
+                .add(new PaperConfigTask());
     }
 
     /**

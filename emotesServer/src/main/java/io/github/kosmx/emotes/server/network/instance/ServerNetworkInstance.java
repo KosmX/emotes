@@ -1,20 +1,17 @@
-package io.github.kosmx.emotes.server.network;
+package io.github.kosmx.emotes.server.network.instance;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.common.network.PacketConfig;
+import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
+
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
-/**
- * Server side emote state tracking
- * It uses {@link Instant}
- * By using instant, tracking is mostly immune to server lags, tick drops
- * However susceptible to system clock changes.
- * And less demanding for a large server
- *
- */
-public class EmotePlayTracker {
+public abstract class ServerNetworkInstance extends AbstractNetworkInstance {
     private Animation currentEmote = null;
     private Instant startTime = null;
     private boolean isForced = false;
@@ -62,5 +59,21 @@ public class EmotePlayTracker {
             return null;
         }
         return Pair.of(currentEmote, tick);
+    }
+
+    public abstract UUID getUUID();
+
+    public void presenceResponse() {
+        sendMessage(createConfigurationPacket(isTrackingPlayState()), false);
+        if (getVersions().getOrDefault(PacketConfig.HEADER_PACKET, (byte)0) >= 0) {
+            UniversalEmoteSerializer.preparePackets().forEach(buffer ->
+                    sendMessage(buffer, true)
+            );
+        }
+    }
+
+    @Override
+    public boolean isTrackingPlayState() {
+        return true;
     }
 }

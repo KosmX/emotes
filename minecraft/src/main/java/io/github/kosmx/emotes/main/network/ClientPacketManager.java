@@ -8,7 +8,6 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
@@ -67,14 +66,14 @@ public final class ClientPacketManager {
     }
 
     private static void sendMessageVia(INetworkInstance network, EmotePacket.Builder packetBuilder, UUID target) {
-        if (target != null && network.isServerTrackingPlayState()) return;
+        if (target != null && network.isTrackingPlayState()) return;
 
-        if (!network.sendPlayerID()) packetBuilder.removePlayerID();
+        if (network.isTrackingPlayState()) packetBuilder.removePlayerID();
         try {
+            if (target != null) packetBuilder.configureTarget(target);
             packetBuilder.setSizeLimit(network.maxDataSize(), false);
-            packetBuilder.setVersion(network.getRemoteVersions());
-            network.sendMessage(packetBuilder, target);
-        } catch (IOException ex) {
+            network.sendMessage(packetBuilder, true);
+        } catch (Exception ex) {
             CommonData.LOGGER.error("Error while sending packet via {}!", network, ex);
         }
     }
@@ -85,7 +84,7 @@ public final class ClientPacketManager {
     }
 
     public static boolean isInstanceOutdated(INetworkInstance instance, byte packet) {
-        Map<Byte, Byte> versions = instance.getRemoteVersions();
+        Map<Byte, Byte> versions = instance.getVersions();
         if (!versions.containsKey(packet)) return true;
         return versions.get(packet) < EmotePacket.defaultVersions.get(packet);
     }

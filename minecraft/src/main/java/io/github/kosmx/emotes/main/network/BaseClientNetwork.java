@@ -32,16 +32,13 @@ public abstract class BaseClientNetwork extends AbstractNetworkInstance {
      * Network instance has received a message, it will send it to EmoteX to execute
      *
      * @param packet received buffer
-     * @param player player who plays the emote, Can be NULL but only
      */
-    public void receiveMessage(EmotePacket packet, @Nullable UUID player) {
+    public void receiveMessage(EmotePacket packet) {
         if (packet.data.purpose == null) {
             CommonData.LOGGER.error("Packet execution is not possible without a purpose!");
             return;
         }
         CommonData.LOGGER.trace("[emotes client] Received message: {}", packet.data);
-
-        if (!trustReceivedPlayer()) packet.data.player = player;
 
         if (packet.data.player == null && packet.data.purpose.playerBound) {
             CommonData.LOGGER.error("Didn't received any player information!");
@@ -109,7 +106,7 @@ public abstract class BaseClientNetwork extends AbstractNetworkInstance {
     }
 
     @Override
-    protected void disconnect() {
+    public void disconnect() {
         EmoteHolder.clearEmotes(this);
     }
 
