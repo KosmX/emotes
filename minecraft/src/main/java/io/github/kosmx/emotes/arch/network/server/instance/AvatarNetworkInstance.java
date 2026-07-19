@@ -36,6 +36,6 @@ public final class AvatarNetworkInstance extends McServerNetworkInstance {
 
     @Override
     public void sendPlayMessage(EmotePacket bytes) {
-        throw new UnsupportedOperationException("Only players can have a connection!");
+        // no-op
     }
 }

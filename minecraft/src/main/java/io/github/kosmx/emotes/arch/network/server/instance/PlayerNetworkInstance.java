@@ -26,11 +26,14 @@ public final class PlayerNetworkInstance extends McServerNetworkInstance {
 
     @Override
     public boolean isActive() {
-        return true; // TODO
+        return NetworkPlatformTools.INSTANCE.canSendPlay(
+                this.serverGamePacketListener.player, NetworkPlatformTools.EMOTE_CHANNEL_ID.id()
+        );
     }
 
     @Override
     public void sendPlayMessage(EmotePacket packet) {
+        if (!isActive()) return;
         this.serverGamePacketListener.send(NetworkPlatformTools.playPacket(packet));
     }
 

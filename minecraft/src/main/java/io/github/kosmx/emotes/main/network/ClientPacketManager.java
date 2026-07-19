@@ -53,7 +53,7 @@ public final class ClientPacketManager {
 
         boolean isMainActive = ClientNetwork.INSTANCE.isActive();
         if (isMainActive) { // Always try to send to main
-            ClientPacketManager.sendMessageVia(ClientNetwork.INSTANCE, packetBuilder, target);
+            ClientPacketManager.sendMessageVia(ClientNetwork.INSTANCE, packetBuilder.copy(), target);
         }
 
         if (!isMainActive || isInstanceOutdatedForStreaming(ClientNetwork.INSTANCE)) {

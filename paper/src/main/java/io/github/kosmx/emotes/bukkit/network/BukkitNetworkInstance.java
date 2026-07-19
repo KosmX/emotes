@@ -32,6 +32,7 @@ public class BukkitNetworkInstance extends ServerNetworkInstance {
 
     @Override
     public void sendMessage(EmotePacket.Builder packet, boolean updateVersions) {
+        if (!isActive()) return;
         if (!(this.avatar instanceof ServerPlayer player)) {
             CommonData.LOGGER.error("Attempt to send a packet of an unsupported entity: {}!", this.avatar);
             return;

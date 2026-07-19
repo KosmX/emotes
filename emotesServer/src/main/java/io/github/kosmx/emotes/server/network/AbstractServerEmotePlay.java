@@ -50,10 +50,9 @@ public abstract class AbstractServerEmotePlay<P extends ServerNetworkInstance> e
      * Handle received stream message
      * @param data received data
      * @param instance sender player
-     * @throws IOException probably not
      */
     @SuppressWarnings("ConstantConditions")
-    protected void handleStreamEmote(NetData data, P instance) throws IOException {
+    protected void handleStreamEmote(NetData data, P instance) {
         if (!data.valid && doValidate()) {
             EventResult result = ServerEmoteEvents.EMOTE_VERIFICATION.invoker().verify(data.emoteData, instance.getUUID());
             if (result != EventResult.FAIL) {

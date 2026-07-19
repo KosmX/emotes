@@ -39,6 +39,7 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
 
     @Override
     public void sendMessage(EmotePacket.Builder builder, boolean updateVersions) {
+        if (!isActive()) return;
         if (updateVersions) builder.setVersion(getVersions());
 
         EmotePacket writer = builder.build();

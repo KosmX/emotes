@@ -50,6 +50,7 @@ public class GeyserNetworkInstance implements INetworkInstance {
 
     @Override
     public void sendMessage(EmotePacket.Builder packet, boolean updateVersions) {
+        if (!isActive()) return;
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
             if (updateVersions) packet.setVersion(getVersions());
