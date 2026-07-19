@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.server.network.instance;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import it.unimi.dsi.fastutil.Pair;
@@ -9,12 +9,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
-public abstract class ServerNetworkInstance extends AbstractNetworkInstance {
+public abstract class ServerNetworkInstance implements INetworkInstance {
+    private final ConfigNetworkInstance configInstance;
+
     private Animation currentEmote = null;
     private Instant startTime = null;
     private boolean isForced = false;
+
+    protected ServerNetworkInstance(ConfigNetworkInstance configInstance) {
+        this.configInstance = configInstance;
+    }
 
     /**
      * Set the currently played emote.
@@ -63,6 +70,7 @@ public abstract class ServerNetworkInstance extends AbstractNetworkInstance {
 
     public abstract UUID getUUID();
 
+    @Deprecated
     public void presenceResponse() {
         sendMessage(createConfigurationPacket(isTrackingPlayState()), false);
         if (getVersions().getOrDefault(PacketConfig.HEADER_PACKET, (byte)0) >= 0) {
@@ -70,6 +78,11 @@ public abstract class ServerNetworkInstance extends AbstractNetworkInstance {
                     sendMessage(buffer, true)
             );
         }
+    }
+
+    @Override
+    public Map<Byte, Byte> getVersions() {
+        return this.configInstance.versions();
     }
 
     @Override

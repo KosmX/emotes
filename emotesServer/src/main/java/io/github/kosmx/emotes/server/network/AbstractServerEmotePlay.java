@@ -6,12 +6,10 @@ import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI;
 import io.github.kosmx.emotes.api.events.server.ServerEmoteEvents;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
-import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.network.instance.ServerNetworkInstance;
 
-import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
@@ -28,17 +26,13 @@ public abstract class AbstractServerEmotePlay<P extends ServerNetworkInstance> e
 
     protected abstract P getPlayerFromUUID(UUID player);
 
-    public void receiveMessage(ByteBuf bytes, P instance) throws IOException {
-        receiveMessage(new EmotePacket(bytes, PacketBound.SERVER), instance);
-    }
-
     public void receiveMessage(EmotePacket packet, P instance) throws IOException {
         CommonData.LOGGER.trace("[emotes server] Received data from: {} data: {}", instance, packet);
         switch (packet.data.purpose){
             case STOP:
                 stopEmote(instance, packet.data);
                 break;
-            case CONFIG:
+            case CONFIG: // deprecated case
                 instance.setVersions(packet.data.versions);
                 instance.presenceResponse();
                 break;

@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.network.server.instance;
 
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.server.network.instance.ConfigNetworkInstance;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +14,7 @@ public final class AvatarNetworkInstance extends McServerNetworkInstance {
     private final Avatar avatar;
 
     public AvatarNetworkInstance(@NotNull Avatar avatar) {
-        super();
-
+        super(ConfigNetworkInstance.IMMUTABLE);
         if (avatar instanceof Player) throw new UnsupportedOperationException("For players, use ModdedServerPlayNetwork!");
         this.avatar = avatar;
     }

@@ -7,6 +7,6 @@ import net.minecraft.network.protocol.Packet;
 public class PaperConfigTask extends ConfigTask {
     @Override
     protected Packet<?> convert(EmotePacket packet) {
-        return null;
+        return BukkitNetworkInstance.convertEmotePacket(packet);
     }
 }

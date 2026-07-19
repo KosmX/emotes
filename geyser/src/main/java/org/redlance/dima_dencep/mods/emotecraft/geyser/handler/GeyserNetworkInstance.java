@@ -3,7 +3,7 @@ package org.redlance.dima_dencep.mods.emotecraft.geyser.handler;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
+import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketBound;
@@ -29,7 +29,7 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.utils.*;
 import java.io.IOException;
 import java.util.*;
 
-public class GeyserNetworkInstance extends AbstractNetworkInstance {
+public class GeyserNetworkInstance implements INetworkInstance {
     private final HashMap<Byte, Byte> versions = new HashMap<>();
     // private final Map<UUID, Object> queue = new ConcurrentHashMap<>();
     private final UUIDMap<Animation> animations = new UUIDMap<>();
@@ -46,12 +46,6 @@ public class GeyserNetworkInstance extends AbstractNetworkInstance {
     @Override
     public HashMap<Byte, Byte> getVersions() {
         return this.versions;
-    }
-
-    @Override
-    public void setVersions(Map<Byte, Byte> map) {
-        this.versions.clear();
-        this.versions.putAll(map);
     }
 
     @Override

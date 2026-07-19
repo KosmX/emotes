@@ -4,7 +4,6 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.common.CommonData;
@@ -16,12 +15,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class BaseClientNetwork extends AbstractNetworkInstance {
+public abstract class BaseClientNetwork implements INetworkInstance {
+    private final HashMap<Byte, Byte> versions = new HashMap<>(EmotePacket.defaultVersions);
+
     /**
      * When the emotePacket arrives earlier than the player entity data
      * I put the emote into a queue.
@@ -143,4 +145,9 @@ public abstract class BaseClientNetwork extends AbstractNetworkInstance {
     }
 
     record QueueEntry(Animation emoteData, float beginTick, int receivedTick) {}
+
+    @Override
+    public HashMap<Byte, Byte> getVersions() {
+        return this.versions;
+    }
 }

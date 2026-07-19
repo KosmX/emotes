@@ -10,8 +10,6 @@ import java.util.Map;
 /**
  * To hold information about network
  * <p>
- * implement {@link AbstractNetworkInstance} if you want to implement only the necessary functions
- * <p>
  * use this interface if you want to do something completely different
  */
 public interface INetworkInstance {
@@ -29,7 +27,10 @@ public interface INetworkInstance {
      * Receive (and save) versions from the other side
      * @param map map
      */
-    void setVersions(Map<Byte, Byte> map);
+    default void setVersions(Map<Byte, Byte> map) {
+        getVersions().clear();
+        getVersions().putAll(map);
+    }
 
     /**
      * When the network instance disconnects...
@@ -77,7 +78,10 @@ public interface INetworkInstance {
      * Does the other side track the emote play state of every player -> true
      * The client has to resend the emote if a new player get close -> false
      */
-    boolean isTrackingPlayState();
+    default boolean isTrackingPlayState() {
+        return getVersions().containsKey(PacketConfig.SERVER_TRACK_EMOTE_PLAY) &&
+                getVersions().get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
+    }
 
     /**
      * Maximum size of the data what the instance can send

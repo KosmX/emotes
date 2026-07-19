@@ -25,7 +25,7 @@ public final class McServerEmotePlay extends AbstractServerEmotePlay<McServerNet
     public void receiveMessage(EmotePacket packet, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             try {
-                receiveMessage(packet, serverPlayer.connection.emotecraft$getServerNetworkInstance());
+                receiveMessage(packet, serverPlayer.connection.emotecraft$getGameNetworkInstance());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -34,7 +34,7 @@ public final class McServerEmotePlay extends AbstractServerEmotePlay<McServerNet
 
     public void receiveStreamMessage(EmotePacket packet, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            receiveStreamMessage(serverPlayer, serverPlayer.connection.emotecraft$getServerNetworkInstance(), packet);
+            receiveStreamMessage(serverPlayer, serverPlayer.connection.emotecraft$getGameNetworkInstance(), packet);
         }
     }
 
@@ -46,7 +46,7 @@ public final class McServerEmotePlay extends AbstractServerEmotePlay<McServerNet
     @Override
     protected McServerNetworkInstance getPlayerFromUUID(UUID player) {
         ServerPlayer serverPlayer = NetworkPlatformTools.INSTANCE.getServer().getPlayerList().getPlayer(player);
-        if (serverPlayer != null) return serverPlayer.connection.emotecraft$getServerNetworkInstance();
+        if (serverPlayer != null) return serverPlayer.connection.emotecraft$getGameNetworkInstance();
 
         if (!this.nonPlayers.containsKey(player)) {
             for (ServerLevel level : NetworkPlatformTools.INSTANCE.getServer().getAllLevels()) {
@@ -63,7 +63,7 @@ public final class McServerEmotePlay extends AbstractServerEmotePlay<McServerNet
     @Override
     protected void sendForTrackedBy(NetData data, McServerNetworkInstance player) {
         for (ServerPlayer target : NetworkPlatformTools.INSTANCE.getTrackedBy(player.getAvatar())) {
-            McServerNetworkInstance targetInstance = target.connection.emotecraft$getServerNetworkInstance();
+            McServerNetworkInstance targetInstance = target.connection.emotecraft$getGameNetworkInstance();
             if (targetInstance == player) continue;
 
             if (NetworkPlatformTools.INSTANCE.canSendPlay(target, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
@@ -75,7 +75,7 @@ public final class McServerEmotePlay extends AbstractServerEmotePlay<McServerNet
     @Override
     protected void sendForEveryone(NetData data) {
         for (ServerPlayer player : NetworkPlatformTools.INSTANCE.getServer().getPlayerList().getPlayers()) {
-            McServerNetworkInstance targetInstance = player.connection.emotecraft$getServerNetworkInstance();
+            McServerNetworkInstance targetInstance = player.connection.emotecraft$getGameNetworkInstance();
             if (NetworkPlatformTools.INSTANCE.canSendPlay(player, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
                 targetInstance.sendMessage(data, true);
             }

@@ -27,8 +27,7 @@ public final class ServerNetworkStuff {
 
         ServerConfigurationNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID, (payload, context) -> {
             try {
-                context.packetListener().connection.emotecraft$getServerNetworkInstance()
-                        .receiveConfigMessage(payload.packet(), context.responseSender()::sendPacket);
+                context.packetListener().connection.emotecraft$receiveConfigMessage(payload.packet(), context.responseSender()::sendPacket);
                 ((FabricServerConfigurationPacketListenerImpl)context.packetListener()).completeTask(McConfigTask.TYPE); // And, we're done here
             } catch (Exception e) {
                 CommonData.LOGGER.error("Invalid Emotecraft packet!", e);

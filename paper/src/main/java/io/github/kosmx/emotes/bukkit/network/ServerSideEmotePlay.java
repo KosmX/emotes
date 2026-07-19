@@ -3,14 +3,24 @@ package io.github.kosmx.emotes.bukkit.network;
 import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.bukkit.fuckery.StreamCodecUtils;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
+import io.github.kosmx.emotes.server.network.instance.ConfigNetworkInstance;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.papermc.paper.connection.DisconnectionReason;
+import io.papermc.paper.connection.PlayerConfigurationConnection;
 import io.papermc.paper.connection.PlayerConnection;
 import io.papermc.paper.event.connection.configuration.PlayerConnectionInitialConfigureEvent;
 import io.papermc.paper.event.player.PlayerTrackEntityEvent;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ConfigurationTask;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.minecraft.world.entity.Avatar;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.entity.CraftMannequin;
@@ -32,34 +42,44 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNetworkInstance> implements PluginMessageListener, Listener {
     private static final BukkitWrapper PLUGIN = BukkitWrapper.getPlugin(BukkitWrapper.class);
 
+    private final Map<Connection, ConfigNetworkInstance> configs = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitNetworkInstance> players = new ConcurrentHashMap<>();
 
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void onPluginMessageReceived(@NotNull String channel, @NotNull PlayerConnection connection, byte @NotNull [] message) {
-        System.out.println(connection);
-        onPluginMessageReceived(channel, (UUID) null, message);
+        if (!BukkitWrapper.EMOTE_PACKET.equals(channel)) return;
+        if (!(connection instanceof PlayerConfigurationConnection configuration)) return;
+
+        ServerConfigurationPacketListenerImpl listener = (ServerConfigurationPacketListenerImpl) StreamCodecUtils.PACKET_LISTENER.get(configuration);
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(message);
+        try {
+            this.configs.computeIfAbsent(listener.connection, _ -> new ConfigNetworkInstance())
+                    .receiveConfigMessage(new EmotePacket(byteBuf, PacketBound.SERVER), emotePacket -> listener.send(BukkitNetworkInstance.convertEmotePacket(emotePacket)));
+            listener.finishCurrentTask(PaperConfigTask.TYPE); // And, we're done here
+        } catch (Exception e) {
+            CommonData.LOGGER.error("Invalid Emotecraft packet!", e);
+            listener.disconnect(Component.literal(CommonData.MOD_ID + ": " + (e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName())), DisconnectionReason.INVALID_PAYLOAD);
+        } finally {
+            byteBuf.release();
+        }
     }
 
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] message) {
-        onPluginMessageReceived(channel, player.getUniqueId(), message);
-    }
-
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull UUID player, byte @NotNull [] message) {
         if (channel.equals(BukkitWrapper.EMOTE_PACKET)) {
-            BukkitNetworkInstance playerNetwork = this.players.get(player);
+            BukkitNetworkInstance playerNetwork = this.players.get(player.getUniqueId());
             if (playerNetwork != null) {
                 ByteBuf byteBuf = Unpooled.wrappedBuffer(message);
                 try {
-                    this.receiveMessage(byteBuf, playerNetwork);
+                    this.receiveMessage(new EmotePacket(byteBuf, PacketBound.SERVER), playerNetwork);
                 } catch (Exception e) {
-                    CommonData.LOGGER.error("Invalid Emotecraft packet from {}!", player, e);
+                    CommonData.LOGGER.error("Invalid Emotecraft packet from {}!", player.getName(), e);
                 } finally {
                     byteBuf.release();
                 }
             } else {
-                CommonData.LOGGER.warn("Player {} is not registered!", player);
+                CommonData.LOGGER.warn("Player {} is not registered!", player.getName());
             }
         }
     }
@@ -73,7 +93,12 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
             if (!(entity instanceof CraftMannequin)) {
                 CommonData.LOGGER.error("Player {} never joined. If it is a fake player, the fake-player plugin forgot to fire join event.", entity);
             }
-            this.players.put(playerUuid, new BukkitNetworkInstance((Avatar) entity.getHandle()));
+            ConfigNetworkInstance instance = ConfigNetworkInstance.IMMUTABLE;
+            if (entity instanceof CraftPlayer player) {
+                ConfigNetworkInstance configured = this.configs.get(player.getHandle().connection.connection);
+                instance = configured == null ? new ConfigNetworkInstance() : configured;
+            }
+            this.players.put(playerUuid, new BukkitNetworkInstance(instance, (Avatar) entity.getHandle()));
         }
         return this.players.get(playerUuid);
     }
@@ -99,14 +124,15 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        registerPlayer(event.getPlayer());
+        registerPlayer(((CraftPlayer)event.getPlayer()).getHandle());
     }
 
     @ApiStatus.Internal
-    public void registerPlayer(Player player) {
-        UUID uuid = player.getUniqueId();
+    public void registerPlayer(ServerPlayer player) {
+        UUID uuid = player.getUUID();
         if (this.players.containsKey(uuid)) return;
-        this.players.put(uuid, new BukkitNetworkInstance(((CraftPlayer) player).getHandle()));
+        ConfigNetworkInstance configured = this.configs.get(player.connection.connection);
+        this.players.put(uuid, new BukkitNetworkInstance(configured == null ? new ConfigNetworkInstance() : configured, player));
     }
 
     @EventHandler
@@ -125,8 +151,9 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     @EventHandler
     @SuppressWarnings({"UnstableApiUsage", "unchecked"})
     public void onPlayerConnectionInitialConfigure(PlayerConnectionInitialConfigureEvent event) {
-        ((Queue<ConfigurationTask>) StreamCodecUtils.CONFIGURATION_TASKS.get(StreamCodecUtils.PACKET_LISTENER.get(event.getConnection())))
-                .add(new PaperConfigTask());
+        ServerCommonPacketListenerImpl impl = (ServerCommonPacketListenerImpl) StreamCodecUtils.PACKET_LISTENER.get(event.getConnection());
+        System.out.println(impl.pluginMessagerChannels);
+        ((Queue<ConfigurationTask>) StreamCodecUtils.CONFIGURATION_TASKS.get(impl)).add(new PaperConfigTask());
     }
 
     /**

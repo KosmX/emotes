@@ -19,7 +19,7 @@ import java.util.Collection;
 public interface NetworkPlatformTools extends AdvancedService {
     NetworkPlatformTools INSTANCE = ServiceUtils.loadService(NetworkPlatformTools.class);
 
-    CustomPacketPayload.Type<EmotePacketPayload> EMOTE_CHANNEL_ID = new CustomPacketPayload.Type<>(McUtils.newIdentifier(CommonData.playEmoteID));
+    CustomPacketPayload.Type<EmotePacketPayload> EMOTE_CHANNEL_ID = new CustomPacketPayload.Type<>(McUtils.EMOTE_CHANNEL_ID);
     CustomPacketPayload.Type<EmotePacketPayload> STREAM_CHANNEL_ID = new CustomPacketPayload.Type<>(McUtils.newIdentifier(CommonData.emoteStreamID));
 
     boolean canSendPlay(ServerPlayer player, Identifier channel);

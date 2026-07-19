@@ -24,8 +24,8 @@ public abstract class EmotecraftMod {
     protected void onStartTracking(Entity entity, Player player) {
         if (entity instanceof ServerPlayer tracked && player instanceof ServerPlayer tracker) {
             McServerEmotePlay.getInstance().playerStartTracking(
-                    tracked.connection.emotecraft$getServerNetworkInstance(),
-                    tracker.connection.emotecraft$getServerNetworkInstance()
+                    tracked.connection.emotecraft$getGameNetworkInstance(),
+                    tracker.connection.emotecraft$getGameNetworkInstance()
             );
         }
     }

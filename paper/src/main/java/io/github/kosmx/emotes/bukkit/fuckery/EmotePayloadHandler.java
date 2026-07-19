@@ -9,17 +9,15 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.ProtocolInfo;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.*;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import net.minecraft.network.protocol.game.GameProtocols;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import org.bukkit.entity.Player;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 import java.util.List;
 
@@ -35,6 +33,7 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
     }
 
     @Override
+    @SuppressWarnings("UnstableApiUsage")
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         if (in.readableBytes() == 0 || !ctx.channel().isActive()) {
             out.add(in.retain());
@@ -57,9 +56,15 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
                 byte[] data = new byte[i];
                 buf.readBytes(data);
 
-                Player player = connection.getPlayer().getBukkitEntity();
-                ServerSideEmotePlay.getInstance().registerPlayer(player); // Force register
-                ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, player, data);
+                PacketListener listener = connection.getPacketListener();
+                if (listener instanceof ServerConfigurationPacketListenerImpl impl) {
+                    ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, impl.getApiConnection(), data);
+                } else if (listener instanceof ServerGamePacketListenerImpl impl) {
+                    ServerSideEmotePlay.getInstance().registerPlayer(impl.player); // Force register
+                    ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, impl.getCraftPlayer(), data);
+                } else if (listener != null) {
+                    throw new IllegalArgumentException("Invalid listener: " + listener.getClass().getName());
+                }
                 return;
             }
         }

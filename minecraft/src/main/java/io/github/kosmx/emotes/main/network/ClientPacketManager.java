@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.main.network;
 
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
@@ -30,7 +29,7 @@ public final class ClientPacketManager {
 
     /**
      * Register your proxy instance
-     * use {@link AbstractNetworkInstance} to create a new instance
+     * use {@link INetworkInstance} to create a new instance
      * @param instance your instance
      * @return true if registered {@link ArrayList#add(Object)}
      */

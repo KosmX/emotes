@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.neoforge.network;
 
 import io.github.kosmx.emotes.arch.network.*;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
+import io.github.kosmx.emotes.arch.network.ducks.ConfigEmotesNetworkMixin;
 import io.github.kosmx.emotes.arch.network.server.McServerEmotePlay;
 import io.github.kosmx.emotes.arch.network.server.McConfigTask;
 import io.github.kosmx.emotes.common.CommonData;
@@ -34,9 +35,7 @@ public class ForgeNetwork {
                 .configurationBidirectional(NetworkPlatformTools.EMOTE_CHANNEL_ID, null,
                         (arg, ctx) -> {
                             try {
-                                ((EmotesMixinNetwork) ctx.connection()).emotecraft$getServerNetworkInstance()
-                                        .receiveConfigMessage(arg.packet(), ctx.connection()::send);
-
+                                ((ConfigEmotesNetworkMixin) ctx.connection()).emotecraft$receiveConfigMessage(arg.packet(), ctx.connection()::send);
                                 ctx.finishCurrentTask(McConfigTask.TYPE);
                             } catch (Exception e) {
                                 CommonData.LOGGER.error("Invalid Emotecraft packet!", e);

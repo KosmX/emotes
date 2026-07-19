@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.network.server.instance;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.server.network.instance.ConfigNetworkInstance;
 import io.github.kosmx.emotes.server.network.instance.ServerNetworkInstance;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 public abstract class McServerNetworkInstance extends ServerNetworkInstance {
+    public McServerNetworkInstance(ConfigNetworkInstance configInstance) {
+        super(configInstance);
+    }
+
     @NotNull
     public abstract Avatar getAvatar();
 

@@ -31,5 +31,5 @@ accessible field net/minecraft/server/network/ServerCommonPacketListenerImpl con
 
 # Injected interfaces
 transitive-inject-interface net/minecraft/world/entity/Avatar io/github/kosmx/emotes/main/mixinFunctions/IPlayerEntity
-transitive-inject-interface net/minecraft/server/network/ServerGamePacketListenerImpl io/github/kosmx/emotes/arch/network/EmotesMixinNetwork
-transitive-inject-interface net/minecraft/network/Connection io/github/kosmx/emotes/arch/network/EmotesMixinNetwork
+transitive-inject-interface net/minecraft/server/network/ServerGamePacketListenerImpl io/github/kosmx/emotes/arch/network/ducks/GameEmotesNetworkMixin
+transitive-inject-interface net/minecraft/network/Connection io/github/kosmx/emotes/arch/network/ducks/ConfigEmotesNetworkMixin

@@ -1,11 +1,11 @@
-package io.github.kosmx.emotes.arch.network;
+package io.github.kosmx.emotes.arch.network.ducks;
 
 import io.github.kosmx.emotes.arch.network.server.instance.PlayerNetworkInstance;
 import org.jetbrains.annotations.NotNull;
 
-public interface EmotesMixinNetwork {
+public interface GameEmotesNetworkMixin {
     @NotNull
-    default PlayerNetworkInstance emotecraft$getServerNetworkInstance() {
+    default PlayerNetworkInstance emotecraft$getGameNetworkInstance() {
         throw new AssertionError();
     }
 }

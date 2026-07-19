@@ -1,24 +1,27 @@
 package io.github.kosmx.emotes.bukkit.network;
 
-import io.github.kosmx.emotes.bukkit.BukkitWrapper;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
+import io.github.kosmx.emotes.mc.McUtils;
+import io.github.kosmx.emotes.server.network.instance.ConfigNetworkInstance;
 import io.github.kosmx.emotes.server.network.instance.ServerNetworkInstance;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.DiscardedPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Avatar;
 
 import java.util.UUID;
 
 public class BukkitNetworkInstance extends ServerNetworkInstance {
-    private static final BukkitWrapper PLUGIN = BukkitWrapper.getPlugin(BukkitWrapper.class);
-
     protected final Avatar avatar;
 
-    public BukkitNetworkInstance(Avatar avatar) {
+    public BukkitNetworkInstance(ConfigNetworkInstance configInstance, Avatar avatar) {
+        super(configInstance);
         this.avatar = avatar;
     }
 
@@ -33,11 +36,15 @@ public class BukkitNetworkInstance extends ServerNetworkInstance {
             CommonData.LOGGER.error("Attempt to send a packet of an unsupported entity: {}!", this.avatar);
             return;
         }
+        if (updateVersions) packet.setVersion(getVersions());
+        player.connection.send(convertEmotePacket(packet.build()));
+    }
+
+    public static Packet<?> convertEmotePacket(EmotePacket packet) {
         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
         try {
-            if (updateVersions) packet.setVersion(getVersions());
-            packet.build().write(buf, PacketBound.CLIENT);
-            player.getBukkitEntity().sendPluginMessage(PLUGIN, BukkitWrapper.EMOTE_PACKET, MathHelper.readBytes(buf));
+            packet.write(buf, PacketBound.CLIENT);
+            return new ClientboundCustomPayloadPacket(new DiscardedPayload(McUtils.EMOTE_CHANNEL_ID, MathHelper.readBytes(buf)));
         } finally {
             buf.release();
         }
