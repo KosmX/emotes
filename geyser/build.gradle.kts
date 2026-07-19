@@ -50,8 +50,8 @@ dependencies {
     compileApi("org.redlance.common-utils:reflect:${project["commonutils_version"]}") {
         isTransitive = false
     }
-    compileApi("org.ow2.asm:asm:9.9.1")
-    compileApi("org.ow2.asm:asm-commons:9.9.1")
+    compileApi("org.ow2.asm:asm:9.10.1")
+    compileApi("org.ow2.asm:asm-commons:9.10.1")
 }
 
 tasks {
