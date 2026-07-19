@@ -11,7 +11,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import net.minecraft.network.*;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundPongPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
+import net.minecraft.network.protocol.configuration.ConfigurationProtocols;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.network.protocol.game.GameProtocols;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.Identifier;
@@ -27,6 +30,7 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
     public static final Identifier PLAY_PAYLOAD = McUtils.newIdentifier(CommonData.playEmoteID);
     private static final int PAYLOAD_ID = EmotePayloadHandler.hackPayloadId();
+    private static final int PONG_ID = EmotePayloadHandler.hackPongId();
 
     private EmotePayloadHandler() {
         // no-op
@@ -44,8 +48,9 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
         int readerIndex = in.readerIndex();
         FriendlyByteBuf buf = new FriendlyByteBuf(in);
+        int packetId = buf.readVarInt();
 
-        if (buf.readVarInt() == PAYLOAD_ID) {
+        if (packetId == PAYLOAD_ID) {
             if (PLAY_PAYLOAD.equals(buf.readIdentifier())) {
 
                 int i = buf.readableBytes();
@@ -67,6 +72,10 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
                 }
                 return;
             }
+        } else if (packetId == PONG_ID) {
+            if (connection.getPacketListener() instanceof ServerConfigurationPacketListenerImpl impl) {
+                ServerSideEmotePlay.getInstance().onPongMessageReceived(impl, buf.readInt());
+            }
         }
 
         in.readerIndex(readerIndex);
@@ -84,6 +93,20 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
         RegistryFriendlyByteBuf friendlyByteBuf = new RegistryFriendlyByteBuf(Unpooled.buffer(), MinecraftServer.getServer().registryAccess());
         try {
             protocol.codec().encode(friendlyByteBuf, new ServerboundCustomPayloadPacket(new DiscardedPayload(PLAY_PAYLOAD, new byte[0])));
+            return friendlyByteBuf.readVarInt();
+        } finally {
+            friendlyByteBuf.release();
+        }
+    }
+
+    private static int hackPongId() {  // Hack to figure out the id of the Pong packet
+        ProtocolInfo<ServerConfigurationPacketListener> protocol = ConfigurationProtocols.SERVERBOUND_TEMPLATE.bind(
+                k -> new RegistryFriendlyByteBuf(k, MinecraftServer.getServer().registryAccess())
+        );
+
+        RegistryFriendlyByteBuf friendlyByteBuf = new RegistryFriendlyByteBuf(Unpooled.buffer(), MinecraftServer.getServer().registryAccess());
+        try {
+            protocol.codec().encode(friendlyByteBuf, new ServerboundPongPacket(0));
             return friendlyByteBuf.readVarInt();
         } finally {
             friendlyByteBuf.release();

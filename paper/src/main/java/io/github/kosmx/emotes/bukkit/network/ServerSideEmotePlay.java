@@ -45,6 +45,13 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     private final Map<Connection, ConfigNetworkInstance> configs = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitNetworkInstance> players = new ConcurrentHashMap<>();
 
+    public void onPongMessageReceived(ServerConfigurationPacketListenerImpl impl, int time) {
+        if (time == PaperConfigTask.PING_MAGIC_INT && PaperConfigTask.ON_CONFIG.remove(impl.connection)) {
+            CommonData.LOGGER.error("Client doesn't support emotes, ignoring!");
+            impl.finishCurrentTask(PaperConfigTask.TYPE);
+        }
+    }
+
     @Override
     @SuppressWarnings("UnstableApiUsage")
     public void onPluginMessageReceived(@NotNull String channel, @NotNull PlayerConnection connection, byte @NotNull [] message) {
@@ -54,6 +61,8 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
         ServerConfigurationPacketListenerImpl listener = (ServerConfigurationPacketListenerImpl) StreamCodecUtils.PACKET_LISTENER.get(configuration);
         ByteBuf byteBuf = Unpooled.wrappedBuffer(message);
         try {
+            PaperConfigTask.ON_CONFIG.remove(listener.connection);
+            CommonData.LOGGER.info("Emotecraft is configuring client...");
             this.configs.computeIfAbsent(listener.connection, _ -> new ConfigNetworkInstance())
                     .receiveConfigMessage(new EmotePacket(byteBuf, PacketBound.SERVER), emotePacket -> listener.send(BukkitNetworkInstance.convertEmotePacket(emotePacket)));
             listener.finishCurrentTask(PaperConfigTask.TYPE); // And, we're done here
@@ -136,9 +145,10 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     }
 
     @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         BukkitNetworkInstance instance = this.players.remove(event.getPlayer().getUniqueId());
         if (instance != null) instance.disconnect();
+        this.configs.remove(((CraftPlayer) event.getPlayer()).getHandle().connection.connection);
     }
 
     @EventHandler
@@ -152,8 +162,7 @@ public final class ServerSideEmotePlay extends AbstractServerEmotePlay<BukkitNet
     @SuppressWarnings({"UnstableApiUsage", "unchecked"})
     public void onPlayerConnectionInitialConfigure(PlayerConnectionInitialConfigureEvent event) {
         ServerCommonPacketListenerImpl impl = (ServerCommonPacketListenerImpl) StreamCodecUtils.PACKET_LISTENER.get(event.getConnection());
-        System.out.println(impl.pluginMessagerChannels);
-        ((Queue<ConfigurationTask>) StreamCodecUtils.CONFIGURATION_TASKS.get(impl)).add(new PaperConfigTask());
+        ((Queue<ConfigurationTask>) StreamCodecUtils.CONFIGURATION_TASKS.get(impl)).add(new PaperConfigTask(impl));
     }
 
     /**
