@@ -15,7 +15,7 @@ public final class AvatarNetworkInstance extends McServerNetworkInstance {
 
     public AvatarNetworkInstance(@NotNull Avatar avatar) {
         super(ConfigNetworkInstance.IMMUTABLE);
-        if (avatar instanceof Player) throw new UnsupportedOperationException("For players, use ModdedServerPlayNetwork!");
+        if (avatar instanceof Player) throw new UnsupportedOperationException("For players, use PlayerNetworkInstance!");
         this.avatar = avatar;
     }
 

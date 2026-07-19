@@ -1,6 +1,5 @@
 package io.github.kosmx.emotes.bukkit.network;
 
-import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
@@ -32,13 +31,9 @@ public class BukkitNetworkInstance extends ServerNetworkInstance {
 
     @Override
     public void sendMessage(EmotePacket.Builder packet, boolean updateVersions) {
-        if (!isActive()) return;
-        if (!(this.avatar instanceof ServerPlayer player)) {
-            CommonData.LOGGER.error("Attempt to send a packet of an unsupported entity: {}!", this.avatar);
-            return;
-        }
+        if (!isActive()) return; // isActive() guarantees the avatar is a ServerPlayer
         if (updateVersions) packet.setVersion(getVersions());
-        player.connection.send(convertEmotePacket(packet.build()));
+        ((ServerPlayer) this.avatar).connection.send(convertEmotePacket(packet.build()));
     }
 
     public static Packet<?> convertEmotePacket(EmotePacket packet) {
