@@ -36,6 +36,7 @@ public abstract class BaseClientNetwork implements INetworkInstance {
      * @param packet received buffer
      */
     public void receiveMessage(EmotePacket packet) {
+        if (packet == EmotePacket.EMPTY) return; // undecodable packet dropped by the decoder, nothing to execute
         if (packet.data.purpose == null) {
             CommonData.LOGGER.error("Packet execution is not possible without a purpose!");
             return;

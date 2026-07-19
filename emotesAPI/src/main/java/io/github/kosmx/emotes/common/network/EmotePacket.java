@@ -43,6 +43,13 @@ public final class EmotePacket {
 
     public final NetData data;
 
+    /**
+     * Sentinel returned by the decoder when an incoming packet can't be parsed and must be dropped
+     * instead of tearing down the netty connection. Its {@link PacketTask#UNKNOWN} purpose makes the
+     * receiver skip it.
+     */
+    public static final EmotePacket EMPTY = new EmotePacket(new NetData());
+
     private EmotePacket(@NotNull NetData data) {
         if (data.versions.isEmpty()) data.versions.putAll(defaultVersions);
         this.data = data;
