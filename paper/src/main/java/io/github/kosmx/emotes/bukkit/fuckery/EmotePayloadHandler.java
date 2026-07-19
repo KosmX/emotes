@@ -9,17 +9,18 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.ProtocolInfo;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.*;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundPongPacket;
 import net.minecraft.network.protocol.common.custom.DiscardedPayload;
+import net.minecraft.network.protocol.configuration.ConfigurationProtocols;
+import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.minecraft.network.protocol.game.GameProtocols;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import org.bukkit.entity.Player;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 import java.util.List;
 
@@ -29,12 +30,14 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
     public static final Identifier PLAY_PAYLOAD = McUtils.newIdentifier(CommonData.playEmoteID);
     private static final int PAYLOAD_ID = EmotePayloadHandler.hackPayloadId();
+    private static final int PONG_ID = EmotePayloadHandler.hackPongId();
 
     private EmotePayloadHandler() {
         // no-op
     }
 
     @Override
+    @SuppressWarnings("UnstableApiUsage")
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         if (in.readableBytes() == 0 || !ctx.channel().isActive()) {
             out.add(in.retain());
@@ -45,8 +48,9 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
 
         int readerIndex = in.readerIndex();
         FriendlyByteBuf buf = new FriendlyByteBuf(in);
+        int packetId = buf.readVarInt();
 
-        if (buf.readVarInt() == PAYLOAD_ID) {
+        if (packetId == PAYLOAD_ID) {
             if (PLAY_PAYLOAD.equals(buf.readIdentifier())) {
 
                 int i = buf.readableBytes();
@@ -57,15 +61,35 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
                 byte[] data = new byte[i];
                 buf.readBytes(data);
 
-                Player player = connection.getPlayer().getBukkitEntity();
-                ServerSideEmotePlay.getInstance().registerPlayer(player); // Force register
-                ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, player, data);
+                PacketListener listener = connection.getPacketListener();
+                if (listener instanceof ServerConfigurationPacketListenerImpl impl) {
+                    ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, impl.getApiConnection(), data);
+                } else if (listener instanceof ServerGamePacketListenerImpl impl) {
+                    ServerSideEmotePlay.getInstance().registerPlayer(impl.player); // Force register
+                    ServerSideEmotePlay.getInstance().onPluginMessageReceived(BukkitWrapper.EMOTE_PACKET, impl.getCraftPlayer(), data);
+                } else if (listener != null) {
+                    // Never throw from inside a netty decoder: it would tear down the connection. Just drop our payload.
+                    CommonData.LOGGER.warn("Received an emote payload on an unexpected listener: {}", listener.getClass().getName());
+                }
                 return;
+            }
+        } else if (packetId == PONG_ID) {
+            if (connection.getPacketListener() instanceof ServerConfigurationPacketListenerImpl impl) {
+                ServerSideEmotePlay.getInstance().onPongMessageReceived(impl, buf.readInt());
             }
         }
 
         in.readerIndex(readerIndex);
         out.add(in.retain());
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        // Clean up config-phase bookkeeping for connections that drop before completing/aborting the emote config task
+        if (ctx.pipeline().get("packet_handler") instanceof Connection connection) {
+            ServerSideEmotePlay.getInstance().onConnectionClosed(connection);
+        }
+        super.channelInactive(ctx);
     }
 
     /**
@@ -79,6 +103,20 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
         RegistryFriendlyByteBuf friendlyByteBuf = new RegistryFriendlyByteBuf(Unpooled.buffer(), MinecraftServer.getServer().registryAccess());
         try {
             protocol.codec().encode(friendlyByteBuf, new ServerboundCustomPayloadPacket(new DiscardedPayload(PLAY_PAYLOAD, new byte[0])));
+            return friendlyByteBuf.readVarInt();
+        } finally {
+            friendlyByteBuf.release();
+        }
+    }
+
+    private static int hackPongId() {  // Hack to figure out the id of the Pong packet
+        ProtocolInfo<ServerConfigurationPacketListener> protocol = ConfigurationProtocols.SERVERBOUND_TEMPLATE.bind(
+                k -> new RegistryFriendlyByteBuf(k, MinecraftServer.getServer().registryAccess())
+        );
+
+        RegistryFriendlyByteBuf friendlyByteBuf = new RegistryFriendlyByteBuf(Unpooled.buffer(), MinecraftServer.getServer().registryAccess());
+        try {
+            protocol.codec().encode(friendlyByteBuf, new ServerboundPongPacket(0));
             return friendlyByteBuf.readVarInt();
         } finally {
             friendlyByteBuf.release();

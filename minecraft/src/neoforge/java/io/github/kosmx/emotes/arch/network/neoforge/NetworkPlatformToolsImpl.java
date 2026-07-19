@@ -6,7 +6,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -18,11 +17,6 @@ public final class NetworkPlatformToolsImpl implements NetworkPlatformTools {
     @Override
     public boolean canSendPlay(ServerPlayer player, Identifier channel) {
         return player.connection.hasChannel(channel);
-    }
-
-    @Override
-    public boolean canSendConfig(ServerConfigurationPacketListenerImpl packetListener, Identifier channel) {
-        return packetListener.hasChannel(channel);
     }
 
     @Override

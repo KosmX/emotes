@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.fabric;
 
 import io.github.kosmx.emotes.mc.ServerCommands;
-import io.github.kosmx.emotes.fabric.network.ServerNetworkStuff;
+import io.github.kosmx.emotes.fabric.network.server.ServerNetworkStuff;
 import io.github.kosmx.emotes.main.EmotecraftMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;

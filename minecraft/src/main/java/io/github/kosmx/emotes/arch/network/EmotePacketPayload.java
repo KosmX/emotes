@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.network;
 
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketBound;
 import net.minecraft.network.FriendlyByteBuf;
@@ -30,7 +31,21 @@ public record EmotePacketPayload(@NotNull CustomPacketPayload.Type<?> id, @NotNu
     public static StreamCodec<FriendlyByteBuf, EmotePacketPayload> reader(@NotNull CustomPacketPayload.Type<?> channel, PacketBound bound) {
         return CustomPacketPayload.codec(
                 (payload, buf) -> payload.packet().write(buf, bound),
-                buf -> new EmotePacketPayload(channel, new EmotePacket(buf, bound))
+                buf -> {
+                    // A malformed / un-negotiated clientbound emote (e.g. a newer animation format the server sends
+                    // before the config handshake finished) must not tear down the netty connection — drop it best-effort.
+                    // Only clientbound: serverbound decode stays strict, so this never touches ClientNetwork server-side.
+                    if (bound == PacketBound.CLIENT) {
+                        try {
+                            return new EmotePacketPayload(channel, new EmotePacket(buf, bound));
+                        } catch (Exception e) {
+                            CommonData.LOGGER.warn("Dropping undecodable clientbound emote packet", e);
+                            if (buf.isReadable()) buf.skipBytes(buf.readableBytes());
+                            return new EmotePacketPayload(channel, EmotePacket.EMPTY);
+                        }
+                    }
+                    return new EmotePacketPayload(channel, new EmotePacket(buf, bound));
+                }
         );
     }
 

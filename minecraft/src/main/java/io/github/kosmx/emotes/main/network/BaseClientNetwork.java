@@ -4,7 +4,6 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.event.EventResult;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.events.client.ClientEmoteEvents;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.common.CommonData;
@@ -16,12 +15,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class BaseClientNetwork extends AbstractNetworkInstance {
+public abstract class BaseClientNetwork implements INetworkInstance {
+    private final HashMap<Byte, Byte> versions = new HashMap<>(EmotePacket.defaultVersions);
+
     /**
      * When the emotePacket arrives earlier than the player entity data
      * I put the emote into a queue.
@@ -32,16 +34,14 @@ public abstract class BaseClientNetwork extends AbstractNetworkInstance {
      * Network instance has received a message, it will send it to EmoteX to execute
      *
      * @param packet received buffer
-     * @param player player who plays the emote, Can be NULL but only
      */
-    public void receiveMessage(EmotePacket packet, @Nullable UUID player) {
+    public void receiveMessage(EmotePacket packet) {
+        if (packet == EmotePacket.EMPTY) return; // undecodable packet dropped by the decoder, nothing to execute
         if (packet.data.purpose == null) {
             CommonData.LOGGER.error("Packet execution is not possible without a purpose!");
             return;
         }
         CommonData.LOGGER.trace("[emotes client] Received message: {}", packet.data);
-
-        if (!trustReceivedPlayer()) packet.data.player = player;
 
         if (packet.data.player == null && packet.data.purpose.playerBound) {
             CommonData.LOGGER.error("Didn't received any player information!");
@@ -109,7 +109,7 @@ public abstract class BaseClientNetwork extends AbstractNetworkInstance {
     }
 
     @Override
-    protected void disconnect() {
+    public void disconnect() {
         EmoteHolder.clearEmotes(this);
     }
 
@@ -146,4 +146,9 @@ public abstract class BaseClientNetwork extends AbstractNetworkInstance {
     }
 
     record QueueEntry(Animation emoteData, float beginTick, int receivedTick) {}
+
+    @Override
+    public HashMap<Byte, Byte> getVersions() {
+        return this.versions;
+    }
 }
