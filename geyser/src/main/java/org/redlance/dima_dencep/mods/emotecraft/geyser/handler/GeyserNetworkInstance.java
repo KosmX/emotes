@@ -201,7 +201,7 @@ public class GeyserNetworkInstance implements INetworkInstance {
     }
 
     public boolean isMainAvatar(AvatarEntity avatarEntity) {
-        return ((AvatarEntity) this.session.playerEntity()).uuid().equals(avatarEntity.uuid());
+        return this.session.playerEntity().uuid().equals(avatarEntity.uuid());
     }
 
     @Override

@@ -12,10 +12,10 @@ import org.redlance.dima_dencep.mods.emotecraft.geyser.animator.ControllerHolder
 
 public class FixGeometryCommand implements CommandExecutor<GeyserConnection> {
     @Override
-    public void execute(@NonNull GeyserConnection source, @NonNull Command command, @NonNull String[] args) {
+    public void execute(@NonNull GeyserConnection source, @NonNull Command command, String @NonNull [] args) {
         EmotecraftExt.getNetworkInstance(source).appliedGeometries.clear();
 
-        for (Entity entity : ((GeyserSession) source).getEntityCache().getEntities().values()) {
+        for (Entity entity : ((GeyserSession) source).getEntityCache().getEntitiesUnsafe().values()) {
             if (entity instanceof AvatarEntity avatar) ControllerHolder.INSTANCE.resubscribe(avatar);
         }
     }

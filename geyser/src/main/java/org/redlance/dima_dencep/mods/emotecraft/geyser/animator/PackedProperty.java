@@ -20,8 +20,8 @@ public final class PackedProperty {
     public static final int PROP_MAX_USED = PROP_MIN + (SLOT * ID_COUNT) - 1;
 
     public static int pack(int id, float value) {
-        id = Math.max(ID_MIN, Math.min(ID_MAX, id));
-        value = Math.max(VALUE_MIN, Math.min(VALUE_MAX, value));
+        id = Math.clamp(id, ID_MIN, ID_MAX);
+        value = Math.clamp(value, VALUE_MIN, VALUE_MAX);
         int idx = id - ID_MIN; // 0..198
         int quant = Math.round(value * SCALE);
         int valueIndex = quant + CENTER;
