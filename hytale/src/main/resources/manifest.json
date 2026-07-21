@@ -1,0 +1,20 @@
+{
+  "Group": "io.github.kosmx.emotes",
+  "Name": "Emotecraft",
+  "Version": "${version}",
+  "Description": "${description}",
+  "Authors": [
+    {
+      "Name": "KosmX",
+      "Email": "kosmx.mc@gmail.com"
+    },
+    {
+      "Name": "dima_dencep",
+      "Email": "dima_dencep@redlance.org"
+    }
+  ],
+  "Website": "https://github.com/KosmX/emotes",
+  "Main": "io.github.kosmx.emotes.hytale.EmotecraftPlugin",
+  "ServerVersion": ">=0.5.7",
+  "IncludesAssetPack": true
+}

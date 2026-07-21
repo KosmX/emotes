@@ -22,3 +22,6 @@ include("paper")
 
 // Geyser ext
 include("geyser")
+
+// Hytale server mod
+include("hytale")

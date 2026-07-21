@@ -1,0 +1,71 @@
+$C = "../../Common.ui";
+
+$C.@PageOverlay {
+  Anchor: (Top: 130);
+}
+
+$C.@Container {
+  Anchor: (Width: 600, Height: 700);
+
+  #Title {
+    $C.@Title {
+      @Text = %emotecraft.library.title;
+    }
+  }
+
+  #Content {
+    LayoutMode: Top;
+
+    Group {
+      LayoutMode: Left;
+      Anchor: (Bottom: 10, Height: $C.@DropdownBoxHeight);
+
+      $C.@TextField #SearchInput {
+        @Anchor = (Left: 0, Right: 10);
+        FlexWeight: 1;
+        PlaceholderText: %server.customUI.searchPlaceholder;
+      }
+
+      $C.@TextButton #Search {
+        Text: %emotecraft.library.search.button;
+      }
+    }
+
+    Group #List {
+      FlexWeight: 1;
+      Anchor: (Bottom: 15);
+      LayoutMode: TopScrolling;
+      ScrollbarStyle: $C.@DefaultScrollbarStyle;
+    }
+
+    Label #Status {
+      Padding: 8;
+      Style: (
+        FontSize: 14,
+        HorizontalAlignment: Center,
+        TextColor: #94969a
+      );
+      Text: " ";
+    }
+
+    Group {
+      LayoutMode: Left;
+      Anchor: (Top: 15);
+
+      $C.@TextButton #Prev {
+        @Anchor = (Right: 10);
+        Text: %emotecraft.library.prev;
+        FlexWeight: 1;
+        Disabled: true;
+      }
+
+      $C.@TextButton #Next {
+        Text: %emotecraft.library.next;
+        FlexWeight: 1;
+        Disabled: true;
+      }
+    }
+  }
+}
+
+$C.@BackButton {}
