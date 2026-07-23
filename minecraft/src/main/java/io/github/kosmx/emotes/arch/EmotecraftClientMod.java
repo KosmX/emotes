@@ -55,7 +55,7 @@ public class EmotecraftClientMod {
                     EmoteHolder.clearEmotes();
                     EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes(), null);
                 })
-                .thenRunAsync(EmotecraftClientMod::migrateLegacyBinds, Minecraft.getInstance())
+                .thenRun(EmotecraftClientMod::migrateLegacyBinds)
                 .exceptionally(th -> {
                     CommonData.LOGGER.error("Failed to reload emotes!", th);
                     return null;
