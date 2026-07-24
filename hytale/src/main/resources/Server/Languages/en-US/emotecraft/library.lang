@@ -1,0 +1,6 @@
+# The search field's placeholder reuses Hytale's own server.customUI.searchPlaceholder; only the strings with no
+# vanilla equivalent are defined here.
+title = Emote Library
+search.button = Search
+prev = Previous
+next = Next

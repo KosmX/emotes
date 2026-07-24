@@ -1,0 +1,39 @@
+Button #Button {
+  Padding: (Full: 6);
+  LayoutMode: Left;
+  Style: (
+    Hovered: (
+      Background: #000000(0.2),
+    )
+  );
+
+  AssetImage #Icon {
+    Anchor: (Width: 32, Height: 32, Right: 8);
+  }
+
+  Group {
+    LayoutMode: Top;
+    FlexWeight: 1;
+
+    Group {
+      LayoutMode: Left;
+
+      Label #Name {
+        Style: (RenderBold: true);
+        FlexWeight: 1;
+      }
+
+      Label #Author {
+        Style: (TextColor: #ffffff(0.2), RenderItalics: true);
+      }
+    }
+
+    Label #Description {
+      Style: (FontSize: 12, TextColor: #94969a);
+    }
+
+    Label #Tags {
+      Style: (FontSize: 11, TextColor: #6a7d8f, RenderItalics: true);
+    }
+  }
+}
