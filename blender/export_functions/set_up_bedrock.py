@@ -307,21 +307,22 @@ def create_emote(filename,
         "parents": {},
         "animations": {
             filename: {
-                "loopTick": round((loop_return_frame-export_frame_start)/framerate, 3),
-                "loop": isLoop,
                 "animation_length": round((export_frame_end-export_frame_start)/framerate, 3),
-                "player_animation_library": {
+                "loop": isLoop
+            }
+        }
+
+    }
+    if isLoop is True:
+        emote["animations"][filename]["loopTick"] = round((loop_return_frame-export_frame_start)/framerate, 3)
+    emote["animations"][filename]["player_animation_library"] = {
                     "name": name,
                     "author": author,
                     "description": description,
                     "bages": badges
     #                "applyBendToOtherBones": True
-                },
-                "bones":{}
-            }
-        }
-
-    }
+                }
+    emote["animations"][filename]["bones"] = {}
     
     print("Figuring out the custom bones...")
     default_bones = ["body","head","left_arm","left_leg","right_arm",
@@ -352,12 +353,12 @@ def create_emote(filename,
         if bone_name not in [b.name for b in rig_object.pose.bones]:
             print(bone_name, "doesn't exist!")
             continue
-        
-        emote["animations"][filename]["bones"][bone_name] = {}
+        bone_anim = {}
         for mode in ["position", "rotation", "bend", "scale"]:
             k = write_mode(bone_name, mode, animation_data, rig_object,value_precision,default_bones, export_bones)
             if k is None: continue
-            emote["animations"][filename]["bones"][bone_name][mode] = k
+            bone_anim[mode] = k
+        if bone_anim != {}: emote["animations"][filename]["bones"][bone_name] = bone_anim
     bpy.ops.object.mode_set(mode='POSE')     
     return emote
     

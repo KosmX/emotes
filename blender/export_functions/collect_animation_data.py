@@ -264,6 +264,11 @@ def collect_animation_data(baking_error_threshold,
     #    for bone in rig_object.pose.bones:
     #        for c in ["location", "rotation_euler", "scale"]:
     #            bone.keyframe_insert(c, frame=0)
+        for bone in ["left_arm", "right_arm", "left_leg", "right_leg"]:
+            export_bones.append(bone+"_vanilla")
+        for bone in ["left_arm", "right_arm", "left_leg", "right_leg", "torso", "cape"]:
+            export_bones.append(bone+"_bend")
+        
         for bone in rig_object.pose.bones:
             if bone.name in export_bones: bone.select = True
         bpy.ops.object.mode_set(mode='POSE')
@@ -290,10 +295,6 @@ def collect_animation_data(baking_error_threshold,
         animation_data = {} 
 
         baked_curve_to_bezier(rig_object, baked_action.name, error_threshold=baking_error_threshold)
-        for bone in ["left_arm", "right_arm", "left_leg", "right_leg"]:
-            export_bones.append(bone+"_vanilla")
-        for bone in ["left_arm", "right_arm", "left_leg", "right_leg", "torso", "cape"]:
-            export_bones.append(bone+"_bend")
         for bone in export_bones:
             if bone not in [b.name for b in rig_object.pose.bones]:
                 print(f'You have selected for export a bone that doesn\'t exist:"{bone}"')
