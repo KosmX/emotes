@@ -1,8 +1,9 @@
 # Player Animation Tools
 
 The `.blend` files are [Blender](https://www.blender.org/) projects.  
-`emote_creator.blend` is the rig for blender 5.2+ and only for the latest version of Emotecraft!
-[Emotecraft wiki](https://docs.zigythebird.com/emotecraft/creatingemotes/) if you're stuck.  
+
+`emote_creator.blend` is the latest rig for blender, it has the most features. It is made for Blender 5.2+ and intended to work only on the latest version of PAL (1.2.5+mc.26.2 at the time this is written)! Other rigs work fine on versions lower.
+Read [Emotecraft wiki](https://docs.zigythebird.com/emotecraft/creatingemotes/) to learn more about `emote_creator.blend`.
 
 `.bbmodel` files are models for [Blockbench](https://blockbench.net/). You can use them as well.  
 To use them, you'll need to install the [GeckoLib](https://geckolib.com/) Blockbench plugin first.   

@@ -8,8 +8,7 @@ scene = bpy.context.scene
 emote_save_folder = project_dir
 blender_save_folder = project_dir
 
-prefix = ""
-filename = prefix + action.name
+filename = action.name
 
 name = f"{filename}"
 description = ""
@@ -29,15 +28,9 @@ export_bones = [
             "right_arm",
             "right_leg",
             "torso",
-            "left_arm_bend",
-            "left_leg_bend",
-            "right_arm_bend",
-            "right_leg_bend",
-            "torso_bend",
             "right_item",
             "left_item",
             "cape",
-            "cape_bend",
             "waist"
             ]
 
@@ -53,22 +46,19 @@ badges = [
 #    "fallback": "Test",
 #    "color": "#003A3A"
 #  }
-#    {
-#    "translate": "mineemotes.emote.badge.bendless",
-#    "fallback": "Bendless",
-#    "color": "#34c415"
-#  }
 ]
-#end of the settings
 
 # how many decimal places to keep in values
 value_precision = 3
+#========================================
+# User settings end here
+#========================================
 
 framerate = scene.render.fps/scene.render.fps_base
 
 
 
-bpy.ops.wm.save_mainfile(filepath=f"{blender_save_folder}\\{filename}.blend")
+bpy.ops.wm.save_mainfile()
 
 
 collect_animation_data = bpy.data.texts['collect_animation_data.py'].as_module().collect_animation_data
@@ -79,18 +69,22 @@ is_vanilla = rig_object.pose.bones["settings"]["vanilla"]
 
 preview_frame = scene.frame_current
 scene.frame_set(0)
+export_frame_start = int(action.frame_start)
+export_frame_end = int(action.frame_end)
+if export_frame_end == 0:
+    export_frame_end = scene.frame_end
 
 animation_data, work_action = collect_animation_data(baking_error_threshold,
                        isLoop, 
-                       int(action.frame_start),
-                       int(action.frame_end),
+                       export_frame_start,
+                       export_frame_end,
                        export_bones
                        )
 
 emote = create_emote(filename,
                      scene.frame_start,
-                     int(action.frame_start),
-                     int(action.frame_end),
+                     export_frame_start,
+                     export_frame_end,
                      isLoop,
                      name, author, description, badges,
                      export_bones,
@@ -101,11 +95,12 @@ emote = create_emote(filename,
 bpy.data.actions.remove(work_action)
 
 print("Saving json...")
-with open(str(emote_save_folder / (prefix + filename + ".json")), 'w', encoding="utf-8") as e:
+with open(str(emote_save_folder / (filename + ".json")), 'w', encoding="utf-8") as e:
     json.dump(emote, e, ensure_ascii=False, indent=4)
+
 scene.frame_set(preview_frame)
 print("Rendering icon...")
-scene.render.filepath = str(emote_save_folder / (prefix + filename + ".png"))
+scene.render.filepath = str(emote_save_folder / (filename + ".png"))
 bpy.ops.render.render(write_still = 1)
 
 
