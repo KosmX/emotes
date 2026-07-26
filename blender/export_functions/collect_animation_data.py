@@ -168,7 +168,6 @@ def _insert_segment(base_fcurve, baked_fcurve, start, end):
                 options={'FAST'}
             )
             k.interpolation = 'BEZIER'
-#            k.interpolation = 'LINEAR'
             k.type = 'GENERATED'
 
 def blender_type(type):
@@ -212,8 +211,6 @@ def merge_fcurves(
             if not diff and in_segment:
                 in_segment = False
                 segment_end = baked_keys[i - 1].co.x
-#                if i==len(baked_keys)-1:
-#                    segment_end += 1
                 _insert_segment(base_fcurve, baked_fcurve, segment_start, segment_end)
         if in_segment:
             segment_end = baked_keys[-1].co.x
@@ -226,17 +223,20 @@ def merge_fcurves(
             m.mute = mute
 
 
-def collect_animation_data(baking_error_threshold,
-                           isLoop, 
-                           export_frame_start,
-                           export_frame_end,
-                           export_bones
-                           ):
+def collect_animation_data(rig_object, export_bones):
+    scene = bpy.context.scene
+    
     print("Collecting animation data...")
     bpy.ops.object.mode_set(mode='OBJECT')
-    rig_object = bpy.data.objects["export_armature"]
     original_action = rig_object.animation_data.action
     original_slot = rig_object.animation_data.action_slot
+    baking_error_threshold = original_action.emote.baking_error_threshold
+    
+    export_frame_start = 0
+    export_frame_end = int(scene.frame_end)
+    if action.use_frame_range:
+        export_frame_start = int(original_action.frame_start)
+        export_frame_end = int(original_action.frame_end)
 
     for stale in list(bpy.data.actions):
         if PAL_TMP_SUFFIX in stale.name and stale.users == 0:
