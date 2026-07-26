@@ -9,6 +9,7 @@ from bpy.props import (
     CollectionProperty,
     FloatVectorProperty,
 )
+from bl_ui.space_dopesheet import DOPESHEET_PT_action
 from pathlib import Path
 
 class ActionBadge(PropertyGroup):
@@ -88,76 +89,60 @@ class ActionMetadata(PropertyGroup):
 # UI
 # ------------------------------------------------------------
 
-class DOPESHEET_PT_emote(Panel):
-    bl_label = "Emote settings"
-    bl_space_type = 'DOPESHEET_EDITOR'
-    bl_region_type = 'UI'
-    bl_category = "Action"
+def draw_emote_settings(self, context):
+    layout = self.layout
 
-    @classmethod
-    def poll(cls, context):
-        return (
-            context.space_data is not None
-            and context.space_data.mode == 'ACTION'
-            and context.object is not None
-            and context.object.animation_data is not None
-            and context.object.animation_data.action is not None
-        )
-
-    def draw(self, context):
-        layout = self.layout
-
-        action = context.object.animation_data.action
-        data = action.emote
-        
-        if action.use_cyclic:
-            layout.prop(data, "hold_on_last_frame")
-            layout.separator()
-
-        layout.prop(data, "name")
-        layout.prop(data, "description")
-        layout.prop(data, "author")
-        
-        box = layout.box()
-        row = box.row()
-        
-        row.label(text="Badges")
-        row.operator("action.add_badge", text="", icon='ADD')
-
-        for i, badge in enumerate(data.badges):
-            
-            badge_box = box.box()
-            row = badge_box.row()
-            row.prop(badge, "text")
-            row.prop(badge, "color")
-            op = row.operator("action.remove_badge", text="", icon='X')
-            op.index = i
-        
+    action = context.object.animation_data.action
+    data = action.emote
+    
+    if action.use_cyclic:
+        layout.prop(data, "hold_on_last_frame")
         layout.separator()
-        
-        layout.label(text="Export")
-        
-        box = layout.box()
-        row = box.row()
-        
-        row.label(text="Pivot Bones")
-        row.operator("action.add_pivot_bone", text="", icon='ADD')
 
-        for i, pivot_bone in enumerate(data.pivot_bones):
-            
-            pivot_bone_box = box.box()
-            row = pivot_bone_box.row()
-            row.prop(pivot_bone, "name")
-            op = row.operator("action.remove_pivot_bone", text="", icon='X')
-            op.index = i
+    layout.prop(data, "name")
+    layout.prop(data, "description")
+    layout.prop(data, "author")
+    
+    box = layout.box()
+    row = box.row()
+    
+    row.label(text="Badges")
+    row.operator("action.add_badge", text="", icon='ADD')
+
+    for i, badge in enumerate(data.badges):
         
-        layout.prop(data, "baking_error_threshold")
-        layout.prop(data, "value_precision")
+        badge_box = box.box()
+        row = badge_box.row()
+        row.prop(badge, "text")
+        row.prop(badge, "color")
+        op = row.operator("action.remove_badge", text="", icon='X')
+        op.index = i
+    
+    layout.separator()
+    
+    layout.label(text="Export")
+    
+    box = layout.box()
+    row = box.row()
+    
+    row.label(text="Pivot Bones")
+    row.operator("action.add_pivot_bone", text="", icon='ADD')
+
+    for i, pivot_bone in enumerate(data.pivot_bones):
         
-        layout.separator()
-        
-        layout.prop(data, "emote_save_path")
-        layout.operator("action.export_animation", icon='EXPORT')
+        pivot_bone_box = box.box()
+        row = pivot_bone_box.row()
+        row.prop(pivot_bone, "name")
+        op = row.operator("action.remove_pivot_bone", text="", icon='X')
+        op.index = i
+    
+    layout.prop(data, "baking_error_threshold")
+    layout.prop(data, "value_precision")
+    
+    layout.separator()
+    
+    layout.prop(data, "emote_save_path")
+    layout.operator("action.export_animation", icon='EXPORT')
 
 class ACTION_OT_add_badge(bpy.types.Operator):
     bl_idname = "action.add_badge"
@@ -233,7 +218,7 @@ classes = (
     ActionBadge,
     ActionMetadata,
     ACTION_OT_export,
-    DOPESHEET_PT_emote,
+#    DOPESHEET_PT_emote,
     ACTION_OT_add_badge,
     ACTION_OT_remove_badge,
     ACTION_OT_add_pivot_bone,
@@ -248,9 +233,11 @@ def register():
     bpy.types.Action.emote = PointerProperty(
         type=ActionMetadata
     )
+    DOPESHEET_PT_action.append(draw_emote_settings)
 
 
 def unregister():
+    DOPESHEET_PT_action.remove(draw_emote_settings)
     del bpy.types.Action.emote
 
     for cls in reversed(classes):
