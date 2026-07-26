@@ -234,7 +234,7 @@ def collect_animation_data(rig_object, export_bones):
     
     export_frame_start = 0
     export_frame_end = int(scene.frame_end)
-    if action.use_frame_range:
+    if original_action.use_frame_range:
         export_frame_start = int(original_action.frame_start)
         export_frame_end = int(original_action.frame_end)
 

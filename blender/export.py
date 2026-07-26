@@ -20,7 +20,7 @@ for pivot_bone in action.emote.pivot_bones:
 collect_animation_data = bpy.data.texts['collect_animation_data.py'].as_module().collect_animation_data
 create_emote = bpy.data.texts['set_up_bedrock.py'].as_module().create_emote
 
-print(f"Exporting {filename}.json!")
+print(f"Exporting {action.name}.json!")
 preview_frame = scene.frame_current
 scene.frame_set(0)
 
@@ -31,14 +31,13 @@ emote = create_emote(rig_object, export_bones, animation_data)
 bpy.data.actions.remove(work_action)
 
 emote_save_folder = action.emote.emote_save_path
-filename = action.name
 print("Saving json...")
-with open(str(emote_save_folder + "/" + filename + ".json"), 'w', encoding="utf-8") as e:
+with open(str(emote_save_folder + "/" + action.name + ".json"), 'w', encoding="utf-8") as e:
     json.dump(emote, e, ensure_ascii=False, indent=4)
 
 scene.frame_set(preview_frame)
 print("Rendering icon...")
-scene.render.filepath = emote_save_folder + "/" + filename + ".png"
+scene.render.filepath = emote_save_folder + "/" + action.name + ".png"
 bpy.ops.render.render(write_still = 1)
 
 

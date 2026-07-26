@@ -67,6 +67,7 @@ class ActionMetadata(PropertyGroup):
         name="Baking Error Threshold",
         default=0.001,
         precision=3,
+        step=0.001,
         description="How much error is fine when converting baked animation to bezier keyframes\n0: just keep it fully baked\n>0: curve is allowed to be off by this much"
     )
 
@@ -185,6 +186,14 @@ class ACTION_OT_export(bpy.types.Operator):
 
         with context.temp_override(**override):
             bpy.ops.text.run_script()
+        
+        self.report({'INFO'}, "Export finished")
+
+        context.window_manager.popup_menu(
+            lambda self, context: self.layout.label(text="Export finished successfully."),
+            title="Export",
+            icon='CHECKMARK'
+        )
 
         return {'FINISHED'}
 class ACTION_OT_add_pivot_bone(bpy.types.Operator):

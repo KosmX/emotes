@@ -336,7 +336,7 @@ def create_emote(rig_object, export_bones, animation_data):
         }
 
     }
-    if isLoop is True:
+    if loop is True:
         emote["animations"][action.name]["loopTick"] = round((loop_return_frame-export_frame_start)/framerate, 3)
     emote["animations"][action.name]["player_animation_library"] = {
                     "name": action.emote.name,
@@ -381,7 +381,7 @@ def create_emote(rig_object, export_bones, animation_data):
             k = write_mode(bone_name, mode, animation_data, rig_object, default_bones, export_bones)
             if k is None: continue
             bone_anim[mode] = k
-        if bone_anim != {}: emote["animations"][filename]["bones"][bone_name] = bone_anim
+        if bone_anim != {}: emote["animations"][action.name]["bones"][bone_name] = bone_anim
     bpy.ops.object.mode_set(mode='POSE')     
     return emote
     
