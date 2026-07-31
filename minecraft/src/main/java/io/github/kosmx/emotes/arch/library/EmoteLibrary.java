@@ -49,7 +49,7 @@ final class EmoteLibrary implements JoinServer {
 
     private static final EmoteLibraryClient EMOTE_LIBRARY_CLIENT = new EmoteLibraryClient("https://emotes.redlance.org/", String.format("%s/%s (%s; mc%s)",
             CommonData.MOD_NAME, EmotecraftModPlatform.INSTANCE.getModVersion(CommonData.MOD_ID), EmotecraftModPlatform.INSTANCE.getPlatformName(), SharedConstants.getCurrentVersion().name()
-    ));
+    ), () -> Minecraft.getInstance().getLanguageManager().getSelected().replace('_', '-'));
 
     private static final EmoteLibrary JOIN_SERVER = new EmoteLibrary();
 
