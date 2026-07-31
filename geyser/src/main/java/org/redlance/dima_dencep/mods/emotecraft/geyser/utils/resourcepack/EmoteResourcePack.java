@@ -127,7 +127,7 @@ public final class EmoteResourcePack extends PackCodec implements EventRegistrar
             zos.write(manifestJson.getBytes(StandardCharsets.UTF_8));
             zos.closeEntry();
 
-            try (InputStream is = EmoteResourcePack.class.getClassLoader().getResourceAsStream("emotecraft_mod_logo.png")) {
+            try (InputStream is = EmoteResourcePack.class.getClassLoader().getResourceAsStream("assets/emotecraft/textures/emotecraft_mod_logo.png")) {
                 zos.putNextEntry(new ZipEntry("pack_icon.png"));
                 zos.write(Objects.requireNonNull(is).readAllBytes());
                 zos.closeEntry();

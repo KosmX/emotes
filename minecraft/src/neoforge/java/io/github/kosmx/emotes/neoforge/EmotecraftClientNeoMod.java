@@ -15,6 +15,8 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
+import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
@@ -26,10 +28,22 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
         container.registerExtensionPoint(IConfigScreenFactory.class, (minecraft, screen) -> new EmoteMenu(screen));
         super.onInitializeClient();
 
+        NeoForge.EVENT_BUS.addListener(this::onClientStartedEvent);
+        NeoForge.EVENT_BUS.addListener(this::onClientStoppingEvent);
         NeoForge.EVENT_BUS.addListener(this::onClientTickPost);
         NeoForge.EVENT_BUS.addListener(this::onLoggingOut);
         NeoForge.EVENT_BUS.addListener(this::onLoggingIn);
         modEventBus.addListener(this::onRegisterKeyMappings);
+    }
+
+    @SubscribeEvent
+    public void onClientStartedEvent(ClientStartedEvent event) {
+        super.onClientStarted(event.getClient());
+    }
+
+    @SubscribeEvent
+    public void onClientStoppingEvent(ClientStoppingEvent event) {
+        super.onClientStopping(event.getClient());
     }
 
     @SubscribeEvent

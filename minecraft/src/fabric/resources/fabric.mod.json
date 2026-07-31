@@ -19,7 +19,7 @@
     "sources": "https://github.com/KosmX/emotes"
   },
   "license": "GPL3",
-  "icon": "emotecraft_mod_logo.png",
+  "icon": "assets/emotecraft/textures/emotecraft_mod_logo.png",
   "environment": "*",
   "entrypoints": {
     "main": [

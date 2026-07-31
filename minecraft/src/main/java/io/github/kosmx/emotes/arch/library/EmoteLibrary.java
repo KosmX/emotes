@@ -72,6 +72,19 @@ final class EmoteLibrary implements JoinServer {
                 });
     }
 
+    /** Closes a stream opened through the client, logging a failure instead of throwing it. */
+    static void close(AutoCloseable closeable) {
+        if (closeable == null) {
+            return; // it never opened
+        }
+
+        try {
+            closeable.close();
+        } catch (Exception e) {
+            CommonData.LOGGER.warn("Failed to close EmotecraftLibrary connection!", e);
+        }
+    }
+
     /** Peels the {@link CompletionException} wrappers off a future's failure to reach the real cause (e.g. an SDK error). */
     static Throwable unwrap(Throwable throwable) {
         while (throwable instanceof CompletionException && throwable.getCause() != null) {

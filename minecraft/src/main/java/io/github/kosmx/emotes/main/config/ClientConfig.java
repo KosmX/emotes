@@ -34,6 +34,7 @@ public class ClientConfig extends CommonConfig {
     // public final ConfigEntry<Boolean> neverRemoveBadIcon = new ConfigEntry<>("neverRemoveBadIcon", false, expert, true);
     // public final ConfigEntry<Boolean> exportBuiltin = new ConfigEntry<>("exportBuiltin", false, expert, true);
     public final EnumConfigEntry<LibraryStatus> cloudLibraryStatus = new EnumConfigEntry<>("cloudLibraryStatus", LibraryStatus.SHOW_FOLDER, false, category("library"), false);
+    public final ConfigEntry<Boolean> libraryNotifications = new ConfigEntry<>("libraryNotifications", true, true, category("library"));
 
     //------------------------ Client-only overrides ------------------------//
 

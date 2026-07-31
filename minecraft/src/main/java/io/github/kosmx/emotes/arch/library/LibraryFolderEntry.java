@@ -115,7 +115,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         this.searchLoading = null;
 
         if (this.connection != null) {
-            this.connection.whenComplete((closeable, _) -> close(closeable));
+            this.connection.whenComplete((closeable, _) -> EmoteLibrary.close(closeable));
             this.connection = null;
         }
     }
@@ -123,18 +123,6 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
     @Override
     protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float tickDelta) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, EMOTECRAFT_LIBRARY_ICON, getX(), getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
-    }
-
-    private static void close(AutoCloseable closeable) {
-        if (closeable == null) {
-            return;
-        }
-
-        try {
-            closeable.close();
-        } catch (Exception e) {
-            CommonData.LOGGER.warn("Failed to close EmotecraftLibrary connection!", e);
-        }
     }
 
     public LoadingEntry getOrPutLoadingEntry() {
@@ -160,7 +148,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         Minecraft.getInstance().execute(() -> { // render thread: bail out of the folder back to the root
             this.connectionGeneration++; // mute the dead connection's callbacks
             if (this.connection != null) {
-                this.connection.whenComplete((closeable, _) -> close(closeable));
+                this.connection.whenComplete((closeable, _) -> EmoteLibrary.close(closeable));
                 this.connection = null; // so reopening the folder reconnects (and re-shows this if still failing)
             }
             this.widget.setLastFolder(null);
@@ -249,7 +237,7 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
         // connection so re-opening the library re-authorizes and reopens the stream (onOpen guards on connection != null).
         getOrPutLoadingEntry().addForWait(CompletableFuture.failedFuture(e));
         if (this.connection != null) {
-            this.connection.whenComplete((closeable, _) -> close(closeable));
+            this.connection.whenComplete((closeable, _) -> EmoteLibrary.close(closeable));
             this.connection = null;
         }
     }

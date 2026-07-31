@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.arch.gui.screen;
 import com.mojang.serialization.Codec;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
+import io.github.kosmx.emotes.arch.library.LibraryNotifications;
 import io.github.kosmx.emotes.arch.library.LibraryStatus;
 import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
@@ -178,6 +179,7 @@ public class ConfigScreen extends OptionsSubScreen {
     @Override
     public void onClose() {
         this.serializer.saveConfig();
+        LibraryNotifications.refresh(this.minecraft); // the library or its notifications may have just been switched
         super.onClose();
     }
 

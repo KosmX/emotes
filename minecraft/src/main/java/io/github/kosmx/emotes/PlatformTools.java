@@ -2,13 +2,13 @@ package io.github.kosmx.emotes;
 
 import com.zigythebird.playeranim.PlayerAnimLibService;
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.arch.gui.toast.EmotecraftToast;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
@@ -43,7 +43,7 @@ public final class PlatformTools {
     }
 
     public static void addToast(Component title, Component message) {
-        SystemToast.addOrUpdate(Minecraft.getInstance().gui.toastManager(), SystemToast.SystemToastId.WORLD_BACKUP, title, message);
+        EmotecraftToast.add(Minecraft.getInstance().gui.toastManager(), title, message);
     }
 
     public static void addToast(Component message) {

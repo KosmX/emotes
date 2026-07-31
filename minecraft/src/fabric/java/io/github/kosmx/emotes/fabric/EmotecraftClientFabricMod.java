@@ -5,6 +5,7 @@ import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 
@@ -17,6 +18,8 @@ public class EmotecraftClientFabricMod extends EmotecraftClientMod implements Cl
         super.onInitializeClient();
         ClientNetworkInstance.init(); //init network
 
+        ClientLifecycleEvents.CLIENT_STARTED.register(this::onClientStarted);
+        ClientLifecycleEvents.CLIENT_STOPPING.register(this::onClientStopping);
         ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
         ClientCommandRegistrationCallback.EVENT.register(ClientCommands::register);
     }

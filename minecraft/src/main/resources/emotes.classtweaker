@@ -9,6 +9,9 @@ accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent
 extendable method net/minecraft/client/gui/components/AbstractWidget extractRenderState (Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V
 extendable class net/minecraft/client/OptionInstance$SliderableValueSet
 accessible method net/minecraft/client/gui/components/AbstractSelectionList clearEntries ()V
+accessible field net/minecraft/client/gui/components/toasts/SystemToast MAX_LINE_SIZE I
+accessible field net/minecraft/client/gui/components/toasts/SystemToast LINE_SPACING I
+accessible field net/minecraft/client/gui/components/toasts/ToastManager SLOT_COUNT I
 
 # EmotecraftLibrary
 accessible field net/minecraft/client/resources/SkinManager skinTextureDownloader Lnet/minecraft/client/renderer/texture/SkinTextureDownloader;

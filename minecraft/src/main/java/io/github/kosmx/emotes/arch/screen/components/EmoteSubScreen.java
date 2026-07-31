@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
 import io.github.kosmx.emotes.arch.library.LibraryFolderEntry;
+import io.github.kosmx.emotes.arch.library.LibraryNotifications;
 import io.github.kosmx.emotes.arch.library.LibraryStatus;
 import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import io.github.kosmx.emotes.arch.screen.utils.EmoteListener;
@@ -124,6 +125,7 @@ public abstract class EmoteSubScreen extends Screen {
                     minecraft.gui.setScreen(new AcceptPrivacyScreen(EmoteSubScreen.this, () -> {
                         PlatformTools.getConfig().cloudLibraryStatus.set(LibraryStatus.ENABLED);
                         Serializer.INSTANCE.saveConfig();
+                        LibraryNotifications.refresh(minecraft); // the library was just enabled
                         minecraft.gui.setScreen(EmoteSubScreen.this); // Re-show first, then navigate on the now-active screen.
                         setLastFolder(libraryFolder);
                     }));
