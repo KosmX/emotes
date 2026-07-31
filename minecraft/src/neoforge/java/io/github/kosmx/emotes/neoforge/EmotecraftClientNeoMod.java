@@ -25,7 +25,7 @@ import net.neoforged.neoforge.common.NeoForge;
 public class EmotecraftClientNeoMod extends EmotecraftClientMod {
 
     public EmotecraftClientNeoMod(ModContainer container, IEventBus modEventBus) {
-        container.registerExtensionPoint(IConfigScreenFactory.class, (minecraft, screen) -> new EmoteMenu(screen));
+        container.registerExtensionPoint(IConfigScreenFactory.class, (_, screen) -> new EmoteMenu(screen));
         super.onInitializeClient();
 
         NeoForge.EVENT_BUS.addListener(this::onClientStartedEvent);
@@ -33,6 +33,7 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
         NeoForge.EVENT_BUS.addListener(this::onClientTickPost);
         NeoForge.EVENT_BUS.addListener(this::onLoggingOut);
         NeoForge.EVENT_BUS.addListener(this::onLoggingIn);
+        NeoForge.EVENT_BUS.addListener(this::onRegisterClientCommands);
         modEventBus.addListener(this::onRegisterKeyMappings);
     }
 
