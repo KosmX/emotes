@@ -1,13 +1,18 @@
 import bpy, os, math, json
 from mathutils import *
 
-def get_bone_axis_difference(arm: bpy.types.Object, bone_name: str, mode: str):
+def rgb_to_hex(color):
+    r = round(color[0] * 255)
+    g = round(color[1] * 255)
+    b = round(color[2] * 255)
+    return f"#{r:02X}{g:02X}{b:02X}"
+
+def get_bone_axis_difference(rig_object, bone_name, mode):
     # get the difference between bone's axes and the blockbench axes
     
-    is_vanilla = bpy.data.objects["export_armature"].pose.bones["settings"]["vanilla"]
-    prev_mode = arm.mode
+    prev_mode = rig_object.mode
     bpy.ops.object.mode_set(mode='EDIT')
-    edit_bone = arm.data.edit_bones[bone_name + "_bend"*(mode == 'bend') + "_vanilla"*(is_vanilla and mode !="bend" and bone_name in ["left_arm", "right_arm", "left_leg", "right_leg"])]
+    edit_bone = rig_object.data.edit_bones[bone_name + "_bend"*(mode == 'bend')]
     bone_axes = [
         edit_bone.x_axis, 
         edit_bone.y_axis, 
@@ -40,12 +45,13 @@ def get_bone_axis_difference(arm: bpy.types.Object, bone_name: str, mode: str):
     return result
 
 
-def fcurves_to_mode_dict(fcurves: list[bpy.types.Curve], is_bend: bool=False):
-    def build_frame_map(fcurve: bpy.types.Curve):
+def fcurves_to_mode_dict(fcurves, is_bend=False):
+    def build_frame_map(fcurve):
         if fcurve == None:
             return {}
         return {round(kf.co.x, 6): kf for kf in fcurve.keyframe_points}
-    framerate = bpy.data.scenes["Scene"].render.fps/bpy.data.scenes["Scene"].render.fps_base
+    scene = bpy.context.scene
+    framerate = scene.render.fps/scene.render.fps_base
     
     maps = [build_frame_map(fc) for fc in fcurves]
     all_frames = set()
@@ -74,11 +80,12 @@ def fcurves_to_mode_dict(fcurves: list[bpy.types.Curve], is_bend: bool=False):
 
 
 def get_bezier_args(keyframe, mode, multiplier):
-    framerate = bpy.data.scenes["Scene"].render.fps/bpy.data.scenes["Scene"].render.fps_base
+    scene = bpy.context.scene
+    framerate = scene.render.fps/scene.render.fps_base
     
-    handle_left_y = (keyframe.handle_left.y - keyframe.co.y)*multiplier
+    handle_left_y = (keyframe.handle_left.y - keyframe.co.y)
     handle_left_x = (keyframe.handle_left.x - keyframe.co.x)/framerate
-    handle_right_y = (keyframe.handle_right.y - keyframe.co.y)*multiplier
+    handle_right_y = (keyframe.handle_right.y - keyframe.co.y)
     handle_right_x = (keyframe.handle_right.x - keyframe.co.x)/framerate
     
     if mode == "position":
@@ -171,19 +178,13 @@ def get_easingArgs_list(keyframes: list[bpy.types.Keyframe], mode: str, sign: fl
     return [get_easingArgs(keyframes[i], mode, round(sign[i]), value_precision) for i in range(len(keyframes))]
 
 
-def write_mode(bone_name: str, mode: str, animation_data, rig_object, value_precision, default_bones, export_bones):
-    is_vanilla = bpy.data.objects["export_armature"].pose.bones["settings"]["vanilla"]
-    if mode == 'bend' and is_vanilla: return
+def write_mode(bone_name: str, mode: str, animation_data, rig_object, default_bones, export_bones):
+    value_precision = rig_object.animation_data.action.emote.value_precision
     if mode == 'bend':
-        if f"{bone_name}_bend" not in default_bones or f"{bone_name}_bend" not in export_bones: # bone isn't bendable or isn't selected for export
+        if f"{bone_name}_bend" not in default_bones: # bone isn't bendable
             return None
         
         mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_bend"]["rotation"], is_bend=True)
-    elif is_vanilla and bone_name in ["left_arm", "right_arm", "left_leg", "right_leg"]:
-        if f"{bone_name}_bend" not in default_bones or f"{bone_name}_bend" not in export_bones: # bone isn't bendable or isn't selected for export
-            return None
-        
-        mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_vanilla"][mode])
     else:
         mode_dict = fcurves_to_mode_dict(animation_data[bone_name][mode])
     
@@ -287,41 +288,56 @@ def write_mode(bone_name: str, mode: str, animation_data, rig_object, value_prec
     return mode_dict
 
  
-def create_emote(filename, 
-                 loop_return_frame,
-                 export_frame_start,
-                 export_frame_end,
-                 isLoop,
-                 name, author, description, badges,
-                 export_bones,
-                 animation_data,
-                 value_precision
-                 ):
-    rig_object = bpy.data.objects["export_armature"]
-    framerate = bpy.data.scenes["Scene"].render.fps/bpy.data.scenes["Scene"].render.fps_base
+def create_emote(rig_object, export_bones, animation_data):
+    
+    action = rig_object.animation_data.action
+    scene = bpy.context.scene
+    
+    framerate = scene.render.fps/scene.render.fps_base
+    value_precision = action.emote.value_precision
+    
+    loop_return_frame = scene.frame_start
+
+    export_frame_start = 0
+    export_frame_end = int(scene.frame_end)
+    if action.use_frame_range:
+        export_frame_start = int(action.frame_start)
+        export_frame_end = int(action.frame_end)
+    
+    badges = []
+    for badge in action.emote.badges:
+        badges.append({
+            "text": badge.text,
+            "color": rgb_to_hex(badge.color)
+        })
+    
+    loop = action.use_cyclic
+    if action.use_cyclic and action.emote.hold_on_last_frame:
+        loop = "hold_on_last_frame"
     
     emote = {
         "format_version": "1.8.0",
         "geckolib_format_version": 2,
-        "model": {},
-        "parents": {},
         "animations": {
-            filename: {
-                "loopTick": round((loop_return_frame-export_frame_start)/framerate, 3),
-                "loop": isLoop,
-                "animation_length": round((export_frame_end-export_frame_start)/framerate, 3),
-                "player_animation_library": {
-                    "name": name,
-                    "author": author,
-                    "description": description,
-                    "bages": badges
-    #                "applyBendToOtherBones": True
-                },
-                "bones":{}
+            action.name: {
+                "model": {},
+                "parents": {},
+                "animation_length": round((export_frame_end-export_frame_start)/framerate, value_precision),
+                "loop": loop
             }
         }
 
     }
+    if loop is True:
+        emote["animations"][action.name]["loopTick"] = round((loop_return_frame-export_frame_start)/framerate, 3)
+    emote["animations"][action.name]["player_animation_library"] = {
+                    "name": action.emote.name,
+                    "author": action.emote.author,
+                    "description": action.emote.description,
+                    "bages": badges
+    #                "applyBendToOtherBones": True
+                }
+    emote["animations"][action.name]["bones"] = {}
     
     print("Figuring out the custom bones...")
     default_bones = ["body","head","left_arm","left_leg","right_arm",
@@ -337,12 +353,12 @@ def create_emote(filename,
         pivot = bone.head
         #in blockbench compared to blender x is negated and y is swapped with z
         pivot = [-pivot[0]*4, pivot[2]*4, pivot[1]*4]
-        emote["model"][bone.name] = {"pivot": pivot}
+        emote["animations"][action.name]["model"][bone.name] = {"pivot": pivot}
         
         for child in bone.children:
             if child.name in export_bones:
                 if "_vanilla" in child.name: continue
-                emote["parents"][child.name] = bone.name
+                emote["animations"][action.name]["parents"][child.name] = bone.name
 
 
     print("Fixing animation data for bedrock...")
@@ -352,12 +368,14 @@ def create_emote(filename,
         if bone_name not in [b.name for b in rig_object.pose.bones]:
             print(bone_name, "doesn't exist!")
             continue
-        
-        emote["animations"][filename]["bones"][bone_name] = {}
+        bone_anim = {}
         for mode in ["position", "rotation", "bend", "scale"]:
-            k = write_mode(bone_name, mode, animation_data, rig_object,value_precision,default_bones, export_bones)
+            if rig_object.pose.bones["settings"]["vanilla"] and mode == "bend": continue
+
+            k = write_mode(bone_name, mode, animation_data, rig_object, default_bones, export_bones)
             if k is None: continue
-            emote["animations"][filename]["bones"][bone_name][mode] = k
+            bone_anim[mode] = k
+        if bone_anim != {}: emote["animations"][action.name]["bones"][bone_name] = bone_anim
     bpy.ops.object.mode_set(mode='POSE')     
     return emote
     
