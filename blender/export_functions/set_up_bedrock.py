@@ -10,10 +10,9 @@ def rgb_to_hex(color):
 def get_bone_axis_difference(rig_object, bone_name, mode):
     # get the difference between bone's axes and the blockbench axes
     
-    is_vanilla = rig_object.pose.bones["settings"]["vanilla"]
     prev_mode = rig_object.mode
     bpy.ops.object.mode_set(mode='EDIT')
-    edit_bone = rig_object.data.edit_bones[bone_name + "_bend"*(mode == 'bend') + "_vanilla"*(is_vanilla and mode !="bend" and bone_name in ["left_arm", "right_arm", "left_leg", "right_leg"])]
+    edit_bone = rig_object.data.edit_bones[bone_name + "_bend"*(mode == 'bend')]
     bone_axes = [
         edit_bone.x_axis, 
         edit_bone.y_axis, 
@@ -84,9 +83,9 @@ def get_bezier_args(keyframe, mode, multiplier):
     scene = bpy.context.scene
     framerate = scene.render.fps/scene.render.fps_base
     
-    handle_left_y = (keyframe.handle_left.y - keyframe.co.y)*multiplier
+    handle_left_y = (keyframe.handle_left.y - keyframe.co.y)
     handle_left_x = (keyframe.handle_left.x - keyframe.co.x)/framerate
-    handle_right_y = (keyframe.handle_right.y - keyframe.co.y)*multiplier
+    handle_right_y = (keyframe.handle_right.y - keyframe.co.y)
     handle_right_x = (keyframe.handle_right.x - keyframe.co.x)/framerate
     
     if mode == "position":
@@ -180,23 +179,17 @@ def get_easingArgs_list(keyframes: list[bpy.types.Keyframe], mode: str, sign: fl
 
 
 def write_mode(bone_name: str, mode: str, animation_data, rig_object, default_bones, export_bones):
-    is_vanilla = rig_object.pose.bones["settings"]["vanilla"]
     value_precision = rig_object.animation_data.action.emote.value_precision
-    if mode == 'bend' and is_vanilla: return
     if mode == 'bend':
-        if f"{bone_name}_bend" not in default_bones or f"{bone_name}_bend" not in export_bones: # bone isn't bendable or isn't selected for export
+        if f"{bone_name}_bend" not in default_bones: # bone isn't bendable
             return None
         
         mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_bend"]["rotation"], is_bend=True)
-    elif is_vanilla and bone_name in ["left_arm", "right_arm", "left_leg", "right_leg"]:
-        if f"{bone_name}_bend" not in default_bones or f"{bone_name}_bend" not in export_bones: # bone isn't bendable or isn't selected for export
-            return None
-        
-        mode_dict = fcurves_to_mode_dict(animation_data[f"{bone_name}_vanilla"][mode])
     else:
         mode_dict = fcurves_to_mode_dict(animation_data[bone_name][mode])
     
     if len(mode_dict) == 0:
+        print(f"{mode} of {bone_name} is empty!")
         return None
     
     bone_axis_difference = get_bone_axis_difference(rig_object, bone_name, mode)
@@ -326,10 +319,10 @@ def create_emote(rig_object, export_bones, animation_data):
     emote = {
         "format_version": "1.8.0",
         "geckolib_format_version": 2,
-        "model": {},
-        "parents": {},
         "animations": {
             action.name: {
+                "model": {},
+                "parents": {},
                 "animation_length": round((export_frame_end-export_frame_start)/framerate, value_precision),
                 "loop": loop
             }
@@ -361,12 +354,12 @@ def create_emote(rig_object, export_bones, animation_data):
         pivot = bone.head
         #in blockbench compared to blender x is negated and y is swapped with z
         pivot = [-pivot[0]*4, pivot[2]*4, pivot[1]*4]
-        emote["model"][bone.name] = {"pivot": pivot}
+        emote["animations"][action.name]["model"][bone.name] = {"pivot": pivot}
         
         for child in bone.children:
             if child.name in export_bones:
                 if "_vanilla" in child.name: continue
-                emote["parents"][child.name] = bone.name
+                emote["animations"][action.name]["parents"][child.name] = bone.name
 
 
     print("Fixing animation data for bedrock...")
@@ -378,6 +371,8 @@ def create_emote(rig_object, export_bones, animation_data):
             continue
         bone_anim = {}
         for mode in ["position", "rotation", "bend", "scale"]:
+            if rig_object.pose.bones["settings"]["vanilla"] and mode == "bend": continue
+
             k = write_mode(bone_name, mode, animation_data, rig_object, default_bones, export_bones)
             if k is None: continue
             bone_anim[mode] = k

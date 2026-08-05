@@ -1,5 +1,8 @@
 import sys, bpy, json
 from pathlib import Path
+import base64
+import tempfile
+import os
 rig_object = bpy.context.active_object
 action = rig_object.animation_data.action
 scene = bpy.context.scene
@@ -25,20 +28,35 @@ preview_frame = scene.frame_current
 scene.frame_set(0)
 
 animation_data, work_action = collect_animation_data(rig_object, export_bones)
-
 emote = create_emote(rig_object, export_bones, animation_data)
 
 bpy.data.actions.remove(work_action)
 
 emote_save_folder = action.emote.emote_save_path
+
+print("Rendering icon...")
+scene.frame_set(preview_frame)
+bpy.ops.render.render()
+
+
+image = bpy.data.images["Render Result"]
+
+with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+    path = tmp.name
+
+try:
+    image.save_render(path)
+
+    with open(path, "rb") as f:
+        image_base64 = base64.b64encode(f.read()).decode("ascii")
+finally:
+    os.remove(path)
+
+emote["animations"][action.name]["player_animation_library"]["iconData"] = image_base64 
+
 print("Saving json...")
 with open(str(emote_save_folder + "/" + action.name + ".json"), 'w', encoding="utf-8") as e:
     json.dump(emote, e, ensure_ascii=False, indent=4)
-
-scene.frame_set(preview_frame)
-print("Rendering icon...")
-scene.render.filepath = emote_save_folder + "/" + action.name + ".png"
-bpy.ops.render.render(write_still = 1)
 
 
 print("Emote has been exported successfuly!")

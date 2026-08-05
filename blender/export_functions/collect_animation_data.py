@@ -225,6 +225,7 @@ def merge_fcurves(
 
 def collect_animation_data(rig_object, export_bones):
     scene = bpy.context.scene
+    is_vanilla = rig_object.pose.bones["settings"]["vanilla"]
     
     print("Collecting animation data...")
     bpy.ops.object.mode_set(mode='OBJECT')
@@ -264,16 +265,21 @@ def collect_animation_data(rig_object, export_bones):
     #    for bone in rig_object.pose.bones:
     #        for c in ["location", "rotation_euler", "scale"]:
     #            bone.keyframe_insert(c, frame=0)
+        bone_collection_visibility = {
+            collection.name: collection.is_visible
+            for collection in rig_object.data.collections_all
+        }
+        
+        for collection in rig_object.data.collections_all:
+            collection.is_visible = True
+        
         for bone in ["left_arm", "right_arm", "left_leg", "right_leg"]:
             export_bones.append(bone+"_vanilla")
         for bone in ["left_arm", "right_arm", "left_leg", "right_leg", "torso", "cape"]:
             export_bones.append(bone+"_bend")
-        
-        for bone in rig_object.pose.bones:
-            if bone.name in export_bones: bone.select = True
         bpy.ops.object.mode_set(mode='POSE')
         bpy.ops.nla.bake(
-                only_selected=True,
+                only_selected=False,
                 frame_start=export_frame_start,
                 frame_end= export_frame_end+1,
                 step=1,
@@ -282,6 +288,9 @@ def collect_animation_data(rig_object, export_bones):
                 bake_types={'POSE'},
                 channel_types={'LOCATION', 'ROTATION', 'SCALE', 'PROPS'}
         )
+        
+        for collection in rig_object.data.collections_all:
+            collection.is_visible = bone_collection_visibility[collection.name]
         bpy.ops.object.mode_set(mode='OBJECT')
         baked_action = rig_object.animation_data.action
 
@@ -293,7 +302,7 @@ def collect_animation_data(rig_object, export_bones):
 
         baked_animation_data = {}  
         animation_data = {} 
-
+        
         baked_curve_to_bezier(rig_object, baked_action.name, error_threshold=baking_error_threshold)
         for bone in export_bones:
             if bone not in [b.name for b in rig_object.pose.bones]:
@@ -304,8 +313,11 @@ def collect_animation_data(rig_object, export_bones):
                 "rotation": [],
                 "scale": []
             }
+            target_bone = bone
+            if is_vanilla and f"{bone}_vanilla" in rig_object.pose.bones:
+                target_bone = f"{bone}_vanilla"
             for type in "location", "rotation_euler", "scale":
-                    baked_animation_data[bone][blender_type(type)]= [fcurves.find(data_path = f'pose.bones["{bone}"].{type}', index = axis) for axis in [0,1,2]]
+                    baked_animation_data[bone][blender_type(type)]= [fcurves.find(data_path = f'pose.bones["{target_bone}"].{type}', index = axis) for axis in [0,1,2]]
 
         rig_object.animation_data.action = work_action
         rig_object.animation_data.action_slot = work_slot
@@ -321,9 +333,9 @@ def collect_animation_data(rig_object, export_bones):
                 "position": [],
                 "rotation": [],
                 "scale": []
-            }        
+            }
             for type in "location", "rotation_euler", "scale":
-                animation_data[bone][blender_type(type)] = [fcurves.find(data_path = f'pose.bones["{bone}"].{type}', index = axis) for axis in [0,1,2]] 
+                    animation_data[bone][blender_type(type)]= [fcurves.find(data_path = f'pose.bones["{bone}"].{type}', index = axis) for axis in [0,1,2]]
 
         for bone in export_bones:
             if bone not in [b.name for b in rig_object.pose.bones]:
