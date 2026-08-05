@@ -189,7 +189,6 @@ def write_mode(bone_name: str, mode: str, animation_data, rig_object, default_bo
         mode_dict = fcurves_to_mode_dict(animation_data[bone_name][mode])
     
     if len(mode_dict) == 0:
-        print(f"{mode} of {bone_name} is empty!")
         return None
     
     bone_axis_difference = get_bone_axis_difference(rig_object, bone_name, mode)
