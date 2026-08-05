@@ -1,12 +1,15 @@
-package io.github.kosmx.emotes.arch.network;
+package io.github.kosmx.emotes.arch.network.server;
 
+import io.github.kosmx.emotes.arch.network.NetworkPlatformTools;
+import io.github.kosmx.emotes.arch.network.server.instance.AvatarNetworkInstance;
+import io.github.kosmx.emotes.arch.network.server.instance.McServerNetworkInstance;
+import io.github.kosmx.emotes.arch.network.server.instance.PlayerNetworkInstance;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.server.network.AbstractServerEmotePlay;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -16,49 +19,40 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<AbstractServerNetwork> {
-    private final Map<UUID, AvatarServerPlayNetwork> nonPlayers = new WeakHashMap<>();
+public final class McServerEmotePlay extends AbstractServerEmotePlay<McServerNetworkInstance> {
+    private final Map<UUID, AvatarNetworkInstance> nonPlayers = new WeakHashMap<>();
 
     public void receiveMessage(EmotePacket packet, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             try {
-                receiveMessage(packet, getHandler(serverPlayer.connection));
+                receiveMessage(packet, serverPlayer.connection.emotecraft$getGameNetworkInstance());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public static ModdedServerPlayNetwork getHandler(ServerGamePacketListenerImpl handler) {
-        return ((EmotesMixinNetwork) handler).emotecraft$getServerNetworkInstance();
-    }
-
     public void receiveStreamMessage(EmotePacket packet, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            receiveStreamMessage(serverPlayer, getHandler(serverPlayer.connection), packet);
+            receiveStreamMessage(serverPlayer, serverPlayer.connection.emotecraft$getGameNetworkInstance(), packet);
         }
     }
 
     @SuppressWarnings("unused")
-    public void receiveStreamMessage(ServerPlayer player, ModdedServerPlayNetwork handler, EmotePacket packet) {
+    public void receiveStreamMessage(ServerPlayer player, PlayerNetworkInstance handler, EmotePacket packet) {
         player.connection.disconnect(Component.literal("This server does not support streaming!"));
     }
 
     @Override
-    protected UUID getUUIDFromPlayer(AbstractServerNetwork player) {
-        return player.getAvatar().getUUID();
-    }
-
-    @Override
-    protected AbstractServerNetwork getPlayerFromUUID(UUID player) {
+    protected McServerNetworkInstance getPlayerFromUUID(UUID player) {
         ServerPlayer serverPlayer = NetworkPlatformTools.INSTANCE.getServer().getPlayerList().getPlayer(player);
-        if (serverPlayer != null) return getPlayerNetworkInstance(serverPlayer);
+        if (serverPlayer != null) return serverPlayer.connection.emotecraft$getGameNetworkInstance();
 
         if (!this.nonPlayers.containsKey(player)) {
             for (ServerLevel level : NetworkPlatformTools.INSTANCE.getServer().getAllLevels()) {
                 Entity entity = level.getEntity(player);
                 if (entity instanceof Avatar avatar) {
-                    this.nonPlayers.put(player, new AvatarServerPlayNetwork(avatar));
+                    this.nonPlayers.put(player, new AvatarNetworkInstance(avatar));
                     break;
                 }
             }
@@ -66,18 +60,14 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Ab
         return this.nonPlayers.get(player);
     }
 
-    public AbstractServerNetwork getPlayerNetworkInstance(ServerPlayer player) {
-        return ((EmotesMixinNetwork) player.connection).emotecraft$getServerNetworkInstance();
-    }
-
     @Override
-    protected void sendForTrackedBy(NetData data, AbstractServerNetwork player) {
+    protected void sendForTrackedBy(NetData data, McServerNetworkInstance player) {
         for (ServerPlayer target : NetworkPlatformTools.INSTANCE.getTrackedBy(player.getAvatar())) {
-            AbstractServerNetwork targetInstance = getPlayerNetworkInstance(target);
+            McServerNetworkInstance targetInstance = target.connection.emotecraft$getGameNetworkInstance();
             if (targetInstance == player) continue;
 
             if (NetworkPlatformTools.INSTANCE.canSendPlay(target, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
-                sendForPlayer(data, targetInstance);
+                targetInstance.sendMessage(data, true);
             }
         }
     }
@@ -85,9 +75,9 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Ab
     @Override
     protected void sendForEveryone(NetData data) {
         for (ServerPlayer player : NetworkPlatformTools.INSTANCE.getServer().getPlayerList().getPlayers()) {
-            AbstractServerNetwork targetInstance = getPlayerNetworkInstance(player);
+            McServerNetworkInstance targetInstance = player.connection.emotecraft$getGameNetworkInstance();
             if (NetworkPlatformTools.INSTANCE.canSendPlay(player, NetworkPlatformTools.EMOTE_CHANNEL_ID.id())) {
-                sendForPlayer(data, targetInstance);
+                targetInstance.sendMessage(data, true);
             }
         }
     }
@@ -97,7 +87,7 @@ public final class CommonServerNetworkHandler extends AbstractServerEmotePlay<Ab
      * internal purpose only
      * @return this
      */
-    public static CommonServerNetworkHandler getInstance() {
-        return (CommonServerNetworkHandler) AbstractServerEmotePlay.getInstance();
+    public static McServerEmotePlay getInstance() {
+        return (McServerEmotePlay) AbstractServerEmotePlay.getInstance();
     }
 }

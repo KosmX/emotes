@@ -1,14 +1,12 @@
 package io.github.kosmx.emotes.main.network;
 
 import io.github.kosmx.emotes.api.events.client.ClientNetworkEvents;
-import io.github.kosmx.emotes.api.proxy.AbstractNetworkInstance;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +29,7 @@ public final class ClientPacketManager {
 
     /**
      * Register your proxy instance
-     * use {@link AbstractNetworkInstance} to create a new instance
+     * use {@link INetworkInstance} to create a new instance
      * @param instance your instance
      * @return true if registered {@link ArrayList#add(Object)}
      */
@@ -55,7 +53,7 @@ public final class ClientPacketManager {
 
         boolean isMainActive = ClientNetwork.INSTANCE.isActive();
         if (isMainActive) { // Always try to send to main
-            ClientPacketManager.sendMessageVia(ClientNetwork.INSTANCE, packetBuilder, target);
+            ClientPacketManager.sendMessageVia(ClientNetwork.INSTANCE, packetBuilder.copy(), target);
         }
 
         if (!isMainActive || isInstanceOutdatedForStreaming(ClientNetwork.INSTANCE)) {
@@ -67,14 +65,16 @@ public final class ClientPacketManager {
     }
 
     private static void sendMessageVia(INetworkInstance network, EmotePacket.Builder packetBuilder, UUID target) {
-        if (target != null && network.isServerTrackingPlayState()) return;
+        if (target != null && network.isTrackingPlayState()) return;
 
-        if (!network.sendPlayerID()) packetBuilder.removePlayerID();
+        // Strip the sender id only when the other side tracks play-state and re-maps the sender from the connection itself.
+        // Non-tracking receivers (e.g. Geyser) don't re-map and rely on this field, so it must be kept for them.
+        if (network.isTrackingPlayState()) packetBuilder.removePlayerID();
         try {
+            if (target != null) packetBuilder.configureTarget(target);
             packetBuilder.setSizeLimit(network.maxDataSize(), false);
-            packetBuilder.setVersion(network.getRemoteVersions());
-            network.sendMessage(packetBuilder, target);
-        } catch (IOException ex) {
+            network.sendMessage(packetBuilder, true);
+        } catch (Exception ex) {
             CommonData.LOGGER.error("Error while sending packet via {}!", network, ex);
         }
     }
@@ -85,7 +85,7 @@ public final class ClientPacketManager {
     }
 
     public static boolean isInstanceOutdated(INetworkInstance instance, byte packet) {
-        Map<Byte, Byte> versions = instance.getRemoteVersions();
+        Map<Byte, Byte> versions = instance.getVersions();
         if (!versions.containsKey(packet)) return true;
         return versions.get(packet) < EmotePacket.defaultVersions.get(packet);
     }

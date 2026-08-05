@@ -49,7 +49,7 @@ final class EmoteLibrary implements JoinServer {
 
     private static final EmoteLibraryClient EMOTE_LIBRARY_CLIENT = new EmoteLibraryClient("https://emotes.redlance.org/", String.format("%s/%s (%s; mc%s)",
             CommonData.MOD_NAME, EmotecraftModPlatform.INSTANCE.getModVersion(CommonData.MOD_ID), EmotecraftModPlatform.INSTANCE.getPlatformName(), SharedConstants.getCurrentVersion().name()
-    ));
+    ), () -> Minecraft.getInstance().getLanguageManager().getSelected().replace('_', '-'));
 
     private static final EmoteLibrary JOIN_SERVER = new EmoteLibrary();
 
@@ -70,6 +70,19 @@ final class EmoteLibrary implements JoinServer {
                     CommonData.LOGGER.warn("Failed to send emotecraft library request!", throwable);
                     throw new CompletionException(throwable);
                 });
+    }
+
+    /** Closes a stream opened through the client, logging a failure instead of throwing it. */
+    static void close(AutoCloseable closeable) {
+        if (closeable == null) {
+            return; // it never opened
+        }
+
+        try {
+            closeable.close();
+        } catch (Exception e) {
+            CommonData.LOGGER.warn("Failed to close EmotecraftLibrary connection!", e);
+        }
     }
 
     /** Peels the {@link CompletionException} wrappers off a future's failure to reach the real cause (e.g. an SDK error). */

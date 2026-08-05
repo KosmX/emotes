@@ -1,6 +1,5 @@
 package org.redlance.dima_dencep.mods.emotecraft.geyser.utils;
 
-import org.geysermc.geyser.entity.type.Entity;
 import org.geysermc.geyser.entity.type.player.AvatarEntity;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.session.GeyserSession;
@@ -10,17 +9,15 @@ import java.util.UUID;
 
 public class GeyserEntityUtils {
     public static @Nullable AvatarEntity getAvatarByUUID(GeyserSession session, UUID uuid) {
-        if (session.entities().playerEntity() instanceof AvatarEntity player && player.uuid().equals(uuid)) {
+        if (session.playerEntity() instanceof AvatarEntity player && uuid.equals(player.uuid())) {
             return player;
         }
 
         PlayerEntity player = session.getEntityCache().getPlayerEntity(uuid);
         if (player != null) return player; // Fast
 
-        for (Entity entity : session.getEntityCache().getEntities().values()) {
-            if (entity instanceof AvatarEntity avatar && avatar.uuid().equals(uuid)) {
-                return avatar;
-            }
+        if (session.getEntityCache().getEntityByUuid(uuid) instanceof AvatarEntity avatar) {
+            return avatar;
         }
         return null;
     }
@@ -29,7 +26,7 @@ public class GeyserEntityUtils {
         GeyserSession session = entity.getSession();
         if (session.isClosed()) return true;
 
-        if (session.entities().playerEntity() == entity) {
+        if (session.playerEntity() == entity) {
             return false;
         } else {
             return session.getEntityCache().getEntityByGeyserId(entity.geyserId()) == null;

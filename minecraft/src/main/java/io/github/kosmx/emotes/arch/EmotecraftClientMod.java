@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.library.LibraryNotifications;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -35,6 +36,14 @@ public class EmotecraftClientMod {
         EmotecraftClientMod.loadEmotes();
     }
 
+    protected void onClientStarted(Minecraft minecraft) {
+        LibraryNotifications.refresh(minecraft);
+    }
+
+    protected void onClientStopping(Minecraft minecraft) {
+        LibraryNotifications.close();
+    }
+
     protected void onClientTick(Minecraft minecraft) {
         if (tick++ % 21 == 20) BaseClientNetwork.checkQueue();
 
@@ -55,7 +64,7 @@ public class EmotecraftClientMod {
                     EmoteHolder.clearEmotes();
                     EmoteHolder.addEmoteToList(UniversalEmoteSerializer.getLoadedEmotes(), null);
                 })
-                .thenRunAsync(EmotecraftClientMod::migrateLegacyBinds, Minecraft.getInstance())
+                .thenRun(EmotecraftClientMod::migrateLegacyBinds)
                 .exceptionally(th -> {
                     CommonData.LOGGER.error("Failed to reload emotes!", th);
                     return null;

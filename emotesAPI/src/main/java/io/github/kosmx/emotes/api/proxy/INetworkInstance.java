@@ -2,17 +2,13 @@ package io.github.kosmx.emotes.api.proxy;
 
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.PacketConfig;
+import io.github.kosmx.emotes.common.network.objects.NetData;
 
-import org.jetbrains.annotations.Nullable;
-import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
-import java.util.function.Consumer;
 
 /**
  * To hold information about network
- * <p>
- * implement {@link AbstractNetworkInstance} if you want to implement only the necessary functions
  * <p>
  * use this interface if you want to do something completely different
  */
@@ -25,57 +21,54 @@ public interface INetworkInstance {
      *
      * @return maybe null
      */
-    Map<Byte, Byte> getRemoteVersions();
+    Map<Byte, Byte> getVersions();
 
     /**
      * Receive (and save) versions from the other side
      * @param map map
      */
-    void setVersions(Map<Byte, Byte> map);
-
-    /**
-     * Invoked after receiving the presence packet
-     * {@link INetworkInstance#setVersions(Map)}
-     * Used to send server-side config/emotes
-     *
-     * @deprecated communication changes
-     */
-    @Deprecated
-    default void presenceResponse() {
+    default void setVersions(Map<Byte, Byte> map) {
+        getVersions().clear();
+        getVersions().putAll(map);
     }
 
     /**
-     * Do send the sender's id to the server
-     * @return true means send
+     * When the network instance disconnects...
      */
-    default boolean sendPlayerID() {
-        return false;
+    void disconnect();
+
+    default void sendMessage(NetData data, boolean updateVersions) {
+        // Guard every send: a single failing recipient must not abort a broadcast loop
+        try {
+            sendMessage(new EmotePacket.Builder(data.copy()), updateVersions);
+        } catch (Exception e) {
+            CommonData.LOGGER.warn("Failed to send packet via {}!", this, e);
+        }
     }
 
     /**
      * The Proxy controller ask you to send the message,
      * only if {@link #isActive()} is true
      * @param builder packet builder
-     * @param target target to send message, if null, everyone in the view distance
-     *               on server-side target will be ignored
-     * @throws IOException when message write to bytes has failed
      */
-    void sendMessage(EmotePacket.Builder builder, @Nullable UUID target) throws IOException;
+    void sendMessage(EmotePacket.Builder builder, boolean updateVersions);
 
     /**
      * Client is sending config message to server. Vanilla clients will answer to the server configuration phase message.
      * This might get invoked multiple times on the same network instance.
      */
-    default void sendC2SConfig(Consumer<EmotePacket.Builder> consumer) {
+    default EmotePacket.Builder createConfigurationPacket(boolean allowTracking) {
+        return createConfigPacket(allowTracking && isTrackingPlayState());
     }
 
-    /**
-     * when receiving a message, it contains a player. If you don't trust in this information, override this and return false
-     *
-     * @return false if received info is untrusted
-     */
-    default boolean trustReceivedPlayer() {
-        return true;
+    static EmotePacket.Builder createConfigPacket(boolean isTrackingPlayState) {
+        EmotePacket.Builder builder = new EmotePacket.Builder().configureToConfigExchange();
+        if (isTrackingPlayState) {
+            NetData configData = builder.build().data;
+            configData.versions.put(PacketConfig.SERVER_TRACK_EMOTE_PLAY, (byte)0x01);
+            return new EmotePacket.Builder(configData);
+        }
+        return builder;
     }
 
     /**
@@ -87,10 +80,13 @@ public interface INetworkInstance {
     boolean isActive();
 
     /**
-     * Does the track the emote play state of every player -> true
+     * Does the other side track the emote play state of every player -> true
      * The client has to resend the emote if a new player get close -> false
      */
-    boolean isServerTrackingPlayState();
+    default boolean isTrackingPlayState() {
+        return getVersions().containsKey(PacketConfig.SERVER_TRACK_EMOTE_PLAY) &&
+                getVersions().get(PacketConfig.SERVER_TRACK_EMOTE_PLAY) != 0;
+    }
 
     /**
      * Maximum size of the data what the instance can send

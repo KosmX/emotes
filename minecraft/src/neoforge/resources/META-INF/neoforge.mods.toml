@@ -9,7 +9,7 @@ version="${version}"
 displayName="Emotecraft"
 updateJSONURL="https://api.modrinth.com/updates/emotecraft/forge_updates.json?neoforge=include"
 displayURL="https://docs.zigythebird.com/emotecraft/gettingstarted"
-logoFile="emotecraft_mod_logo.png"
+logoFile="assets/emotecraft/textures/emotecraft_mod_logo.png"
 authors="KosmX, dima_dencep"
 credits="Kale Ko, ZigyTheBird, BoBkiNN"
 description='''${description}'''

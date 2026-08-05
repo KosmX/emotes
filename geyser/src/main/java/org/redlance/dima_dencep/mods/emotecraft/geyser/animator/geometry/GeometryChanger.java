@@ -6,7 +6,6 @@ import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.skin.SkinManager;
 import org.geysermc.geyser.skin.SkinProvider;
 import org.redlance.common.utils.ReflectUtils;
-import org.redlance.dima_dencep.mods.emotecraft.geyser.EmotecraftExt;
 
 import java.awt.*;
 import java.lang.invoke.MethodHandle;

@@ -15,6 +15,8 @@ public class McUtils {
     public static final Component MOD_NAME = Component.literal(CommonData.MOD_NAME);
     public static final Component SLASH = Component.literal("/");
 
+    public static final Identifier EMOTE_CHANNEL_ID = McUtils.newIdentifier(CommonData.playEmoteID);
+
     public static Component fromJson(String json, HolderLookup.Provider registries) {
         if (json == null || json.isBlank()) return CommonComponents.EMPTY;
 

@@ -8,14 +8,18 @@ import net.minecraft.resources.Identifier;
 
 public class WidgetOutliner {
     public static void extractOutline(GuiGraphicsExtractor graphics, LayoutElement element, int color) {
-        Identifier headerSeparator = EmotecraftTexture.HEADER_SEPARATOR.identifier(Minecraft.getInstance().level != null);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, headerSeparator, element.getX(), element.getY() - 1, 0.0F, 0.0F, element.getWidth(), 2, 32, 2, color);
+        extractOutline(graphics, element.getX(), element.getY(), element.getWidth(), element.getHeight(), color);
+    }
 
-        extractSeparatorRotated(graphics, headerSeparator, element.getX() - 1, element.getY(), element.getHeight(), -90F, color);
-        extractSeparatorRotated(graphics, headerSeparator, element.getX() + element.getWidth() + 1, element.getY(), element.getHeight(), 90F, color);
+    public static void extractOutline(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int color) {
+        Identifier headerSeparator = EmotecraftTexture.HEADER_SEPARATOR.identifier(Minecraft.getInstance().level != null);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, headerSeparator, x, y - 1, 0.0F, 0.0F, width, 2, 32, 2, color);
+
+        extractSeparatorRotated(graphics, headerSeparator, x - 1, y, height, -90F, color);
+        extractSeparatorRotated(graphics, headerSeparator, x + width + 1, y, height, 90F, color);
 
         Identifier footerSeparator = EmotecraftTexture.FOOTER_SEPARATOR.identifier(Minecraft.getInstance().level != null);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, footerSeparator, element.getX(), element.getY() + element.getHeight() - 1, 0.0F, 0.0F, element.getWidth(), 2, 32, 2, color);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, footerSeparator, x, y + height - 1, 0.0F, 0.0F, width, 2, 32, 2, color);
     }
 
     protected static void extractSeparatorRotated(GuiGraphicsExtractor graphics, Identifier separator, int x, int y, int size, float angle, int color) {

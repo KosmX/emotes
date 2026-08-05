@@ -31,7 +31,7 @@ public class ClientNetworkInstance {
         ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> ClientNetwork.INSTANCE.disconnect());
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.EMOTE_CHANNEL_ID,
-                (buf, _) -> ClientNetwork.INSTANCE.receiveMessage(buf.packet(), null)
+                (buf, _) -> ClientNetwork.INSTANCE.receiveMessage(buf.packet())
         );
 
         ClientPlayNetworking.registerGlobalReceiver(NetworkPlatformTools.STREAM_CHANNEL_ID, (buf, context) ->

@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 public final class ControllerHolder {
     private static final ThreadFactory THREAD_FACTORY = Thread.ofVirtual()
             .name("emotecraft-animating-")
-            .uncaughtExceptionHandler((t, e) -> CommonData.LOGGER.warn("Failed to animate!", e))
+            .uncaughtExceptionHandler((_, e) -> CommonData.LOGGER.warn("Failed to animate!", e))
             .factory();
 
     private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY);
@@ -37,7 +37,7 @@ public final class ControllerHolder {
             CompletableFuture<Boolean> cf = CompletableFuture.supplyAsync(e.getValue()::handleFrame, CHILD_EXECUTOR);
             inFlight.put(uuid, cf);
 
-            cf.whenComplete((remove, ex) -> {
+            cf.whenComplete((remove, _) -> {
                 inFlight.remove(uuid, cf);
                 if (remove) controllers.remove(uuid);
             });

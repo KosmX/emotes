@@ -183,10 +183,10 @@ public class UniversalEmoteSerializer {
         return map;
     }
 
-    public static Stream<EmotePacket> preparePackets(Map<Byte, Byte> compatibilityMap) {
+    public static Stream<EmotePacket.Builder> preparePackets() {
         return UniversalEmoteSerializer.SERVER_EMOTES.values().stream().map(emote -> {
             try {
-                return new EmotePacket.Builder().configureToSaveEmote(emote).setSizeLimit(0x100000, false).setVersion(compatibilityMap).build();
+                return new EmotePacket.Builder().configureToSaveEmote(emote);
             } catch (Throwable e) {
                 CommonData.LOGGER.warn("Failed to prepare emote packet!", e);
                 return null;
