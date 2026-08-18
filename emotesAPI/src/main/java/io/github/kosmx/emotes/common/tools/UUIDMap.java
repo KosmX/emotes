@@ -1,6 +1,6 @@
 package io.github.kosmx.emotes.common.tools;
 
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,7 +23,7 @@ public class UUIDMap<T extends Supplier<UUID>> extends ConcurrentHashMap<UUID, T
     }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public @NotNull Iterator<T> iterator() {
         return this.values().iterator();
     }
 
