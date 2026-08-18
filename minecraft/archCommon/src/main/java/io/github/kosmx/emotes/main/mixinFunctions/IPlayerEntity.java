@@ -7,8 +7,6 @@ import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 
 import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SoundInstance;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -72,9 +70,5 @@ public interface IPlayerEntity {
         if (PlatformTools.getConfig().checkPose.get()) {
             ClientEmotePlay.clientStopLocalEmote(emotecraft$getEmote().getCurrentAnimationInstance());
         }
-    }
-
-    default void emotecraft$playRawSound(SoundInstance instance) {
-        Minecraft.getInstance().getSoundManager().play(instance);
     }
 }

@@ -4,6 +4,8 @@ import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.enums.State;
 import io.github.kosmx.emotes.common.CommonData;
 import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
+import net.raphimc.noteblocklib.format.nbs.model.event.NbsSoundStopperEvent;
+import net.raphimc.noteblocklib.model.event.Event;
 import net.raphimc.noteblocklib.model.note.Note;
 import net.raphimc.noteblocklib.model.song.Song;
 import net.raphimc.noteblocklib.player.SongPlayer;
@@ -32,11 +34,16 @@ public abstract class NbsPlayer extends SongPlayer {
 
     @Override
     protected void playNotes(List<Note> notes) {
+        if (!isRunning()) return;
         this.firstSongPlayed = true;
         for (Note note : notes) playNote(note);
     }
 
     @Override
+    protected void preTick() {
+        setPaused(!isRunning() || !shouldTick());
+    }
+
     protected boolean shouldTick() {
         if (this.controller == null) return true;
 
@@ -48,6 +55,18 @@ public abstract class NbsPlayer extends SongPlayer {
     }
 
     protected abstract void playNote(Note note);
+
+    @Override
+    protected void handleEvents(List<Event> events) {
+        if (!isRunning()) return;
+        for (Event event : events) {
+            if (event instanceof NbsSoundStopperEvent stopperEvent) {
+                handleEvent(stopperEvent);
+            }
+        }
+    }
+
+    protected abstract void handleEvent(NbsSoundStopperEvent event);
 
     @Override
     protected void onSongFinished() {
