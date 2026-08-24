@@ -2,7 +2,7 @@ import me.modmuss50.mpp.ReleaseType
 
 plugins {
     java
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.22"
     id("xyz.jpenilla.run-paper") version "3.1.0"
     `maven-publish`
     id("com.gradleup.shadow")
