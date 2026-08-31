@@ -12,7 +12,7 @@ jobs:
     - name: checkout repository
       uses: actions/checkout@v7
     - name: Setup JDK 25
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         distribution: 'microsoft'
         java-version: 25
