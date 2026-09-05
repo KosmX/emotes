@@ -25,6 +25,13 @@ public final class OpusPackets {
     }
 
     /**
+     * @return whether the TOC byte says the packet carries two channels
+     */
+    public static boolean stereo(byte toc) {
+        return (toc & 0x04) != 0;
+    }
+
+    /**
      * {@code opus_packet_get_nb_frames}, or -1 if malformed.
      */
     public static int frameCount(byte[] data, int offset, int length) {

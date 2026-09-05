@@ -78,6 +78,9 @@ public class OpusSound {
             int samples = OpusPackets.sampleCount(data, offsets[i], length, OpusPackets.SAMPLE_RATE);
             if (samples <= 0) throw new OpusFormatException("Malformed Opus packet");
 
+            // The header says mono, and only the packets themselves can contradict it
+            if (OpusPackets.stereo(data[offsets[i]])) throw new OpusFormatException("Opus stream must be mono");
+
             sampleCount += samples;
             if (sampleCount > MAX_SAMPLES) {
                 throw new OpusFormatException("Opus stream is longer than " + MAX_DURATION_MS + " ms");
@@ -151,7 +154,7 @@ public class OpusSound {
     public void write(Path file) throws IOException {
         // The writer's constructor already writes headers, so the stream needs closing even if that throws
         try (OutputStream stream = Files.newOutputStream(file);
-             OggOpusWriter writer = new OggOpusWriter(stream, this.preSkip, this.outputGain, this.trackGain, this.loopStart)) {
+             OggOpusWriter writer = new OggOpusWriter(stream, 1, this.preSkip, this.outputGain, this.trackGain, this.loopStart)) {
             for (int i = 0, count = packetCount(); i < count; i++) {
                 writer.writePacket(this.data, this.offsets[i], length(i));
             }
