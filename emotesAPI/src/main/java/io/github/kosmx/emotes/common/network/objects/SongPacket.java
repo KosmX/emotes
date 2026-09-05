@@ -57,6 +57,9 @@ public class SongPacket extends AbstractNetworkPacket {
                 // Only the side that plays a live emote decodes; servers and proxies just relay the packets
                 if (config.purpose == PacketTask.STREAM && config.bound == PacketBound.CLIENT) sound.pcm();
                 config.extraData.put(OPUS_KEY, sound);
+
+                // A stored emote keeps its .nbs too, so it can still be streamed to someone who needs it
+                if (buf.isReadable()) config.extraData.put(NBS_KEY, MathHelper.readBytes(buf));
             }
 
             case NBS_VERSION -> config.extraData.put(NBS_KEY, MathHelper.readBytes(buf));
@@ -79,6 +82,9 @@ public class SongPacket extends AbstractNetworkPacket {
                 VarIntUtils.writeVarInt(buf, packet.length);
                 buf.writeBytes(packet);
             }
+
+            ByteBuffer song = config.purpose == PacketTask.FILE ? data.getBinary(NBS_KEY) : null;
+            if (song != null) buf.writeBytes(song);
         } else {
             ByteBuffer song = data.getBinary(NBS_KEY);
             if (song == null) throw new IOException("Emote has no song");
