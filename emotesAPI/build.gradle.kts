@@ -8,7 +8,7 @@ version = mod_version
 
 dependencies {
     api("com.zigythebird.playeranim:PlayerAnimationLibCore:${project["playeranimlib_version"]}")
-    api("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}")
+    api("io.github.jaredmdobson:concentus:${project["concentus_version"]}")
 
     testImplementation(platform("org.junit:junit-bom:6.1.3"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")

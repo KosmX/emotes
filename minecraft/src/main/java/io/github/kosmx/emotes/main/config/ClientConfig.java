@@ -25,7 +25,7 @@ public class ClientConfig extends CommonConfig {
 
     public final ConfigEntry<Boolean> alwaysOpenEmoteScreen = new ConfigEntry<>("alwaysOpenScreen", false, true, category("general"));
     //expert
-    public final ConfigEntry<Boolean> displayNowPlaying = new ConfigEntry<>("displayNowPlaying", true, false, category("expert"));
+    public final ConfigEntry<Boolean> normalizeSoundVolume = new ConfigEntry<>("normalizeSoundVolume", true, false, category("expert"));
     public final ConfigEntry<Boolean> alwaysValidate = new ConfigEntry<>("alwaysValidateEmote", false, true, category("expert"));
     public final ConfigEntry<Boolean> enablePlayerSafety = new ConfigEntry<>("playersafety", true, true, category("expert"));
     public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry("stopthreshold", "stopThreshold", 0.04f, true, category("expert"), -3.912f, 8f);

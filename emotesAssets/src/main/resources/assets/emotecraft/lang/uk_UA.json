@@ -61,7 +61,6 @@
   "emotecraft.otherconfig.enableWheelKeyboardNav": "Увімкнути навігацію клавіатурою у колесі вибору",
   "emotecraft.otherconfig.closeWheelType": "Як закривається колесо",
   "emotecraft.otherconfig.closeWheelType.tooltip": "HOLD - колесо відкрите, поки ви утримуєте кнопку\nPRESS - колесо завжди відкрите, поки ви не натиснете кнопку або ESC",
-  "emotecraft.otherconfig.displayNowPlaying": "Відображати «Зараз відтворюється» для емоцій з музикою",
   "emotecraft.emotelist": "Усі емоції",
   "emotecraft.no_server": "На сервері не встановлено жодної версії Emotecraft. Інші користувачі не побачать ваших емоцій, якщо ви їх відтворите.",
   "emotecraft.different_server": "На сервері встановлено іншу версію Emotecraft. Інші користувачі можуть неправильно бачити ваші емоції.",

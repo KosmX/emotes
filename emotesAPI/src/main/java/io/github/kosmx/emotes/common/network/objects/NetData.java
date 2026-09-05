@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
@@ -22,6 +23,11 @@ public final class NetData {
      * //as the sub-packet ids
      */
     public PacketTask purpose = PacketTask.UNKNOWN;
+    /**
+     * The side reading this packet, null while writing.
+     */
+    @Nullable
+    public PacketBound bound = null;
     @Nullable
     public UUID stopEmoteID = null;
     public final List<UUID> removeEmoteIds = new ArrayList<>(0);

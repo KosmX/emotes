@@ -59,6 +59,7 @@ public final class EmotePacket {
         if (byteBuf.readableBytes() < 6) throw new RuntimeException("Invalid packet header");
         if (byteBuf.readInt() > CommonData.networkingVersion) throw new RuntimeException("Can't read newer version");
         this.data = new NetData();
+        this.data.bound = target;
         this.data.purpose = PacketTask.getTaskFromID(byteBuf.readByte());
 
         short count = byteBuf.readUnsignedByte();
@@ -117,7 +118,7 @@ public final class EmotePacket {
 
                 int subPacketStart = buf.writerIndex();
                 try {
-                    byte packetVersion = packet.getVer(this.data.versions);
+                    byte packetVersion = packet.getVer(this.data);
 
                     buf.writeByte(packet.getID());
                     buf.writeByte(packetVersion);

@@ -3,11 +3,10 @@ package io.github.kosmx.emotes.server.serializer;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.objects.SongPacket;
+import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
-import net.raphimc.noteblocklib.NoteBlockLib;
-import net.raphimc.noteblocklib.format.SongFormat;
-import net.raphimc.noteblocklib.model.song.Song;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,13 +74,28 @@ public class EmoteSerializer {
                 }
             }
 
-            Path song = file.getParent().resolve(baseFileName + ".nbs");
-            if (Files.isRegularFile(song)) {
-                try (InputStream is = Files.newInputStream(song)) {
-                    Song nbs = NoteBlockLib.readSong(is, SongFormat.NBS);
+            Path sound = file.getParent().resolve(baseFileName + ".opus");
+            if (Files.isRegularFile(sound)) {
+                try {
+                    OpusSound opus = OpusSound.read(sound);
 
                     for (Animation emote : emotes.values()) { // Avoid lambda
-                        emote.data().put("song", nbs);
+                        emote.data().put(SongPacket.OPUS_KEY, opus);
+                    }
+                } catch (Throwable th) {
+                    CommonData.LOGGER.warn("Error while reading sound: {}", sound.getFileName(), th);
+                }
+            }
+
+            // Only passed through, so clients old enough to still play it keep their sound
+            Path song = file.getParent().resolve(baseFileName + ".nbs");
+            if (Files.isRegularFile(song)) {
+                try {
+                    if (Files.size(song) > CommonData.MAX_PACKET_SIZE) throw new IOException("Song is too big to send");
+                    byte[] nbs = Files.readAllBytes(song);
+
+                    for (Animation emote : emotes.values()) { // Avoid lambda
+                        emote.data().put(SongPacket.NBS_KEY, nbs);
                     }
                 } catch (Throwable th) {
                     CommonData.LOGGER.warn("Error while reading song: {}", song.getFileName(), th);
