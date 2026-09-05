@@ -1,13 +1,13 @@
 package io.github.kosmx.emotes.common.opus;
 
 import io.github.jaredmdobson.concentus.OpusDecoder;
-import io.github.jaredmdobson.concentus.OpusException;
 import io.github.kosmx.emotes.common.CommonData;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +58,11 @@ public class OpusSound {
     private final int sampleCount;
 
     // Minutes of PCM are worth keeping for a replay, but not worth an OutOfMemoryError
-    private volatile SoftReference<CompletableFuture<DecodedSound>> pcm = new SoftReference<>(null);
+    private volatile SoftReference<DecodedSound> pcm = new SoftReference<>(null);
+    // Held strongly while a decode runs, so a cleared reference cannot start a second one
+    @Nullable
+    private volatile CompletableFuture<DecodedSound> decoding;
+    private volatile boolean failed;
 
     public OpusSound(int preSkip, int outputGain, @Nullable Integer trackGain, @Nullable Integer loopStart,
                      byte[] data, int[] offsets) throws OpusFormatException {
@@ -104,36 +108,50 @@ public class OpusSound {
     }
 
     public static OpusSound read(Path file) throws IOException {
-        long fileSize = Files.size(file);
-        if (fileSize > CommonData.MAX_PACKET_SIZE) throw new OpusFormatException("Opus file is too big to send");
+        if (Files.size(file) > CommonData.MAX_PACKET_SIZE) throw new OpusFormatException("Opus file is too big to send");
 
-        try (InputStream stream = new BufferedInputStream(Files.newInputStream(file))) {
-            OggOpusReader reader = new OggOpusReader(stream);
-            if (reader.channelCount() != 1) throw new OpusFormatException("Opus stream must be mono");
-
-            // The packets are what is left of the file once the container is stripped, so it bounds them
-            byte[] data = new byte[(int) fileSize];
-            int[] offsets = new int[64];
-            int count = 0;
-            int length = 0;
-
-            for (byte[] packet = reader.readPacket(); packet != null; packet = reader.readPacket()) {
-                if (count + 1 == offsets.length) offsets = Arrays.copyOf(offsets, offsets.length * 2);
-
-                offsets[count++] = length;
-                System.arraycopy(packet, 0, data, length, packet.length);
-                length += packet.length;
-            }
-            offsets[count] = length;
-
-            return new OpusSound(reader.preSkip(), reader.outputGain(), reader.trackGain(), reader.loopStart(),
-                    Arrays.copyOf(data, length), Arrays.copyOf(offsets, count + 1));
+        try (InputStream stream = Files.newInputStream(file)) {
+            return read(stream);
         }
     }
 
+    /**
+     * Reads without closing the stream, for sounds that come from somewhere other than a file.
+     */
+    public static OpusSound read(InputStream input) throws IOException {
+        OggOpusReader reader = new OggOpusReader(new BufferedInputStream(input));
+        if (reader.channelCount() != 1) throw new OpusFormatException("Opus stream must be mono");
+
+        byte[] data = new byte[8192];
+        int[] offsets = new int[64];
+        int count = 0;
+        int length = 0;
+
+        for (byte[] packet = reader.readPacket(); packet != null; packet = reader.readPacket()) {
+            // The constructor bounds this too, but only once the whole stream is already in memory
+            if (length + packet.length > CommonData.MAX_PACKET_SIZE) {
+                throw new OpusFormatException("Opus stream is bigger than " + CommonData.MAX_PACKET_SIZE + " bytes");
+            }
+
+            if (count + 1 == offsets.length) offsets = Arrays.copyOf(offsets, offsets.length * 2);
+            if (length + packet.length > data.length) {
+                data = Arrays.copyOf(data, Math.max(data.length * 2, length + packet.length));
+            }
+
+            offsets[count++] = length;
+            System.arraycopy(packet, 0, data, length, packet.length);
+            length += packet.length;
+        }
+        offsets[count] = length;
+
+        return new OpusSound(reader.preSkip(), reader.outputGain(), reader.trackGain(), reader.loopStart(),
+                Arrays.copyOf(data, length), Arrays.copyOf(offsets, count + 1));
+    }
+
     public void write(Path file) throws IOException {
-        try (OggOpusWriter writer = new OggOpusWriter(Files.newOutputStream(file), this.preSkip, this.outputGain,
-                this.trackGain, this.loopStart)) {
+        // The writer's constructor already writes headers, so the stream needs closing even if that throws
+        try (OutputStream stream = Files.newOutputStream(file);
+             OggOpusWriter writer = new OggOpusWriter(stream, this.preSkip, this.outputGain, this.trackGain, this.loopStart)) {
             for (int i = 0, count = packetCount(); i < count; i++) {
                 writer.writePacket(this.data, this.offsets[i], length(i));
             }
@@ -172,20 +190,31 @@ public class OpusSound {
     }
 
     /**
-     * Starts the decode on first call; the result is kept for replays until memory gets tight.
+     * Decodes in the background if that has not happened yet, or if the result was reclaimed.
      */
-    public CompletableFuture<DecodedSound> pcm() {
-        CompletableFuture<DecodedSound> pcm = this.pcm.get();
-        if (pcm == null) {
-            synchronized (this) {
-                pcm = this.pcm.get();
-                if (pcm == null) {
-                    pcm = CompletableFuture.supplyAsync(this::decode, DECODER);
-                    this.pcm = new SoftReference<>(pcm);
-                }
-            }
+    public void startDecoding() {
+        if (this.failed || this.decoding != null || this.pcm.get() != null) return;
+
+        synchronized (this) {
+            if (this.failed || this.decoding != null || this.pcm.get() != null) return;
+
+            // Store before completing, or an inline finish would clear the field and be overwritten
+            CompletableFuture<DecodedSound> decoding = CompletableFuture.supplyAsync(this::decode, DECODER);
+            this.decoding = decoding;
+            decoding.whenComplete(this::finish);
         }
-        return pcm;
+    }
+
+    private void finish(@Nullable DecodedSound decoded, @Nullable Throwable error) {
+        synchronized (this) {
+            if (decoded != null) {
+                this.pcm = new SoftReference<>(decoded);
+            } else {
+                this.failed = true; // one bad stream should not be retried on every frame
+                CommonData.LOGGER.error("Failed to decode an emote sound", error);
+            }
+            this.decoding = null;
+        }
     }
 
     /**
@@ -193,9 +222,9 @@ public class OpusSound {
      */
     @Nullable
     public DecodedSound decoded() {
-        CompletableFuture<DecodedSound> pcm = pcm();
-        // A done future never changes again, so getNow cannot throw after these two checks
-        return pcm.isDone() && !pcm.isCompletedExceptionally() ? pcm.getNow(null) : null;
+        DecodedSound decoded = this.pcm.get();
+        if (decoded == null) startDecoding();
+        return decoded;
     }
 
     private DecodedSound decode() {
@@ -218,7 +247,8 @@ public class OpusSound {
                     // The pre-skip usually cuts a packet in half, so decode it aside and keep the tail
                     int decoded = decoder.decode(this.data, from, size, scratch, 0, scratch.length, false);
                     int dropped = Math.min(decoded, skip);
-                    count = decoded - dropped;
+                    // Trust the decoder over the sample count derived from the TOC bytes
+                    count = Math.min(decoded - dropped, samples.length - offset);
                     System.arraycopy(scratch, dropped, samples, offset, count);
                     skip -= dropped;
                 } else {
@@ -229,7 +259,7 @@ public class OpusSound {
                 if (loudness != null) loudness.feed(samples, offset, count);
                 offset += count;
             }
-        } catch (OpusException e) {
+        } catch (Exception e) { // Concentus throws IllegalArgumentException as readily as OpusException
             throw new CompletionException(e);
         }
 

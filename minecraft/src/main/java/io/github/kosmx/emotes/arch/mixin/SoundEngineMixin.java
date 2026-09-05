@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -16,6 +17,19 @@ import java.util.concurrent.CompletableFuture;
 
 @Mixin(SoundEngine.class)
 public class SoundEngineMixin {
+    // Only the pool choice: streaming has 8 channels shared with music, and ours streams out of memory
+    @ModifyExpressionValue(
+            method = "play",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/resources/sounds/Sound;shouldStream()Z",
+                    ordinal = 1
+            )
+    )
+    private boolean emotecraft$takeAStaticChannel(boolean original, @Local(argsOnly = true) SoundInstance instance) {
+        return original && !(instance instanceof EmoteSoundInstance);
+    }
+
     @WrapOperation(
             method = "play",
             at = @At(

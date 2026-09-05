@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.common.network.objects;
 
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
+import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
@@ -42,7 +43,10 @@ public class SongPacket extends AbstractNetworkPacket {
         ExtraAnimationData data = config.emoteData.data();
 
         if (version >= OPUS_VERSION && data.getRaw(OPUS_KEY) instanceof OpusSound) return OPUS_VERSION;
-        return version >= NBS_VERSION && data.getBinary(NBS_KEY) != null ? NBS_VERSION : 0;
+        if (version < NBS_VERSION || data.getBinary(NBS_KEY) == null) return 0;
+
+        // Nothing plays .nbs any more: it goes to someone who cannot read Opus, or into a stored emote
+        return version == NBS_VERSION || config.purpose == PacketTask.FILE ? NBS_VERSION : 0;
     }
 
     @Override
@@ -73,14 +77,19 @@ public class SongPacket extends AbstractNetworkPacket {
                 OpusSound sound = new OpusSound(preSkip, 0, null, loopStart < 0 ? null : loopStart,
                         Arrays.copyOf(data, length), offsets);
                 // Only the side that plays a live emote decodes; servers and proxies just relay the packets
-                if (config.purpose == PacketTask.STREAM && config.bound == PacketBound.CLIENT) sound.pcm();
+                if (config.purpose == PacketTask.STREAM && config.bound == PacketBound.CLIENT) sound.startDecoding();
                 config.extraData.put(OPUS_KEY, sound);
 
-                // A stored emote keeps its .nbs too, so it can still be streamed to someone who needs it
-                if (buf.isReadable()) config.extraData.put(NBS_KEY, MathHelper.readBytes(buf));
+                // Only a stored emote carries the .nbs tail; anywhere else trailing bytes are junk
+                if (config.purpose == PacketTask.FILE && buf.isReadable()) {
+                    config.extraData.put(NBS_KEY, MathHelper.readBytes(buf));
+                }
             }
 
             case NBS_VERSION -> config.extraData.put(NBS_KEY, MathHelper.readBytes(buf));
+
+            // Ver1 held a note list rather than a file, so there is nothing left that can read or relay it
+            default -> CommonData.LOGGER.warn("Dropping the sound of an emote: sub-packet version {} is no longer supported", version);
         }
     }
 

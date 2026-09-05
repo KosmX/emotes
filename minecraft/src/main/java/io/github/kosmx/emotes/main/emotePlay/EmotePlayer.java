@@ -17,6 +17,8 @@ import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.main.emotePlay.instances.EmoteSoundInstance;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,8 +26,11 @@ import org.jetbrains.annotations.Nullable;
  * Modified keyframe animation player to play songs with animations
  */
 public class EmotePlayer extends PlayerAnimationController {
+    private static final long RETRY_DELAY = 500L; // animation time runs backwards on a loop, wall time does not
+
     @Nullable
     private EmoteSoundInstance song;
+    private long attempted;
 
     public boolean perspective = false;
     public boolean muteNbs = false;
@@ -104,22 +109,34 @@ public class EmotePlayer extends PlayerAnimationController {
     }
 
     private void startSound() {
-        if (this.song != null || this.muteNbs || !isActive()) return;
+        if (this.muteNbs || !isActive() || !EmoteSoundInstance.audible(this.avatar)) return;
+
+        SoundManager manager = Minecraft.getInstance().getSoundManager();
+        if (this.song != null) {
+            if (!this.song.isStopped() && (this.song.started() || manager.isActive(this.song))) return;
+            this.song = null; // it stopped itself, or the engine turned it down; a fresh one starts in time
+        }
 
         Animation emote = getCurrentAnimationInstance();
         if (emote == null || !(emote.data().getRaw(SongPacket.OPUS_KEY) instanceof OpusSound sound)) return;
 
-        // Handing the engine an unfinished decode would strand a streaming channel if the emote ends first
+        // Handing the engine an unfinished decode would strand a channel if the emote ends first
         OpusSound.DecodedSound decoded = sound.decoded();
         if (decoded == null) return;
+
+        // Play can be refused for a whole emote, and asking again every frame notifies subtitles every frame
+        long now = Util.getMillis();
+        if (this.attempted != 0 && now - this.attempted < RETRY_DELAY) return;
+        this.attempted = now;
 
         // Join wherever the animation already is, whether it started late or mid-emote
         int offset = (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE);
         this.song = new EmoteSoundInstance(this.avatar, decoded, offset, sound.loopStart());
-        Minecraft.getInstance().getSoundManager().play(this.song);
+        manager.play(this.song);
     }
 
     private void stopSound() {
+        this.attempted = 0; // the next emote starts its clock over
         if (this.song == null) return;
 
         this.song.stop();

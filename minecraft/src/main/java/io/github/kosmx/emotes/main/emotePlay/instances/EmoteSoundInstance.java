@@ -34,6 +34,7 @@ public class EmoteSoundInstance implements TickableSoundInstance {
     private final int loopStart;
 
     private boolean stopped;
+    private boolean started;
 
     public EmoteSoundInstance(Avatar avatar, OpusSound.DecodedSound decoded, int offset, int loopStart) {
         this.avatar = avatar;
@@ -43,7 +44,15 @@ public class EmoteSoundInstance implements TickableSoundInstance {
     }
 
     public AudioStream stream() {
+        this.started = true;
         return new PcmAudioStream(this.decoded.samples(), this.offset, this.loopStart);
+    }
+
+    /**
+     * @return whether the engine ever asked for the audio, as opposed to turning the sound down
+     */
+    public boolean started() {
+        return this.started;
     }
 
     public void stop() {
@@ -55,13 +64,19 @@ public class EmoteSoundInstance implements TickableSoundInstance {
         return this.stopped;
     }
 
+    /**
+     * A preview should not outlive its screen, and audio should not give away a player that is not rendered.
+     */
+    public static boolean audible(Avatar avatar) {
+        Minecraft mc = Minecraft.getInstance();
+        if (avatar instanceof UnsafeMannequin) return mc.gui.screen() != null;
+
+        return mc.player != null && !avatar.isRemoved() && !avatar.isInvisibleTo(mc.player);
+    }
+
     @Override
     public void tick() {
-        if (this.avatar instanceof UnsafeMannequin) return;
-
-        Minecraft mc = Minecraft.getInstance();
-        // Audio would give away a player the client is deliberately not rendering
-        if (mc.player == null || this.avatar.isRemoved() || this.avatar.isInvisibleTo(mc.player)) this.stopped = true;
+        if (!audible(this.avatar)) this.stopped = true;
     }
 
     @Override
