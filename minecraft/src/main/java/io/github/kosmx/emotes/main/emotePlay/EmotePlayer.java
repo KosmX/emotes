@@ -11,11 +11,13 @@ import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.State;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
+import io.github.kosmx.emotes.common.network.objects.SongPacket;
+import io.github.kosmx.emotes.common.opus.OpusPackets;
+import io.github.kosmx.emotes.common.opus.OpusSound;
+import io.github.kosmx.emotes.main.emotePlay.instances.EmoteSoundInstance;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Avatar;
-import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -23,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EmotePlayer extends PlayerAnimationController {
     @Nullable
-    private MinecraftNbsPlayer song;
+    private EmoteSoundInstance song;
 
     public boolean perspective = false;
     public boolean muteNbs = false;
@@ -46,15 +48,7 @@ public class EmotePlayer extends PlayerAnimationController {
     @Override
     protected void setupNewAnimation() {
         super.setupNewAnimation();
-
-        Animation emote = getCurrentAnimationInstance();
-
-        if (this.song != null) this.song.stop();
-        if (emote != null && emote.data().has("song")) {
-            this.song = new MinecraftNbsPlayer(this, emote.data().<NbsSong>get("song").orElseThrow());
-        } else {
-            this.song = null;
-        }
+        stopSound();
     }
 
     @Override
@@ -77,7 +71,7 @@ public class EmotePlayer extends PlayerAnimationController {
             Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
             this.perspective = false;
         }
-        if (this.song != null) this.song.stop();
+        stopSound();
     }
 
     /**
@@ -97,27 +91,39 @@ public class EmotePlayer extends PlayerAnimationController {
     }
 
     @Override
+    public void pause() {
+        super.pause();
+        // No way to pause one instance; startSound picks the track back up at the right offset on unpause
+        stopSound();
+    }
+
+    @Override
     protected void applyCustomPivotPoints() {
-        if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning() && !this.muteNbs) {
-            if (PlatformTools.getConfig().displayNowPlaying.get() && !(this.avatar instanceof UnsafeMannequin)) {
-                String nowPlaying = this.song.getNowPlaying();
-                if (nowPlaying != null) Minecraft.getInstance().gui.hud.setNowPlaying(Component.literal(nowPlaying));
-            }
-            this.song.setPaused(getAnimationState() == State.PAUSED);
-            this.song.start();
-        }
+        startSound();
         super.applyCustomPivotPoints();
     }
 
-    @Override
-    public void pause() {
-        super.pause();
-        if (this.song != null) this.song.setPaused(true);
+    private void startSound() {
+        if (this.song != null || this.muteNbs || !isActive()) return;
+
+        Animation emote = getCurrentAnimationInstance();
+        if (emote == null || !(emote.data().getRaw(SongPacket.OPUS_KEY) instanceof OpusSound sound)) return;
+
+        // Handing the engine an unfinished decode would strand a streaming channel if the emote ends first
+        OpusSound.DecodedSound decoded = sound.decoded();
+        if (decoded == null) return;
+
+        // Join wherever the animation already is, whether it started late or mid-emote
+        int offset = (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE);
+        this.song = new EmoteSoundInstance(this.avatar, decoded, offset, sound.loopStart());
+        Minecraft.getInstance().getSoundManager().play(this.song);
     }
 
-    @Override
-    public void unpause() {
-        super.unpause();
-        if (this.song != null) this.song.setPaused(false);
+    private void stopSound() {
+        if (this.song == null) return;
+
+        this.song.stop();
+        Minecraft.getInstance().getSoundManager().stop(this.song);
+        this.song = null;
     }
 }

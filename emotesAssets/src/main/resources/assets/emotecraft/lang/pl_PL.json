@@ -48,7 +48,6 @@
   "emotecraft.otherconfig.enableWheelKeyboardNav": "Nawigowanie klawiaturą na kole wyboru emotek",
   "emotecraft.otherconfig.closeWheelType": "Sposób zamykania koła",
   "emotecraft.otherconfig.closeWheelType.tooltip": "HOLD — koło jest otwarte, dopóki trzymasz przycisk.\nPRESS — koło zostaje otwarte do czasu kliknięcia przycisku lub klawisza ESC.",
-  "emotecraft.otherconfig.displayNowPlaying": "Wyświetl „Obecnie odtwarzane” dla emotek z muzyką",
   "emotecraft.emotelist": "Wszystkie emotki",
   "emotecraft.no_server": "Serwer nie ma zainstalowanego Emotecrafta. Inni gracze nie zobaczą Twoich emotek.",
   "emotecraft.different_server": "Serwer ma zainstalowaną inną wersję Emotecrafta. Emotki mogą nie wyświetlać się poprawnie u innych osób.",

@@ -100,7 +100,7 @@ dependencies {
         fabricPomCompile(this)
         neoforgePomCompile(this)
     }
-    implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
+    implementation("io.github.jaredmdobson:concentus:${project["concentus_version"]}") {
         isTransitive = false
 
         platformInclude(this)

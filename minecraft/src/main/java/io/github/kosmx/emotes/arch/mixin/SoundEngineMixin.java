@@ -3,26 +3,30 @@ package io.github.kosmx.emotes.arch.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.kosmx.emotes.main.emotePlay.instances.SoundDirectInstance;
-import io.github.kosmx.emotes.main.emotePlay.instances.SoundEventInstance;
+import io.github.kosmx.emotes.main.emotePlay.instances.EmoteSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.client.sounds.AudioStream;
+import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.client.sounds.SoundEngine;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.concurrent.CompletableFuture;
 
 @Mixin(SoundEngine.class)
 public class SoundEngineMixin {
     @WrapOperation(
-            method = "calculatePitch",
+            method = "play",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/Mth;clamp(FFF)F"
+                    target = "Lnet/minecraft/client/sounds/SoundBufferLibrary;getStream(Lnet/minecraft/resources/Identifier;Z)Ljava/util/concurrent/CompletableFuture;"
             )
     )
-    private float emotecraft$extendOctaves(float value, float min, float max, Operation<Float> original, @Local(argsOnly = true) SoundInstance sound) {
-        if (sound instanceof SoundEventInstance || sound instanceof SoundDirectInstance) {
-            return value;
+    private CompletableFuture<AudioStream> emotecraft$streamDecodedSound(SoundBufferLibrary library, Identifier location, boolean looping, Operation<CompletableFuture<AudioStream>> original, @Local(argsOnly = true) SoundInstance instance) {
+        if (instance instanceof EmoteSoundInstance sound) {
+            return CompletableFuture.completedFuture(sound.stream());
         }
-        return original.call(value, min, max);
+        return original.call(library, location, looping);
     }
 }
