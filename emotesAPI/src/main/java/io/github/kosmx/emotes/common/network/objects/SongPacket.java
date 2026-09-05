@@ -11,8 +11,7 @@ import team.unnamed.mocha.util.network.VarIntUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public class SongPacket extends AbstractNetworkPacket {
     public static final String NBS_KEY = "song";
@@ -53,7 +52,26 @@ public class SongPacket extends AbstractNetworkPacket {
                 int preSkip = buf.readUnsignedShort();
                 int loopStart = VarIntUtils.readVarInt(buf) - 1;
 
-                OpusSound sound = new OpusSound(preSkip, 0, null, loopStart < 0 ? null : loopStart, readPackets(buf));
+                int count = VarIntUtils.readVarInt(buf);
+                // Every packet costs a length byte and a TOC byte, so the count can be sized against what is left
+                if (count < 0 || count > buf.readableBytes() / 2) throw new IOException("Invalid Opus packet count: " + count);
+
+                int[] offsets = new int[count + 1];
+                byte[] data = new byte[buf.readableBytes()]; // the rest of the sub-packet bounds the packets
+                int length = 0;
+
+                for (int i = 0; i < count; i++) {
+                    int size = VarIntUtils.readVarInt(buf);
+                    if (size <= 0 || size > buf.readableBytes()) throw new IOException("Invalid Opus packet size: " + size);
+
+                    offsets[i] = length;
+                    buf.readBytes(data, length, size);
+                    length += size;
+                }
+                offsets[count] = length;
+
+                OpusSound sound = new OpusSound(preSkip, 0, null, loopStart < 0 ? null : loopStart,
+                        Arrays.copyOf(data, length), offsets);
                 // Only the side that plays a live emote decodes; servers and proxies just relay the packets
                 if (config.purpose == PacketTask.STREAM && config.bound == PacketBound.CLIENT) sound.pcm();
                 config.extraData.put(OPUS_KEY, sound);
@@ -76,11 +94,11 @@ public class SongPacket extends AbstractNetworkPacket {
 
             buf.writeShort(sound.preSkip());
             VarIntUtils.writeVarInt(buf, sound.loopStart() + 1);
-            VarIntUtils.writeVarInt(buf, sound.packets().size());
+            VarIntUtils.writeVarInt(buf, sound.packetCount());
 
-            for (byte[] packet : sound.packets()) { // Avoid lambda
-                VarIntUtils.writeVarInt(buf, packet.length);
-                buf.writeBytes(packet);
+            for (int i = 0, count = sound.packetCount(); i < count; i++) {
+                VarIntUtils.writeVarInt(buf, sound.length(i));
+                buf.writeBytes(sound.data(), sound.offset(i), sound.length(i));
             }
 
             ByteBuffer song = config.purpose == PacketTask.FILE ? data.getBinary(NBS_KEY) : null;
@@ -102,20 +120,4 @@ public class SongPacket extends AbstractNetworkPacket {
         return true;
     }
 
-    private static List<byte[]> readPackets(ByteBuf buf) throws IOException {
-        int count = VarIntUtils.readVarInt(buf);
-        // Every packet costs a length byte and a TOC byte, so the count can be sized against what is left
-        if (count < 0 || count > buf.readableBytes() / 2) throw new IOException("Invalid Opus packet count: " + count);
-
-        List<byte[]> packets = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            int length = VarIntUtils.readVarInt(buf);
-            if (length <= 0 || length > buf.readableBytes()) throw new IOException("Invalid Opus packet size: " + length);
-
-            byte[] packet = new byte[length];
-            buf.readBytes(packet);
-            packets.add(packet);
-        }
-        return packets;
-    }
 }

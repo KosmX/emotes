@@ -27,25 +27,25 @@ public final class OpusPackets {
     /**
      * {@code opus_packet_get_nb_frames}, or -1 if malformed.
      */
-    public static int frameCount(byte[] packet) {
-        if (packet.length < 1) return -1;
+    public static int frameCount(byte[] data, int offset, int length) {
+        if (length < 1) return -1;
 
-        int code = packet[0] & 0x3;
+        int code = data[offset] & 0x3;
         if (code == 0) return 1;
         if (code != 3) return 2;
 
-        if (packet.length < 2) return -1;
-        return packet[1] & 0x3F;
+        if (length < 2) return -1;
+        return data[offset + 1] & 0x3F;
     }
 
     /**
      * {@code opus_packet_get_nb_samples}, or -1 if malformed.
      */
-    public static int sampleCount(byte[] packet, int sampleRate) {
-        int frames = frameCount(packet);
+    public static int sampleCount(byte[] data, int offset, int length, int sampleRate) {
+        int frames = frameCount(data, offset, length);
         if (frames < 1) return -1;
 
-        int samples = frames * samplesPerFrame(packet[0], sampleRate);
+        int samples = frames * samplesPerFrame(data[offset], sampleRate);
         if (samples * 1000L > (long) sampleRate * MAX_PACKET_DURATION_MS) return -1;
         return samples;
     }

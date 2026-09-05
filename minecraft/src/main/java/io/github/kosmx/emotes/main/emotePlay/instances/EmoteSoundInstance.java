@@ -2,9 +2,9 @@ package io.github.kosmx.emotes.main.emotePlay.instances;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
-import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.main.emotePlay.PcmAudioStream;
+import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
@@ -25,8 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class EmoteSoundInstance implements TickableSoundInstance {
     private static final FloatProvider DEFAULT_FLOAT = ConstantFloat.of(1.0F);
     private static final Sound SOUND = new Sound(
-            Identifier.fromNamespaceAndPath(CommonData.MOD_ID, "emote_sound"),
-            DEFAULT_FLOAT, DEFAULT_FLOAT, 1, Sound.Type.FILE, true, false, 16
+            McUtils.newIdentifier("emote_sound"), DEFAULT_FLOAT, DEFAULT_FLOAT, 1, Sound.Type.FILE, true, false, 16
     );
 
     private final Avatar avatar;
@@ -71,7 +70,7 @@ public class EmoteSoundInstance implements TickableSoundInstance {
     }
 
     @Override
-    public @Nullable WeighedSoundEvents resolve(SoundManager manager) {
+    public @Nullable WeighedSoundEvents resolve(@NotNull SoundManager manager) {
         return new EmotecraftSoundEvents(SOUND);
     }
 

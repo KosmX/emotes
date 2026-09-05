@@ -55,9 +55,9 @@ public class OggOpusWriter implements Closeable {
         writeTags(trackGain, loopStart);
     }
 
-    public void writePacket(byte[] packet) throws IOException {
-        append(packet);
-        this.granule += OpusPackets.sampleCount(packet, OpusPackets.SAMPLE_RATE);
+    public void writePacket(byte[] data, int offset, int length) throws IOException {
+        append(data, offset, length);
+        this.granule += OpusPackets.sampleCount(data, offset, length, OpusPackets.SAMPLE_RATE);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class OggOpusWriter implements Closeable {
         head[18] = 0; // channel mapping family
 
         this.type = BOS;
-        append(head);
+        append(head, 0, head.length);
         flush(0);
     }
 
@@ -106,25 +106,25 @@ public class OggOpusWriter implements Closeable {
             offset += 4 + comment.length;
         }
 
-        append(tags);
+        append(tags, 0, tags.length);
         flush(0);
     }
 
-    private void append(byte[] packet) throws IOException {
-        int offset = 0;
+    private void append(byte[] data, int offset, int length) throws IOException {
+        int done = 0;
         int lacing;
         do {
             if (this.segmentCount == MAX_SEGMENTS) {
                 // The continued flag belongs on the page that starts mid-packet, not on the one being closed
                 flush(this.granule);
-                if (offset > 0) this.type = CONTINUED;
+                if (done > 0) this.type = CONTINUED;
             }
 
-            lacing = Math.min(255, packet.length - offset);
+            lacing = Math.min(255, length - done);
             this.page[PAGE_HEADER_SIZE + this.segmentCount++] = (byte) lacing;
-            System.arraycopy(packet, offset, this.page, PAYLOAD_BASE + this.payloadLength, lacing);
+            System.arraycopy(data, offset + done, this.page, PAYLOAD_BASE + this.payloadLength, lacing);
             this.payloadLength += lacing;
-            offset += lacing;
+            done += lacing;
         } while (lacing == 255);
     }
 
