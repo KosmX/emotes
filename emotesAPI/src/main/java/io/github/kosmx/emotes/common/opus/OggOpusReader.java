@@ -74,8 +74,7 @@ public class OggOpusReader extends LittleEndianInputStream {
     /**
      * @return the next audio packet, or null once the stream is over
      */
-    @Nullable
-    public byte[] readPacket() throws IOException {
+    public byte @Nullable [] readPacket() throws IOException {
         byte[] packet = null;
 
         while (true) {
