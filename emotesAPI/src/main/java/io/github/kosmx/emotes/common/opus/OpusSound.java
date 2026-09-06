@@ -48,6 +48,7 @@ public class OpusSound {
     public record DecodedSound(short[] samples, float normalization) {}
 
     private final int preSkip;
+    private final int endTrim;
     private final int outputGain;
     @Nullable
     private final Integer trackGain;
@@ -64,14 +65,15 @@ public class OpusSound {
     private volatile CompletableFuture<DecodedSound> decoding;
     private volatile boolean failed;
 
-    public OpusSound(int preSkip, int outputGain, @Nullable Integer trackGain, @Nullable Integer loopStart,
+    public OpusSound(int preSkip, int endTrim, int outputGain, @Nullable Integer trackGain, @Nullable Integer loopStart,
                      byte[] data, int[] offsets) throws OpusFormatException {
         if (offsets.length < 2 || offsets[offsets.length - 1] > data.length) {
             throw new OpusFormatException("Opus stream has no packets");
         }
 
         long sampleCount = 0;
-        long size = Short.BYTES + varIntSize(offsets.length - 1) + Integer.BYTES; // preSkip, count, loop start
+        // preSkip, end trim, count, loop start
+        long size = varIntSize(preSkip) + varIntSize(endTrim) + varIntSize(offsets.length - 1) + Integer.BYTES;
 
         for (int i = 0; i < offsets.length - 1; i++) {
             int length = offsets[i + 1] - offsets[i];
@@ -92,7 +94,7 @@ public class OpusSound {
             }
         }
 
-        if (sampleCount <= preSkip) throw new OpusFormatException("Opus stream has no audio");
+        if (preSkip < 0 || sampleCount <= preSkip) throw new OpusFormatException("Opus stream has no audio");
 
         long bitrate = size * 8L * OpusPackets.SAMPLE_RATE / sampleCount;
         long limit = Math.min(MAX_BITRATE, CommonData.MAX_PACKET_SIZE * 8L * OpusPackets.SAMPLE_RATE / sampleCount);
@@ -100,14 +102,34 @@ public class OpusSound {
             throw new OpusFormatException("Opus stream is " + bitrate + " bps, over the " + limit + " bps limit");
         }
 
+        // A trim that eats the whole track is nonsense
+        if (endTrim < 0 || endTrim >= sampleCount - preSkip) endTrim = 0;
+
+        // Packets that are all padding need not be kept
+        int packets = offsets.length - 1;
+        while (packets > 1) {
+            int offset = offsets[packets - 1];
+            int samples = OpusPackets.sampleCount(data, offset, offsets[packets] - offset, OpusPackets.SAMPLE_RATE);
+            if (samples > endTrim) break;
+
+            endTrim -= samples;
+            sampleCount -= samples;
+            packets--;
+        }
+
+        if (packets < offsets.length - 1) {
+            offsets = Arrays.copyOf(offsets, packets + 1);
+            data = Arrays.copyOf(data, offsets[packets]);
+        }
+
         this.preSkip = preSkip;
+        this.endTrim = endTrim;
         this.outputGain = outputGain;
         this.trackGain = trackGain;
         this.data = data;
         this.offsets = offsets;
         this.sampleCount = (int) sampleCount;
-        this.loopStart = loopStart != null && loopStart >= 0 && loopStart < this.sampleCount - preSkip
-                ? loopStart : NO_LOOP;
+        this.loopStart = loopStart != null && loopStart >= 0 && loopStart < playable() ? loopStart : NO_LOOP;
     }
 
     public static OpusSound read(Path file) throws IOException {
@@ -147,14 +169,15 @@ public class OpusSound {
         }
         offsets[count] = length;
 
-        return new OpusSound(reader.preSkip(), reader.outputGain(), reader.trackGain(), reader.loopStart(),
-                Arrays.copyOf(data, length), Arrays.copyOf(offsets, count + 1));
+        return new OpusSound(reader.preSkip(), reader.endTrim(), reader.outputGain(), reader.trackGain(),
+                reader.loopStart(), Arrays.copyOf(data, length), Arrays.copyOf(offsets, count + 1));
     }
 
     public void write(Path file) throws IOException {
         // The writer's constructor already writes headers, so the stream needs closing even if that throws
         try (OutputStream stream = Files.newOutputStream(file);
-             OggOpusWriter writer = new OggOpusWriter(stream, 1, this.preSkip, this.outputGain, this.trackGain, this.loopStart)) {
+             OggOpusWriter writer = new OggOpusWriter(stream, 1, this.preSkip, this.endTrim, this.outputGain,
+                     this.trackGain, this.loopStart)) {
             for (int i = 0, count = packetCount(); i < count; i++) {
                 writer.writePacket(this.data, this.offsets[i], length(i));
             }
@@ -163,6 +186,13 @@ public class OpusSound {
 
     public int preSkip() {
         return this.preSkip;
+    }
+
+    /**
+     * @return the padding at the end, in samples
+     */
+    public int endTrim() {
+        return this.endTrim;
     }
 
     /**
@@ -189,7 +219,11 @@ public class OpusSound {
     }
 
     public int durationMs() {
-        return (this.sampleCount - this.preSkip) / (OpusPackets.SAMPLE_RATE / 1000);
+        return playable() / (OpusPackets.SAMPLE_RATE / 1000);
+    }
+
+    private int playable() {
+        return this.sampleCount - this.preSkip - this.endTrim;
     }
 
     /**
@@ -231,7 +265,7 @@ public class OpusSound {
     }
 
     private DecodedSound decode() {
-        short[] samples = new short[this.sampleCount - this.preSkip];
+        short[] samples = new short[playable()];
         Loudness loudness = this.trackGain == null ? new Loudness(samples.length) : null;
         float gain = (float) Math.pow(10.0, this.outputGain / Q7_8 / 20.0);
 
@@ -246,8 +280,8 @@ public class OpusSound {
                 int size = length(i);
 
                 int count;
-                if (skip > 0) {
-                    // The pre-skip usually cuts a packet in half, so decode it aside and keep the tail
+                if (skip > 0 || samples.length - offset < scratch.length) {
+                    // The padding at either end usually cuts a packet in half, so decode it aside
                     int decoded = decoder.decode(this.data, from, size, scratch, 0, scratch.length, false);
                     int dropped = Math.min(decoded, skip);
                     // Trust the decoder over the sample count derived from the TOC bytes

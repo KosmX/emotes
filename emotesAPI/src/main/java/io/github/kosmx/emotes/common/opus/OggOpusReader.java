@@ -27,6 +27,11 @@ public class OggOpusReader extends LittleEndianInputStream {
     private boolean serialKnown;
     private boolean ended;
 
+    private long granule;
+    private long samples;
+    private long previousGranule;
+    private long previousSamples;
+
     private final byte[] header = new byte[27];
     private int crc;
     private int expectedCrc;
@@ -94,14 +99,32 @@ public class OggOpusReader extends LittleEndianInputStream {
     }
 
     /**
+     * The last page keeps only what its granule position gained over the page before it.
+     *
+     * @return the padding at the end, in samples, final once the last packet has been read
+     */
+    public int endTrim() {
+        long samples = this.samples - this.previousSamples;
+        long kept = this.granule - this.previousGranule;
+        return (int) Math.max(0, Math.min(samples - kept, samples));
+    }
+
+    /**
      * @return the next audio packet, or null once the stream is over
      */
     public byte @Nullable [] readPacket() throws IOException {
+        byte[] packet;
         try {
-            return nextPacket();
+            packet = nextPacket();
         } catch (EOFException e) {
             throw new OpusFormatException("Ogg page ends early");
         }
+
+        if (packet != null) {
+            int samples = OpusPackets.sampleCount(packet, 0, packet.length, OpusPackets.SAMPLE_RATE);
+            if (samples > 0) this.samples += samples; // a malformed packet is the caller's to refuse
+        }
+        return packet;
     }
 
     private byte @Nullable [] nextPacket() throws IOException {
@@ -152,6 +175,10 @@ public class OggOpusReader extends LittleEndianInputStream {
                 | ((bytes[offset + 2] & 0xFF) << 16) | ((bytes[offset + 3] & 0xFF) << 24);
     }
 
+    private static long readLong(byte[] bytes, int offset) {
+        return (readInt(bytes, offset) & 0xFFFFFFFFL) | ((long) readInt(bytes, offset + 4) << 32);
+    }
+
     /**
      * A page is only whole once its payload has been read, so this runs before moving to the next one.
      */
@@ -160,6 +187,18 @@ public class OggOpusReader extends LittleEndianInputStream {
 
         this.checking = false;
         if (this.crc != this.expectedCrc) throw new OpusFormatException("Ogg page is corrupt");
+    }
+
+    /**
+     * The granule positions are counted back from the first page to complete a packet, so it cannot be
+     * short of what it decodes, or of the pre-skip when it is also the last one.
+     */
+    private void verifyStart(boolean ended) throws IOException {
+        if (this.previousSamples != 0 || this.samples == 0) return;
+
+        if (ended ? this.granule < this.preSkip : this.granule < this.samples) {
+            throw new OpusFormatException("Ogg stream starts at granule position " + this.granule);
+        }
     }
 
     private int payloadByte() throws IOException {
@@ -184,6 +223,7 @@ public class OggOpusReader extends LittleEndianInputStream {
         // Whatever follows the page the stream said was its last is not ours to read
         if (this.ended) {
             verifyPage(); // nothing else will come along to check the last one
+            verifyStart(true);
             return -1;
         }
 
@@ -228,6 +268,14 @@ public class OggOpusReader extends LittleEndianInputStream {
             }
 
             if (serial == this.serial) {
+                verifyStart(false); // the page being left has all of its packets now
+                this.previousGranule = this.granule;
+                this.previousSamples = this.samples;
+
+                // A page no packet ends on carries -1 and says nothing about the length
+                long granule = readLong(this.header, 6);
+                if (granule >= 0) this.granule = granule;
+
                 this.ended = (type & OggOpus.EOS) != 0;
                 return type;
             }

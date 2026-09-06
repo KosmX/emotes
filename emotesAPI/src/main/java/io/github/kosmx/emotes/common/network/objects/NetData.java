@@ -24,10 +24,9 @@ public final class NetData {
      */
     public PacketTask purpose = PacketTask.UNKNOWN;
     /**
-     * The side reading this packet, null while writing.
+     * Whether the side reading this packet plays the emote itself, rather than passing it on.
      */
-    @Nullable
-    public PacketBound bound = null;
+    public boolean playback = false;
     @Nullable
     public UUID stopEmoteID = null;
     public final List<UUID> removeEmoteIds = new ArrayList<>(0);

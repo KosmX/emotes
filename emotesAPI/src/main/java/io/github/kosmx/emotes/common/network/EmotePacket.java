@@ -56,10 +56,17 @@ public final class EmotePacket {
     }
 
     public EmotePacket(@NotNull ByteBuf byteBuf, PacketBound target) {
+        this(byteBuf, target, false);
+    }
+
+    /**
+     * @param playback whether this side plays what it reads, so that a relay never decodes an emote's sound
+     */
+    public EmotePacket(@NotNull ByteBuf byteBuf, PacketBound target, boolean playback) {
         if (byteBuf.readableBytes() < 6) throw new RuntimeException("Invalid packet header");
         if (byteBuf.readInt() > CommonData.networkingVersion) throw new RuntimeException("Can't read newer version");
         this.data = new NetData();
-        this.data.bound = target;
+        this.data.playback = playback;
         this.data.purpose = PacketTask.getTaskFromID(byteBuf.readByte());
 
         short count = byteBuf.readUnsignedByte();

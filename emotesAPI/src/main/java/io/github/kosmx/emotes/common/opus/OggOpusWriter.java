@@ -27,6 +27,7 @@ public class OggOpusWriter implements Closeable {
     private final OutputStream out;
     private final byte[] page = new byte[PAYLOAD_BASE + SEGMENTS_PER_PAGE * OggOpus.MAX_LACING];
     private final int serial = ThreadLocalRandom.current().nextInt();
+    private final int endTrim;
 
     private int segmentCount;
     private int payloadLength;
@@ -35,9 +36,10 @@ public class OggOpusWriter implements Closeable {
     private int type; // header type of the page being built, not of the one just written
     private boolean closed;
 
-    public OggOpusWriter(OutputStream out, int channelCount, int preSkip, int outputGain,
+    public OggOpusWriter(OutputStream out, int channelCount, int preSkip, int endTrim, int outputGain,
                          @Nullable Integer trackGain, int loopStart) throws IOException {
         this.out = out;
+        this.endTrim = endTrim;
         writeHead(channelCount, preSkip, outputGain);
         writeTags(trackGain, loopStart);
     }
@@ -58,7 +60,8 @@ public class OggOpusWriter implements Closeable {
 
         try (OutputStream stream = this.out) {
             this.type |= OggOpus.EOS;
-            flush(this.granule);
+            // The last granule is short of the decoded length by whatever the player should not hear
+            flush(Math.max(0, this.granule - this.endTrim));
         }
     }
 

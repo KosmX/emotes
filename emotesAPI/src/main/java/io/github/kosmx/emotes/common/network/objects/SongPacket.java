@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import io.github.kosmx.emotes.common.CommonData;
-import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.opus.OpusSound;
@@ -53,7 +52,8 @@ public class SongPacket extends AbstractNetworkPacket {
     public void read(ByteBuf buf, NetData config, byte version) throws IOException {
         switch (version) {
             case OPUS_VERSION -> {
-                int preSkip = buf.readUnsignedShort();
+                int preSkip = VarIntUtils.readVarInt(buf);
+                int endTrim = VarIntUtils.readVarInt(buf);
                 int loopStart = VarIntUtils.readVarInt(buf) - 1;
 
                 int count = VarIntUtils.readVarInt(buf);
@@ -74,10 +74,10 @@ public class SongPacket extends AbstractNetworkPacket {
                 }
                 offsets[count] = length;
 
-                OpusSound sound = new OpusSound(preSkip, 0, null, loopStart < 0 ? null : loopStart,
+                OpusSound sound = new OpusSound(preSkip, endTrim, 0, null, loopStart < 0 ? null : loopStart,
                         Arrays.copyOf(data, length), offsets);
                 // Only the side that plays a live emote decodes; servers and proxies just relay the packets
-                if (config.purpose == PacketTask.STREAM && config.bound == PacketBound.CLIENT) sound.startDecoding();
+                if (config.playback && config.purpose == PacketTask.STREAM) sound.startDecoding();
                 config.extraData.put(OPUS_KEY, sound);
 
                 // Only a stored emote carries the .nbs tail; anywhere else trailing bytes are junk
@@ -101,7 +101,8 @@ public class SongPacket extends AbstractNetworkPacket {
         if (version == OPUS_VERSION) {
             if (!(data.getRaw(OPUS_KEY) instanceof OpusSound sound)) throw new IOException("Emote has no Opus sound");
 
-            buf.writeShort(sound.preSkip());
+            VarIntUtils.writeVarInt(buf, sound.preSkip());
+            VarIntUtils.writeVarInt(buf, sound.endTrim());
             VarIntUtils.writeVarInt(buf, sound.loopStart() + 1);
             VarIntUtils.writeVarInt(buf, sound.packetCount());
 
