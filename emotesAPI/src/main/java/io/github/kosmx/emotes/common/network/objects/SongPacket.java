@@ -77,7 +77,7 @@ public class SongPacket extends AbstractNetworkPacket {
                 OpusSound sound = new OpusSound(preSkip, endTrim, 0, null, loopStart < 0 ? null : loopStart,
                         Arrays.copyOf(data, length), offsets);
                 // Only the side that plays a live emote decodes; servers and proxies just relay the packets
-                if (config.playback && config.purpose == PacketTask.STREAM) sound.startDecoding();
+                if (config.playback && config.purpose == PacketTask.STREAM) sound.decoded();
                 config.extraData.put(OPUS_KEY, sound);
 
                 // Only a stored emote carries the .nbs tail; anywhere else trailing bytes are junk

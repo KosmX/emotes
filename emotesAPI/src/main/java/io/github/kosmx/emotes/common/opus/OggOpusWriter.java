@@ -58,7 +58,7 @@ public class OggOpusWriter implements Closeable {
         if (this.closed) return;
         this.closed = true;
 
-        try (OutputStream stream = this.out) {
+        try (OutputStream _ = this.out) {
             this.type |= OggOpus.EOS;
             // The last granule is short of the decoded length by whatever the player should not hear
             flush(Math.max(0, this.granule - this.endTrim));

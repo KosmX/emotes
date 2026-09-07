@@ -19,33 +19,44 @@ import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.function.IntSupplier;
+
 /**
  * The emote's sound, streamed from decoded PCM instead of a resource pack file.
  */
-public class EmoteSoundInstance implements TickableSoundInstance {
+public abstract class EmoteSoundInstance implements TickableSoundInstance {
     private static final FloatProvider DEFAULT_FLOAT = ConstantFloat.of(1.0F);
     private static final Sound SOUND = new Sound(
             McUtils.newIdentifier("emote_sound"), DEFAULT_FLOAT, DEFAULT_FLOAT, 1, Sound.Type.FILE, true, false, 16
     );
 
     private final Avatar avatar;
-    private final OpusSound.DecodedSound decoded;
-    private final int offset;
-    private final int loopStart;
+    private final OpusSound sound;
+    private final IntSupplier offset;
 
+    @Nullable
+    private volatile OpusSound.DecodedSound decoded;
     private boolean stopped;
     private boolean started;
 
-    public EmoteSoundInstance(Avatar avatar, OpusSound.DecodedSound decoded, int offset, int loopStart) {
+    protected EmoteSoundInstance(Avatar avatar, OpusSound sound, IntSupplier offset) {
         this.avatar = avatar;
-        this.decoded = decoded;
+        this.sound = sound;
         this.offset = offset;
-        this.loopStart = loopStart;
     }
 
-    public AudioStream stream() {
+    /**
+     * The engine waits on the decode itself, holding a channel meanwhile and letting it go if the emote
+     * ends first, so the sound never has to be ready before the emote can start.
+     */
+    public CompletableFuture<AudioStream> stream() {
         this.started = true;
-        return new PcmAudioStream(this.decoded.samples(), this.offset, this.loopStart);
+        return this.sound.decoded().thenApply(pcm -> {
+            this.decoded = pcm;
+            // Minutes of audio take a while to decode, so join the emote where it is by then
+            return new PcmAudioStream(pcm.samples(), this.offset.getAsInt(), this.sound.loopStart());
+        });
     }
 
     /**
@@ -116,7 +127,10 @@ public class EmoteSoundInstance implements TickableSoundInstance {
 
     @Override
     public float getVolume() {
-        return PlatformTools.getConfig().normalizeSoundVolume.get() ? this.decoded.normalization() : 1.0F;
+        OpusSound.DecodedSound decoded = this.decoded;
+        // Nothing is audible until the stream lands, and the engine asks for the volume again every tick
+        if (decoded == null || !PlatformTools.getConfig().normalizeSoundVolume.get()) return 1.0F;
+        return decoded.normalization();
     }
 
     @Override

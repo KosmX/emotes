@@ -106,7 +106,7 @@ public class OggOpusReader extends LittleEndianInputStream {
     public int endTrim() {
         long samples = this.samples - this.previousSamples;
         long kept = this.granule - this.previousGranule;
-        return (int) Math.max(0, Math.min(samples - kept, samples));
+        return (int) Math.clamp(samples - kept, 0, samples);
     }
 
     /**

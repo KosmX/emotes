@@ -9,6 +9,7 @@ import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEve
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.State;
+import io.github.kosmx.emotes.EmotecraftModPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
 import io.github.kosmx.emotes.common.network.objects.SongPacket;
@@ -36,7 +37,7 @@ public class EmotePlayer extends PlayerAnimationController {
     public boolean muteNbs = false;
 
     public EmotePlayer(Avatar avatar) {
-        super(avatar, (controller, state, animSetter) -> PlayState.STOP);
+        super(avatar, (_, _, _) -> PlayState.STOP);
     }
 
     @Override
@@ -120,18 +121,14 @@ public class EmotePlayer extends PlayerAnimationController {
         Animation emote = getCurrentAnimationInstance();
         if (emote == null || !(emote.data().getRaw(SongPacket.OPUS_KEY) instanceof OpusSound sound)) return;
 
-        // Handing the engine an unfinished decode would strand a channel if the emote ends first
-        OpusSound.DecodedSound decoded = sound.decoded();
-        if (decoded == null) return;
-
         // Play can be refused for a whole emote, and asking again every frame notifies subtitles every frame
         long now = Util.getMillis();
         if (this.attempted != 0 && now - this.attempted < RETRY_DELAY) return;
         this.attempted = now;
 
         // Join wherever the animation already is, whether it started late or mid-emote
-        int offset = (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE);
-        this.song = new EmoteSoundInstance(this.avatar, decoded, offset, sound.loopStart());
+        this.song = EmotecraftModPlatform.INSTANCE.createSound(this.avatar, sound,
+                () -> (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE));
         manager.play(this.song);
     }
 

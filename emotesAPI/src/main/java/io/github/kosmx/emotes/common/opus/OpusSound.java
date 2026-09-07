@@ -227,18 +227,24 @@ public class OpusSound {
     }
 
     /**
-     * Decodes in the background if that has not happened yet, or if the result was reclaimed.
+     * @return the PCM, decoded in the background if that has not happened yet or was reclaimed
      */
-    public void startDecoding() {
-        if (this.failed || this.decoding != null || this.pcm.get() != null) return;
+    public CompletableFuture<DecodedSound> decoded() {
+        DecodedSound decoded = this.pcm.get();
+        if (decoded != null) return CompletableFuture.completedFuture(decoded);
 
         synchronized (this) {
-            if (this.failed || this.decoding != null || this.pcm.get() != null) return;
+            decoded = this.pcm.get();
+            if (decoded != null) return CompletableFuture.completedFuture(decoded);
+
+            CompletableFuture<DecodedSound> decoding = this.decoding;
+            if (decoding != null) return decoding;
+            if (this.failed) return CompletableFuture.failedFuture(new IllegalStateException("Sound failed to decode"));
 
             // Store before completing, or an inline finish would clear the field and be overwritten
-            CompletableFuture<DecodedSound> decoding = CompletableFuture.supplyAsync(this::decode, DECODER);
+            decoding = CompletableFuture.supplyAsync(this::decode, DECODER);
             this.decoding = decoding;
-            decoding.whenComplete(this::finish);
+            return decoding.whenComplete(this::finish);
         }
     }
 
@@ -252,16 +258,6 @@ public class OpusSound {
             }
             this.decoding = null;
         }
-    }
-
-    /**
-     * @return the PCM if it is already decoded, null while it is still being worked on or if it failed
-     */
-    @Nullable
-    public DecodedSound decoded() {
-        DecodedSound decoded = this.pcm.get();
-        if (decoded == null) startDecoding();
-        return decoded;
     }
 
     private DecodedSound decode() {
@@ -325,7 +321,7 @@ public class OpusSound {
         if (gain == 1.0F) return;
 
         for (int i = offset, end = offset + length; i < end; i++) {
-            samples[i] = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, Math.round(samples[i] * gain)));
+            samples[i] = (short) Math.clamp(Math.round(samples[i] * gain), Short.MIN_VALUE, Short.MAX_VALUE);
         }
     }
 }
