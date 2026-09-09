@@ -10,6 +10,7 @@ import org.lwjgl.BufferUtils;
 import javax.sound.sampled.AudioFormat;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 
 /**
  * Hands already decoded PCM to the sound engine in the chunks it asks for.
@@ -19,7 +20,7 @@ public class PcmAudioStream implements AudioStream {
 
     private final short[] samples;
     private final int loopStart;
-    private int offset;
+    private volatile int offset;
 
     /**
      * @param offset    where to start, in samples, so a track can join an emote that is already running
@@ -27,8 +28,8 @@ public class PcmAudioStream implements AudioStream {
      */
     public PcmAudioStream(short[] samples, int offset, int loopStart) {
         this.samples = samples;
-        this.loopStart = loopStart;
-        this.offset = wrap(offset, samples.length, loopStart);
+        this.loopStart = loopStart >= 0 && loopStart < samples.length ? loopStart : OpusSound.NO_LOOP;
+        this.offset = wrap(offset, samples.length, this.loopStart);
     }
 
     private static int wrap(int offset, int length, int loopStart) {
@@ -45,18 +46,26 @@ public class PcmAudioStream implements AudioStream {
 
     @Override
     public @Nullable ByteBuffer read(int expectedSize) {
-        if (this.offset == this.samples.length) {
-            if (this.loopStart < 0) return null;
-            this.offset = this.loopStart;
-        }
-
-        int count = Math.min(expectedSize / Short.BYTES, this.samples.length - this.offset);
+        int count = expectedSize / Short.BYTES;
+        if (this.loopStart < 0) count = Math.min(count, this.samples.length - this.offset);
         if (count <= 0) return null;
 
         ByteBuffer buffer = BufferUtils.createByteBuffer(count * Short.BYTES);
-        buffer.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().put(this.samples, this.offset, count);
-        this.offset += count;
+        ShortBuffer pcm = buffer.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        while (pcm.hasRemaining()) {
+            if (this.offset == this.samples.length) this.offset = this.loopStart;
+            int copied = Math.min(pcm.remaining(), this.samples.length - this.offset);
+            pcm.put(this.samples, this.offset, copied);
+            this.offset += copied;
+        }
         return buffer;
+    }
+
+    /**
+     * @return whether a track that does not loop has nothing left to hand over
+     */
+    public boolean exhausted() {
+        return this.loopStart < 0 && this.offset == this.samples.length;
     }
 
     @Override

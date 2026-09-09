@@ -60,7 +60,7 @@ public final class EmotePacket {
     }
 
     /**
-     * @param playback whether this side plays what it reads, so that a relay never decodes an emote's sound
+     * @param playback whether this side plays what it reads, so that only a relay keeps what it cannot play
      */
     public EmotePacket(@NotNull ByteBuf byteBuf, PacketBound target, boolean playback) {
         if (byteBuf.readableBytes() < 6) throw new RuntimeException("Invalid packet header");

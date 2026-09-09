@@ -20,6 +20,7 @@ bin/
 
 #fabric
 run/
+logs/
 
 #project junk
 quark api.txt

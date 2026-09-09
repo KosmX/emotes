@@ -89,6 +89,11 @@ val neoforgePomCompile = configurations.register("neoPomDep").get()
 neoforgePomCompile.extendsFrom(commonModule)
 
 dependencies {
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     // Common
     implementation(project(":emotesAssets")) { commonModule(this) }
     implementation(project(":emotesAPI")) { commonModule(this) }
@@ -164,6 +169,15 @@ dependencies {
         "neoforgeInclude"(this)
         neoforgePomCompile(this)
     }
+}
+
+sourceSets.test {
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 listOf("processResources", "processFabricResources", "processNeoforgeResources").forEach { name ->

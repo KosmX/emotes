@@ -12,10 +12,17 @@ import java.lang.ref.SoftReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 /**
  * A validated mono Opus stream: its packets, and the PCM they decode to once someone asks.
@@ -36,8 +43,9 @@ public class OpusSound {
     private static final double Q7_8 = 256.0;
 
     // Concentus is fixed-point and does not chew through minutes of audio instantly
-    private static final ExecutorService DECODER = Executors.newFixedThreadPool(
-            Math.max(1, Runtime.getRuntime().availableProcessors() / 4), runnable -> {
+    private static final int DECODER_THREADS = Math.clamp(Runtime.getRuntime().availableProcessors() / 4, 1, 2);
+    private static final ExecutorService DECODER = new ThreadPoolExecutor(
+            DECODER_THREADS, DECODER_THREADS, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(16), runnable -> {
                 Thread thread = new Thread(runnable, "Emotecraft Opus decoder");
                 thread.setDaemon(true);
                 thread.setPriority(Thread.MIN_PRIORITY);
@@ -62,18 +70,25 @@ public class OpusSound {
     private volatile SoftReference<DecodedSound> pcm = new SoftReference<>(null);
     // Held strongly while a decode runs, so a cleared reference cannot start a second one
     @Nullable
-    private volatile CompletableFuture<DecodedSound> decoding;
+    private CompletableFuture<DecodedSound> decoding;
+    // One player stopping must not cancel another player's shared decode
+    private final Queue<BooleanSupplier> cancellations = new ConcurrentLinkedQueue<>();
     private volatile boolean failed;
 
     public OpusSound(int preSkip, int endTrim, int outputGain, @Nullable Integer trackGain, @Nullable Integer loopStart,
                      byte[] data, int[] offsets) throws OpusFormatException {
+        if (preSkip < 0 || preSkip > 0xffff) throw new OpusFormatException("Opus pre-skip does not fit in 16 bits");
+        if (outputGain < Short.MIN_VALUE || outputGain > Short.MAX_VALUE) {
+            throw new OpusFormatException("Opus output gain does not fit in 16 bits");
+        }
         if (offsets.length < 2 || offsets[offsets.length - 1] > data.length) {
             throw new OpusFormatException("Opus stream has no packets");
         }
 
         long sampleCount = 0;
-        // preSkip, end trim, count, loop start
-        long size = varIntSize(preSkip) + varIntSize(endTrim) + varIntSize(offsets.length - 1) + Integer.BYTES;
+        // Packed pre-skip/output gain, end trim, count, loop start
+        long size = varIntSize(preSkip | (outputGain << 16)) + varIntSize(endTrim)
+                + varIntSize(offsets.length - 1) + Integer.BYTES;
 
         for (int i = 0; i < offsets.length - 1; i++) {
             int length = offsets[i + 1] - offsets[i];
@@ -188,6 +203,10 @@ public class OpusSound {
         return this.preSkip;
     }
 
+    public int outputGain() {
+        return this.outputGain;
+    }
+
     /**
      * @return the padding at the end, in samples
      */
@@ -222,14 +241,31 @@ public class OpusSound {
         return playable() / (OpusPackets.SAMPLE_RATE / 1000);
     }
 
-    private int playable() {
+    /**
+     * @return how many samples are left once both ends are trimmed
+     */
+    public int playable() {
         return this.sampleCount - this.preSkip - this.endTrim;
+    }
+
+    /**
+     * @return what a decode measured the track at, or zero while its PCM is not in memory
+     */
+    public float normalization() {
+        DecodedSound decoded = this.pcm.get();
+        return decoded == null ? 0.0F : decoded.normalization();
     }
 
     /**
      * @return the PCM, decoded in the background if that has not happened yet or was reclaimed
      */
     public CompletableFuture<DecodedSound> decoded() {
+        return decoded(() -> false);
+    }
+
+    /** The cancellation predicate is also read on the decoder thread. */
+    public CompletableFuture<DecodedSound> decoded(BooleanSupplier cancelled) {
+        if (cancelled.getAsBoolean()) return CompletableFuture.failedFuture(new CancellationException());
         DecodedSound decoded = this.pcm.get();
         if (decoded != null) return CompletableFuture.completedFuture(decoded);
 
@@ -237,41 +273,60 @@ public class OpusSound {
             decoded = this.pcm.get();
             if (decoded != null) return CompletableFuture.completedFuture(decoded);
 
-            CompletableFuture<DecodedSound> decoding = this.decoding;
-            if (decoding != null) return decoding;
             if (this.failed) return CompletableFuture.failedFuture(new IllegalStateException("Sound failed to decode"));
 
-            // Store before completing, or an inline finish would clear the field and be overwritten
-            decoding = CompletableFuture.supplyAsync(this::decode, DECODER);
-            this.decoding = decoding;
-            return decoding.whenComplete(this::finish);
+            this.cancellations.removeIf(BooleanSupplier::getAsBoolean);
+            this.cancellations.add(cancelled);
+            if (this.decoding != null) return this.decoding;
+
+            try {
+                this.decoding = CompletableFuture.supplyAsync(this::decode, DECODER);
+                return this.decoding;
+            } catch (RejectedExecutionException e) {
+                this.cancellations.clear();
+                return CompletableFuture.failedFuture(e); // temporary overload, not a corrupt track
+            }
         }
     }
 
-    private void finish(@Nullable DecodedSound decoded, @Nullable Throwable error) {
-        synchronized (this) {
-            if (decoded != null) {
-                this.pcm = new SoftReference<>(decoded);
-            } else {
-                this.failed = true; // one bad stream should not be retried on every frame
-                CommonData.LOGGER.error("Failed to decode an emote sound", error);
-            }
-            this.decoding = null;
+    public boolean failed() {
+        return this.failed;
+    }
+
+    /** Nobody is waiting any more; the future goes with it, so a later listener starts over. */
+    private synchronized boolean cancelled() {
+        this.cancellations.removeIf(BooleanSupplier::getAsBoolean);
+        if (!this.cancellations.isEmpty()) return false;
+
+        this.decoding = null;
+        return true;
+    }
+
+    private synchronized void finish(@Nullable DecodedSound decoded, @Nullable Throwable error) {
+        if (decoded != null) {
+            this.pcm = new SoftReference<>(decoded);
+        } else {
+            this.failed = true; // one bad stream should not be retried on every frame
+            CommonData.LOGGER.error("Failed to decode an emote sound", error);
         }
+
+        this.decoding = null;
+        this.cancellations.clear();
     }
 
     private DecodedSound decode() {
-        short[] samples = new short[playable()];
-        Loudness loudness = this.trackGain == null ? new Loudness(samples.length) : null;
-        float gain = (float) Math.pow(10.0, this.outputGain / Q7_8 / 20.0);
-
         try {
+            if (cancelled()) throw new CancellationException(); // no PCM for a sound nobody waits for
+            short[] samples = new short[playable()];
+            Loudness loudness = this.trackGain == null ? new Loudness(samples.length) : null;
+            float gain = (float) Math.pow(10.0, this.outputGain / Q7_8 / 20.0);
             OpusDecoder decoder = new OpusDecoder(OpusPackets.SAMPLE_RATE, 1);
             short[] scratch = new short[OpusPackets.SAMPLE_RATE / 1000 * OpusPackets.MAX_PACKET_DURATION_MS];
             int skip = this.preSkip;
             int offset = 0;
 
             for (int i = 0, packets = packetCount(); i < packets; i++) {
+                if (cancelled()) throw new CancellationException();
                 int from = this.offsets[i];
                 int size = length(i);
 
@@ -292,11 +347,15 @@ public class OpusSound {
                 if (loudness != null) loudness.feed(samples, offset, count);
                 offset += count;
             }
-        } catch (Exception e) { // Concentus throws IllegalArgumentException as readily as OpusException
+            DecodedSound decoded = new DecodedSound(samples, normalization(loudness));
+            finish(decoded, null);
+            return decoded;
+        } catch (CancellationException e) {
+            throw e;
+        } catch (Throwable e) { // Concentus throws IllegalArgumentException as readily as OpusException
+            finish(null, e);
             throw new CompletionException(e);
         }
-
-        return new DecodedSound(samples, normalization(loudness));
     }
 
     private float normalization(@Nullable Loudness loudness) {

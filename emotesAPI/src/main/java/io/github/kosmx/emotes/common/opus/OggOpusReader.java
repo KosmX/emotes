@@ -31,6 +31,8 @@ public class OggOpusReader extends LittleEndianInputStream {
     private long samples;
     private long previousGranule;
     private long previousSamples;
+    private long pageGranule = -1;
+    private boolean counted;
 
     private final byte[] header = new byte[27];
     private int crc;
@@ -99,7 +101,7 @@ public class OggOpusReader extends LittleEndianInputStream {
     }
 
     /**
-     * The last page keeps only what its granule position gained over the page before it.
+     * The last page a packet ended on keeps only what its granule position gained over the one before it.
      *
      * @return the padding at the end, in samples, final once the last packet has been read
      */
@@ -122,9 +124,22 @@ public class OggOpusReader extends LittleEndianInputStream {
 
         if (packet != null) {
             int samples = OpusPackets.sampleCount(packet, 0, packet.length, OpusPackets.SAMPLE_RATE);
-            if (samples > 0) this.samples += samples; // a malformed packet is the caller's to refuse
+            if (samples > 0) { // a malformed packet is the caller's to refuse
+                countPage();
+                this.samples += samples;
+            }
         }
         return packet;
+    }
+
+    /** Only a page a packet ends on carries a granule position, and the last two of those bound the padding. */
+    private void countPage() {
+        if (this.counted || this.pageGranule < 0) return;
+
+        this.counted = true;
+        this.previousGranule = this.granule;
+        this.previousSamples = this.samples;
+        this.granule = this.pageGranule;
     }
 
     private byte @Nullable [] nextPacket() throws IOException {
@@ -269,12 +284,10 @@ public class OggOpusReader extends LittleEndianInputStream {
 
             if (serial == this.serial) {
                 verifyStart(false); // the page being left has all of its packets now
-                this.previousGranule = this.granule;
-                this.previousSamples = this.samples;
 
                 // A page no packet ends on carries -1 and says nothing about the length
-                long granule = readLong(this.header, 6);
-                if (granule >= 0) this.granule = granule;
+                this.pageGranule = readLong(this.header, 6);
+                this.counted = false;
 
                 this.ended = (type & OggOpus.EOS) != 0;
                 return type;
@@ -412,16 +425,18 @@ public class OggOpusReader extends LittleEndianInputStream {
 
     private void readComment(String comment) {
         if (this.trackGain == null && comment.regionMatches(true, 0, OggOpus.TRACK_GAIN, 0, OggOpus.TRACK_GAIN.length())) {
-            this.trackGain = number(comment.substring(OggOpus.TRACK_GAIN.length()));
+            // A track gain is a 16 bit signed integer, and a value that is not one is not a gain
+            this.trackGain = number(comment.substring(OggOpus.TRACK_GAIN.length()), Short.MIN_VALUE, Short.MAX_VALUE);
         } else if (this.loopStart == null && comment.regionMatches(true, 0, OggOpus.LOOP_START, 0, OggOpus.LOOP_START.length())) {
-            this.loopStart = number(comment.substring(OggOpus.LOOP_START.length()));
+            this.loopStart = number(comment.substring(OggOpus.LOOP_START.length()), 0, Integer.MAX_VALUE);
         }
     }
 
     @Nullable
-    private static Integer number(String value) {
+    private static Integer number(String value, int min, int max) {
         try {
-            return Integer.parseInt(value.trim());
+            int number = Integer.parseInt(value.trim());
+            return number >= min && number <= max ? number : null;
         } catch (NumberFormatException ignored) {
             return null;
         }

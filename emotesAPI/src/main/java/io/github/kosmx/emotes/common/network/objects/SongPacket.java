@@ -42,7 +42,8 @@ public class SongPacket extends AbstractNetworkPacket {
         ExtraAnimationData data = config.emoteData.data();
 
         if (version >= OPUS_VERSION && data.getRaw(OPUS_KEY) instanceof OpusSound) return OPUS_VERSION;
-        if (version < NBS_VERSION || data.getBinary(NBS_KEY) == null) return 0;
+        // getBinary writes back into the emote, and this runs once per recipient
+        if (version < NBS_VERSION || !data.has(NBS_KEY)) return 0;
 
         // Nothing plays .nbs any more: it goes to someone who cannot read Opus, or into a stored emote
         return version == NBS_VERSION || config.purpose == PacketTask.FILE ? NBS_VERSION : 0;
@@ -52,7 +53,10 @@ public class SongPacket extends AbstractNetworkPacket {
     public void read(ByteBuf buf, NetData config, byte version) throws IOException {
         switch (version) {
             case OPUS_VERSION -> {
-                int preSkip = VarIntUtils.readVarInt(buf);
+                // Both OpusHead values fit in the existing VarInt: unsigned skip, signed Q7.8 gain
+                int skipAndGain = VarIntUtils.readVarInt(buf);
+                int preSkip = skipAndGain & 0xffff;
+                int outputGain = skipAndGain >> 16;
                 int endTrim = VarIntUtils.readVarInt(buf);
                 int loopStart = VarIntUtils.readVarInt(buf) - 1;
 
@@ -74,23 +78,28 @@ public class SongPacket extends AbstractNetworkPacket {
                 }
                 offsets[count] = length;
 
-                OpusSound sound = new OpusSound(preSkip, endTrim, 0, null, loopStart < 0 ? null : loopStart,
+                // Without a local R128 tag, the decoder measures loudness from the PCM
+                OpusSound sound = new OpusSound(preSkip, endTrim, outputGain, null, loopStart < 0 ? null : loopStart,
                         Arrays.copyOf(data, length), offsets);
-                // Only the side that plays a live emote decodes; servers and proxies just relay the packets
-                if (config.playback && config.purpose == PacketTask.STREAM) sound.decoded();
                 config.extraData.put(OPUS_KEY, sound);
 
                 // Only a stored emote carries the .nbs tail; anywhere else trailing bytes are junk
-                if (config.purpose == PacketTask.FILE && buf.isReadable()) {
-                    config.extraData.put(NBS_KEY, MathHelper.readBytes(buf));
-                }
+                if (config.purpose == PacketTask.FILE && buf.isReadable()) config.extraData.put(NBS_KEY, song(buf));
             }
 
-            case NBS_VERSION -> config.extraData.put(NBS_KEY, MathHelper.readBytes(buf));
+            // Nothing plays .nbs any more: only a live emote, on the side that plays it, has no use left for it
+            case NBS_VERSION -> {
+                if (config.purpose != PacketTask.STREAM || !config.playback) config.extraData.put(NBS_KEY, song(buf));
+            }
 
             // Ver1 held a note list rather than a file, so there is nothing left that can read or relay it
             default -> CommonData.LOGGER.warn("Dropping the sound of an emote: sub-packet version {} is no longer supported", version);
         }
+    }
+
+    /** Stored the way {@link ExtraAnimationData#getBinary} wants it, so that reading it never writes. */
+    private static ByteBuffer song(ByteBuf buf) {
+        return ByteBuffer.wrap(MathHelper.readBytes(buf)).asReadOnlyBuffer();
     }
 
     @Override
@@ -101,7 +110,7 @@ public class SongPacket extends AbstractNetworkPacket {
         if (version == OPUS_VERSION) {
             if (!(data.getRaw(OPUS_KEY) instanceof OpusSound sound)) throw new IOException("Emote has no Opus sound");
 
-            VarIntUtils.writeVarInt(buf, sound.preSkip());
+            VarIntUtils.writeVarInt(buf, sound.preSkip() | (sound.outputGain() << 16));
             VarIntUtils.writeVarInt(buf, sound.endTrim());
             VarIntUtils.writeVarInt(buf, sound.loopStart() + 1);
             VarIntUtils.writeVarInt(buf, sound.packetCount());

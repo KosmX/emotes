@@ -18,6 +18,7 @@ import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.main.emotePlay.instances.EmoteSoundInstance;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.Avatar;
@@ -32,6 +33,7 @@ public class EmotePlayer extends PlayerAnimationController {
     @Nullable
     private EmoteSoundInstance song;
     private long attempted;
+    private int clock;
 
     public boolean perspective = false;
     public boolean muteNbs = false;
@@ -110,16 +112,25 @@ public class EmotePlayer extends PlayerAnimationController {
     }
 
     private void startSound() {
-        if (this.muteNbs || !isActive() || !EmoteSoundInstance.audible(this.avatar)) return;
+        if (this.muteNbs || getAnimationState() != State.RUNNING || !EmoteSoundInstance.audible(this.avatar)) return;
+
+        // The animation clock runs backwards when the emote loops, and a track that ran out starts over with it
+        int offset = (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE);
+        if (offset < this.clock && (this.song == null || this.song.finished())) stopSound();
+        this.clock = offset;
 
         SoundManager manager = Minecraft.getInstance().getSoundManager();
         if (this.song != null) {
-            if (!this.song.isStopped() && (this.song.started() || manager.isActive(this.song))) return;
-            this.song = null; // it stopped itself, or the engine turned it down; a fresh one starts in time
+            if (!this.song.isStopped() && (this.song.finished() || manager.isActive(this.song))) return;
+            dropSound(); // it stopped itself, or the engine turned it down; a fresh one starts in time
         }
 
         Animation emote = getCurrentAnimationInstance();
         if (emote == null || !(emote.data().getRaw(SongPacket.OPUS_KEY) instanceof OpusSound sound)) return;
+        if (sound.failed()) return;
+
+        // A track shorter than its emote has nothing left until the animation loops
+        if (sound.loopStart() == OpusSound.NO_LOOP && offset >= sound.playable()) return;
 
         // Play can be refused for a whole emote, and asking again every frame notifies subtitles every frame
         long now = Util.getMillis();
@@ -129,11 +140,17 @@ public class EmotePlayer extends PlayerAnimationController {
         // Join wherever the animation already is, whether it started late or mid-emote
         this.song = EmotecraftModPlatform.INSTANCE.createSound(this.avatar, sound,
                 () -> (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE));
-        manager.play(this.song);
+        if (manager.play(this.song) == SoundEngine.PlayResult.NOT_STARTED) dropSound();
     }
 
     private void stopSound() {
-        this.attempted = 0; // the next emote starts its clock over
+        this.attempted = 0; // the next emote starts both of its clocks over
+        this.clock = 0;
+        dropSound();
+    }
+
+    /** The engine keeps draining an abandoned instance until it is told to stop it. */
+    private void dropSound() {
         if (this.song == null) return;
 
         this.song.stop();

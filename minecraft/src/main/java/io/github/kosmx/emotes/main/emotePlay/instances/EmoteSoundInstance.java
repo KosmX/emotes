@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.main.emotePlay.instances;
 
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
+import io.github.kosmx.emotes.common.opus.OpusPackets;
 import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.main.emotePlay.PcmAudioStream;
 import io.github.kosmx.emotes.mc.McUtils;
@@ -13,6 +14,7 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Util;
 import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.entity.Avatar;
@@ -33,17 +35,24 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
 
     private final Avatar avatar;
     private final OpusSound sound;
-    private final IntSupplier offset;
+    private final IntSupplier position;
 
-    @Nullable
-    private volatile OpusSound.DecodedSound decoded;
-    private boolean stopped;
-    private boolean started;
+    // Taken on the client thread, the only one that may ask the animation
+    private volatile int offset;
+    // What the decode measured, never zero, so zero is "not decoded yet"
+    private volatile float normalization;
+    // How much audio is left, in ms of playing time, which the animation clock drifts from
+    private volatile long remaining = Long.MAX_VALUE;
+    private long ticked; // client thread only, like the ticks it counts
+    private volatile boolean stopped;
 
-    protected EmoteSoundInstance(Avatar avatar, OpusSound sound, IntSupplier offset) {
+    protected EmoteSoundInstance(Avatar avatar, OpusSound sound, IntSupplier position) {
         this.avatar = avatar;
         this.sound = sound;
-        this.offset = offset;
+        this.position = position;
+        this.offset = position.getAsInt();
+        this.ticked = Util.getMillis();
+        this.normalization = sound.normalization(); // a replay knows its level before the engine asks
     }
 
     /**
@@ -51,19 +60,38 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
      * ends first, so the sound never has to be ready before the emote can start.
      */
     public CompletableFuture<AudioStream> stream() {
-        this.started = true;
-        return this.sound.decoded().thenApply(pcm -> {
-            this.decoded = pcm;
+        return this.sound.decoded(this::isStopped).handle((pcm, error) -> {
+            if (error != null || this.stopped) {
+                stop();
+                return silence();
+            }
+
             // Minutes of audio take a while to decode, so join the emote where it is by then
-            return new PcmAudioStream(pcm.samples(), this.offset.getAsInt(), this.sound.loopStart());
+            int offset = this.offset;
+            PcmAudioStream stream = new PcmAudioStream(pcm.samples(), offset, this.sound.loopStart());
+            if (stream.exhausted()) return silence(); // the emote outran the track while it decoded
+
+            this.normalization = pcm.normalization();
+            if (this.sound.loopStart() == OpusSound.NO_LOOP) {
+                this.remaining = (this.sound.playable() - offset) / (OpusPackets.SAMPLE_RATE / 1000);
+            }
+            return stream;
         });
     }
 
     /**
-     * @return whether the engine ever asked for the audio, as opposed to turning the sound down
+     * Counted at the rate the engine plays, not the emote's: a channel thrown away by a reload leaves the
+     * rest of the track to be picked up again, while one that ran out stays quiet.
+     *
+     * @return whether the track has been played out
      */
-    public boolean started() {
-        return this.started;
+    public boolean finished() {
+        return this.remaining <= 0;
+    }
+
+    /** A source that never got a buffer never stops, and the engine frees only channels it saw stop. */
+    private static AudioStream silence() {
+        return new PcmAudioStream(new short[1], 0, OpusSound.NO_LOOP);
     }
 
     public void stop() {
@@ -80,6 +108,8 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
      */
     public static boolean audible(Avatar avatar) {
         Minecraft mc = Minecraft.getInstance();
+        // The engine refuses a silenced source, and would refuse it all emote long
+        if (mc.options.getFinalSoundSourceVolume(SoundSource.PLAYERS) <= 0.0F) return false;
         if (avatar instanceof UnsafeMannequin) return mc.gui.screen() != null;
 
         return mc.player != null && !avatar.isRemoved() && !avatar.isInvisibleTo(mc.player);
@@ -87,7 +117,13 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
 
     @Override
     public void tick() {
-        if (!audible(this.avatar)) this.stopped = true;
+        // The engine pauses the channel along with the game, and stops ticking us just the same
+        long now = Util.getMillis();
+        if (this.remaining != Long.MAX_VALUE) this.remaining -= now - this.ticked;
+        this.ticked = now;
+
+        if (audible(this.avatar)) this.offset = this.position.getAsInt();
+        else this.stopped = true;
     }
 
     @Override
@@ -127,10 +163,16 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
 
     @Override
     public float getVolume() {
-        OpusSound.DecodedSound decoded = this.decoded;
-        // Nothing is audible until the stream lands, and the engine asks for the volume again every tick
-        if (decoded == null || !PlatformTools.getConfig().normalizeSoundVolume.get()) return 1.0F;
-        return decoded.normalization();
+        float normalization = this.normalization;
+        // The engine takes the volume before the stream, so a decoding track must not start loud
+        if (normalization == 0.0F) return 0.0F;
+        return PlatformTools.getConfig().normalizeSoundVolume.get() ? normalization : 1.0F;
+    }
+
+    /** The channel is held through the decode, silent as it is. */
+    @Override
+    public boolean canStartSilent() {
+        return true;
     }
 
     @Override

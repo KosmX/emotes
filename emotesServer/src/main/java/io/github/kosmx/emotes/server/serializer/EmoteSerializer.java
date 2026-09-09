@@ -92,7 +92,8 @@ public class EmoteSerializer {
             if (Files.isRegularFile(song)) {
                 try {
                     if (Files.size(song) > CommonData.MAX_PACKET_SIZE) throw new IOException("Song is too big to send");
-                    byte[] nbs = Files.readAllBytes(song);
+                    // Read-only, or the first send converts it in place under the others
+                    ByteBuffer nbs = ByteBuffer.wrap(Files.readAllBytes(song)).asReadOnlyBuffer();
 
                     for (Animation emote : emotes.values()) { // Avoid lambda
                         emote.data().put(SongPacket.NBS_KEY, nbs);

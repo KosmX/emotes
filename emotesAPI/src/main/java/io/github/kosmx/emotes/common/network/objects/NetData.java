@@ -77,6 +77,7 @@ public final class NetData {
     public NetData copy() {
         NetData data = new NetData();
         data.purpose = this.purpose;
+        data.playback = playback;
         data.stopEmoteID = stopEmoteID;
         data.emoteData = emoteData;
         data.tick = tick;
