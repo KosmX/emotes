@@ -1,10 +1,10 @@
 package io.github.kosmx.emotes.server.serializer;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import io.github.kosmx.emotes.common.network.objects.SongPacket;
+import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.server.serializer.type.IWriter;
-import net.raphimc.noteblocklib.NoteBlockLib;
-import net.raphimc.noteblocklib.model.song.Song;
 
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -40,10 +40,16 @@ public class EmoteWriter {
                 }
             }
 
-            if (animation.data().getRaw("song") instanceof Song song) {
+            if (animation.data().getRaw(SongPacket.OPUS_KEY) instanceof OpusSound sound) {
+                Path soundPath = exportDir.resolve(fileName + ".opus");
+                if (Files.exists(soundPath)) throw new FileAlreadyExistsException(soundPath.toString());
+                sound.write(soundPath);
+            }
+
+            if (animation.data().getBinary(SongPacket.NBS_KEY) instanceof ByteBuffer song) {
                 Path songPath = exportDir.resolve(fileName + ".nbs");
                 if (Files.exists(songPath)) throw new FileAlreadyExistsException(songPath.toString());
-                NoteBlockLib.writeSong(song, songPath);
+                Files.write(songPath, MathHelper.safeGetBytesFromBuffer(song));
             }
         }
     }

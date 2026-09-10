@@ -3,6 +3,8 @@ package io.github.kosmx.emotes.server.serializer;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.common.network.objects.SongPacket;
+import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.server.config.Serializer;
@@ -150,9 +152,17 @@ public class UniversalEmoteSerializer {
                 emote.data().put(EmoteSerializer.BUILT_IN_KEY, true);
 
                 InputStream iconStream = UniversalEmoteSerializer.class.getClassLoader().getResourceAsStream("assets/" + CommonData.MOD_ID + "/emotes/" + name + ".png");
-                if(iconStream != null) {
+                if (iconStream != null) {
                     emote.data().put("iconData", MathHelper.readFromIStream(iconStream));
                     iconStream.close();
+                }
+
+                try (InputStream soundStream = UniversalEmoteSerializer.class.getClassLoader().getResourceAsStream("assets/" + CommonData.MOD_ID + "/emotes/" + name + ".opus")) {
+                    if (soundStream != null) {
+                        emote.data().put(SongPacket.OPUS_KEY, OpusSound.read(soundStream));
+                    }
+                } catch (Throwable th) { // a sound the mod cannot read should not cost the emote itself
+                    CommonData.LOGGER.warn("Error while reading built-in sound: {}", name, th);
                 }
             }
 

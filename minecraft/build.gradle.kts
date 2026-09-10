@@ -89,6 +89,11 @@ val neoforgePomCompile = configurations.register("neoPomDep").get()
 neoforgePomCompile.extendsFrom(commonModule)
 
 dependencies {
+    testImplementation(platform("org.junit:junit-bom:6.1.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     // Common
     implementation(project(":emotesAssets")) { commonModule(this) }
     implementation(project(":emotesAPI")) { commonModule(this) }
@@ -100,7 +105,7 @@ dependencies {
         fabricPomCompile(this)
         neoforgePomCompile(this)
     }
-    implementation("net.raphimc:NoteBlockLib:${project["noteblocklib_version"]}") {
+    implementation("io.github.jaredmdobson:concentus:${project["concentus_version"]}") {
         isTransitive = false
 
         platformInclude(this)
@@ -124,6 +129,7 @@ dependencies {
     "fabricImplementation"(fabricApi.fabricModule("fabric-key-mapping-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-lifecycle-events-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-rendering-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
+    "fabricImplementation"(fabricApi.fabricModule("fabric-sound-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-permission-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
 
     "fabricRuntimeOnly"(fabricApi.fabricModule("fabric-screen-api-v1", project["fabric_api_version"]))
@@ -163,6 +169,15 @@ dependencies {
         "neoforgeInclude"(this)
         neoforgePomCompile(this)
     }
+}
+
+sourceSets.test {
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 listOf("processResources", "processFabricResources", "processNeoforgeResources").forEach { name ->

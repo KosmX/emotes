@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.common.network.objects;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketTask;
 
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
@@ -22,6 +23,10 @@ public final class NetData {
      * //as the sub-packet ids
      */
     public PacketTask purpose = PacketTask.UNKNOWN;
+    /**
+     * Whether the side reading this packet plays the emote itself, rather than passing it on.
+     */
+    public boolean playback = false;
     @Nullable
     public UUID stopEmoteID = null;
     public final List<UUID> removeEmoteIds = new ArrayList<>(0);
@@ -72,6 +77,7 @@ public final class NetData {
     public NetData copy() {
         NetData data = new NetData();
         data.purpose = this.purpose;
+        data.playback = playback;
         data.stopEmoteID = stopEmoteID;
         data.emoteData = emoteData;
         data.tick = tick;
