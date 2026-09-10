@@ -61,6 +61,8 @@
   "emotecraft.otherconfig.closeWheelType": "Как закрывается колесо",
   "emotecraft.otherconfig.closeWheelType.tooltip": "HOLD — колесо открыто, пока вы удерживаете кнопку\nPRESS — колесо всегда открыто, пока вы не нажмете кнопку или ESC",
   "emotecraft.otherconfig.normalizeSoundVolume": "Приводить громкость звука эмоций к одному уровню",
+  "emotecraft.otherconfig.otherEmoteVolume": "Громкость звука эмоций других игроков",
+  "emotecraft.otherconfig.otherEmoteVolume.tooltip": "Насколько громко звучат эмоции других игроков, пока играет ваша\nГромкость плавно уходит к этому уровню и возвращается, а 1 — не приглушать",
   "emotecraft.emotelist": "Все эмоции",
   "emotecraft.no_server": "На сервере не установлен Emotecraft! Другие игроки не увидят, проигрываете ли Вы эмоции",
   "emotecraft.different_server": "Сервер имеет другую версию Emotecraft, Ваши эмоции могут проигрываться некорректно для других игроков",

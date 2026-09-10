@@ -7,6 +7,7 @@ import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.main.emotePlay.PcmAudioStream;
 import io.github.kosmx.emotes.mc.McUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
 import net.minecraft.client.sounds.AudioStream;
@@ -14,6 +15,7 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.util.valueproviders.FloatProvider;
@@ -33,9 +35,16 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
             McUtils.newIdentifier("emote_sound"), DEFAULT_FLOAT, DEFAULT_FLOAT, 1, Sound.Type.FILE, true, false, 16
     );
 
+    private static final float DUCK_STEP = 0.05F; // a second from one end to the other, so nothing jumps
+
+    // The client's own sound once it can be heard, which is what the other players' step back for
+    @Nullable
+    private static volatile EmoteSoundInstance ownPlaying;
+
     private final Avatar avatar;
     private final OpusSound sound;
     private final IntSupplier position;
+    private final boolean own;
 
     // Taken on the client thread, the only one that may ask the animation
     private volatile int offset;
@@ -44,12 +53,14 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
     // How much audio is left, in ms of playing time, which the animation clock drifts from
     private volatile long remaining = Long.MAX_VALUE;
     private long ticked; // client thread only, like the ticks it counts
+    private float ducking = 1.0F;
     private volatile boolean stopped;
 
     protected EmoteSoundInstance(Avatar avatar, OpusSound sound, IntSupplier position) {
         this.avatar = avatar;
         this.sound = sound;
         this.position = position;
+        this.own = avatar instanceof UnsafeMannequin || avatar instanceof LocalPlayer;
         this.offset = position.getAsInt();
         this.ticked = Util.getMillis();
         this.normalization = sound.normalization(); // a replay knows its level before the engine asks
@@ -75,6 +86,8 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
             if (this.sound.loopStart() == OpusSound.NO_LOOP) {
                 this.remaining = (this.sound.playable() - offset) / (OpusPackets.SAMPLE_RATE / 1000);
             }
+
+            if (this.own) ownPlaying = this;
             return stream;
         });
     }
@@ -96,6 +109,7 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
 
     public void stop() {
         this.stopped = true;
+        if (ownPlaying == this) ownPlaying = null;
     }
 
     @Override
@@ -122,8 +136,14 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
         if (this.remaining != Long.MAX_VALUE) this.remaining -= now - this.ticked;
         this.ticked = now;
 
+        // Your own emote has the floor, and the others walk down to their level instead of dropping to it
+        EmoteSoundInstance own = ownPlaying;
+        float level = own == null || own == this || own.stopped || own.finished()
+                ? 1.0F : PlatformTools.getConfig().otherEmoteVolume.get();
+        this.ducking = Mth.approach(this.ducking, level, DUCK_STEP);
+
         if (audible(this.avatar)) this.offset = this.position.getAsInt();
-        else this.stopped = true;
+        else stop();
     }
 
     @Override
@@ -166,7 +186,7 @@ public abstract class EmoteSoundInstance implements TickableSoundInstance {
         float normalization = this.normalization;
         // The engine takes the volume before the stream, so a decoding track must not start loud
         if (normalization == 0.0F) return 0.0F;
-        return PlatformTools.getConfig().normalizeSoundVolume.get() ? normalization : 1.0F;
+        return (PlatformTools.getConfig().normalizeSoundVolume.get() ? normalization : 1.0F) * this.ducking;
     }
 
     /** The channel is held through the decode, silent as it is. */

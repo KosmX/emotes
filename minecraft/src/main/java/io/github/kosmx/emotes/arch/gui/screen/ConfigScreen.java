@@ -222,7 +222,11 @@ public class ConfigScreen extends OptionsSubScreen {
 
         @Override
         public @NonNull T fromSliderValue(double slider) {
-            return this.entry.fromDouble(Mth.map(slider, 0.0, 1.0, this.entry.min.doubleValue(), this.entry.max.doubleValue()));
+            double min = this.entry.min.doubleValue();
+            double max = this.entry.max.doubleValue();
+            // A slider is dragged, not typed, so it means no more than two decimals of what it lands on
+            double value = Math.round(Mth.map(slider, 0.0, 1.0, min, max) * 100.0) / 100.0;
+            return this.entry.fromDouble(Mth.clamp(value, min, max));
         }
     }
 }
