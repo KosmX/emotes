@@ -55,7 +55,7 @@
   "custom": {
     "modmenu": {
       "links": {
-        "emotecraft.library.privacy.title": "https://emotes.redlance.org",
+        "EmotecraftLibrary": "https://emotes.redlance.org",
         "modmenu.crowdin": "https://crowdin.com/project/emotecraft",
         "modmenu.wiki": "https://docs.zigythebird.com/emotecraft",
         "modmenu.curseforge": "https://curseforge.com/minecraft/mc-mods/emotecraft",
