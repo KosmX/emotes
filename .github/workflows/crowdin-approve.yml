@@ -43,8 +43,16 @@ jobs:
 
         branch = next(items("/branches", name="dev"))
         source = next(file for file in items("/files", branchId=branch["id"], recursion=1) if file["name"] == "en_US.json")
-        string_ids = {string["identifier"]: string["id"] for string in items("/strings", fileId=source["id"])}
         languages = {language["locale"].replace("-", "_"): language["id"] for language in call("GET", "")["data"]["targetLanguages"]}
+
+        # Crowdin stores flat dotted JSON keys as quoted identifiers, so match strings by their source text instead
+        sources = json.loads((LANG_DIR / "en_US.json").read_text("utf-8"))
+        ids_by_text = {string["text"]: string["id"] for string in items("/strings", fileId=source["id"])}
+        string_ids = {key: ids_by_text[text] for key, text in sources.items() if text in ids_by_text}
+        if len(string_ids) < len(sources):
+            print(f"::warning::Not found in Crowdin: {sorted(sources.keys() - string_ids.keys())}")
+        if not string_ids:
+            raise SystemExit("No en_US strings matched Crowdin")
 
         for file in sorted(LANG_DIR.glob("*.json")):
             language = languages.get(file.stem)
