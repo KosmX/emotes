@@ -2,6 +2,10 @@ name: Crowdin Approve
 
 on:
   workflow_dispatch:
+    inputs:
+      language:
+        description: "Language file to approve, e.g. uk_UA"
+        required: true
 
 jobs:
   approve-dev-translations:
@@ -19,6 +23,7 @@ jobs:
       env:
         CROWDIN_PROJECT_ID: 414868
         CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        LANGUAGE: ${{ inputs.language }}
       run: |
         import json, os, pathlib, urllib.error, urllib.parse, urllib.request
 
@@ -44,6 +49,10 @@ jobs:
         branch = next(items("/branches", name="dev"))
         source = next(file for file in items("/files", branchId=branch["id"], recursion=1) if file["name"] == "en_US.json")
         languages = {language["locale"].replace("-", "_"): language["id"] for language in call("GET", "")["data"]["targetLanguages"]}
+        locale = os.environ["LANGUAGE"]
+        if locale not in languages:
+            raise SystemExit(f"{locale} is not a Crowdin target language: {sorted(languages)}")
+        language = languages[locale]
 
         # Crowdin stores flat dotted JSON keys as quoted identifiers, so match strings by their source text instead
         sources = json.loads((LANG_DIR / "en_US.json").read_text("utf-8"))
@@ -54,28 +63,23 @@ jobs:
         if not string_ids:
             raise SystemExit("No en_US strings matched Crowdin")
 
-        for file in sorted(LANG_DIR.glob("*.json")):
-            language = languages.get(file.stem)
-            if language is None:
+        approved = {translation["stringId"]: translation["text"] for translation in
+                    items(f"/languages/{language}/translations", fileId=source["id"], approvedOnly=1)}
+
+        for key, text in json.loads((LANG_DIR / f"{locale}.json").read_text("utf-8")).items():
+            string_id = string_ids.get(key)
+            if string_id is None or approved.get(string_id) == text:
                 continue
 
-            approved = {translation["stringId"]: translation["text"] for translation in
-                        items(f"/languages/{language}/translations", fileId=source["id"], approvedOnly=1)}
+            try:
+                suggestions = items("/translations", stringId=string_id, languageId=language)
+                translation_id = next((translation["id"] for translation in suggestions if translation["text"] == text), None)
+                if translation_id is None:
+                    translation_id = call("POST", "/translations", {"stringId": string_id, "languageId": language, "text": text})["data"]["id"]
 
-            for key, text in json.loads(file.read_text("utf-8")).items():
-                string_id = string_ids.get(key)
-                if string_id is None or approved.get(string_id) == text:
-                    continue
-
-                try:
-                    suggestions = items("/translations", stringId=string_id, languageId=language)
-                    translation_id = next((translation["id"] for translation in suggestions if translation["text"] == text), None)
-                    if translation_id is None:
-                        translation_id = call("POST", "/translations", {"stringId": string_id, "languageId": language, "text": text})["data"]["id"]
-
-                    for approval in items("/approvals", stringId=string_id, languageId=language):
-                        call("DELETE", f"/approvals/{approval['id']}")
-                    call("POST", "/approvals", {"translationId": translation_id})
-                    print(f"{file.stem}: approved {key}")
-                except urllib.error.HTTPError as error:
-                    print(f"::warning::{file.stem}: {key}: {error.code} {error.read().decode()}")
+                for approval in items("/approvals", stringId=string_id, languageId=language):
+                    call("DELETE", f"/approvals/{approval['id']}")
+                call("POST", "/approvals", {"translationId": translation_id})
+                print(f"approved {key}")
+            except urllib.error.HTTPError as error:
+                print(f"::warning::{key}: {error.code} {error.read().decode()}")
