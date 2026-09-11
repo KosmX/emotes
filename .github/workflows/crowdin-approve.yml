@@ -1,0 +1,73 @@
+name: Crowdin Approve
+
+on:
+  workflow_dispatch:
+
+jobs:
+  approve-dev-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        ref: dev
+
+    # upload translations --auto-approve-imported skips texts that already exist in Crowdin, so approve them via the API
+    - name: Approve translations from dev
+      shell: python
+      env:
+        CROWDIN_PROJECT_ID: 414868
+        CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+      run: |
+        import json, os, pathlib, urllib.error, urllib.parse, urllib.request
+
+        API = f"https://api.crowdin.com/api/v2/projects/{os.environ['CROWDIN_PROJECT_ID']}"
+        HEADERS = {"Authorization": f"Bearer {os.environ['CROWDIN_PERSONAL_TOKEN']}", "Content-Type": "application/json"}
+        LANG_DIR = pathlib.Path("emotesAssets/src/main/resources/assets/emotecraft/lang")
+
+        def call(method, path, body=None):
+            data = None if body is None else json.dumps(body).encode()
+            with urllib.request.urlopen(urllib.request.Request(API + path, data, HEADERS, method=method)) as response:
+                raw = response.read()
+            return json.loads(raw) if raw else None
+
+        def items(path, **params):
+            offset = 0
+            while True:
+                page = call("GET", f"{path}?{urllib.parse.urlencode({**params, 'limit': 500, 'offset': offset})}")["data"]
+                yield from (item["data"] for item in page)
+                if len(page) < 500:
+                    return
+                offset += 500
+
+        branch = next(items("/branches", name="dev"))
+        source = next(file for file in items("/files", branchId=branch["id"], recursion=1) if file["name"] == "en_US.json")
+        string_ids = {string["identifier"]: string["id"] for string in items("/strings", fileId=source["id"])}
+        languages = {language["locale"].replace("-", "_"): language["id"] for language in call("GET", "")["data"]["targetLanguages"]}
+
+        for file in sorted(LANG_DIR.glob("*.json")):
+            language = languages.get(file.stem)
+            if language is None:
+                continue
+
+            approved = {translation["stringId"]: translation["text"] for translation in
+                        items(f"/languages/{language}/translations", fileId=source["id"], approvedOnly=1)}
+
+            for key, text in json.loads(file.read_text("utf-8")).items():
+                string_id = string_ids.get(key)
+                if string_id is None or approved.get(string_id) == text:
+                    continue
+
+                try:
+                    suggestions = items("/translations", stringId=string_id, languageId=language)
+                    translation_id = next((translation["id"] for translation in suggestions if translation["text"] == text), None)
+                    if translation_id is None:
+                        translation_id = call("POST", "/translations", {"stringId": string_id, "languageId": language, "text": text})["data"]["id"]
+
+                    for approval in items("/approvals", stringId=string_id, languageId=language):
+                        call("DELETE", f"/approvals/{approval['id']}")
+                    call("POST", "/approvals", {"translationId": translation_id})
+                    print(f"{file.stem}: approved {key}")
+                except urllib.error.HTTPError as error:
+                    print(f"::warning::{file.stem}: {key}: {error.code} {error.read().decode()}")
