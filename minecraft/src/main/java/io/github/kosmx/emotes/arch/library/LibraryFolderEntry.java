@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.ClientAsset;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +31,7 @@ import java.util.function.Predicate;
 public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implements LibraryListener {
     public static final Identifier EMOTECRAFT_LIBRARY_ICON = McUtils.newIdentifier("textures/redlance_emotes_icon.png");
     private static final int PAGE_SIZE = 10;
+    private static final Component DESCRIPTION = Component.translatable("emotecraft.library.description");
     private static final Component END = Component.translatable("emotecraft.library.end");
 
     private final EmoteListWidget widget;
@@ -53,16 +53,13 @@ public final class LibraryFolderEntry extends EmoteListWidget.FolderEntry implem
     private LoadingEntry searchLoading;
 
     public LibraryFolderEntry(EmoteListWidget widget) {
-        widget.super(AcceptPrivacyScreen.TITLE, CommonComponents.EMPTY);
+        widget.super(AcceptPrivacyScreen.TITLE, DESCRIPTION);
         this.widget = widget;
     }
 
     @Override
     protected void onOpen() {
-        if (this.connection != null) {
-            return; // The live connection is already opening or open.
-        }
-
+        if (this.connection != null) return; // The live connection is already opening or open.
         int generation = ++this.connectionGeneration;
         this.connection = EmoteLibrary.executeAuthorized(client -> client.openLiveConnection(gated(generation), Minecraft.getInstance()));
         getOrPutLoadingEntry().addForWait(this.connection);
