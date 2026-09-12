@@ -42,6 +42,8 @@ import java.util.stream.Stream;
  * Use to create your list of emotes. (dima_dencep uses it)
  */
 public abstract class EmoteSubScreen extends Screen {
+    protected static final int MAX_PREVIEW_SIZE = 256; // In gui units, so the preview follows the gui scale instead of the window
+
     protected final boolean reloadOnOpen;
     protected final ISearchEngine searchEngine;
     protected Screen lastScreen;
@@ -106,7 +108,7 @@ public abstract class EmoteSubScreen extends Screen {
         if (this.preview == null) {
             this.preview = new PlayerPreview(this.minecraft.getGameProfile(), 0, 0, 0, 0, true);
         }
-        this.layout.addToContents(this.preview, layoutSettings -> layoutSettings.alignHorizontallyLeft().paddingLeft(Button.DEFAULT_SPACING));
+        this.addRenderableWidget(this.preview); // Not in the layout, it is placed next to the list once that is arranged
     }
 
     protected EmoteListWidget newEmoteListWidget() {
@@ -171,18 +173,21 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     protected void repositionElements() {
+        if (this.list != null) this.list.updateSize(this.width, this.layout);
         this.layout.arrangeElements();
-        if (this.list != null) {
-            this.list.updateSize(this.width, this.layout);
-        }
+        if (this.list != null) this.list.refreshScrollAmount(); // The entries follow the position the layout just gave the list
+
         if (this.preview != null) {
-            int previewHeight = this.height / 2;
-            int space = (this.list != null ? this.list.getRowLeft() : this.width) - this.preview.getX() - Button.DEFAULT_SPACING;
+            int previewHeight = Math.min(this.height / 2, MAX_PREVIEW_SIZE);
+            int space = (this.list != null ? this.list.getRowLeft() : this.width) - Button.DEFAULT_SPACING * 2;
+            int previewWidth = Math.clamp(space, 0, previewHeight);
 
             this.preview.visible = space >= previewHeight / 3; // For small screens
-            this.preview.setSize(Math.clamp(space, 0, previewHeight), previewHeight);
-
-            this.layout.arrangeElements(); // the frame centers the preview by its size, which is only known now
+            this.preview.setSize(previewWidth, previewHeight);
+            this.preview.setPosition( // Centered in what is left of the list, both ways
+                    Button.DEFAULT_SPACING + (space - previewWidth) / 2,
+                    this.layout.getHeaderHeight() + (this.layout.getContentHeight() - previewHeight) / 2
+            );
         }
     }
 
