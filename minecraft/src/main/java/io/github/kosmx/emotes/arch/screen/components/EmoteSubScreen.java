@@ -172,15 +172,17 @@ public abstract class EmoteSubScreen extends Screen {
     @Override
     protected void repositionElements() {
         this.layout.arrangeElements();
-        if (this.preview != null) {
-            this.preview.setSize(width / 6, height / 2);
-        }
         if (this.list != null) {
             this.list.updateSize(this.width, this.layout);
+        }
+        if (this.preview != null) {
+            int previewHeight = this.height / 2;
+            int space = (this.list != null ? this.list.getRowLeft() : this.width) - this.preview.getX() - Button.DEFAULT_SPACING;
 
-            if (this.preview != null) { // For small screens
-                this.preview.visible = this.preview.getRight() <= this.list.getRowLeft();
-            }
+            this.preview.visible = space >= previewHeight / 3; // For small screens
+            this.preview.setSize(Math.clamp(space, 0, previewHeight), previewHeight);
+
+            this.layout.arrangeElements(); // the frame centers the preview by its size, which is only known now
         }
     }
 
