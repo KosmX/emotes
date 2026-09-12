@@ -129,6 +129,7 @@ dependencies {
     "fabricRuntimeOnly"(fabricApi.fabricModule("fabric-screen-api-v1", project["fabric_api_version"]))
     "fabricImplementation"("com.terraformersmc:modmenu:${project["modmenu_version"]}") {
         exclude(group = "net.fabricmc.fabric-api")
+        exclude(module = "fabric-loader")
     }
 
     "fabricImplementation"("com.zigythebird.playeranim:PlayerAnimationLibFabric:${project["playeranimlib_version"]}") {
