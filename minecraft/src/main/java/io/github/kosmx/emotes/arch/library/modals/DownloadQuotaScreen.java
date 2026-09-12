@@ -2,7 +2,6 @@ package io.github.kosmx.emotes.arch.library.modals;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
@@ -27,7 +26,7 @@ public class DownloadQuotaScreen extends BaseModalScreen {
 
     @Override
     protected LayoutElement addBody() {
-        return new MultiLineTextWidget(BODY, this.font).setMaxWidth(240).setCentered(true);
+        return createTextWidget(BODY);
     }
 
     @Override
@@ -38,8 +37,7 @@ public class DownloadQuotaScreen extends BaseModalScreen {
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        buttons.addChild(Button.builder(UPGRADE,
-                        _ -> ConfirmLinkScreen.confirmLinkNow(this, SUPPORTER_URI))
+        buttons.addChild(Button.builder(UPGRADE, _ -> ConfirmLinkScreen.confirmLinkNow(this, SUPPORTER_URI))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );

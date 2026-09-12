@@ -2,12 +2,9 @@ package io.github.kosmx.emotes.arch.library.modals;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
-import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
@@ -33,14 +30,7 @@ public class AcceptPrivacyScreen extends BaseModalScreen {
 
     @Override
     protected LayoutElement addBody() {
-        MultiLineTextWidget body = new MultiLineTextWidget(BODY, this.font).setMaxWidth(240).setCentered(true);
-        body.setComponentClickHandler(style -> {
-            if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
-                ConfirmLinkScreen.confirmLinkNow(this, uri);
-            }
-        });
-        body.active = true; // MultiLineTextWidget starts inactive; without this mouseClicked bails and links don't fire
-        return body;
+        return createTextWidget(BODY);
     }
 
     @Override
