@@ -70,10 +70,15 @@ tasks {
     shadowJar {
         configurations = listOf(compileApi)
         archiveClassifier.set("shaded")
-        mergeServiceFiles()
 
         relocate("javassist", "org.redlance.dima_dencep.mods.emotecraft.geyser.libs.javassist")
         relocate("org.objectweb", "org.redlance.dima_dencep.mods.emotecraft.geyser.libs.ow")
+
+        // Services
+        filesMatching("META-INF/services/**") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        mergeServiceFiles()
     }
 
     downgradeJar {
@@ -93,7 +98,7 @@ tasks {
 
     shadeDowngradedApi {
         downgradeTo = targetGeyserJava
-        shadePath.set({ "org/redlance/dima_dencep/mods/emotecraft/geyser/libs/" })
+        shadePath.set("org/redlance/dima_dencep/mods/emotecraft/geyser/libs/")
         archiveClassifier.set("")
 
         onlyIf { !downgradeJar.get().state.skipped }
@@ -156,7 +161,10 @@ publishMods {
         announcementTitle = "Modrinth (Geyser)"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = providers.gradleProperty("modrinth_id")
-        minecraftVersions.addAll(release_minecraft_versions)
+        minecraftVersionRange {
+            start = "1.21.11"
+            end = project["minecraft_version"]
+        }
         displayName = "Emotecraft $mod_version for Geyser"
         version = "$mod_version-geyser"
         environment = SERVER_ONLY

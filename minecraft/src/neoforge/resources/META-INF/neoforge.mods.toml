@@ -10,6 +10,7 @@ displayName="Emotecraft"
 updateJSONURL="https://api.modrinth.com/updates/emotecraft/forge_updates.json?neoforge=include"
 displayURL="https://docs.zigythebird.com/emotecraft/gettingstarted"
 logoFile="assets/emotecraft/textures/emotecraft_mod_logo.png"
+iconFile="assets/emotecraft/textures/emotecraft_mod_logo.png"
 authors="KosmX, dima_dencep"
 credits="Kale Ko, ZigyTheBird, BoBkiNN"
 description='''${description}'''
@@ -22,14 +23,14 @@ config = "emotecraft-neo.mixins.json"
 [[dependencies.emotecraft]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.1.0.1-beta,)"
+versionRange = "[26.2.0.87,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.emotecraft]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.1,)"
+versionRange = "[26.2,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -43,6 +44,6 @@ side="BOTH"
 [[dependencies.emotecraft]]
 modId="bendable_cuboids"
 type="incompatible"
-versionRange="[1.0,2.0.1+mc.1.21.11)"
+versionRange="[1.0,2.0.4+mc.26.2)"
 ordering="NONE"
 side="BOTH"

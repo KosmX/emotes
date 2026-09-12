@@ -41,21 +41,21 @@
     "fabric-key-mapping-api-v1": "*",
     "fabric-lifecycle-events-v1": "*",
     "fabric-rendering-v1": ">=12.5.1+fbe231d52c",
-    "minecraft": ">=26.1",
+    "minecraft": ">=26.2",
     "player_animation_library": ">=1.2.6+mc.26.2",
-    "fabricloader": ">=0.19.2"
+    "fabricloader": ">=0.19.5"
   },
   "recommends": {
     "fabric-permission-api-v1": "*"
   },
   "breaks": {
-    "bendable_cuboids": "<2.0.1+mc.1.21.11",
+    "bendable_cuboids": "<2.0.4+mc.26.2",
     "grimac": "*"
   },
   "custom": {
     "modmenu": {
       "links": {
-        "emotecraft.library.privacy.title": "https://emotes.redlance.org",
+        "EmotecraftLibrary": "https://emotes.redlance.org",
         "modmenu.crowdin": "https://crowdin.com/project/emotecraft",
         "modmenu.wiki": "https://docs.zigythebird.com/emotecraft",
         "modmenu.curseforge": "https://curseforge.com/minecraft/mc-mods/emotecraft",

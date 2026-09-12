@@ -15,7 +15,7 @@ public class AcceptPrivacyScreen extends BaseModalScreen {
     private static final URI TERMS_URI = URI.create("https://emotes.redlance.org/terms");
     private static final URI PRIVACY_URI = URI.create("https://emotes.redlance.org/privacy");
 
-    public static final Component TITLE = Component.translatable("emotecraft.library.privacy.title").withStyle(ChatFormatting.BOLD);
+    public static final Component TITLE = Component.literal("EmotecraftLibrary").withStyle(ChatFormatting.BOLD);
     private static final Component BODY = Component.translatable("emotecraft.library.privacy.description",
             link("mco.terms.sentence.2", TERMS_URI),
             link("emotecraft.library.privacy.privacy", PRIVACY_URI)

@@ -1,12 +1,12 @@
 package io.github.kosmx.emotes.bukkit;
 
+import io.github.kosmx.emotes.bukkit.config.PaperConfig;
 import io.github.kosmx.emotes.bukkit.fuckery.EmotePayloadHandler;
 import io.github.kosmx.emotes.bukkit.fuckery.StreamCodecUtils;
 import io.github.kosmx.emotes.bukkit.network.ServerSideEmotePlay;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.mc.PermissionKeys;
 import io.github.kosmx.emotes.mc.ServerCommands;
-import io.github.kosmx.emotes.server.config.CommonConfig;
 import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -41,7 +41,7 @@ public final class BukkitWrapper extends JavaPlugin implements ChannelInitialize
         // Step two
         ChannelInitializeListenerHolder.addListener(Key.key(CommonData.MOD_ID, "listener"), this);
 
-        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(CommonConfig::new, CommonConfig.staticConfigVersion), CommonConfig.class); //it does register itself
+        Serializer.INSTANCE = new Serializer<>(new ConfigSerializer<>(PaperConfig::new, PaperConfig.staticConfigVersion), PaperConfig.class); //it does register itself
         UniversalEmoteSerializer.loadEmotes();
 
         for (Identifier permission : PermissionKeys.PERMISSIONS) {
@@ -60,7 +60,8 @@ public final class BukkitWrapper extends JavaPlugin implements ChannelInitialize
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EMOTE_PACKET);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance());
         getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
-        if (Bukkit.getServerConfig().isProxyEnabled()) {
+        boolean suppressProxyWarning = Serializer.getConfig() instanceof PaperConfig paperConfig && paperConfig.suppressProxyWarning.get();
+        if (!suppressProxyWarning && Bukkit.getServerConfig().isProxyEnabled()) {
             CommonData.LOGGER.error("*************************************************************************************");
             CommonData.LOGGER.error("Emotecraft detected that this server is running behind a proxy. " +
                     "By default proxies limit plugin messages to 32767 bytes, which is too small for larger emotes and can kick players. " +
