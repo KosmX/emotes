@@ -70,10 +70,15 @@ tasks {
     shadowJar {
         configurations = listOf(compileApi)
         archiveClassifier.set("shaded")
-        mergeServiceFiles()
 
         relocate("javassist", "org.redlance.dima_dencep.mods.emotecraft.geyser.libs.javassist")
         relocate("org.objectweb", "org.redlance.dima_dencep.mods.emotecraft.geyser.libs.ow")
+
+        // Services
+        filesMatching("META-INF/services/**") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+        mergeServiceFiles()
     }
 
     downgradeJar {
