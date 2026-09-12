@@ -14,7 +14,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
-import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
@@ -37,6 +37,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     private static final Component WARN_ONLY_PROXY = Component.translatable("emotecraft.only_proxy");
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 0, HeaderAndFooterLayout.DEFAULT_HEADER_AND_FOOTER_HEIGHT);
+    private final FrameLayout contents = this.layout.addToContents(new FrameLayout());
     protected final Screen parent;
 
     protected AbstractFastChooseWidget fastMenu;
@@ -64,9 +65,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
             this.layout.addTitleHeader(FastMenuScreen.WARN_NO_SERVER, this.font);
         }
 
-        this.fastMenu = this.layout.addToContents(new PreviewFastChooseWidget(this, true, 0, 0, 512),
-                LayoutSettings::alignVerticallyMiddle
-        );
+        this.fastMenu = this.contents.addChild(new PreviewFastChooseWidget(this, true, 0, 0, 512));
 
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
@@ -84,9 +83,11 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     protected void repositionElements() {
+        int contentHeight = this.layout.getContentHeight();
         if (this.fastMenu != null) {
-            this.fastMenu.setSize(Math.min(Math.round(Math.min(this.width * 0.8F, (this.height - this.layout.getHeaderHeight()) * 0.8F)), 512));
+            this.fastMenu.setSize(Math.min(Math.round(Math.min(this.width * 0.8F, contentHeight * 0.8F)), 512));
         }
+        this.contents.setMinHeight(contentHeight); // Fills the area between header and footer, so the frame centers the wheel in it
         this.layout.arrangeElements();
     }
 
