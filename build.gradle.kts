@@ -3,7 +3,7 @@ import org.redlance.dima_dencep.gradle.publish2discord.utils.Emoji
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
-    id("xyz.wagyourtail.jvmdowngrader") version("1.3.6") apply false
+    id("xyz.wagyourtail.jvmdowngrader") version("2.0.1") apply false
     id("xyz.wagyourtail.unimined") version "1.4.2-SNAPSHOT" apply false
     id("com.gradleup.shadow") version "9.6.1" apply false
     id("me.modmuss50.mod-publish-plugin") version "2.2.0"
