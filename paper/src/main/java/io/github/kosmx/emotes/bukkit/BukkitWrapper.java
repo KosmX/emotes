@@ -11,6 +11,7 @@ import io.github.kosmx.emotes.server.config.ConfigSerializer;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
 import io.papermc.paper.network.ChannelInitializeListener;
 import io.papermc.paper.network.ChannelInitializeListenerHolder;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -83,6 +84,9 @@ public final class BukkitWrapper extends JavaPlugin implements ChannelInitialize
 
     @Override
     public void afterInitChannel(@NotNull Channel channel) {
-        channel.pipeline().addAfter("splitter", BukkitWrapper.EMOTE_PACKET, EmotePayloadHandler.INSTANCE);
+        ChannelPipeline pipeline = channel.pipeline();
+        boolean hasVia = pipeline.get("via-decoder") != null;
+        pipeline.addAfter(hasVia ? "via-decoder" : "splitter", BukkitWrapper.EMOTE_PACKET, EmotePayloadHandler.INSTANCE);
+        CommonData.LOGGER.debug("Pipeline: {}", pipeline.names());
     }
 }
