@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
@@ -28,6 +29,7 @@ import net.minecraft.util.Mth;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 public class FastMenuScreen extends Screen implements FastChooseController {
     protected static final Component TITLE = Component.translatable("emotecraft.fastmenu");
@@ -105,10 +107,13 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     @Override
     public boolean keyPressed(@NonNull KeyEvent keyEvent) {
         if (supportsKeyboardNavigation()) {
-            List<IChooseElement> chooseElements = this.fastMenu.getChooseElements();
-            int digit = keyEvent.getDigit() - 1;
-            if (digit >= 0 && digit < chooseElements.size() && onClick(chooseElements.get(digit), keyEvent, false)) {
-                return true;
+            OptionalInt intKey = InputConstants.getKey(keyEvent).getNumericKeyValue();
+            if (intKey.isPresent()) {
+                List<IChooseElement> chooseElements = this.fastMenu.getChooseElements();
+                int digit = intKey.getAsInt() - 1;
+                if (digit >= 0 && digit < chooseElements.size() && onClick(chooseElements.get(digit), keyEvent, false)) {
+                    return true;
+                }
             }
         }
         if (PlatformTools.getConfig().closeWheelType.get() == CloseWheel.PRESS && EmotecraftClientMod.OPEN_MENU_KEY.matches(keyEvent)) {

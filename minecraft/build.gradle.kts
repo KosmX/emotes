@@ -136,7 +136,7 @@ dependencies {
         fabricPomCompile(this)
     }
 
-    "fabricImplementation"("com.blamejared.searchables:Searchables-fabric-26.2:${project["searchables_version"]}") {
+    "fabricCompileOnly"("com.blamejared.searchables:Searchables-fabric-26.2:${project["searchables_version"]}") {
         isTransitive = false
     }
 

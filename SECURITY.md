@@ -14,6 +14,8 @@
 | 1.21.11   | 3.2.x      | 3.4.0-SNAPSHOT | :warning:          |
 | 26.1.X    | 3.3.x      | 3.4.0-SNAPSHOT | :warning:          |
 | 26.2      | 3.4.x      | 3.4.0-SNAPSHOT | :white_check_mark: |
+| 26.3      | 3.5.x      | 3.4.0-SNAPSHOT | :white_check_mark: |
+
 
 ## Reporting a Vulnerability  
 

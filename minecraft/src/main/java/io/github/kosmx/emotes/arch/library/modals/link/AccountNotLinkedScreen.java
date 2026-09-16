@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.library.modals.link;
 
+import com.mojang.blaze3d.Blaze3D;
 import io.github.kosmx.emotes.arch.library.EmoteLibrary;
 import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import net.minecraft.ChatFormatting;
@@ -10,7 +11,6 @@ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
 import org.jspecify.annotations.Nullable;
 import org.redlance.emotecraftlibrary.sdk.GameLinkRequest;
 
@@ -50,7 +50,7 @@ public class AccountNotLinkedScreen extends BaseModalScreen {
                 ConfirmLinkScreen.confirmLinkNow(this, WEBSITE_URI);
             } else {
                 this.linking = true;
-                Util.getPlatform().openUri(this.link.getUrl());
+                Blaze3D.openUri(URI.create(this.link.getUrl()));
                 this.minecraft.gui.setScreen(new AccountLinkPendingScreen(this.backgroundScreen, this.link));
             }
         }).width(Button.SMALL_WIDTH).build());

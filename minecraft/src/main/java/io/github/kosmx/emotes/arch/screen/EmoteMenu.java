@@ -125,7 +125,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
-        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, button -> this.minecraft.gui.setScreen(new ConfigScreen(this)))
+        linearLayout.addChild(Button.builder(EmoteMenu.OPTIONS, _ -> this.minecraft.gui.setScreen(new ConfigScreen(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );

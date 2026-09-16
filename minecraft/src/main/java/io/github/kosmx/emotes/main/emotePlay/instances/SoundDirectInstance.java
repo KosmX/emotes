@@ -37,13 +37,18 @@ public class SoundDirectInstance implements SoundInstance {
     }
 
     @Override
-    public @Nullable WeighedSoundEvents resolve(SoundManager manager) {
-        return new EmotecraftSoundEvents(this.sound);
+    public @Nullable WeighedSoundEvents getOrResolve(@NotNull SoundManager manager) {
+        return getSoundEvent();
     }
 
     @Override
     public @NotNull Sound getSound() {
         return this.sound;
+    }
+
+    @Override
+    public @Nullable WeighedSoundEvents getSoundEvent() {
+        return new EmotecraftSoundEvents(this.sound);
     }
 
     @Override

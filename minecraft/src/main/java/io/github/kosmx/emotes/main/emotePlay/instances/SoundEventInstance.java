@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class SoundEventInstance extends AbstractSoundInstance {
     @SuppressWarnings("deprecation")
@@ -23,8 +24,8 @@ public class SoundEventInstance extends AbstractSoundInstance {
     }
 
     @Override
-    public @NotNull WeighedSoundEvents resolve(SoundManager manager) {
-        super.resolve(manager);
+    public @NotNull WeighedSoundEvents getOrResolve(@NonNull SoundManager manager) {
+        super.getOrResolve(manager);
         return new EmotecraftSoundEvents(this.sound);
     }
 }

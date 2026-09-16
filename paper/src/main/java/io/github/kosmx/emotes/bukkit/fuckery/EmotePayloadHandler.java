@@ -37,7 +37,6 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
     }
 
     @Override
-    @SuppressWarnings("UnstableApiUsage")
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         if (in.readableBytes() == 0 || !ctx.channel().isActive()) {
             out.add(in.retain());
@@ -97,8 +96,10 @@ public class EmotePayloadHandler extends MessageToMessageDecoder<ByteBuf> {
      */
     private static int hackPayloadId() {  // Hack to figure out the id of the CustomPayload packet
         ProtocolInfo<ServerGamePacketListener> protocol = GameProtocols.SERVERBOUND_TEMPLATE.bind(
-                k -> new RegistryFriendlyByteBuf(k, MinecraftServer.getServer().registryAccess()), () -> false
-        );
+                k -> new RegistryFriendlyByteBuf(k, MinecraftServer.getServer().registryAccess()), new GameProtocols.Context() {
+                    @Override public boolean hasInfiniteMaterials() { return false; }
+                    @Override public boolean canUseCommandBlocks() { return false; }
+                });
 
         RegistryFriendlyByteBuf friendlyByteBuf = new RegistryFriendlyByteBuf(Unpooled.buffer(), MinecraftServer.getServer().registryAccess());
         try {

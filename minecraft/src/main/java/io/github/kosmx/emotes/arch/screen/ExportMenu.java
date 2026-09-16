@@ -46,7 +46,7 @@ public class ExportMenu extends Screen {
         GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(2);
 
         for (IWriter serializer : UniversalEmoteSerializer.WRITERS) {
-            rowHelper.addChild(Button.builder(Component.translatable("emotecraft.export", serializer.getExtension()), button -> {
+            rowHelper.addChild(Button.builder(Component.translatable("emotecraft.export", serializer.getExtension()), _ -> {
                 if (!serializer.possibleDataLoss()) {
                     exportEmotesInFormat(serializer);
                     return;
@@ -69,10 +69,10 @@ public class ExportMenu extends Screen {
 
         LinearLayout footer = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
-        footer.addChild(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
+        footer.addChild(Button.builder(CommonComponents.GUI_DONE, _ -> onClose())
                 .build()
         );
-        footer.addChild(Button.builder(EmoteMenu.OPEN_FOLDER, button ->PlatformTools.openExternalEmotesDir())
+        footer.addChild(Button.builder(EmoteMenu.OPEN_FOLDER, _ ->PlatformTools.openExternalEmotesDir())
                 .build()
         );
 

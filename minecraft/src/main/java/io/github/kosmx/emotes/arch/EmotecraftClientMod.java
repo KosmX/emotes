@@ -15,7 +15,6 @@ import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -24,10 +23,10 @@ public class EmotecraftClientMod {
     protected static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(McUtils.newIdentifier("keybinding")); // key.category.emotecraft.keybinding
 
     public static final KeyMapping OPEN_MENU_KEY = new KeyMapping(
-            "key.emotecraft.fastchoose", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_B, KEYBIND_CATEGORY
+            "key.emotecraft.fastchoose", InputConstants.KEY_B, KEYBIND_CATEGORY
     );
     public static final KeyMapping STOP_EMOTE_KEY = new KeyMapping(
-            "key.emotecraft.stop", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, KEYBIND_CATEGORY
+            "key.emotecraft.stop", InputConstants.UNKNOWN.getValue(), KEYBIND_CATEGORY
     );
 
     private static int tick = 0;

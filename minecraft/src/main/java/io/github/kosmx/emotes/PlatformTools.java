@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes;
 
+import com.mojang.blaze3d.Blaze3D;
 import com.zigythebird.playeranim.PlayerAnimLibService;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.arch.gui.toast.EmotecraftToast;
@@ -11,7 +12,6 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,7 @@ public final class PlatformTools {
     }
 
     public static void openExternalEmotesDir() {
-        Util.getPlatform().openPath(InstanceService.INSTANCE.getExternalEmoteDir());
+        Blaze3D.openPath(InstanceService.INSTANCE.getExternalEmoteDir());
     }
 
     public static ClientConfig getConfig() {
