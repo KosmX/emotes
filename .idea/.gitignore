@@ -1,7 +1,11 @@
 # Default ignored files
 /runConfigurations
+/modules
 /shelf/
 /workspace.xml
 /gradle.xml
 /misc.xml
 /vcs.xml
+/jarRepositories.xml
+/kotlinc.xml
+/compiler.xml
