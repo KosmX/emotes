@@ -6,7 +6,6 @@ classes/
 .out/
 
 #IDEA
-.idea/
 *.iml
 *.ipr
 *.iws
