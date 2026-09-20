@@ -15,9 +15,10 @@ import java.util.UUID;
 public abstract class ServerNetworkInstance implements INetworkInstance {
     private final ConfigNetworkInstance configInstance;
 
-    private Animation currentEmote = null;
-    private Instant startTime = null;
-    private boolean isForced = false;
+    // Read from other connections' threads, not only from the one playing the emote
+    private volatile Animation currentEmote = null;
+    private volatile Instant startTime = null;
+    private volatile boolean isForced = false;
 
     protected ServerNetworkInstance(ConfigNetworkInstance configInstance) {
         this.configInstance = configInstance;
@@ -28,14 +29,15 @@ public abstract class ServerNetworkInstance implements INetworkInstance {
      * @param data Emote, null if stop playing
      */
     public void setPlayedEmote(@Nullable Animation data, boolean isForced) {
-        this.currentEmote = data;
-
         if (data == null) {
+            this.currentEmote = null;
             this.startTime = null;
             this.isForced = false;
         } else {
+            // startTime first: a reader that sees currentEmote must see the time it started at
             this.startTime = Instant.now();
             this.isForced = isForced;
+            this.currentEmote = data;
         }
     }
 
@@ -57,15 +59,17 @@ public abstract class ServerNetworkInstance implements INetworkInstance {
      */
     @Nullable
     public Pair<Animation, Float> getPlayedEmote() {
-        if (currentEmote == null) return null;
-        float tick = Duration.between(startTime, Instant.now()).toMillis() / 50F;
-        if (!currentEmote.isPlayingAt(tick)) {
-            currentEmote = null;
-            startTime = null;
-            isForced = false;
+        // Read both fields once: another thread may stop the emote between the two reads
+        Animation emote = this.currentEmote;
+        Instant started = this.startTime;
+        if (emote == null || started == null) return null;
+
+        float tick = Duration.between(started, Instant.now()).toMillis() / 50F;
+        if (!emote.isPlayingAt(tick)) {
+            setPlayedEmote(null, false);
             return null;
         }
-        return Pair.of(currentEmote, tick);
+        return Pair.of(emote, tick);
     }
 
     public abstract UUID getUUID();
