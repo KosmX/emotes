@@ -210,13 +210,13 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
 
     @Override
     public boolean isValidClickButton(MouseButtonInfo info) {
-        return (info.button() == 0 || info.button() == 1) && activeKeyTime == 0;
+        return (info.button() == InputConstants.MOUSE_BUTTON_LEFT || info.button() == InputConstants.MOUSE_BUTTON_RIGHT) && activeKeyTime == 0;
     }
 
     @Override
     public boolean onClick(IChooseElement element, InputWithModifiers event, boolean bl) {
         if (this.activeKeyTime != 0) return false;
-        if (event.input() == 1) {
+        if (event.input() == InputConstants.MOUSE_BUTTON_RIGHT) {
             element.clearEmote();
             return true;
         } else if (this.list != null && this.list.getSelected() instanceof EmoteListWidget.EmoteLikeEntry entry) {

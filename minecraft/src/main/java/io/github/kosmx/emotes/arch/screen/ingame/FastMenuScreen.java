@@ -181,7 +181,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     public boolean isValidClickButton(MouseButtonInfo info) {
-        return info.button() == 0;
+        return info.button() == InputConstants.MOUSE_BUTTON_LEFT;
     }
 
     @Override
