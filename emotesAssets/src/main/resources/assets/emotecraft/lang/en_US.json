@@ -115,6 +115,10 @@
   "emotecraft.emote.clap.description": "clap clap clap",
   "emotecraft.emote.backflip.name": "Back Flip",
   "emotecraft.emote.backflip.description": "Makes You Do A Back Flip",
+  "emotecraft.emote.take_the_l.name": "Take The L",
+  "emotecraft.emote.take_the_l.description": "You lose!",
+  "emotecraft.emote.caramell_dance.name": "Carramell Dance",
+  "emotecraft.emote.caramell_dance.description": "Kawai!",
   "emotecraft.dataloss.msg": "Possible loss of animation data",
   "emotecraft.dataloss.descr": "Writing in this format may result in data loss or incorrect playback of the final file!\nAre you sure you want to do this?"
 }

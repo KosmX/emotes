@@ -114,6 +114,10 @@
   "emotecraft.emote.clap.description": "хлоп хлоп хлоп",
   "emotecraft.emote.backflip.name": "Сальто назад",
   "emotecraft.emote.backflip.description": "Заставляет тебя сделать сальто назад",
+  "emotecraft.emote.take_the_l.name": "Признание поражения",
+  "emotecraft.emote.take_the_l.description": "Ты проиграл!",
+  "emotecraft.emote.caramell_dance.name": "Карамельный танец",
+  "emotecraft.emote.caramell_dance.description": "Каваи!",
   "emotecraft.dataloss.msg": "Возможная потеря данных анимации",
   "emotecraft.dataloss.descr": "Запись в этом формате может привести к потере данных или неправильному воспроизведению конечного файла!\nВы уверены, что хотите это сделать?"
 }
