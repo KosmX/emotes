@@ -8,6 +8,7 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
+import io.github.kosmx.emotes.common.network.objects.SongPacket;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.BaseClientNetwork;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
@@ -45,7 +46,8 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
         EmotePacket writer = builder.build();
         sendPlayPacket(EmotePacketPayload.playPacket(writer));
 
-        if (writer.data.emoteData != null && writer.data.emoteData.data().has("song") && writer.data.skippedPackets.contains(PacketConfig.NBS_CONFIG)) {
+        if (writer.data.emoteData != null && writer.data.skippedPackets.contains(PacketConfig.NBS_CONFIG)
+                && (writer.data.emoteData.data().has(SongPacket.OPUS_KEY) || writer.data.emoteData.data().has(SongPacket.NBS_KEY))) {
             PlatformTools.addToast(Component.translatable("emotecraft.song_too_big_to_send"));
         }
     }

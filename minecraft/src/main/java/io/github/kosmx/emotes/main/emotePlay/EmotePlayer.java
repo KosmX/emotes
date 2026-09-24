@@ -9,27 +9,37 @@ import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEve
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.KeyFrameData;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.State;
+import io.github.kosmx.emotes.EmotecraftModPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.screen.utils.UnsafeMannequin;
+import io.github.kosmx.emotes.common.network.objects.SongPacket;
+import io.github.kosmx.emotes.common.opus.OpusPackets;
+import io.github.kosmx.emotes.common.opus.OpusSound;
+import io.github.kosmx.emotes.main.emotePlay.instances.EmoteSoundInstance;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.sounds.SoundEngine;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.Avatar;
-import net.raphimc.noteblocklib.format.nbs.model.NbsSong;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Modified keyframe animation player to play songs with animations
  */
 public class EmotePlayer extends PlayerAnimationController {
+    private static final long RETRY_DELAY = 500L; // animation time runs backwards on a loop, wall time does not
+
     @Nullable
-    private MinecraftNbsPlayer song;
+    private EmoteSoundInstance song;
+    private long attempted;
+    private int clock;
 
     public boolean perspective = false;
     public boolean muteNbs = false;
 
     public EmotePlayer(Avatar avatar) {
-        super(avatar, (controller, state, animSetter) -> PlayState.STOP);
+        super(avatar, (_, _, _) -> PlayState.STOP);
     }
 
     @Override
@@ -46,15 +56,7 @@ public class EmotePlayer extends PlayerAnimationController {
     @Override
     protected void setupNewAnimation() {
         super.setupNewAnimation();
-
-        Animation emote = getCurrentAnimationInstance();
-
-        if (this.song != null) this.song.stop();
-        if (emote != null && emote.data().has("song")) {
-            this.song = new MinecraftNbsPlayer(this, emote.data().<NbsSong>get("song").orElseThrow());
-        } else {
-            this.song = null;
-        }
+        stopSound();
     }
 
     @Override
@@ -77,7 +79,7 @@ public class EmotePlayer extends PlayerAnimationController {
             Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
             this.perspective = false;
         }
-        if (this.song != null) this.song.stop();
+        stopSound();
     }
 
     /**
@@ -97,27 +99,62 @@ public class EmotePlayer extends PlayerAnimationController {
     }
 
     @Override
+    public void pause() {
+        super.pause();
+        // No way to pause one instance; startSound picks the track back up at the right offset on unpause
+        stopSound();
+    }
+
+    @Override
     protected void applyCustomPivotPoints() {
-        if (this.song != null && !this.song.isFirstSongPlayed() && isActive() && !this.song.isRunning() && !this.muteNbs) {
-            if (PlatformTools.getConfig().displayNowPlaying.get() && !(this.avatar instanceof UnsafeMannequin)) {
-                String nowPlaying = this.song.getNowPlaying();
-                if (nowPlaying != null) Minecraft.getInstance().gui.hud.setNowPlaying(Component.literal(nowPlaying));
-            }
-            this.song.setPaused(getAnimationState() == State.PAUSED);
-            this.song.start();
-        }
+        startSound();
         super.applyCustomPivotPoints();
     }
 
-    @Override
-    public void pause() {
-        super.pause();
-        if (this.song != null) this.song.setPaused(true);
+    private void startSound() {
+        if (this.muteNbs || getAnimationState() != State.RUNNING || !EmoteSoundInstance.audible(this.avatar)) return;
+
+        // The animation clock runs backwards when the emote loops, and a track that ran out starts over with it
+        int offset = (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE);
+        if (offset < this.clock && (this.song == null || this.song.finished())) stopSound();
+        this.clock = offset;
+
+        SoundManager manager = Minecraft.getInstance().getSoundManager();
+        if (this.song != null) {
+            if (!this.song.isStopped() && (this.song.finished() || manager.isActive(this.song))) return;
+            dropSound(); // it stopped itself, or the engine turned it down; a fresh one starts in time
+        }
+
+        Animation emote = getCurrentAnimationInstance();
+        if (emote == null || !(emote.data().getRaw(SongPacket.OPUS_KEY) instanceof OpusSound sound)) return;
+        if (sound.failed()) return;
+
+        // A track shorter than its emote has nothing left until the animation loops
+        if (sound.loopStart() == OpusSound.NO_LOOP && offset >= sound.playable()) return;
+
+        // Play can be refused for a whole emote, and asking again every frame notifies subtitles every frame
+        long now = Util.getMillis();
+        if (this.attempted != 0 && now - this.attempted < RETRY_DELAY) return;
+        this.attempted = now;
+
+        // Join wherever the animation already is, whether it started late or mid-emote
+        this.song = EmotecraftModPlatform.INSTANCE.createSound(this.avatar, sound,
+                () -> (int) (getAnimationTime() * OpusPackets.SAMPLE_RATE));
+        if (manager.play(this.song) == SoundEngine.PlayResult.NOT_STARTED) dropSound();
     }
 
-    @Override
-    public void unpause() {
-        super.unpause();
-        if (this.song != null) this.song.setPaused(false);
+    private void stopSound() {
+        this.attempted = 0; // the next emote starts both of its clocks over
+        this.clock = 0;
+        dropSound();
+    }
+
+    /** The engine keeps draining an abandoned instance until it is told to stop it. */
+    private void dropSound() {
+        if (this.song == null) return;
+
+        this.song.stop();
+        Minecraft.getInstance().getSoundManager().stop(this.song);
+        this.song = null;
     }
 }

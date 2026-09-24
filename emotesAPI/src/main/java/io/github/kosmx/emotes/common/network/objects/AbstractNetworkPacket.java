@@ -16,6 +16,10 @@ public abstract class AbstractNetworkPacket {
         return (byte) Math.min(this.getVer(), versions.get(this.getID()));
     }
 
+    public byte getVer(NetData config) {
+        return this.getVer(config.versions);
+    }
+
     public abstract void read(ByteBuf byteBuf, NetData config, byte version) throws IOException;
     public abstract void write(ByteBuf byteBuf, NetData config, byte version) throws IOException;
 
