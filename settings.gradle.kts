@@ -25,4 +25,4 @@ include("minecraft:neoforge")
 include("paper")
 
 // Geyser ext
-include("geyser")
+// include("geyser")
