@@ -8,18 +8,21 @@ import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.friends.FriendsOverlayScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
+import java.util.Optional;
 
 public abstract class BaseModalScreen extends Screen {
-    private final @Nullable Screen backgroundScreen;
+    protected final @Nullable Screen backgroundScreen;
     private @Nullable LinearLayout layout;
 
     protected BaseModalScreen(Component title, @Nullable Screen backgroundScreen) {
@@ -37,12 +40,35 @@ public abstract class BaseModalScreen extends Screen {
 
     protected abstract LayoutElement addBody();
 
+    protected LayoutElement createTextWidget(final Component message) {
+        MultiLineTextWidget body = new MultiLineTextWidget(message, this.font).setMaxWidth(240).setCentered(true);
+        body.setComponentClickHandler(style -> {
+            if (style.getClickEvent() instanceof ClickEvent.OpenUrl(URI uri)) {
+                ConfirmLinkScreen.confirmLinkNow(this, uri);
+            }
+        });
+        body.active = message.visit((style, _) -> Optional.ofNullable(style.getClickEvent()), Style.EMPTY).isPresent(); // MultiLineTextWidget starts inactive; only text with links needs it, or mouseClicked bails and they don't fire
+        return body;
+    }
+
     @Override
     protected void init() {
         if (this.backgroundScreen != null) {
             this.backgroundScreen.init(this.width, this.height);
         }
 
+        buildLayout();
+        this.repositionElements();
+    }
+
+    protected void rebuildLayout() {
+        this.clearWidgets();
+        this.clearFocus();
+        buildLayout();
+        arrangeLayout();
+    }
+
+    private void buildLayout() {
         this.layout = LinearLayout.vertical();
 
         this.layout.addChild(new MultiLineTextWidget(this.title, this.font).setMaxWidth(240).setCentered(true),
@@ -53,12 +79,11 @@ public abstract class BaseModalScreen extends Screen {
                 settings -> settings.alignHorizontallyCenter().padding(2, 2, 2, 5)
         );
 
-        GridLayout gridLayout = this.layout.addChild(new GridLayout());
+        GridLayout gridLayout = this.layout.addChild(new GridLayout(), settings -> settings.alignHorizontallyCenter());
         gridLayout.defaultCellSetting().padding(2, 0, 2, 2);
         addButtons(gridLayout);
 
         this.layout.visitWidgets(this::addRenderableWidget);
-        this.repositionElements();
     }
 
     protected abstract void addButtons(GridLayout gridLayout);
@@ -69,6 +94,10 @@ public abstract class BaseModalScreen extends Screen {
             this.backgroundScreen.resize(this.width, this.height);
         }
 
+        arrangeLayout();
+    }
+
+    private void arrangeLayout() {
         this.layout.arrangeElements();
         FrameLayout.alignInRectangle(this.layout, this.getRectangle(), 0.5F, 0.5F);
     }
@@ -105,8 +134,14 @@ public abstract class BaseModalScreen extends Screen {
             return super.mouseClicked(event, doubleClick);
         }
 
-        onClose();
+        if (closesOnOutsideClick()) {
+            onClose();
+        }
         return true;
+    }
+
+    protected boolean closesOnOutsideClick() {
+        return shouldCloseOnEsc();
     }
 
     @Override

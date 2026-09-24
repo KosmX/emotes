@@ -34,9 +34,9 @@ public class SerializableConfig {
          */
         final String name, oldConfig;
         T value;
-        final T defaultValue;
+        public final T defaultValue;
         final public boolean hasTooltip;
-        final boolean isHidden;
+        public final boolean isHidden;
 
         public ConfigEntry(String name, String oldconfig, T defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, boolean hidden) {
             this.name = name;
@@ -82,10 +82,6 @@ public class SerializableConfig {
 
         public void resetToDefault() {
             this.value = this.defaultValue;
-        }
-
-        public boolean showEntry() {
-            return !isHidden;
         }
     }
 

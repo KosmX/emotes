@@ -3,7 +3,6 @@ package io.github.kosmx.emotes.arch.screen.components;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
-import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
 import io.github.kosmx.emotes.arch.library.LibraryFolderEntry;
@@ -19,7 +18,6 @@ import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
@@ -41,20 +39,14 @@ import java.util.stream.Stream;
  * Like {@link OptionsSubScreen} but with emotes.
  * Use to create your list of emotes. (dima_dencep uses it)
  */
-public abstract class EmoteSubScreen extends Screen {
+public abstract class EmoteSubScreen extends PreviewScreen {
     protected final boolean reloadOnOpen;
     protected final ISearchEngine searchEngine;
-    protected Screen lastScreen;
 
     @Nullable
     public EmoteListener watcher;
     @Nullable
-    protected PlayerPreview preview;
-    @Nullable
-    protected EmoteListWidget.EmoteLikeEntry previewed; // emote currently loaded into the preview — avoid re-fetching it every tick
-    @Nullable
     protected EmoteListWidget list;
-    protected HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
     @Nullable
     protected EditBox searchBox;
 
@@ -63,10 +55,9 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     protected EmoteSubScreen(Component title, boolean reloadOnOpen, ISearchEngine searchEngine, Screen lastScreen) {
-        super(title);
+        super(title, lastScreen);
         this.reloadOnOpen = reloadOnOpen;
         this.searchEngine = searchEngine;
-        this.lastScreen = lastScreen;
     }
 
     @Override
@@ -79,16 +70,6 @@ public abstract class EmoteSubScreen extends Screen {
     }
 
     @Override
-    protected void init() {
-        this.layout.removeChildren(); // The frames accumulate otherwise; widgets below are reused across resizes.
-        this.addTitle();
-        this.addPlayerPreview();
-        this.addContents();
-        this.addFooter();
-        this.layout.visitWidgets(this::addRenderableWidget);
-        this.repositionElements();
-    }
-
     protected void addTitle() {
         if (this.searchBox == null) {
             this.searchBox = this.searchEngine.createEditBox(this.font, RecipeBookComponent.SEARCH_HINT,
@@ -100,13 +81,6 @@ public abstract class EmoteSubScreen extends Screen {
             ));
         }
         this.layout.addToHeader(this.searchBox);
-    }
-
-    protected void addPlayerPreview() {
-        if (this.preview == null) {
-            this.preview = new PlayerPreview(this.minecraft.getGameProfile(), 0, 0, 0, 0, true);
-        }
-        this.layout.addToContents(this.preview, layoutSettings -> layoutSettings.alignHorizontallyLeft().paddingLeft(Button.DEFAULT_SPACING));
     }
 
     protected EmoteListWidget newEmoteListWidget() {
@@ -148,6 +122,7 @@ public abstract class EmoteSubScreen extends Screen {
         };
     }
 
+    @Override
     protected void addContents() {
         if (this.list == null) {
             this.list = newEmoteListWidget();
@@ -158,6 +133,7 @@ public abstract class EmoteSubScreen extends Screen {
 
     protected abstract void addOptions();
 
+    @Override
     protected void addFooter() {
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
 
@@ -171,17 +147,10 @@ public abstract class EmoteSubScreen extends Screen {
 
     @Override
     protected void repositionElements() {
+        if (this.list != null) this.list.updateSize(this.width, this.layout);
         this.layout.arrangeElements();
-        if (this.preview != null) {
-            this.preview.setSize(width / 6, height / 2);
-        }
-        if (this.list != null) {
-            this.list.updateSize(this.width, this.layout);
-
-            if (this.preview != null) { // For small screens
-                this.preview.visible = this.preview.getRight() <= this.list.getRowLeft();
-            }
-        }
+        if (this.list != null) this.list.refreshScrollAmount(); // The entries follow the position the layout just gave the list
+        repositionPreview(this.list != null ? this.list.getRowLeft() : this.width);
     }
 
     @Override
@@ -196,40 +165,24 @@ public abstract class EmoteSubScreen extends Screen {
                 this.closeWatcher();
             }
         }
-        super.tick();
-        if (this.preview != null) {
+        if (this.list != null) {
             EmoteListWidget.ListEntry hovered = this.list.getHovered();
             if (this.list.getSelected() == hovered) {
                 hovered = null;
             }
             if (hovered instanceof EmoteListWidget.EmoteLikeEntry emote) {
-                if (emote != this.previewed) { // hovered emote changed — load it once, not on every tick
-                    this.previewed = emote;
-                    emote.getEmote().whenCompleteAsync((animation, throwable) -> {
-                        if (this.previewed != emote) return; // hovered away before it finished loading
-                        if (throwable != null) {
-                            // Passive hover — the emote's own row shows the error inline; no modal here.
-                            CommonData.LOGGER.error("Failed to load emote!", throwable);
-                            return;
-                        }
-                        this.preview.playAnimation(animation, Animation.LoopType.DEFAULT, true);
-                    }, this.minecraft);
-                }
+                previewEmote(emote, emote::getEmote);
             } else {
-                this.previewed = null;
-                if (hovered instanceof EmoteListWidget.FolderEntry) {
-                    this.preview.getMannequin().stopEmote();
-                }
+                clearPreviewed(hovered instanceof EmoteListWidget.FolderEntry);
             }
-            this.preview.tick();
         }
+        super.tick();
     }
 
     @Override
     public void removed() {
         if (this.watcher != null) this.watcher.blockWhileLoading();
         super.removed();
-        if (this.preview != null) this.preview.getMannequin().stopEmote();
         if (this.list != null) this.list.releaseEntries();
     }
 
@@ -250,7 +203,7 @@ public abstract class EmoteSubScreen extends Screen {
             PlatformTools.addToast(EmoteListener.RELOADING_WAIT);
             return;
         }
-        this.minecraft.gui.setScreen(this.lastScreen);
+        super.onClose();
     }
 
     @Override

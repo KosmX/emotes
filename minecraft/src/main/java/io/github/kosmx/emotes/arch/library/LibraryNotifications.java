@@ -115,10 +115,7 @@ public final class LibraryNotifications implements NotificationListener {
 
     @Override
     public void onError(EmoteLibraryException error, boolean fatal) {
-        if (!fatal) {
-            return; // Transient (network/5xx): the SDK reconnects itself with backoff.
-        }
-
+        if (!fatal) return; // Transient (network/5xx): the SDK reconnects itself with backoff.
         // Fatal (session expired/revoked): the SDK stopped reconnecting. Drop the dead stream and open a fresh
         // one — executeAuthorized re-authorizes on the way, which is exactly what the session needs. Should
         // that fail too, the open's own callback clears the field and leaves it to the next refresh.

@@ -216,16 +216,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
     @Override
     public void updateSize(int width, @NonNull HeaderAndFooterLayout layout) {
-        super.updateSize(width, layout);
-        if (this.compactMode) {
-            layout.arrangeElements();
-            refreshScrollAmount();
-        }
-    }
-
-    @Override
-    public void updateSizeAndPosition(int width, int height, int x, int y) {
-        super.updateSizeAndPosition(compactMode ? width / 3 : width, height, x, y);
+        setSize(this.compactMode ? width / 3 : width, layout.getContentHeight()); // Only the size, the layout places us afterwards
     }
 
     @Override

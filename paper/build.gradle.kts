@@ -42,13 +42,17 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
-    duplicatesStrategy = DuplicatesStrategy.WARN
     configurations = listOf(compileApi)
     archiveClassifier.set("")
-    mergeServiceFiles()
 
     relocate("team.unnamed.mocha", "com.zigythebird.playeranim.lib.mochafloats")
     relocate("javassist", "com.zigythebird.playeranim.lib.javassist")
+
+    // Services
+    filesMatching("META-INF/services/**") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    mergeServiceFiles()
 }
 
 tasks.jar {

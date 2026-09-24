@@ -60,6 +60,7 @@ public class ConfigSerializer<T extends SerializableConfig> implements JsonDeser
     }
 
     protected <E> void serializeEntry(SerializableConfig.ConfigEntry<E> entry, JsonObject node, JsonSerializationContext context) {
+        if (entry.isHidden && entry.get() == entry.defaultValue) return;
         node.add(entry.getName(), context.serialize(entry.get()));
     }
 }

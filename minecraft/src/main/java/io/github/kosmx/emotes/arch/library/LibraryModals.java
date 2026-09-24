@@ -1,8 +1,8 @@
 package io.github.kosmx.emotes.arch.library;
 
-import io.github.kosmx.emotes.arch.library.modals.AccountNotLinkedScreen;
 import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import io.github.kosmx.emotes.arch.library.modals.DownloadQuotaScreen;
+import io.github.kosmx.emotes.arch.library.modals.link.AccountNotLinkedScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryException;
@@ -24,8 +24,8 @@ public final class LibraryModals {
         Function<Screen, BaseModalScreen> factory;
         if (cause instanceof EmoteLibraryException.DownloadQuotaExceeded) {
             factory = DownloadQuotaScreen::new;
-        } else if (cause instanceof EmoteLibraryException.AccountNotLinked) {
-            factory = AccountNotLinkedScreen::new;
+        } else if (cause instanceof EmoteLibraryException.AccountNotLinked notLinked) {
+            factory = screen -> new AccountNotLinkedScreen(screen, notLinked.getLinkRequest());
         } else {
             return false;
         }

@@ -86,7 +86,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     @SuppressWarnings("unchecked")
     protected <T> void addConfigEntry(SerializableConfig.ConfigEntry<T> entry, OptionsList options) {
-        if (entry.showEntry() || (this.serializer.readConfig(false) instanceof ClientConfig clientConfig && clientConfig.showHiddenConfig.get())) {
+        if (!entry.isHidden || (this.serializer.readConfig(false) instanceof ClientConfig clientConfig && clientConfig.showHiddenConfig.get())) {
             OptionInstance.TooltipSupplier<?> tooltip;
             if (entry.hasTooltip) {
                 tooltip = _ -> Tooltip.create(

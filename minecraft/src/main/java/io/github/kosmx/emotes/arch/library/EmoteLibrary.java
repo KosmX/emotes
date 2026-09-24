@@ -25,7 +25,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-final class EmoteLibrary implements JoinServer {
+public final class EmoteLibrary implements JoinServer {
     private static final Executor EXECUTOR = Executors.newCachedThreadPool(Thread.ofVirtual()
             .name("emotecraft-library-", 0)
             .factory()
@@ -53,6 +53,8 @@ final class EmoteLibrary implements JoinServer {
 
     private static final EmoteLibrary JOIN_SERVER = new EmoteLibrary();
 
+    private EmoteLibrary() {}
+
     public static <R> CompletableFuture<R> executeAuthorized(Function<EmoteLibraryClient, R> request) {
         return CompletableFuture.supplyAsync(() -> request.apply(EMOTE_LIBRARY_CLIENT), EXECUTOR)
                 .exceptionallyCompose(throwable -> {
@@ -73,11 +75,8 @@ final class EmoteLibrary implements JoinServer {
     }
 
     /** Closes a stream opened through the client, logging a failure instead of throwing it. */
-    static void close(AutoCloseable closeable) {
-        if (closeable == null) {
-            return; // it never opened
-        }
-
+    public static void close(AutoCloseable closeable) {
+        if (closeable == null) return; // it never opened
         try {
             closeable.close();
         } catch (Exception e) {
