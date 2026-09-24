@@ -37,7 +37,8 @@ public record EmotePacketPayload(@NotNull CustomPacketPayload.Type<?> id, @NotNu
                     // Only clientbound: serverbound decode stays strict, so this never touches ClientNetwork server-side.
                     if (bound == PacketBound.CLIENT) {
                         try {
-                            return new EmotePacketPayload(channel, new EmotePacket(buf, bound));
+                            // This decode only ever runs on a game client, which is what plays the emote
+                            return new EmotePacketPayload(channel, new EmotePacket(buf, bound, true));
                         } catch (Exception e) {
                             CommonData.LOGGER.warn("Dropping undecodable clientbound emote packet", e);
                             if (buf.isReadable()) buf.skipBytes(buf.readableBytes());

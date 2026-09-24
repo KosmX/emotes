@@ -66,7 +66,9 @@
   "emotecraft.otherconfig.enableWheelKeyboardNav": "Enable keyboard navigation on the choose wheel",
   "emotecraft.otherconfig.closeWheelType": "How the wheel closes",
   "emotecraft.otherconfig.closeWheelType.tooltip": "HOLD - wheel is open while you hold the button\nPRESS - wheel is always open until you press the button or ESC",
-  "emotecraft.otherconfig.displayNowPlaying": "Display \"Now Playing\" for emotes with songs",
+  "emotecraft.otherconfig.normalizeSoundVolume": "Normalize the volume of emote sounds",
+  "emotecraft.otherconfig.otherEmoteVolume": "Volume of other players' emote sounds",
+  "emotecraft.otherconfig.otherEmoteVolume.tooltip": "How loud the emote sounds of other players stay while your own emote is playing\nThey fade to it and back, and 1 leaves them alone",
   "emotecraft.emotelist": "All Emotes",
   "emotecraft.no_server": "Server has no version of Emotecraft installed. Other users won't see your emotes if you play any.",
   "emotecraft.different_server": "Server has a different version of Emotecraft installed. Other users may not see your emotes play correctly.",
@@ -118,6 +120,10 @@
   "emotecraft.emote.clap.description": "clap clap clap",
   "emotecraft.emote.backflip.name": "Back Flip",
   "emotecraft.emote.backflip.description": "Makes You Do A Back Flip",
+  "emotecraft.emote.take_the_l.name": "Take The L",
+  "emotecraft.emote.take_the_l.description": "You lose!",
+  "emotecraft.emote.caramell_dance.name": "Carramell Dance",
+  "emotecraft.emote.caramell_dance.description": "Kawai!",
   "emotecraft.dataloss.msg": "Possible loss of animation data",
   "emotecraft.dataloss.descr": "Writing in this format may result in data loss or incorrect playback of the final file!\nAre you sure you want to do this?"
 }

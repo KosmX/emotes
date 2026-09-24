@@ -56,9 +56,17 @@ public final class EmotePacket {
     }
 
     public EmotePacket(@NotNull ByteBuf byteBuf, PacketBound target) {
+        this(byteBuf, target, false);
+    }
+
+    /**
+     * @param playback whether this side plays what it reads, so that only a relay keeps what it cannot play
+     */
+    public EmotePacket(@NotNull ByteBuf byteBuf, PacketBound target, boolean playback) {
         if (byteBuf.readableBytes() < 6) throw new RuntimeException("Invalid packet header");
         if (byteBuf.readInt() > CommonData.networkingVersion) throw new RuntimeException("Can't read newer version");
         this.data = new NetData();
+        this.data.playback = playback;
         this.data.purpose = PacketTask.getTaskFromID(byteBuf.readByte());
 
         short count = byteBuf.readUnsignedByte();
@@ -117,7 +125,7 @@ public final class EmotePacket {
 
                 int subPacketStart = buf.writerIndex();
                 try {
-                    byte packetVersion = packet.getVer(this.data.versions);
+                    byte packetVersion = packet.getVer(this.data);
 
                     buf.writeByte(packet.getID());
                     buf.writeByte(packetVersion);
