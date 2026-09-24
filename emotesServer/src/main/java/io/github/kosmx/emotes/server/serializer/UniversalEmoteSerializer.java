@@ -116,6 +116,7 @@ public class UniversalEmoteSerializer {
         serializeInternalJson("club_penguin_dance");
         serializeInternalJson("take_the_l");
         serializeInternalJson("caramell_dance");
+        serializeInternalJson("lets_groove");
 
         Path path = InstanceService.INSTANCE.getExternalEmoteDir();
         if (!Files.isDirectory(path)) {
