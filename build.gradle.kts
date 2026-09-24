@@ -127,7 +127,7 @@ val ds = publishDiscord {
         nextRow()
 
         // Geyser
-        from(":geyser", "modrinth", title = "Geyser (Modrinth)")
+        // from(":geyser", "modrinth", title = "Geyser (Modrinth)")
     }
 
     footer = "||<@&926902263941849118>||"

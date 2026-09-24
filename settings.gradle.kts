@@ -21,4 +21,4 @@ include("minecraft")
 include("paper")
 
 // Geyser ext
-include("geyser")
+// include("geyser")
