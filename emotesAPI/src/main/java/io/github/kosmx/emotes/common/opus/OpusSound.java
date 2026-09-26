@@ -1,7 +1,7 @@
 package io.github.kosmx.emotes.common.opus;
 
-import io.github.jaredmdobson.concentus.OpusDecoder;
 import io.github.kosmx.emotes.common.CommonData;
+import org.concentus.OpusDecoder;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;

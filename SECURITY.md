@@ -16,7 +16,7 @@
 | 26.2      | 3.4.x      | 3.4.0-SNAPSHOT * | :white_check_mark: |
 
 \* Only in the builds that still play Note Block Studio songs. Emote sound has since moved to Opus, decoded
-with [Concentus](https://github.com/lostromb/concentus) 1.0.2, and those builds no longer ship NoteBlockLib.
+with [Concentus](https://github.com/plasmoapp/concentus) 1.0.0, and those builds no longer ship NoteBlockLib.
 
 ## Reporting a Vulnerability  
 

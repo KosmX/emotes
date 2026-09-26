@@ -47,6 +47,7 @@ tasks.shadowJar {
 
     relocate("team.unnamed.mocha", "com.zigythebird.playeranim.lib.mochafloats")
     relocate("javassist", "com.zigythebird.playeranim.lib.javassist")
+    relocate("org.concentus", "io.github.kosmx.emotes.bukkit.lib.concentus")
 
     // Services
     filesMatching("META-INF/services/**") {

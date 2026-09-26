@@ -105,7 +105,7 @@ dependencies {
         fabricPomCompile(this)
         neoforgePomCompile(this)
     }
-    implementation("io.github.jaredmdobson:concentus:${project["concentus_version"]}") {
+    implementation("com.plasmoverse:concentus:${project["concentus_version"]}") {
         isTransitive = false
 
         platformInclude(this)
