@@ -1,7 +1,5 @@
 package io.github.kosmx.emotes.testing.common;
 
-import io.github.jaredmdobson.concentus.OpusApplication;
-import io.github.jaredmdobson.concentus.OpusEncoder;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.network.objects.SongPacket;
@@ -10,6 +8,8 @@ import io.github.kosmx.emotes.common.opus.OpusFormatException;
 import io.github.kosmx.emotes.common.opus.Loudness;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.concentus.OpusApplication;
+import org.concentus.OpusEncoder;
 import org.junit.jupiter.api.Test;
 import org.redlance.mocha.parser.util.network.VarIntUtils;
 
