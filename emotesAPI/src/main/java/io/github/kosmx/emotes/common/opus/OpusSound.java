@@ -12,6 +12,7 @@ import java.lang.ref.SoftReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CancellationException;
@@ -65,6 +66,7 @@ public class OpusSound {
     private final byte[] data;
     private final int[] offsets; // one past the last packet, so a length is the gap to the next entry
     private final int sampleCount;
+    private final List<String> comments;
 
     // Minutes of PCM are worth keeping for a replay, but not worth an OutOfMemoryError
     private volatile SoftReference<DecodedSound> pcm = new SoftReference<>(null);
@@ -77,6 +79,14 @@ public class OpusSound {
 
     public OpusSound(int preSkip, int endTrim, int outputGain, @Nullable Integer trackGain, @Nullable Integer loopStart,
                      byte[] data, int[] offsets) throws OpusFormatException {
+        this(preSkip, endTrim, outputGain, trackGain, loopStart, data, offsets, List.of());
+    }
+
+    /**
+     * @param comments the {@code NAME=value} comments of the file the sound came from, which a packet does not carry
+     */
+    public OpusSound(int preSkip, int endTrim, int outputGain, @Nullable Integer trackGain, @Nullable Integer loopStart,
+                     byte[] data, int[] offsets, List<String> comments) throws OpusFormatException {
         if (preSkip < 0 || preSkip > 0xffff) throw new OpusFormatException("Opus pre-skip does not fit in 16 bits");
         if (outputGain < Short.MIN_VALUE || outputGain > Short.MAX_VALUE) {
             throw new OpusFormatException("Opus output gain does not fit in 16 bits");
@@ -144,6 +154,7 @@ public class OpusSound {
         this.data = data;
         this.offsets = offsets;
         this.sampleCount = (int) sampleCount;
+        this.comments = List.copyOf(comments);
         this.loopStart = loopStart != null && loopStart >= 0 && loopStart < playable() ? loopStart : NO_LOOP;
     }
 
@@ -162,30 +173,13 @@ public class OpusSound {
         OggOpusReader reader = new OggOpusReader(new BufferedInputStream(input));
         if (reader.channelCount() != 1) throw new OpusFormatException("Opus stream must be mono");
 
-        byte[] data = new byte[8192];
-        int[] offsets = new int[64];
-        int count = 0;
-        int length = 0;
-
+        Builder builder = new Builder();
         for (byte[] packet = reader.readPacket(); packet != null; packet = reader.readPacket()) {
-            // The constructor bounds this too, but only once the whole stream is already in memory
-            if (length + packet.length > CommonData.MAX_PACKET_SIZE) {
-                throw new OpusFormatException("Opus stream is bigger than " + CommonData.MAX_PACKET_SIZE + " bytes");
-            }
-
-            if (count + 1 == offsets.length) offsets = Arrays.copyOf(offsets, offsets.length * 2);
-            if (length + packet.length > data.length) {
-                data = Arrays.copyOf(data, Math.max(data.length * 2, length + packet.length));
-            }
-
-            offsets[count++] = length;
-            System.arraycopy(packet, 0, data, length, packet.length);
-            length += packet.length;
+            System.arraycopy(packet, 0, builder.reserve(packet.length), builder.length(), packet.length);
+            builder.commit(packet.length);
         }
-        offsets[count] = length;
-
-        return new OpusSound(reader.preSkip(), reader.endTrim(), reader.outputGain(), reader.trackGain(),
-                reader.loopStart(), Arrays.copyOf(data, length), Arrays.copyOf(offsets, count + 1));
+        return builder.build(reader.preSkip(), reader.endTrim(), reader.outputGain(), reader.trackGain(),
+                reader.loopStart(), reader.comments());
     }
 
     public void write(Path file) throws IOException {
@@ -235,6 +229,20 @@ public class OpusSound {
 
     public int length(int index) {
         return this.offsets[index + 1] - this.offsets[index];
+    }
+
+    /**
+     * @return the value of the first {@code name} comment of the file the sound came from, or null
+     */
+    @Nullable
+    public String comment(String name) {
+        for (String comment : this.comments) {
+            if (comment.length() > name.length() && comment.charAt(name.length()) == '='
+                    && comment.regionMatches(true, 0, name, 0, name.length())) {
+                return comment.substring(name.length() + 1);
+            }
+        }
+        return null;
     }
 
     public int durationMs() {
@@ -381,6 +389,55 @@ public class OpusSound {
 
         for (int i = offset, end = offset + length; i < end; i++) {
             samples[i] = (short) Math.clamp(Math.round(samples[i] * gain), Short.MIN_VALUE, Short.MAX_VALUE);
+        }
+    }
+
+    /**
+     * Lays packets back to back as they come, in the array the sound then keeps, so an encoder can write
+     * each one straight into it.
+     */
+    public static final class Builder {
+        private byte[] data = new byte[8192];
+        private int[] offsets = new int[64];
+        private int count;
+        private int length;
+
+        /**
+         * @return the array a packet of up to {@code size} bytes is written into, from {@link #length()} on
+         */
+        public byte[] reserve(int size) {
+            if (this.length + size > this.data.length) {
+                this.data = Arrays.copyOf(this.data, Math.max(this.data.length * 2, this.length + size));
+            }
+            return this.data;
+        }
+
+        /**
+         * @return where the next packet starts
+         */
+        public int length() {
+            return this.length;
+        }
+
+        /**
+         * Takes the {@code size} bytes written at {@link #length()} as the next packet.
+         */
+        public void commit(int size) throws OpusFormatException {
+            // The constructor bounds this too, but only once the whole stream is already in memory
+            if (this.length + size > CommonData.MAX_PACKET_SIZE) {
+                throw new OpusFormatException("Opus stream is bigger than " + CommonData.MAX_PACKET_SIZE + " bytes");
+            }
+
+            if (this.count + 1 == this.offsets.length) this.offsets = Arrays.copyOf(this.offsets, this.offsets.length * 2);
+            this.offsets[this.count++] = this.length;
+            this.length += size;
+        }
+
+        public OpusSound build(int preSkip, int endTrim, int outputGain, @Nullable Integer trackGain,
+                               @Nullable Integer loopStart, List<String> comments) throws OpusFormatException {
+            this.offsets[this.count] = this.length;
+            return new OpusSound(preSkip, endTrim, outputGain, trackGain, loopStart,
+                    Arrays.copyOf(this.data, this.length), Arrays.copyOf(this.offsets, this.count + 1), comments);
         }
     }
 }

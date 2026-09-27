@@ -7,7 +7,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Pulls Opus packets out of an Ogg stream. Page boundaries and packet boundaries are unrelated:
@@ -46,6 +49,7 @@ public class OggOpusReader extends LittleEndianInputStream {
     private Integer trackGain;
     @Nullable
     private Integer loopStart;
+    private final List<String> comments = new ArrayList<>();
 
     public OggOpusReader(InputStream in) throws IOException {
         super(in);
@@ -98,6 +102,13 @@ public class OggOpusReader extends LittleEndianInputStream {
     @Nullable
     public Integer loopStart() {
         return this.loopStart;
+    }
+
+    /**
+     * @return the {@code NAME=value} comments short enough to be read, in stream order
+     */
+    public List<String> comments() {
+        return Collections.unmodifiableList(this.comments);
     }
 
     /**
@@ -424,6 +435,7 @@ public class OggOpusReader extends LittleEndianInputStream {
     }
 
     private void readComment(String comment) {
+        this.comments.add(comment);
         if (this.trackGain == null && comment.regionMatches(true, 0, OggOpus.TRACK_GAIN, 0, OggOpus.TRACK_GAIN.length())) {
             // A track gain is a 16 bit signed integer, and a value that is not one is not a gain
             this.trackGain = number(comment.substring(OggOpus.TRACK_GAIN.length()), Short.MIN_VALUE, Short.MAX_VALUE);

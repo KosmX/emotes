@@ -1,8 +1,11 @@
 package io.github.kosmx.emotes.testing.common;
 
+import io.github.kosmx.emotes.common.opus.OggOpusWriter;
 import io.github.kosmx.emotes.common.opus.OpusSound;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
@@ -18,6 +21,8 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.jupiter.api.Assertions.*;
 
 class OpusSoundTest {
+    private static final byte[] SILENCE = {(byte) 0xf8, (byte) 0xff, (byte) 0xfe};
+
     @Test
     void cancelledRequestDoesNotPoisonReplay() throws Exception {
         OpusSound sound = silence();
@@ -89,6 +94,32 @@ class OpusSoundTest {
         assertEquals(960, overflow.decoded().get(5, SECONDS).samples().length);
     }
 
+    @Test
+    void readKeepsTheCommentsOfTheFile() throws Exception {
+        ByteArrayOutputStream file = new ByteArrayOutputStream();
+        try (OggOpusWriter writer = new OggOpusWriter(file, 1, 0, 0, 0, null, 480)) {
+            writer.writePacket(SILENCE, 0, SILENCE.length);
+        }
+        OpusSound sound = OpusSound.read(new ByteArrayInputStream(file.toByteArray()));
+        assertEquals("480", sound.comment("loopstart"));
+        assertNull(sound.comment("LOOP"));
+        assertNull(silence().comment("LOOPSTART"));
+    }
+
+    @Test
+    void builderLaysPacketsWhereTheEncoderWroteThem() throws Exception {
+        OpusSound.Builder builder = new OpusSound.Builder();
+        for (int i = 0; i < 3; i++) {
+            System.arraycopy(SILENCE, 0, builder.reserve(SILENCE.length), builder.length(), SILENCE.length);
+            builder.commit(SILENCE.length);
+        }
+        OpusSound sound = builder.build(0, 0, 0, null, null, List.of("TITLE=Groove"));
+        assertEquals(3, sound.packetCount());
+        assertEquals(6, sound.offset(2));
+        assertEquals(9, sound.data().length);
+        assertEquals("Groove", sound.comment("title"));
+    }
+
     private static Throwable failure(CompletableFuture<?> future) throws Exception {
         Throwable error = future.handle((value, failure) -> failure).get(5, SECONDS);
         assertNotNull(error);
@@ -96,8 +127,7 @@ class OpusSoundTest {
     }
 
     private static OpusSound silence() throws Exception {
-        return new OpusSound(0, 0, 0, null, null,
-                new byte[]{(byte) 0xf8, (byte) 0xff, (byte) 0xfe}, new int[]{0, 3});
+        return new OpusSound(0, 0, 0, null, null, SILENCE.clone(), new int[]{0, 3});
     }
 
     private static ThreadPoolExecutor decoder() throws Exception {
