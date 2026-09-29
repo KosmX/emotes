@@ -12,6 +12,7 @@ import io.github.kosmx.emotes.common.network.objects.SongPacket;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.network.BaseClientNetwork;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -48,7 +49,7 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
 
         if (writer.data.emoteData != null && writer.data.skippedPackets.contains(PacketConfig.NBS_CONFIG)
                 && (writer.data.emoteData.data().has(SongPacket.OPUS_KEY) || writer.data.emoteData.data().has(SongPacket.NBS_KEY))) {
-            PlatformTools.addToast(Component.translatable("emotecraft.song_too_big_to_send"));
+            Minecraft.getInstance().execute(() -> PlatformTools.addToast(Component.translatable("emotecraft.song_too_big_to_send")));
         }
     }
 
@@ -105,7 +106,7 @@ public abstract class ClientNetwork extends BaseClientNetwork implements Advance
         this.isConfiguredNormally = true;
         CommonData.LOGGER.info("The configuration of the {} is complete! {}", getClass().getName(), getVersions());
         if (ClientPacketManager.isInstanceOutdatedForStreaming(this)) {
-            PlatformTools.addToast(FastMenuScreen.WARN_DIFFERENT_SERVER);
+            Minecraft.getInstance().execute(() -> PlatformTools.addToast(FastMenuScreen.WARN_DIFFERENT_SERVER));
         }
     }
 }

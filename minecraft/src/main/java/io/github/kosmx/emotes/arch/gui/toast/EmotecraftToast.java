@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.gui.toast;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.kosmx.emotes.arch.screen.utils.EmotecraftTexture;
 import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.mc.McUtils;
