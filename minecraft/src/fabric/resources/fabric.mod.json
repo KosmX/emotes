@@ -51,7 +51,8 @@
   },
   "breaks": {
     "bendable_cuboids": "<2.0.4+mc.26.2",
-    "grimac": "*"
+    "grimac": "*",
+    "online_emotes": "*"
   },
   "custom": {
     "modmenu": {

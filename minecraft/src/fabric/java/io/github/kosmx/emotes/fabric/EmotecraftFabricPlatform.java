@@ -8,12 +8,16 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.minecraft.client.sounds.AudioStream;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Avatar;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntSupplier;
 
@@ -30,6 +34,15 @@ public final class EmotecraftFabricPlatform implements EmotecraftModPlatform {
     @Override
     public String getPlatformName() {
         return "fabric";
+    }
+
+    @Override
+    public @Nullable Path getModFile(String modid) {
+        return FabricLoader.getInstance().getModContainer(modid)
+                .map(ModContainer::getOrigin)
+                .map(ModOrigin::getPaths)
+                .map(List::getFirst)
+                .orElse(null);
     }
 
     @Override

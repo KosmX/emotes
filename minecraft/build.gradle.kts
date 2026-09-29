@@ -134,6 +134,22 @@ dependencies {
         "neoforgeImplementation"(this)
     }
 
+    // Online Emotes tells the relay where the jar was downloaded from
+    implementation("org.redlance.platformtools:common:${project["platformtools_version"]}") {
+        isTransitive = false
+
+        platformInclude(this)
+        "fabricImplementation"(this)
+        "neoforgeImplementation"(this)
+    }
+    implementation("org.redlance.platformtools:referer:${project["platformtools_version"]}") {
+        isTransitive = false
+
+        platformInclude(this)
+        "fabricImplementation"(this)
+        "neoforgeImplementation"(this)
+    }
+
     // Third-party
     compileOnly("com.blamejared.searchables:Searchables-common-26.2:${project["searchables_version"]}") {
         isTransitive = false

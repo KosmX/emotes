@@ -14,6 +14,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryClient;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryException;
 import org.redlance.emotecraftlibrary.sdk.JoinServer;
@@ -72,6 +73,31 @@ public final class EmoteLibrary implements JoinServer {
                     CommonData.LOGGER.warn("Failed to send emotecraft library request!", throwable);
                     throw new CompletionException(throwable);
                 });
+    }
+
+    /**
+     * The account token proves the game account to other redlance services, such as the Online Emotes relay. The library
+     * issues it even to accounts not linked on the website, and getting it is not a cloud library feature, so unlike
+     * {@link #executeAuthorized} it signs in without waiting for the library's terms to be accepted.
+     *
+     * @param refresh sign in again even with a token at hand, because the service rejected it
+     * @return the token, or {@code null} if signing in failed
+     */
+    public static CompletableFuture<@Nullable String> getAccountToken(boolean refresh) {
+        return CompletableFuture.supplyAsync(() -> {
+            String token = refresh ? null : EMOTE_LIBRARY_CLIENT.getAccountToken();
+            if (token != null) return token;
+
+            try {
+                EMOTE_LIBRARY_CLIENT.authorizeJava(JOIN_SERVER);
+            } catch (EmoteLibraryException.AccountNotLinked ignored) {
+                // No library session for an unlinked account, but its token came with the answer all the same
+            }
+            return EMOTE_LIBRARY_CLIENT.getAccountToken();
+        }, EXECUTOR).exceptionally(throwable -> {
+            CommonData.LOGGER.warn("Failed to get the EmotecraftLibrary account token!", unwrap(throwable));
+            return null;
+        });
     }
 
     /** Closes a stream opened through the client, logging a failure instead of throwing it. */

@@ -11,6 +11,7 @@
     "AvatarAnimManagerMixin",
     "EmoteAvatarMixin",
     "EntityRenderDispatcherMixin",
+    "IntegratedServerMixin",
     "KeyEventMixin",
     "LivingEntityRendererMixin",
     "PlayerMixin",

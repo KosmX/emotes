@@ -3,12 +3,14 @@ package io.github.kosmx.emotes.arch;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.library.LibraryNotifications;
+import io.github.kosmx.emotes.arch.online.OnlineNetworkInstance;
 import io.github.kosmx.emotes.arch.screen.ingame.FastMenuScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.ClientConfig;
 import io.github.kosmx.emotes.main.network.BaseClientNetwork;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
+import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.config.Serializer;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
@@ -33,6 +35,7 @@ public class EmotecraftClientMod {
 
     protected void onInitializeClient() {
         EmotecraftClientMod.loadEmotes();
+        ClientPacketManager.registerProxyInstance(OnlineNetworkInstance.INSTANCE);
     }
 
     protected void onClientStarted(Minecraft minecraft) {
@@ -55,6 +58,8 @@ public class EmotecraftClientMod {
         if (STOP_EMOTE_KEY.consumeClick()) {
             ClientEmotePlay.clientStopLocalEmote();
         }
+
+        OnlineNetworkInstance.INSTANCE.tick(minecraft);
     }
 
     public static CompletableFuture<Void> loadEmotes() {

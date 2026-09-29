@@ -47,3 +47,11 @@ type="incompatible"
 versionRange="[1.0,2.0.4+mc.26.2)"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.emotecraft]]
+modId="online_emotes"
+type="incompatible"
+reason="Online Emotes is part of Emotecraft now, remove it"
+versionRange="[0,)"
+ordering="NONE"
+side="CLIENT"

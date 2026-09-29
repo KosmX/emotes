@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
+import io.github.kosmx.emotes.arch.online.OnlineEmotes;
+import io.github.kosmx.emotes.arch.online.OnlineNetworkInstance;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
@@ -37,12 +39,15 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     private static final Component WARN_NO_SERVER = Component.translatable("emotecraft.no_server").withColor(CommonColors.SOFT_RED);
     public static final Component WARN_DIFFERENT_SERVER = Component.translatable("emotecraft.different_server").withColor(CommonColors.SOFT_RED);
     private static final Component WARN_ONLY_PROXY = Component.translatable("emotecraft.only_proxy");
+    private static final Component WARN_ONLY_ONLINE = Component.translatable("emotecraft.only_online");
+    private static final Component RECONNECT_ONLINE = Component.translatable("emotecraft.online.reconnect");
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 0, HeaderAndFooterLayout.DEFAULT_HEADER_AND_FOOTER_HEIGHT);
     private final FrameLayout contents = this.layout.addToContents(new FrameLayout());
     protected final Screen parent;
 
     protected AbstractFastChooseWidget fastMenu;
+    private Button reconnectOnline;
 
     public FastMenuScreen(Screen parent) {
         super(FastMenuScreen.TITLE);
@@ -61,6 +66,8 @@ public class FastMenuScreen extends Screen implements FastChooseController {
             } else {
                 this.layout.setHeaderHeight(0);
             }
+        } else if (OnlineNetworkInstance.INSTANCE.isActive()) {
+            this.layout.addTitleHeader(FastMenuScreen.WARN_ONLY_ONLINE, this.font);
         } else if (ClientPacketManager.isAvailableProxy()) {
             this.layout.addTitleHeader(FastMenuScreen.WARN_ONLY_PROXY, this.font);
         } else {
@@ -70,6 +77,13 @@ public class FastMenuScreen extends Screen implements FastChooseController {
         this.fastMenu = this.contents.addChild(new PreviewFastChooseWidget(this, true, 0, 0, 512));
 
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
+        if (PlatformTools.getConfig().onlineDebug.get()) {
+            this.reconnectOnline = linearLayout.addChild(Button.builder(RECONNECT_ONLINE, _ -> OnlineEmotes.connect())
+                    .width(Button.SMALL_WIDTH)
+                    .build()
+            );
+            this.reconnectOnline.active = !OnlineNetworkInstance.INSTANCE.isActive(); // and kept up to date on every tick
+        }
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
                 .width(Button.SMALL_WIDTH)
                 .build()
@@ -161,6 +175,9 @@ public class FastMenuScreen extends Screen implements FastChooseController {
         super.tick();
         if (this.fastMenu != null) {
             this.fastMenu.tick();
+        }
+        if (this.reconnectOnline != null) {
+            this.reconnectOnline.active = !OnlineNetworkInstance.INSTANCE.isActive();
         }
     }
 

@@ -9,8 +9,10 @@ import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.world.entity.Avatar;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntSupplier;
 
@@ -25,6 +27,13 @@ public final class EmotecraftNeoPlatform implements EmotecraftModPlatform {
     @Override
     public String getPlatformName() {
         return "neoforge";
+    }
+
+    @Override
+    public @Nullable Path getModFile(String modid) {
+        ModFileInfo info = FMLLoader.getCurrent().getLoadingModList().getModFileById(modid);
+        if (info == null) return null;
+        return info.getFile().getFilePath();
     }
 
     @Override

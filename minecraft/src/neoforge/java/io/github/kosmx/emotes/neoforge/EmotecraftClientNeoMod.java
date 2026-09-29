@@ -3,6 +3,8 @@ package io.github.kosmx.emotes.neoforge;
 import io.github.kosmx.emotes.arch.ClientCommands;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
+import io.github.kosmx.emotes.arch.online.OnlineEmotes;
+import io.github.kosmx.emotes.arch.online.OnlineNetworkInstance;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.common.CommonData;
 import net.minecraft.client.Minecraft;
@@ -20,6 +22,8 @@ import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 
 @Mod(value = CommonData.MOD_ID, dist = Dist.CLIENT)
 public class EmotecraftClientNeoMod extends EmotecraftClientMod {
@@ -33,6 +37,8 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
         NeoForge.EVENT_BUS.addListener(this::onClientTickPost);
         NeoForge.EVENT_BUS.addListener(this::onLoggingOut);
         NeoForge.EVENT_BUS.addListener(this::onLoggingIn);
+        NeoForge.EVENT_BUS.addListener(this::onEntityJoinLevel);
+        NeoForge.EVENT_BUS.addListener(this::onEntityLeaveLevel);
         NeoForge.EVENT_BUS.addListener(this::onRegisterClientCommands);
         modEventBus.addListener(this::onRegisterKeyMappings);
     }
@@ -55,12 +61,24 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
     @SubscribeEvent
     public void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientNetwork.INSTANCE.disconnect();
+        OnlineNetworkInstance.INSTANCE.disconnect();
     }
 
     @SubscribeEvent
     @SuppressWarnings("deprecation")
     public void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
         ClientNetwork.INSTANCE.configureOnPlay(ClientPacketDistributor::sendToServer);
+        OnlineEmotes.connect();
+    }
+
+    @SubscribeEvent
+    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide()) OnlineNetworkInstance.INSTANCE.onTrackingStart(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
+        if (event.getLevel().isClientSide()) OnlineNetworkInstance.INSTANCE.onTrackingEnd(event.getEntity());
     }
 
     public void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
