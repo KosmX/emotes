@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,7 @@ import java.util.function.Predicate;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
     private static final List<Component> LAST_OPENED_PATH = new CopyOnWriteArrayList<>();
+    private static final long SCROLL_STOP_DELAY = 400L; // ms the list has to stay still to count as stopped
 
     private final LibraryFolderEntry libraryEntry = new LibraryFolderEntry(this);
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
@@ -43,6 +45,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     private FolderEntry lastClickedFolder;
     private ListEntry footer;
     private boolean compactMode;
+    private long lastScrollTime;
 
     private final PageButton backButton = new PageButton(Button.DEFAULT_HEIGHT, Button.DEFAULT_HEIGHT, RecipeBookPage.PAGE_BACKWARD_SPRITES, true, button -> {
         if (!EmoteListWidget.this.active) return;
@@ -108,6 +111,18 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             this.loadMore.clear();
             pending.forEach(Runnable::run);
         }
+    }
+
+    @Override
+    public void setScrollAmount(double scrollAmount) {
+        double previous = scrollAmount();
+        super.setScrollAmount(scrollAmount);
+        if (scrollAmount() != previous) this.lastScrollTime = Util.getMillis();
+    }
+
+    /** @return whether the list scrolled in the last {@link #SCROLL_STOP_DELAY} ms, so its rows may still be sliding under the cursor. */
+    public boolean isScrolling() {
+        return Util.getMillis() - this.lastScrollTime < SCROLL_STOP_DELAY;
     }
 
     public void setEmotes(Iterable<EmoteHolder> list, boolean showInvalid) {

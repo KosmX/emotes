@@ -170,7 +170,9 @@ public abstract class EmoteSubScreen extends PreviewScreen {
             if (this.list.getSelected() == hovered) {
                 hovered = null;
             }
-            if (hovered instanceof EmoteListWidget.EmoteLikeEntry emote) {
+            if (this.list.isScrolling()) {
+                clearPreviewed(true); // Hidden while scrolling, only the emote the list stops on is loaded
+            } else if (hovered instanceof EmoteListWidget.EmoteLikeEntry emote) {
                 previewEmote(emote, emote::getEmote);
             } else {
                 clearPreviewed(hovered instanceof EmoteListWidget.FolderEntry);
