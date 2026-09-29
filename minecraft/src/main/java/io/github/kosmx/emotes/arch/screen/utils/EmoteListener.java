@@ -46,9 +46,9 @@ public class EmoteListener extends PackSelectionScreen.Watcher {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         this.loader = EmotecraftClientMod.loadEmotes()
-                .thenRun(() -> PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
+                .thenRunAsync(() -> PlatformTools.addToast(Component.translatable("emotecraft.reloading.done",
                         FORMAT.format((double) stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000D)
-                )))
+                )), Minecraft.getInstance())
                 .thenRunAsync(onComplete, Objects.requireNonNullElseGet(executor, Minecraft::getInstance));
     }
 
