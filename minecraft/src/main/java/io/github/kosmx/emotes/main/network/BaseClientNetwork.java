@@ -11,6 +11,7 @@ import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +71,7 @@ public abstract class BaseClientNetwork implements INetworkInstance {
                     ClientEmoteEvents.EMOTE_STOP.invoker().onEmoteStop(data.stopEmoteID, player.getUUID());
                     player.stopEmote(data.stopEmoteID);
                     if (player.isMainAvatar() && !data.isForced) {
-                        PlatformTools.addToast(Component.translatable("emotecraft.blockedEmote"));
+                        Minecraft.getInstance().execute(() -> PlatformTools.addToast(Component.translatable("emotecraft.blockedEmote")));
                     }
                 } else {
                     QUEUE.remove(data.player);
