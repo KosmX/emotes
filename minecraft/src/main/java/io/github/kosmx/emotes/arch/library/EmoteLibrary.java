@@ -54,6 +54,8 @@ public final class EmoteLibrary implements JoinServer {
 
     private static final EmoteLibrary JOIN_SERVER = new EmoteLibrary();
 
+    private static @Nullable CompletableFuture<Void> lastSignIn; // one sign-in at a time
+
     private EmoteLibrary() {}
 
     public static <R> CompletableFuture<R> executeAuthorized(Function<EmoteLibraryClient, R> request) {
@@ -65,7 +67,7 @@ public final class EmoteLibrary implements JoinServer {
                             if (PlatformTools.getConfig().cloudLibraryStatus.get() != LibraryStatus.ENABLED) {
                                 throw new EmoteLibraryException("EmoteLibrary not enabled!");
                             }
-                            EMOTE_LIBRARY_CLIENT.authorizeJava(JOIN_SERVER);
+                            signIn().join();
                         }, EXECUTOR).thenApply((_) -> request.apply(EMOTE_LIBRARY_CLIENT)).whenComplete((_, th) -> {
                             if (th != null) CommonData.LOGGER.warn("Failed to send emotecraft library request!", th);
                         });
@@ -75,28 +77,36 @@ public final class EmoteLibrary implements JoinServer {
                 });
     }
 
-    /**
-     * The account token proves the game account to other redlance services, such as the Online Emotes relay. The library
-     * issues it even to accounts not linked on the website, and getting it is not a cloud library feature, so unlike
-     * {@link #executeAuthorized} it signs in without waiting for the library's terms to be accepted.
-     *
-     * @param refresh sign in again even with a token at hand, because the service rejected it
-     * @return the token, or {@code null} if signing in failed
-     */
-    public static CompletableFuture<@Nullable String> getAccountToken(boolean refresh) {
-        return CompletableFuture.supplyAsync(() -> {
-            String token = refresh ? null : EMOTE_LIBRARY_CLIENT.getAccountToken();
-            if (token != null) return token;
+    /** Account token for other redlance services; signs in once for it, library terms accepted or not. */
+    public static synchronized CompletableFuture<@Nullable String> getAccountToken() {
+        String token = EMOTE_LIBRARY_CLIENT.getAccountToken();
+        if (token != null || lastSignIn != null && lastSignIn.isDone()) return CompletableFuture.completedFuture(token);
+        return tokenAfter(signIn()); // the first sign-in, or the one on the way
+    }
 
-            try {
-                EMOTE_LIBRARY_CLIENT.authorizeJava(JOIN_SERVER);
-            } catch (EmoteLibraryException.AccountNotLinked ignored) {
-                // No library session for an unlinked account, but its token came with the answer all the same
+    /** Signs in for another token after a service turned {@code refused} down, unless one came since. */
+    public static synchronized CompletableFuture<@Nullable String> renewAccountToken(String refused) {
+        String token = EMOTE_LIBRARY_CLIENT.getAccountToken();
+        boolean signingIn = lastSignIn != null && !lastSignIn.isDone();
+        if (!signingIn && token != null && !token.equals(refused)) return CompletableFuture.completedFuture(token);
+        return tokenAfter(signIn());
+    }
+
+    /** Signs in, or joins the sign-in on the way: two at once would take the account's Mojang session from each other. */
+    private static synchronized CompletableFuture<Void> signIn() {
+        if (lastSignIn == null || lastSignIn.isDone()) {
+            lastSignIn = CompletableFuture.runAsync(() -> EMOTE_LIBRARY_CLIENT.authorizeJava(JOIN_SERVER), EXECUTOR);
+        }
+        return lastSignIn;
+    }
+
+    private static CompletableFuture<@Nullable String> tokenAfter(CompletableFuture<Void> signIn) {
+        return signIn.handle((_, throwable) -> {
+            // An unlinked account gets no library session, but its token comes with the answer all the same
+            if (throwable != null && !(unwrap(throwable) instanceof EmoteLibraryException.AccountNotLinked)) {
+                CommonData.LOGGER.warn("Failed to get the EmotecraftLibrary account token!", unwrap(throwable));
             }
             return EMOTE_LIBRARY_CLIENT.getAccountToken();
-        }, EXECUTOR).exceptionally(throwable -> {
-            CommonData.LOGGER.warn("Failed to get the EmotecraftLibrary account token!", unwrap(throwable));
-            return null;
         });
     }
 

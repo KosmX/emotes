@@ -5,13 +5,17 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /** Upgrades one connection to a WebSocket; {@link #handshakeFuture()} tells how that went. */
 public class HandshakeHandler extends SimpleChannelInboundHandler<FullHttpResponse> {
+    private static final long TIMEOUT = 10L; // seconds
+
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
 
@@ -34,6 +38,10 @@ public class HandshakeHandler extends SimpleChannelInboundHandler<FullHttpRespon
     public void channelActive(@NotNull ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.handshaker.handshake(ctx.channel());
+
+        ctx.executor().schedule(() -> { // as long as Netty's WebSocketClientProtocolHandler waits
+            if (this.handshakeFuture.tryFailure(new WebSocketClientHandshakeException("Handshake timed out"))) ctx.close();
+        }, TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Override

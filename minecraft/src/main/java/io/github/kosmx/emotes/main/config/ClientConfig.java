@@ -32,12 +32,7 @@ public class ClientConfig extends CommonConfig {
     public final ConfigEntry<Float> stopThreshold = new FloatConfigEntry("stopthreshold", "stopThreshold", 0.04f, true, category("expert"), -3.912f, 8f);
     public final ConfigEntry<Float> yRatio = new FloatConfigEntry("yratio", "yRatio", 0.75f, true, category("expert"), 0f, 100f);
     public final ConfigEntry<Boolean> showHiddenConfig = new ConfigEntry<>("showHiddenConfig", false, true, category("expert"), false);
-    public final ConfigEntry<Long> onlineReconnectDelay = new NumberConfigEntry<>("onlineReconnectDelay", 15L, true, category("expert"), 1L, 300L) {
-        @Override
-        public Long fromDouble(double value) {
-            return (long) value;
-        }
-    };
+    public final ConfigEntry<Long> onlineReconnectDelay = new LongConfigEntry("onlineReconnectDelay", 15L, true, category("expert"), 1L, 300L);
     public final ConfigEntry<Boolean> onlineDebug = new ConfigEntry<>("onlineDebug", false, true, category("expert"));
     // public final ConfigEntry<Boolean> neverRemoveBadIcon = new ConfigEntry<>("neverRemoveBadIcon", false, expert, true);
     // public final ConfigEntry<Boolean> exportBuiltin = new ConfigEntry<>("exportBuiltin", false, expert, true);

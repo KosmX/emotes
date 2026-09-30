@@ -28,19 +28,20 @@ public final class NettyObjectFactory {
     private NettyObjectFactory() {}
 
     /** One thread: the relay connection keeps its state on it, so none of it needs locking. */
-    public static EventLoopGroup newEventLoopGroup() {
-        return new MultiThreadIoEventLoopGroup(1, THREAD_FACTORY, ioHandlerFactory());
+    public static EventLoopGroup newEventLoopGroup(boolean nativeTransport) {
+        return new MultiThreadIoEventLoopGroup(1, THREAD_FACTORY, ioHandlerFactory(nativeTransport));
     }
 
-    private static IoHandlerFactory ioHandlerFactory() {
-        if (KQueue.isAvailable()) return KQueueIoHandler.newFactory();
-        if (Epoll.isAvailable()) return EpollIoHandler.newFactory();
+    // Picked like vanilla's EventLoopGroupHolder.remote
+    private static IoHandlerFactory ioHandlerFactory(boolean nativeTransport) {
+        if (nativeTransport && KQueue.isAvailable()) return KQueueIoHandler.newFactory();
+        if (nativeTransport && Epoll.isAvailable()) return EpollIoHandler.newFactory();
         return NioIoHandler.newFactory();
     }
 
-    public static Class<? extends SocketChannel> getSocketChannel() {
-        if (KQueue.isAvailable()) return KQueueSocketChannel.class;
-        if (Epoll.isAvailable()) return EpollSocketChannel.class;
+    public static Class<? extends SocketChannel> getSocketChannel(boolean nativeTransport) {
+        if (nativeTransport && KQueue.isAvailable()) return KQueueSocketChannel.class;
+        if (nativeTransport && Epoll.isAvailable()) return EpollSocketChannel.class;
         return NioSocketChannel.class;
     }
 }

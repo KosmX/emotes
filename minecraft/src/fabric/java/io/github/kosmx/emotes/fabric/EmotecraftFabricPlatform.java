@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntSupplier;
 
@@ -40,9 +39,16 @@ public final class EmotecraftFabricPlatform implements EmotecraftModPlatform {
     public @Nullable Path getModFile(String modid) {
         return FabricLoader.getInstance().getModContainer(modid)
                 .map(ModContainer::getOrigin)
-                .map(ModOrigin::getPaths)
-                .map(List::getFirst)
+                .map(this::getFile)
                 .orElse(null);
+    }
+
+    private @Nullable Path getFile(ModOrigin origin) {
+        return switch (origin.getKind()) {
+            case PATH -> origin.getPaths().getFirst();
+            case NESTED -> getModFile(origin.getParentModId()); // inside the jar of another mod
+            default -> null;
+        };
     }
 
     @Override

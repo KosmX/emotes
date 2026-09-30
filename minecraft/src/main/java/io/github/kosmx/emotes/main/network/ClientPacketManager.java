@@ -51,17 +51,21 @@ public final class ClientPacketManager {
     public static void send(EmotePacket.Builder packetBuilder, UUID target) {
         ClientNetworkEvents.PACKET_SEND.invoker().onPacketSend(packetBuilder);
 
-        boolean isMainActive = ClientNetwork.INSTANCE.isActive();
-        if (isMainActive) { // Always try to send to main
+        if (ClientNetwork.INSTANCE.isActive()) { // Always try to send to main
             ClientPacketManager.sendMessageVia(ClientNetwork.INSTANCE, packetBuilder.copy(), target);
         }
 
-        if (!isMainActive || isInstanceOutdatedForStreaming(ClientNetwork.INSTANCE)) {
+        if (isProxyNeeded()) {
             for (INetworkInstance network : NETWORK_INSTANCES) {
                 if (!network.isActive()) continue;
                 ClientPacketManager.sendMessageVia(network, packetBuilder.copy(), target);
             }
         }
+    }
+
+    /** Whether emotes go through the proxy instances too, as the server streams none of them or not all. */
+    public static boolean isProxyNeeded() {
+        return !ClientNetwork.INSTANCE.isActive() || isInstanceOutdatedForStreaming(ClientNetwork.INSTANCE);
     }
 
     private static void sendMessageVia(INetworkInstance network, EmotePacket.Builder packetBuilder, UUID target) {

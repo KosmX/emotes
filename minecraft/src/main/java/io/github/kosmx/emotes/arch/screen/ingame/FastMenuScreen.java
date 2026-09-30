@@ -82,7 +82,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
                     .width(Button.SMALL_WIDTH)
                     .build()
             );
-            this.reconnectOnline.active = !OnlineNetworkInstance.INSTANCE.isActive(); // and kept up to date on every tick
+            this.reconnectOnline.active = canReconnectOnline(); // and kept up to date on every tick
         }
         linearLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL, button -> onClose())
                 .width(Button.SMALL_WIDTH)
@@ -177,8 +177,12 @@ public class FastMenuScreen extends Screen implements FastChooseController {
             this.fastMenu.tick();
         }
         if (this.reconnectOnline != null) {
-            this.reconnectOnline.active = !OnlineNetworkInstance.INSTANCE.isActive();
+            this.reconnectOnline.active = canReconnectOnline();
         }
+    }
+
+    private static boolean canReconnectOnline() {
+        return !OnlineNetworkInstance.INSTANCE.isActive() && OnlineEmotes.isWorldShared();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.EmotecraftModPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.library.EmoteLibrary;
+import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.arch.online.netty.HandshakeHandler;
 import io.github.kosmx.emotes.arch.online.netty.NettyObjectFactory;
 import io.github.kosmx.emotes.arch.online.netty.WebsocketHandler;
@@ -11,7 +12,10 @@ import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
 import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
+import io.github.kosmx.emotes.common.network.PacketTask;
+import io.github.kosmx.emotes.common.network.objects.NetData;
 import io.github.kosmx.emotes.common.network.objects.SongPacket;
+import io.github.kosmx.emotes.main.emotePlay.EmotePlayer;
 import io.github.kosmx.emotes.main.network.BaseClientNetwork;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
 import io.netty.bootstrap.Bootstrap;
@@ -35,7 +39,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakeException;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
+import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.ScheduledFuture;
 import net.minecraft.SharedConstants;
@@ -52,51 +58,58 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 import org.redlance.platformtools.referer.PlatformFileReferer;
 
-import javax.net.ssl.SSLException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-/**
- * The connection to the Online Emotes relay, which streams emotes between players whose server doesn't. The relay
- * routes an emote to the clients that track its player, so this one keeps the relay told of the players it tracks.
- * <p>
- * Protocol 2, client to relay: a binary frame starts with the protocol version and the {@link FrameType}.
- * The handshake carries the EmotecraftLibrary account token, if there is one, to verify the account by. It is an
- * optional level of trust: the relay lets clients in without it too.
- */
+/** Connection to the Online Emotes relay; binary frames start with the protocol version and the {@link FrameType}. */
 public final class OnlineNetworkInstance extends BaseClientNetwork {
     private static final URI URI_ADDRESS = URI.create("wss://api.redlance.org:443/websockets/online-emotes");
     private static final int PAYLOAD_LENGTH = Integer.MAX_VALUE;
+    private static final int RELAY_PAYLOAD_LENGTH = 2 * 1024 * 1024; // the largest frame the relay takes
     private static final long TOKEN_TIMEOUT = 5L; // seconds
+    private static final long MAX_RECONNECT_DELAY = 300L; // seconds
+    private static final long PING_INTERVAL = 30L; // seconds
+    private static final long READ_TIMEOUT = 90L; // seconds
 
     private static final byte PROTOCOL_VERSION = 2;
     private static final StreamCodec<ByteBuf, List<UUID>> UUID_LIST = UUIDUtil.STREAM_CODEC.apply(ByteBufCodecs.list());
+    private static final Component CONNECTED = Component.translatable("emotecraft.online.connected");
+    private static final Component DISCONNECTED = Component.translatable("emotecraft.online.disconnected");
 
     /** Set on a channel once its STATE went out: from then on the relay knows who sends what comes through it. */
     private static final AttributeKey<Boolean> ANNOUNCED = AttributeKey.valueOf("emotecraft_online_announced");
 
     public static final OnlineNetworkInstance INSTANCE = new OnlineNetworkInstance();
 
-    private final EventLoopGroup group = NettyObjectFactory.newEventLoopGroup();
-    private final Bootstrap bootstrap = new Bootstrap()
-            .group(this.group)
-            .channel(NettyObjectFactory.getSocketChannel());
-    private final TrackedPlayers trackedPlayers = new TrackedPlayers(); // client thread
+    // Created by the first connect(), which knows whether the native transport is enabled
+    private volatile EventLoopGroup group;
+    private Bootstrap bootstrap;
 
-    private volatile @Nullable ScheduledFuture<?> reconnecting;
+    // Client thread
+    private final TrackedPlayers trackedPlayers = new TrackedPlayers();
+    private final Map<UUID, UUID> relayedEmotes = new HashMap<>(); // player, emote the relay started
+
+    private volatile boolean running;
     private volatile @Nullable Channel channel;
 
-    // Only ever touched on the event loop
+    // Event loop
+    private @Nullable ScheduledFuture<?> retry;
+    private long retryDelay; // seconds
     private boolean connecting;
-    private boolean tokenRejected;
+    private @Nullable String refusedToken; // by the relay with 401, so the next attempt renews it
+    private @Nullable SslContext sslContext; // reused, so TLS sessions resume
+    private @Nullable List<String> referers;
 
     /** Stays connected until {@link #disconnect()}, reconnecting whenever the connection drops. Client thread. */
     public void connect() {
@@ -106,15 +119,27 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
             return;
         }
 
-        stopReconnecting(); // and start over, to try right away
-        this.reconnecting = this.group.scheduleWithFixedDelay(this::reconnect, 0L,
-                PlatformTools.getConfig().onlineReconnectDelay.get(), TimeUnit.SECONDS
-        );
+        EventLoopGroup group = this.group;
+        if (group == null) {
+            boolean nativeTransport = Minecraft.getInstance().options.useNativeTransport();
+            group = NettyObjectFactory.newEventLoopGroup(nativeTransport);
+            this.bootstrap = new Bootstrap().group(group).channel(NettyObjectFactory.getSocketChannel(nativeTransport));
+            this.group = group;
+        }
+
+        this.running = true;
+        group.execute(() -> { // right away, skipping a pending retry
+            this.retryDelay = 0L;
+            attempt();
+        });
     }
 
+    /** Any thread: Fabric calls it on the network thread. */
     @Override
     public void disconnect() {
-        stopReconnecting();
+        this.running = false;
+        EventLoopGroup group = this.group;
+        if (group != null) group.execute(this::cancelRetry);
 
         Channel channel = this.channel;
         this.channel = null;
@@ -122,13 +147,10 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
             channel.writeAndFlush(new CloseWebSocketFrame()).addListener(ChannelFutureListener.CLOSE);
         }
 
-        super.disconnect();
-    }
-
-    private void stopReconnecting() {
-        ScheduledFuture<?> reconnecting = this.reconnecting;
-        this.reconnecting = null;
-        if (reconnecting != null) reconnecting.cancel(false);
+        Minecraft.getInstance().execute(() -> {
+            stopRelayedEmotes();
+            super.disconnect();
+        });
     }
 
     @Override
@@ -140,86 +162,121 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
         return channel != null && channel.isActive() && channel.hasAttr(ANNOUNCED);
     }
 
-    private void reconnect() {
-        if (this.connecting || this.channel != null) return; // connected, or on the way there
+    private void attempt() {
+        cancelRetry();
+        if (!this.running || this.connecting || this.channel != null) return; // connected, or on the way there
         this.connecting = true;
         CommonData.LOGGER.info("Connecting to Online Emotes...");
 
-        // The token only adds trust, so the relay never waits long for it, nor goes unjoined over it
         CompletableFuture<@Nullable String> token;
-        if (this.tokenRejected) { // the relay refused it: join without one, and have a fresh one for the next time
-            this.tokenRejected = false;
-            EmoteLibrary.getAccountToken(true);
+        try {
+            token = this.refusedToken != null ? EmoteLibrary.renewAccountToken(this.refusedToken) : EmoteLibrary.getAccountToken();
+        } catch (Throwable th) { // the relay lets clients in without one
+            CommonData.LOGGER.warn("Failed to get the EmotecraftLibrary account token!", th);
             token = CompletableFuture.completedFuture(null);
-        } else {
-            token = EmoteLibrary.getAccountToken(false).completeOnTimeout(null, TOKEN_TIMEOUT, TimeUnit.SECONDS);
         }
-        token.whenCompleteAsync((value, _) -> open(value), this.group);
+        this.refusedToken = null;
+
+        // Connects without the token rather than waiting long for it
+        token.completeOnTimeout(null, TOKEN_TIMEOUT, TimeUnit.SECONDS).whenCompleteAsync((value, _) -> open(value), this.group);
     }
 
     private void open(@Nullable String token) {
-        if (this.reconnecting == null) { // disconnected while signing in
+        if (!this.running) { // disconnected while signing in
             this.connecting = false;
             return;
         }
 
-        HandshakeHandler handshake = new HandshakeHandler(WebSocketClientHandshakerFactory.newHandshaker(
-                URI_ADDRESS, WebSocketVersion.V13, null, true, createHeaders(token), PAYLOAD_LENGTH
-        ));
+        try {
+            if (this.sslContext == null && "wss".equals(URI_ADDRESS.getScheme())) this.sslContext = SslContextBuilder.forClient().build();
+            SslContext sslContext = this.sslContext;
+            HandshakeHandler handshake = new HandshakeHandler(WebSocketClientHandshakerFactory.newHandshaker(
+                    URI_ADDRESS, WebSocketVersion.V13, null, true, createHeaders(token), PAYLOAD_LENGTH
+            ));
 
-        this.bootstrap.clone()
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws SSLException {
-                        ChannelPipeline pipeline = ch.pipeline();
+            this.bootstrap.clone()
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) {
+                            ChannelPipeline pipeline = ch.pipeline();
 
-                        if ("wss".equals(URI_ADDRESS.getScheme())) {
-                            pipeline.addLast(SslContextBuilder.forClient().build()
-                                    .newHandler(ch.alloc(), URI_ADDRESS.getHost(), URI_ADDRESS.getPort())
-                            );
+                            if (sslContext != null) {
+                                pipeline.addLast(sslContext.newHandler(ch.alloc(), URI_ADDRESS.getHost(), URI_ADDRESS.getPort()));
+                            }
+
+                            pipeline.addLast("http-codec", new HttpClientCodec());
+                            pipeline.addLast("aggregator", new HttpObjectAggregator(PAYLOAD_LENGTH));
+                            pipeline.addLast("ws-compression", new WebSocketClientCompressionHandler(PAYLOAD_LENGTH));
+                            pipeline.addLast("handshaker", handshake);
+                            pipeline.addLast("idle", new IdleStateHandler(READ_TIMEOUT, PING_INTERVAL, 0L, TimeUnit.SECONDS));
+                            pipeline.addLast("ws-handler", new WebsocketHandler(OnlineNetworkInstance.this));
                         }
-
-                        pipeline.addLast("http-codec", new HttpClientCodec());
-                        pipeline.addLast("aggregator", new HttpObjectAggregator(PAYLOAD_LENGTH));
-                        pipeline.addLast("ws-compression", new WebSocketClientCompressionHandler(PAYLOAD_LENGTH));
-                        pipeline.addLast("handshaker", handshake);
-                        pipeline.addLast("ws-handler", new WebsocketHandler(OnlineNetworkInstance.this));
-                    }
-                })
-                .connect(URI_ADDRESS.getHost(), URI_ADDRESS.getPort())
-                .addListener((ChannelFutureListener) future -> onConnected(future, handshake, token));
+                    })
+                    .connect(URI_ADDRESS.getHost(), URI_ADDRESS.getPort())
+                    // Back onto the event loop: a channel that failed to register completes on another thread
+                    .addListener((ChannelFutureListener) future -> this.group.execute(() -> onConnected(future, handshake, token)));
+        } catch (Throwable th) { // keep retrying
+            CommonData.LOGGER.warn("Failed to connect to Online Emotes!", th);
+            this.connecting = false;
+            retryLater();
+        }
     }
 
     private void onConnected(ChannelFuture future, HandshakeHandler handshake, @Nullable String token) {
         this.connecting = false;
         if (!future.isSuccess()) {
-            CommonData.LOGGER.warn("Failed to connect to Online Emotes!", future.cause()); // the next attempt comes as scheduled
+            CommonData.LOGGER.warn("Failed to connect to Online Emotes: {}", future.cause().toString());
+            retryLater();
             return;
         }
 
+        // Set first: disconnect() clears running, then takes the channel, so one of the two closes it
         Channel channel = future.channel();
-        if (this.reconnecting == null) { // disconnected meanwhile
+        this.channel = channel;
+        if (!this.running) {
+            this.channel = null;
             channel.close();
             return;
         }
 
-        this.channel = channel;
-        channel.closeFuture().addListener(_ -> {
-            if (this.channel == channel) this.channel = null; // for the next attempt to reconnect
-        });
-
+        channel.closeFuture().addListener(_ -> onClosed(channel));
         handshake.handshakeFuture().addListener(result -> {
             if (result.isSuccess()) {
+                OnlineEmotes.debugToast(CONNECTED);
                 Minecraft.getInstance().execute(() -> {
                     if (this.channel == channel) announce(channel);
                 });
                 return;
             }
 
-            CommonData.LOGGER.warn("Online Emotes handshake failed!", result.cause());
-            if (token != null && isUnauthorized(result.cause())) this.tokenRejected = true;
+            CommonData.LOGGER.warn("Online Emotes handshake failed: {}", result.cause().toString());
+            if (token != null && isUnauthorized(result.cause())) this.refusedToken = token;
             channel.close();
         });
+    }
+
+    private void onClosed(Channel channel) {
+        if (channel.hasAttr(ANNOUNCED)) OnlineEmotes.debugToast(DISCONNECTED);
+        if (this.channel != channel) return; // disconnect() let it go
+        this.channel = null;
+        Minecraft.getInstance().execute(this::stopRelayedEmotes);
+        retryLater(); // with backoff after a 401 too, as the new token may be refused as well
+    }
+
+    /** Doubles the delay after every failed attempt, from the configured one up to {@link #MAX_RECONNECT_DELAY}. */
+    private void retryLater() {
+        if (!this.running) return;
+
+        this.retryDelay = this.retryDelay == 0L ? PlatformTools.getConfig().onlineReconnectDelay.get()
+                : Math.min(this.retryDelay * 2, MAX_RECONNECT_DELAY);
+        this.retry = this.group.schedule(this::attempt, this.retryDelay, TimeUnit.SECONDS);
+    }
+
+    private void cancelRetry() {
+        if (this.retry != null) {
+            this.retry.cancel(false);
+            this.retry = null;
+        }
     }
 
     private static boolean isUnauthorized(Throwable cause) {
@@ -232,6 +289,46 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
         sendState(channel);
         writeEmote(channel, createConfigurationPacket(true));
         channel.attr(ANNOUNCED).set(true);
+
+        // The relay keeps the play state, so it gets the running emote, if emotes of this server go through it
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null && player.isPlayingEmote() && ClientPacketManager.isProxyNeeded()) {
+            EmotePlayer emote = player.emotecraft$getEmote();
+            sendMessage(new EmotePacket.Builder()
+                    .configureToStreamEmote(emote.getCurrentAnimationInstance())
+                    .configureEmoteTick(emote.getAnimationTicks())
+                    .setSizeLimit(maxDataSize(), false), true
+            );
+        }
+    }
+
+    @Override
+    public void receiveMessage(EmotePacket packet) {
+        if (!isActive()) return; // from a connection already let go
+
+        NetData data = packet.data;
+        if (data.purpose == PacketTask.CONFIG) { // the relay always answers like a legacy server, so without super's warning
+            setVersions(data.versions);
+            onConfigurationDone();
+            return;
+        }
+
+        if (data.player != null && data.purpose == PacketTask.STREAM && data.emoteData != null) {
+            this.relayedEmotes.put(data.player, data.emoteData.uuid());
+        } else if (data.player != null && data.purpose == PacketTask.STOP) {
+            this.relayedEmotes.remove(data.player);
+        }
+        super.receiveMessage(packet);
+    }
+
+    /** A lost connection brings no stops, so what it started stops here, unless the server streams emotes too. */
+    private void stopRelayedEmotes() {
+        if (!ClientNetwork.INSTANCE.isActive()) this.relayedEmotes.forEach((player, emote) -> {
+            NetData stop = new EmotePacket.Builder().configureToSendStop(emote, player).data();
+            stop.isForced = true; // no "not allowed" toast
+            executeMessage(stop, this); // as if received, which also drops an emote waiting for its player to load
+        });
+        this.relayedEmotes.clear();
     }
 
     private void sendState(Channel channel) {
@@ -306,7 +403,7 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
     }
 
     private static EmotePacket writeEmote(Channel channel, EmotePacket.Builder builder) {
-        EmotePacket packet = builder.setSizeLimit(PAYLOAD_LENGTH, false).build();
+        EmotePacket packet = builder.build();
         write(channel, FrameType.EMOTE, buf -> packet.write(buf, PacketBound.SERVER));
         return packet;
     }
@@ -324,7 +421,7 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
         channel.writeAndFlush(new BinaryWebSocketFrame(buf), channel.voidPromise());
     }
 
-    private static HttpHeaders createHeaders(@Nullable String token) {
+    private HttpHeaders createHeaders(@Nullable String token) {
         DefaultHttpHeaders headers = new DefaultHttpHeaders();
 
         // The relay needs its client in front; Online Emotes ships with Emotecraft now, so both carry its version
@@ -333,21 +430,31 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
                 version, CommonData.MOD_NAME, version, SharedConstants.getProtocolVersion()
         ));
 
-        try {
-            for (String referer : PlatformFileReferer.INSTANCE.getFileReferer(EmotecraftModPlatform.INSTANCE.getModFile(CommonData.MOD_ID))) {
-                headers.add(HttpHeaderNames.REFERER, URLEncoder.encode(referer, StandardCharsets.UTF_8));
-            }
-        } catch (Throwable th) {
-            headers.add(HttpHeaderNames.REFERER, URLEncoder.encode(th.toString(), StandardCharsets.UTF_8));
+        if (this.referers == null) this.referers = findReferers();
+        for (String referer : this.referers) {
+            headers.add(HttpHeaderNames.REFERER, referer);
         }
 
         try { // Because LanguageManager is reloadable
             headers.add(HttpHeaderNames.ACCEPT_LANGUAGE, Minecraft.getInstance().getLanguageManager().getSelected());
         } catch (Throwable ignored) {}
 
-        CommonData.LOGGER.info("Online Emotes headers: {}", headers.entries()); // before the token, which logs mustn't hold
+        CommonData.LOGGER.debug("Online Emotes headers: {}", headers.entries()); // before the token, which must not be logged
         if (token != null) headers.add(HttpHeaderNames.AUTHORIZATION, "Bearer " + token);
         return headers;
+    }
+
+    /** Where the mod was downloaded from, URL-encoded, or the error that kept it from being known. */
+    private static List<String> findReferers() {
+        try {
+            Path file = EmotecraftModPlatform.INSTANCE.getModFile(CommonData.MOD_ID);
+            if (file == null) return List.of();
+            return PlatformFileReferer.INSTANCE.getFileReferer(file).stream()
+                    .map(referer -> URLEncoder.encode(referer, StandardCharsets.UTF_8))
+                    .toList();
+        } catch (Throwable th) {
+            return List.of(URLEncoder.encode(th.toString(), StandardCharsets.UTF_8));
+        }
     }
 
     @Override
@@ -356,8 +463,14 @@ public final class OnlineNetworkInstance extends BaseClientNetwork {
     }
 
     @Override
+    public int maxDataSize() {
+        return RELAY_PAYLOAD_LENGTH - 2; // the protocol version and the frame type
+    }
+
+    @Override
     protected void onConfigurationDone() {
-        if (PlatformTools.getConfig().onlineDebug.get()) OnlineEmotes.toast(Component.translatable("emotecraft.online.handshake_done",
+        this.group.execute(() -> this.retryDelay = 0L); // only now, as the relay may still refuse a client after the handshake
+        OnlineEmotes.debugToast(Component.translatable("emotecraft.online.handshake_done",
                 CommonComponents.optionStatus(ClientPacketManager.isInstanceOutdatedForStreaming(this))
         ));
     }

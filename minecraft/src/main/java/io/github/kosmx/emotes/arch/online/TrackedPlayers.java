@@ -5,21 +5,17 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * The other players this client tracks, as changes since the relay was last told. Client thread only.
- * <p>
- * Loaders report each player the level starts and stops tracking. Switching levels unloads nothing, though,
- * so a new level is sent whole instead.
- */
+/** Changes of the other players this client tracks since the relay was last told. Client thread. */
 final class TrackedPlayers {
     private final Set<UUID> added = new LinkedHashSet<>();
     private final Set<UUID> removed = new LinkedHashSet<>();
-    private @Nullable ClientLevel level;
+    private WeakReference<ClientLevel> level = new WeakReference<>(null); // only compared, so it must not keep the level
 
     void start(Entity entity) {
         if (isOtherPlayer(entity) && !this.removed.remove(entity.getUUID())) this.added.add(entity.getUUID());
@@ -31,12 +27,12 @@ final class TrackedPlayers {
 
     /** @return whether the relay was last sent another level */
     boolean isStale(@Nullable ClientLevel level) {
-        return this.level != level;
+        return this.level.get() != level;
     }
 
-    /** @return every player {@code level} tracks, which the relay gets instead of the changes */
+    /** @return every other player {@code level} tracks, which the relay gets instead of the changes */
     List<UUID> reset(@Nullable ClientLevel level) {
-        this.level = level;
+        this.level = new WeakReference<>(level);
         this.added.clear();
         this.removed.clear();
 

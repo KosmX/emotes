@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
 public class EmotecraftClientFabricMod extends EmotecraftClientMod implements ClientModInitializer {
@@ -30,6 +31,7 @@ public class EmotecraftClientFabricMod extends EmotecraftClientMod implements Cl
         // Online Emotes
         ClientPlayConnectionEvents.JOIN.register((_, _, _) -> OnlineEmotes.connect());
         ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> OnlineNetworkInstance.INSTANCE.disconnect());
+        ClientConfigurationConnectionEvents.DISCONNECT.register((_, _) -> OnlineNetworkInstance.INSTANCE.disconnect()); // left while switching servers
         ClientEntityEvents.ENTITY_LOAD.register((entity, _) -> OnlineNetworkInstance.INSTANCE.onTrackingStart(entity));
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, _) -> OnlineNetworkInstance.INSTANCE.onTrackingEnd(entity));
     }

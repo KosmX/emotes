@@ -100,6 +100,17 @@ public class SerializableConfig {
         }
     }
 
+    public static class LongConfigEntry extends NumberConfigEntry<Long> {
+        public LongConfigEntry(String name, Long defVal, boolean hasTooltip, List<ConfigEntry<?>> collection, Long min, Long max) {
+            super(name, defVal, hasTooltip, collection, min, max);
+        }
+
+        @Override
+        public Long fromDouble(double value) {
+            return (long) value;
+        }
+    }
+
     public static abstract class NumberConfigEntry<T extends Number & Comparable<T>> extends ConfigEntry<T> {
         public final T min, max;
 

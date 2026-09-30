@@ -1,9 +1,7 @@
 package io.github.kosmx.emotes.arch.online.netty;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.online.OnlineEmotes;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
@@ -13,15 +11,12 @@ import io.github.kosmx.emotes.mc.McUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
 
 /** Takes what the relay sends: emote packets as binary frames, messages for the player as JSON text frames. */
 public class WebsocketHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-    private static final Component DISCONNECTED = Component.translatable("emotecraft.online.disconnected");
-    private static final Component CONNECTED = Component.translatable("emotecraft.online.connected");
-
     private final BaseClientNetwork network;
 
     public WebsocketHandler(BaseClientNetwork network) {
@@ -29,15 +24,14 @@ public class WebsocketHandler extends SimpleChannelInboundHandler<WebSocketFrame
     }
 
     @Override
-    public void channelInactive(@NotNull ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
-        if (PlatformTools.getConfig().onlineDebug.get()) OnlineEmotes.toast(WebsocketHandler.DISCONNECTED);
-    }
-
-    @Override
-    public void channelActive(@NotNull ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-        if (PlatformTools.getConfig().onlineDebug.get()) OnlineEmotes.toast(WebsocketHandler.CONNECTED);
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (!(evt instanceof IdleStateEvent idle)) {
+            super.userEventTriggered(ctx, evt);
+        } else if (idle.state() == IdleState.READER_IDLE) {
+            ctx.close(); // not even a pong: the socket is half-open
+        } else {
+            ctx.writeAndFlush(new PingWebSocketFrame(), ctx.voidPromise());
+        }
     }
 
     @Override
@@ -56,17 +50,10 @@ public class WebsocketHandler extends SimpleChannelInboundHandler<WebSocketFrame
             }
 
             case TextWebSocketFrame frame -> {
-                try {
+                try { // a component, or an object holding one as its message
                     JsonElement element = JsonParser.parseString(frame.text());
-                    if (!element.isJsonObject()) {
-                        OnlineEmotes.toast(McUtils.fromJson(element));
-                        break;
-                    }
-
-                    JsonObject object = element.getAsJsonObject();
-                    if (object.has("message")) {
-                        OnlineEmotes.toast(McUtils.fromJson(object.get("message")));
-                    }
+                    JsonElement message = element.isJsonObject() ? element.getAsJsonObject().get("message") : element;
+                    if (message != null) OnlineEmotes.toast(McUtils.fromJson(message));
                 } catch (Exception e) {
                     CommonData.LOGGER.error("Failed to parse Online Emotes text frame: {}", frame.text(), e);
                 }
@@ -77,7 +64,12 @@ public class WebsocketHandler extends SimpleChannelInboundHandler<WebSocketFrame
                 ctx.channel().writeAndFlush(new PongWebSocketFrame(frame.content()), ctx.channel().voidPromise());
             }
 
-            case CloseWebSocketFrame ignored -> ctx.channel().close();
+            case PongWebSocketFrame ignored -> {} // the answer to our ping
+
+            case CloseWebSocketFrame frame -> {
+                if (frame.statusCode() == WebSocketCloseStatus.POLICY_VIOLATION.code()) this.network.disconnect(); // until the next join
+                ctx.channel().close();
+            }
 
             default -> CommonData.LOGGER.error("Unsupported Online Emotes frame type: {}!", msg.getClass().getName());
         }
