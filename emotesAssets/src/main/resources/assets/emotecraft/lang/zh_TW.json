@@ -4,6 +4,13 @@
   "emotecraft.options.fastmenu": "選擇一個表情，然後點選",
   "emotecraft.options.fastmenu2": "新增至表情快捷欄",
   "emotecraft.options.fastmenu3": "右鍵取消標記",
+  "emotecraft.library.privacy.description": "若您繼續，即表示您同意我們的%1$s與%2$s。",
+  "emotecraft.library.privacy.privacy": "隱私政策",
+  "emotecraft.library.quota.title": "已達到下載限制",
+  "emotecraft.library.quota.description": "你已達到你的每小時下載限制。請稍後再試。",
+  "emotecraft.library.link.title": "連結您的帳號",
+  "emotecraft.library.link.start": "連結帳號",
+  "emotecraft.library.link.failed.title": "帳號未連結",
   "emotecraft.sure": "覆蓋按鍵綁定",
   "emotecraft.sure2": "此按鍵已被其他表情綁定。\n您想要覆蓋原有表情並為此表情綁定該鍵嗎？",
   "emotecraft.otherconfig.category.general": "基本選項",
@@ -63,5 +70,6 @@
   "emotecraft.resetAllKeys.message": "你確定要重置所有表情綁定的按鍵嗎？",
   "emotecraft.options.export": "輸出UI",
   "emotecraft.song_too_big_to_send": "歌曲檔案的容量太大，無法發送至伺服器。僅發送表情…",
-  "emotecraft.cant.override.forced": "你被迫和播放當前的表情，因為此表情暫時無法更改。"
+  "emotecraft.cant.override.forced": "你被迫和播放當前的表情，因為此表情暫時無法更改。",
+  "emotecraft.dataloss.descr": "以這種格式撰寫有可能會導致資料損失或最終檔案回放錯誤！\n你確定要這麼做嗎？"
 }
