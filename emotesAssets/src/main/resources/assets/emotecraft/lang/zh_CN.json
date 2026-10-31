@@ -1,5 +1,5 @@
 {
-  "modmenu.descriptionTranslation.emotecraft": "在 Minecraft 中播放表情动作\n打开菜单设置你的快速选择轮盘\n\n你可以添加自定义表情动作，即使其他玩家没有这些动作，你也可以播放它们！\n\n特别感谢：\n- Kale Ko 创作了表情动作并协助了界面设计\n\n由 dima_dencep 和 ZigyTheBird 维护",
+  "modmenu.descriptionTranslation.emotecraft": "在Minecraft中播放表情动作\n打开菜单设置你的快速选择轮\n\n你可以添加自定义表情动作，即使其他玩家没有这些动作，你也可以播放它们。\n\n特别感谢：\nKale Ko 创作了表情动作并协助了用户界面设计\nOrsond 激励了我并提供了 CollarMC  \nArchitectury 提供了 Forge 构建工具",
   "emotecraft.menu": "表情配置",
   "emotecraft.options.options": "模组选项",
   "emotecraft.options.keybind": "设置自定义按键以播放所选的表情。",
@@ -78,7 +78,6 @@
   "emotecraft.different_server": "服务器安装了表情工艺的不同版本。其他用户可能无法看到你的表情正确播放。",
   "emotecraft.only_proxy": "仅代理流式处理可用。",
   "emotecraft.only_online": "仅可通过 Online Emotes 流式传输！",
-  "emotecraft.online": "Online Emotes",
   "emotecraft.online.reconnect": "重新连接 Online Emotes",
   "emotecraft.online.connected": "WebSocket 已连接！",
   "emotecraft.online.disconnected": "WebSocket 已断开！",
