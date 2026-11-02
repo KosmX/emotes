@@ -17,6 +17,7 @@
   "emotecraft.otherconfig.category.expert": "進階選項",
   "emotecraft.otherconfig.onlineReconnectDelay": "重新連線前的延遲",
   "emotecraft.otherconfig.onlineReconnectDelay.tooltip": "單位：秒",
+  "emotecraft.otherconfig.onlineDebug": "線上表情除錯訊息",
   "emotecraft.otherconfig": "其它選項",
   "emotecraft.otherconfig.debug": "除錯",
   "emotecraft.otherconfig.validate": "驗證表情",
@@ -71,5 +72,7 @@
   "emotecraft.options.export": "輸出UI",
   "emotecraft.song_too_big_to_send": "歌曲檔案的容量太大，無法發送至伺服器。僅發送表情…",
   "emotecraft.cant.override.forced": "你被迫和播放當前的表情，因為此表情暫時無法更改。",
+  "emotecraft.emote.caramell_dance.name": "焦糖舞",
+  "emotecraft.emote.caramell_dance.description": "卡哇伊！",
   "emotecraft.dataloss.descr": "以這種格式撰寫有可能會導致資料損失或最終檔案回放錯誤！\n你確定要這麼做嗎？"
 }
