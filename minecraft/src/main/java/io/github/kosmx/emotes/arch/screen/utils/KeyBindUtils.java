@@ -2,11 +2,15 @@ package io.github.kosmx.emotes.arch.screen.utils;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.layouts.GridLayout;
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NonNull;
 
@@ -17,7 +21,7 @@ import java.util.UUID;
  * Emote key binds: one key per emote and one emote per key. The binding stores the emote itself, not its UUID.
  */
 public final class KeyBindUtils {
-    private static final Component SURE = Component.translatable("emotecraft.sure");
+    private static final Component SURE = Component.translatable("emotecraft.sure").withStyle(ChatFormatting.BOLD);
     private static final Component SURE2 = Component.translatable("emotecraft.sure2");
 
     private KeyBindUtils() {}
@@ -57,20 +61,45 @@ public final class KeyBindUtils {
             return;
         }
 
-        Minecraft minecraft = Minecraft.getInstance();
-        minecraft.gui.setScreen(new ConfirmScreen(choice -> {
-            if (choice) {
-                forceBind(emote, key);
-                onBound.run();
-            }
-            minecraft.gui.setScreen(screen);
-        }, SURE, SURE2));
+        Minecraft.getInstance().gui.setScreen(new OverwriteScreen(screen, () -> {
+            forceBind(emote, key);
+            onBound.run();
+        }));
     }
 
     private static void forceBind(EmoteHolder emote, InputConstants.Key key) {
         unbind(emote.getUuid());                                // one key per emote: drop its previous bind
         if (!key.equals(InputConstants.UNKNOWN)) {
             PlatformTools.getConfig().keyBinds.put(key, emote); // one emote per key: overwrites any conflicting bind
+        }
+    }
+
+    /** Asks before the key is taken from the emote it plays; a modal, so the screen behind keeps its state. */
+    private static final class OverwriteScreen extends BaseModalScreen {
+        private final Runnable overwrite;
+
+        private OverwriteScreen(Screen backgroundScreen, Runnable overwrite) {
+            super(SURE, backgroundScreen);
+            this.overwrite = overwrite;
+        }
+
+        @Override
+        protected LayoutElement addBody() {
+            return createTextWidget(SURE2);
+        }
+
+        @Override
+        protected void addButtons(GridLayout gridLayout) {
+            GridLayout.RowHelper buttons = gridLayout.createRowHelper(2);
+
+            buttons.addChild(Button.builder(CommonComponents.GUI_YES, _ -> {
+                this.overwrite.run();
+                onClose();
+            }).width(Button.SMALL_WIDTH).build());
+            buttons.addChild(Button.builder(CommonComponents.GUI_NO, _ -> onClose())
+                    .width(Button.SMALL_WIDTH)
+                    .build()
+            );
         }
     }
 }

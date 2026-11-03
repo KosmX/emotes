@@ -9,50 +9,34 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Util;
+import org.jetbrains.annotations.Nullable;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class LoadingEntry extends EmoteListWidget.ListEntry {
     protected static final Component LOADING = Component.translatable("gui.friends.button.loading");
-    private final Set<CompletableFuture<?>> futures = ConcurrentHashMap.newKeySet();
 
-    protected final EmoteListWidget widget;
-    private final Component message;
-
-    // Last failed operation. Kept as a single field (not a pile of failed futures) so repeated errors don't accumulate.
-    private volatile Throwable error;
-
-    public LoadingEntry(EmoteListWidget widget) {
-        this(widget, null);
-    }
+    private final @Nullable Component message;
+    private final @Nullable CompletableFuture<?> future;
 
     public LoadingEntry(EmoteListWidget widget, Component message) {
+        this(widget, message, null);
+    }
+
+    private LoadingEntry(EmoteListWidget widget, @Nullable Component message, @Nullable CompletableFuture<?> future) {
         widget.super(message != null ? message : LOADING, CommonComponents.EMPTY, Collections.emptyList());
-        this.widget = widget;
         this.message = message;
+        this.future = future;
     }
 
-    /** A standalone entry that renders {@code error} (e.g. a footer for a failed pagination request). */
-    public static LoadingEntry error(EmoteListWidget widget, Throwable error) {
-        LoadingEntry entry = new LoadingEntry(widget);
-        entry.addForWait(CompletableFuture.failedFuture(error));
-        return entry;
-    }
-
-    protected <T> CompletableFuture<T> addForWait(CompletableFuture<T> future) {
-        this.error = null; // a fresh operation supersedes any previous error
-        this.futures.add(future);
-        return future.whenComplete((_, th) -> {
-            this.futures.remove(future);
-            if (th != null) this.error = th;
-        });
+    /** A standalone entry that renders {@code future}: loading while it runs, its error once it failed. */
+    public static LoadingEntry waitingFor(EmoteListWidget widget, CompletableFuture<?> future) {
+        return new LoadingEntry(widget, null, future);
     }
 
     @Override
@@ -60,18 +44,8 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
         int centerX = getContentX() + getContentWidth() / 2;
         int centerY = getContentYMiddle();
 
-        if (!this.futures.isEmpty()) { // still loading
-            this.widget.active = false;
-            Font font = Minecraft.getInstance().font;
-            graphics.centeredText(font, LOADING, centerX, centerY - font.lineHeight, -1);
-            graphics.centeredText(font, LoadingDotsText.get(Util.getMillis()), centerX, centerY, -1);
-            return;
-        }
-
-        this.widget.active = true;
-        Throwable error = this.error;
-        if (error != null) {
-            renderError(graphics, error, centerX, centerY, getContentWidth());
+        if (this.future != null && (!this.future.isDone() || this.future.isCompletedExceptionally())) {
+            extractFutureErrors(graphics, this.future, centerX, centerY, getContentWidth());
         } else if (this.message != null) {
             Font font = Minecraft.getInstance().font;
             graphics.centeredText(font, this.message, centerX, centerY - font.lineHeight / 2, -1);
@@ -98,13 +72,6 @@ public class LoadingEntry extends EmoteListWidget.ListEntry {
         for (int i = 0; i < lines.size(); i++) {
             graphics.centeredText(font, lines.get(i), centerX, startY + i * font.lineHeight, -1);
         }
-    }
-
-    @Override
-    protected void onRemoved() {
-        this.widget.active = true;
-        this.futures.clear();
-        this.error = null;
     }
 
     @Override
