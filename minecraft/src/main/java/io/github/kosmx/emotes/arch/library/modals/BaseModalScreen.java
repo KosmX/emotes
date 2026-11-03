@@ -151,12 +151,17 @@ public abstract class BaseModalScreen extends Screen {
 
     @Override
     public boolean isPauseScreen() {
-        return false;
+        return this.backgroundScreen != null && this.backgroundScreen.isPauseScreen(); // Pauses as the screen under it does
     }
 
     /** @return whether this privacy screen is the one currently displayed, so a background screen can skip blurring under it. */
     public static boolean isShowing(Minecraft minecraft) {
         return minecraft.gui.screen() instanceof BaseModalScreen;
+    }
+
+    /** @return the screen {@code screen} is drawn over, if it's a modal */
+    public static @Nullable Screen backgroundOf(@Nullable Screen screen) {
+        return screen instanceof BaseModalScreen modal ? modal.backgroundScreen : null;
     }
 
     protected static Component link(String key, URI uri) {

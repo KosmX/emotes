@@ -185,7 +185,21 @@ public abstract class EmoteSubScreen extends PreviewScreen {
     public void removed() {
         if (this.watcher != null) this.watcher.blockWhileLoading();
         super.removed();
-        if (this.list != null) this.list.releaseEntries();
+    }
+
+    /** Releases the list of the emote screen {@code next} takes away, and reopens the one it brings back; a modal drawn over it keeps it as it is. */
+    public static void onScreenChange(@Nullable Screen current, @Nullable Screen next) {
+        EmoteSubScreen left = shownBy(current);
+        EmoteSubScreen shown = shownBy(next);
+        if (left == shown) return;
+
+        if (left != null && left.list != null) left.list.releaseEntries();
+        if (shown != null && shown.list != null) shown.list.reopenEntries(); // init is not called again on return
+    }
+
+    private static @Nullable EmoteSubScreen shownBy(@Nullable Screen screen) {
+        if (screen instanceof EmoteSubScreen emotes) return emotes;
+        return BaseModalScreen.backgroundOf(screen) instanceof EmoteSubScreen emotes ? emotes : null;
     }
 
     private void closeWatcher() {
