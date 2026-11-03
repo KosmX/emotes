@@ -24,6 +24,7 @@ import org.redlance.emotecraftlibrary.sdk.LibraryListener;
 import org.redlance.emotecraftlibrary.shared.models.PagedResponse;
 
 import java.net.HttpURLConnection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -69,6 +70,11 @@ public final class LibraryFolderEntry extends PagedFolderEntry<GameLibraryItem> 
     @Override
     protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float tickDelta) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, EMOTECRAFT_LIBRARY_ICON, getX(), getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
+    }
+
+    @Override
+    protected List<Component> badges() {
+        return Collections.emptyList(); // How many emotes it holds isn't known before all its pages are read
     }
 
     /** @return whether the library shows the given emote, at its root or in the open bundle, so a bound copy of it isn't shown elsewhere too. */
@@ -275,13 +281,19 @@ public final class LibraryFolderEntry extends PagedFolderEntry<GameLibraryItem> 
             this.info = info;
         }
 
-        /** Not equals: the emote count isn't shown, so its change keeps the row and the emotes loaded in it. */
+        /** Not equals: the author's avatar isn't shown, so its change keeps the row and the emotes loaded in it. */
         private boolean displays(GameBundleInfo info) {
             return Objects.equals(this.info.getName(), info.getName())
                     && Objects.equals(this.info.getDescription(), info.getDescription())
                     && Objects.equals(this.info.getAuthor(), info.getAuthor())
                     && Objects.equals(this.info.getIconHash(), info.getIconHash())
-                    && Objects.equals(this.info.getIconUrl(), info.getIconUrl());
+                    && Objects.equals(this.info.getIconUrl(), info.getIconUrl())
+                    && this.info.getEmoteCount() == info.getEmoteCount();
+        }
+
+        @Override
+        protected int countEmotes() {
+            return this.info.getEmoteCount();
         }
 
         @Override

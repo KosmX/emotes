@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.zigythebird.playeranimcore.animation.Animation;
@@ -35,6 +36,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
     private static final List<Component> LAST_OPENED_PATH = new CopyOnWriteArrayList<>();
@@ -304,7 +306,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             int top = getContentY() + contentShift(); // Vertically center the whole text block within the row.
 
             int maxBadgesWidth = Math.max(maxX - minecraft.font.width(this.name), maxX / 3) - (getContentX() + START_OFFSET);
-            int badgeWidth = BageUtils.extractBadges(graphics, minecraft.font, this.bages, maxX, top, maxBadgesWidth, true);
+            int badgeWidth = BageUtils.extractBadges(graphics, minecraft.font, badges(), maxX, top, maxBadgesWidth, true);
             graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE).acceptScrolling(this.name, getContentX() + START_OFFSET, getContentX() + START_OFFSET, maxX - badgeWidth, top, top + lineHeight);
             graphics.text(minecraft.font, this.description, getContentX() + START_OFFSET, top + DESCRIPTION_Y, -8355712);
             extractAdditionalContent(graphics, mouseX, mouseY, hovered, a);
@@ -327,6 +329,11 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         /** @return {@code true} when {@link #extractAdditionalContent} draws a line below the name (e.g. the author). */
         protected boolean hasSubtext() {
             return this.hasSubtext;
+        }
+
+        /** @return the badges drawn right of the name */
+        protected List<Component> badges() {
+            return this.bages;
         }
 
         /** Vertical offset that centers the name/description/sub-text block within the row. */
@@ -482,6 +489,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public static final Component FOLDER_DESC = Component.translatable("emotecraft.folder");
 
         protected final SequencedMap<Object, ListEntry> entries = new LinkedHashMap<>();
+        private final Supplier<List<Component>> badges = Suppliers.memoize(() -> List.of(Component.translatable("emotecraft.folder.emotes", countEmotes()).withStyle(ChatFormatting.GRAY)));
         private FolderEntry next;
 
         private FolderEntry(Object obj) {
@@ -499,6 +507,20 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         @Override
         protected void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float tickDelta) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, hovering ? FOLDER_OPEN : FOLDER, getX(), getContentY(), 0.0F, 0.0F, 32, 32, 32, 32);
+        }
+
+        @Override
+        protected List<Component> badges() {
+            return this.badges.get();
+        }
+
+        /** @return the emotes in this folder and its subfolders */
+        protected int countEmotes() {
+            int count = 0;
+            for (ListEntry entry : this.entries.values()) {
+                count += entry instanceof FolderEntry folder ? folder.countEmotes() : 1;
+            }
+            return count;
         }
 
         @Override

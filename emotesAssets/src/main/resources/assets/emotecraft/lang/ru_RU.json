@@ -108,6 +108,7 @@
   "emotecraft.cant.override.forced": "Вы вынуждены использовать текущую эмоцию: это не может быть изменено.",
   "emotecraft.folder": "Каталог",
   "emotecraft.folder.main": "основ.",
+  "emotecraft.folder.emotes": "Эмоций: %s",
   "emotecraft.reloading": "Перезагрузка эмоций...",
   "emotecraft.reloading.done": "Перезагрузка заняла %s секунд!",
   "emotecraft.reloading.wait": "Пожалуйста, подождите, пока анимации перезагрузятся!",
