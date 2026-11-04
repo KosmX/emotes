@@ -167,7 +167,9 @@ public abstract class EmoteSubScreen extends Screen {
             if (this.list.getSelected() == hovered) {
                 hovered = null;
             }
-            if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
+            if (this.list.isScrolling()) {
+                this.preview.getMannequin().stopEmote(); // Hidden while scrolling, only the emote the list stops on is played
+            } else if (hovered instanceof EmoteListWidget.EmoteEntry emote) {
                 this.preview.playAnimation(emote.emote.emote, Animation.LoopType.DEFAULT, true);
             } else if (hovered instanceof EmoteListWidget.FolderEntry) {
                 this.preview.getMannequin().stopEmote();
