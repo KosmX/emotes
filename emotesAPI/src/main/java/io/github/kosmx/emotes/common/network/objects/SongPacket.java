@@ -7,7 +7,7 @@ import io.github.kosmx.emotes.common.network.PacketTask;
 import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.netty.buffer.ByteBuf;
-import team.unnamed.mocha.util.network.VarIntUtils;
+import org.redlance.mocha.parser.util.network.VarIntUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

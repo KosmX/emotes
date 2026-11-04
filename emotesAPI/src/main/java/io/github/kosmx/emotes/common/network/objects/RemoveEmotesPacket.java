@@ -5,7 +5,7 @@ import io.github.kosmx.emotes.common.network.PacketBound;
 import io.github.kosmx.emotes.common.network.PacketConfig;
 import io.github.kosmx.emotes.common.network.PacketTask;
 import io.netty.buffer.ByteBuf;
-import team.unnamed.mocha.util.network.ProtocolUtils;
+import org.redlance.mocha.parser.util.network.ProtocolUtils;
 
 import java.io.IOException;
 import java.util.List;

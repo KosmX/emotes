@@ -7,8 +7,8 @@ import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import it.unimi.dsi.fastutil.Pair;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.parser.ast.FloatExpression;
 
 import java.util.Collections;
 import java.util.HashMap;

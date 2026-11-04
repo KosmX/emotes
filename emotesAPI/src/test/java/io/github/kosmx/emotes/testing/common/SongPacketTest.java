@@ -11,7 +11,7 @@ import io.netty.buffer.Unpooled;
 import org.concentus.OpusApplication;
 import org.concentus.OpusEncoder;
 import org.junit.jupiter.api.Test;
-import team.unnamed.mocha.util.network.VarIntUtils;
+import org.redlance.mocha.parser.util.network.VarIntUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.ref.SoftReference;
