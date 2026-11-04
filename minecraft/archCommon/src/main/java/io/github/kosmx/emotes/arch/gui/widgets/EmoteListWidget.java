@@ -243,6 +243,11 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public abstract void renderAdditional(GuiGraphics matrices, int mouseX, int mouseY, boolean hovered, float tickDelta);
 
         @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return super.isMouseOver(mouseX, mouseY) && !(isOverScrollbar(mouseX, mouseY) && scrollbarVisible()); // The compact list draws its scrollbar over the rows
+        }
+
+        @Override
         public @NotNull Component getNarration() {
             return this.name;
         }
