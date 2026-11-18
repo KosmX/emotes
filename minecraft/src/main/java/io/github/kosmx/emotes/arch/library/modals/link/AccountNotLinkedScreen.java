@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.arch.library.modals.link;
 import com.mojang.blaze3d.Blaze3D;
 import io.github.kosmx.emotes.arch.library.EmoteLibrary;
 import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
+import io.github.kosmx.emotes.mc.WebsiteLinks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -18,8 +19,6 @@ import java.net.URI;
 
 /** Shown when a request needs the player's game account linked to a library account, guiding them to do it. */
 public class AccountNotLinkedScreen extends BaseModalScreen {
-    protected static final URI WEBSITE_URI = URI.create("https://emotes.redlance.org");
-
     public static final Component TITLE = Component.translatable("emotecraft.library.link.title").withStyle(ChatFormatting.BOLD);
     private static final Component BODY = Component.translatable("emotecraft.library.link.description");
     private static final Component LINK = Component.translatable("emotecraft.library.link.start");
@@ -47,7 +46,7 @@ public class AccountNotLinkedScreen extends BaseModalScreen {
         );
         buttons.addChild(Button.builder(LINK, _ -> {
             if (this.link == null) {
-                ConfirmLinkScreen.confirmLinkNow(this, WEBSITE_URI);
+                ConfirmLinkScreen.confirmLinkNow(this, WebsiteLinks.WEBSITE);
             } else {
                 this.linking = true;
                 Blaze3D.openUri(URI.create(this.link.getUrl()));

@@ -3,22 +3,25 @@ package io.github.kosmx.emotes.arch.library;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.mojang.authlib.exceptions.AuthenticationException;
+import com.mojang.authlib.exceptions.*;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.EmotecraftModPlatform;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.network.EmotePacket;
+import io.github.kosmx.emotes.mc.WebsiteLinks;
 import io.github.kosmx.emotes.server.serializer.UniversalEmoteSerializer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
+import net.minecraft.client.resources.language.I18n;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryClient;
 import org.redlance.emotecraftlibrary.sdk.EmoteLibraryException;
 import org.redlance.emotecraftlibrary.sdk.JoinServer;
 
+import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -48,7 +51,7 @@ public final class EmoteLibrary implements JoinServer {
                 }
             });
 
-    private static final EmoteLibraryClient EMOTE_LIBRARY_CLIENT = new EmoteLibraryClient("https://emotes.redlance.org/", String.format("%s/%s (%s; mc%s)",
+    private static final EmoteLibraryClient EMOTE_LIBRARY_CLIENT = new EmoteLibraryClient(WebsiteLinks.WEBSITE.toString(), String.format("%s/%s (%s; mc%s)",
             CommonData.MOD_NAME, EmotecraftModPlatform.INSTANCE.getModVersion(CommonData.MOD_ID), EmotecraftModPlatform.INSTANCE.getPlatformName(), SharedConstants.getCurrentVersion().name()
     ), () -> Minecraft.getInstance().getLanguageManager().getSelected().replace('_', '-'));
 
@@ -75,6 +78,11 @@ public final class EmoteLibrary implements JoinServer {
                     CommonData.LOGGER.warn("Failed to send emotecraft library request!", throwable);
                     throw new CompletionException(throwable);
                 });
+    }
+
+    /** The library page of an emote downloaded from it, see {@link EmoteLibraryClient#isLibraryEmote}. */
+    public static URI emotePage(UUID animationUuid) {
+        return URI.create(EMOTE_LIBRARY_CLIENT.getEmotePageUrl(animationUuid));
     }
 
     /** Account token for other redlance services; signs in once for it, library terms accepted or not. */
@@ -139,8 +147,20 @@ public final class EmoteLibrary implements JoinServer {
             User user = mc.getUser();
             mc.services().sessionService().joinServer(user.getProfileId(), user.getAccessToken(), serverId);
             return user.getName();
+        } catch (AuthenticationUnavailableException e) {
+            throw reason(e, I18n.get("disconnect.loginFailedInfo.serversUnavailable"));
+        } catch (InvalidCredentialsException e) {
+            throw reason(e, I18n.get("disconnect.loginFailedInfo.invalidSession"));
+        } catch (InsufficientPrivilegesException e) {
+            throw reason(e, I18n.get("disconnect.loginFailedInfo.insufficientPrivileges"));
+        } catch (UserBannedException | ForcedUsernameChangeException e) {
+            throw reason(e, I18n.get("disconnect.loginFailedInfo.userBanned"));
         } catch (AuthenticationException e) {
-            throw new EmoteLibraryException.AuthFailed(EmoteLibraryException.reason(e), e);
+            throw reason(e, EmoteLibraryException.reason(e));
         }
+    }
+
+    private static EmoteLibraryException.AuthFailed reason(Throwable th, String reason) {
+        return new EmoteLibraryException.AuthFailed(I18n.get("disconnect.loginFailedInfo", reason), th);
     }
 }

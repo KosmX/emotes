@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.components;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.dropdown.DropdownLayer;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
@@ -19,9 +20,12 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +46,7 @@ import java.util.stream.Stream;
 public abstract class EmoteSubScreen extends PreviewScreen {
     protected final boolean reloadOnOpen;
     protected final ISearchEngine searchEngine;
+    protected final DropdownLayer dropdowns = new DropdownLayer();
 
     @Nullable
     public EmoteListener watcher;
@@ -85,7 +90,7 @@ public abstract class EmoteSubScreen extends PreviewScreen {
 
     protected EmoteListWidget newEmoteListWidget() {
         return new EmoteListWidget(
-                this.minecraft, width, this.layout.getContentHeight(), this.layout.getHeaderHeight(), 36
+                this.minecraft, width, this.layout.getContentHeight(), this.layout.getHeaderHeight(), 36, this.dropdowns
         ) {
             @Override
             public void setSelected(@Nullable EmoteListWidget.ListEntry entry) {
@@ -231,11 +236,27 @@ public abstract class EmoteSubScreen extends PreviewScreen {
     public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractRenderState(graphics, mouseX, mouseY, a);
         this.searchEngine.extractRenderState(graphics, mouseX, mouseY, a);
+        this.dropdowns.extractRenderState(graphics, mouseX, mouseY, a);
+    }
+
+    @Override
+    public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean doubleClick) {
+        return this.dropdowns.mouseClicked(event, doubleClick) || super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
+    public boolean keyPressed(@NonNull KeyEvent event) {
+        return this.dropdowns.keyPressed(event) || super.keyPressed(event);
+    }
+
+    @Override
+    protected void updateNarratedWidget(@NonNull NarrationElementOutput output) {
+        if (!this.dropdowns.updateNarration(output)) super.updateNarratedWidget(output);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (this.searchEngine.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+        if (this.dropdowns.mouseScrolled(mouseX, mouseY, scrollX, scrollY) || this.searchEngine.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
@@ -261,11 +282,5 @@ public abstract class EmoteSubScreen extends PreviewScreen {
                 CommonData.LOGGER.warn("Failed to walk!", th);
             }
         }
-    }
-
-    @Override
-    protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
-        if (BaseModalScreen.isShowing(this.minecraft)) return;
-        super.extractBlurredBackground(graphics);
     }
 }

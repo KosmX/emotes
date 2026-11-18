@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,15 +10,20 @@ import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
+import io.github.kosmx.emotes.arch.gui.dropdown.AppDropdownMenu;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.library.EmoteLibrary;
+import io.github.kosmx.emotes.arch.library.modals.ShareScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -31,10 +37,13 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.emotecraftlibrary.sdk.EmoteLibraryClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -295,11 +304,48 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public final static class EmoteHolderEntry extends EmoteListWidget.EmoteLikeEntry {
+        private static final int ICON_SIZE = 32;
+        private static final int ICON_TEXTURE_SIZE = 256;
+
         public final EmoteHolder holder;
+        private final Supplier<Path> file = Suppliers.memoize(this::findFile);
+        private final Supplier<Boolean> fromLibrary = Suppliers.memoize(() -> EmoteLibraryClient.isLibraryEmote(getUuid()));
 
         public EmoteHolderEntry(EmoteListWidget widget, @NotNull EmoteHolder holder) {
             widget.super(holder.name, holder.description, holder.author, holder.bages);
             this.holder = holder;
+        }
+
+        @Override
+        protected @Nullable Path localPath() {
+            return this.file.get();
+        }
+
+        @Override
+        protected boolean hasActions() {
+            return super.hasActions() || this.fromLibrary.get();
+        }
+
+        @Override
+        protected void addActions(AppDropdownMenu.MenuScope menu) {
+            if (this.fromLibrary.get()) {
+                addLinkActions(menu, EmoteLibrary.emotePage(getUuid()), this::icon);
+            } else {
+                super.addActions(menu);
+            }
+        }
+
+        private ShareScreen.Icon icon() {
+            return new ShareScreen.Icon(new ScreenRectangle(getContentX(), getContentY(), ICON_SIZE, ICON_SIZE), this.holder.getIconIdentifier(), ICON_TEXTURE_SIZE);
+        }
+
+        private @Nullable Path findFile() {
+            ExtraAnimationData data = this.holder.emote.data();
+            if (!(data.getRaw(EmoteSerializer.FILENAME_KEY) instanceof String fileName)) return null;
+            Path folder = InstanceService.INSTANCE.getExternalEmoteDir();
+            if (data.getRaw(EmoteSerializer.FOLDER_PATH_KEY) instanceof String folderPath) folder = folder.resolve(folderPath);
+            Path file = folder.resolve(fileName);
+            return Files.isRegularFile(file) ? file : null; // One from emotes/server misses: its folder path starts there
         }
 
         @Override
@@ -308,7 +354,7 @@ public class EmoteHolder implements Supplier<UUID> {
 
             Identifier texture = this.holder.getIconIdentifier();
             if (texture != null) {
-                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_TEXTURE_SIZE, ICON_TEXTURE_SIZE, ICON_TEXTURE_SIZE, ICON_TEXTURE_SIZE);
             }
         }
 

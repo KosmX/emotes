@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.fabric;
 
 import io.github.kosmx.emotes.arch.ClientCommands;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
+import io.github.kosmx.emotes.arch.gui.blur.ModalBlur;
 import io.github.kosmx.emotes.arch.online.OnlineEmotes;
 import io.github.kosmx.emotes.arch.online.OnlineNetworkInstance;
 import io.github.kosmx.emotes.fabric.network.ClientNetworkInstance;
@@ -13,12 +14,14 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.renderer.RenderPipelines;
 
 public class EmotecraftClientFabricMod extends EmotecraftClientMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         KeyMappingHelper.registerKeyMapping(OPEN_MENU_KEY);
         KeyMappingHelper.registerKeyMapping(STOP_EMOTE_KEY);
+        RenderPipelines.register(ModalBlur.PIPELINE);
 
         super.onInitializeClient();
         ClientNetworkInstance.init(); //init network

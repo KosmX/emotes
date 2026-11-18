@@ -2,13 +2,17 @@ package io.github.kosmx.emotes.arch.library;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.dropdown.AppDropdownMenu;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
+import io.github.kosmx.emotes.arch.library.modals.ShareScreen;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.mc.McUtils;
+import io.github.kosmx.emotes.mc.WebsiteLinks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -281,6 +285,21 @@ public final class LibraryFolderEntry extends PagedFolderEntry<GameLibraryItem> 
             this.info = info;
         }
 
+        @Override
+        protected boolean hasActions() {
+            return true;
+        }
+
+        @Override
+        protected void addActions(AppDropdownMenu.MenuScope menu) {
+            addLinkActions(menu, WebsiteLinks.WEBSITE.resolve("bundle/" + this.info.getId()), this::icon);
+        }
+
+        private ShareScreen.Icon icon() {
+            ShareScreen.Icon icon = icons.icon(this.info, getContentX(), getContentY());
+            return icon.texture() != null ? icon : new ShareScreen.Icon(new ScreenRectangle(getX(), getContentY(), 32, 32), FOLDER, 32);
+        }
+
         /** Not equals: the author's avatar isn't shown, so its change keeps the row and the emotes loaded in it. */
         private boolean displays(GameBundleInfo info) {
             return Objects.equals(this.info.getName(), info.getName())
@@ -371,16 +390,27 @@ public final class LibraryFolderEntry extends PagedFolderEntry<GameLibraryItem> 
 
         @Override
         public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
-            boolean loading = this.emoteFuture != null && !this.emoteFuture.isDone();
-            boolean failed = this.emoteFuture != null && this.emoteFuture.isCompletedExceptionally();
-
-            if (loading || failed) {
+            if (isLoadingOrFailed()) {
                 int centerX = getContentX() + getContentWidth() / 2;
                 int centerY = getContentYMiddle();
                 LoadingEntry.extractFutureErrors(graphics, this.emoteFuture, centerX, centerY, getContentWidth());
             } else {
                 super.extractContent(graphics, mouseX, mouseY, hovered, a);
             }
+        }
+
+        private boolean isLoadingOrFailed() {
+            return this.emoteFuture != null && (!this.emoteFuture.isDone() || this.emoteFuture.isCompletedExceptionally());
+        }
+
+        @Override
+        protected boolean hasActions() {
+            return !isLoadingOrFailed();
+        }
+
+        @Override
+        protected void addActions(AppDropdownMenu.MenuScope menu) {
+            addLinkActions(menu, WebsiteLinks.WEBSITE.resolve("emote/" + this.info.getId()), () -> icons.icon(this.info, getContentX(), getContentY()));
         }
 
         @Override

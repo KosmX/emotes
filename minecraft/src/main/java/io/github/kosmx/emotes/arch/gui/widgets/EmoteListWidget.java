@@ -1,13 +1,19 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.google.common.base.Suppliers;
+import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.animation.HoverFill;
+import io.github.kosmx.emotes.arch.gui.dropdown.AppDropdownMenu;
+import io.github.kosmx.emotes.arch.gui.dropdown.DropdownLayer;
+import io.github.kosmx.emotes.arch.gui.dropdown.MoreButton;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.library.LibraryFolderEntry;
 import io.github.kosmx.emotes.arch.library.PagedFolderEntry;
+import io.github.kosmx.emotes.arch.library.modals.ShareScreen;
 import io.github.kosmx.emotes.arch.screen.utils.BageUtils;
 import io.github.kosmx.emotes.arch.screen.utils.PageButton;
 import io.github.kosmx.emotes.main.EmoteHolder;
@@ -19,18 +25,20 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookPage;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,6 +50,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     private static final List<Component> LAST_OPENED_PATH = new CopyOnWriteArrayList<>();
     private static final long SCROLL_STOP_DELAY = 400L; // ms the list has to stay still to count as stopped
 
+    private final DropdownLayer dropdowns;
     private final LibraryFolderEntry libraryEntry = new LibraryFolderEntry(this);
     private final FolderEntry mainFolder = new FolderEntry(Component.translatable("emotecraft.folder.main"));
     private final List<Runnable> loadMore = new ArrayList<>();
@@ -59,10 +68,16 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
     });
 
-    public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight) {
+    public EmoteListWidget(Minecraft minecraft, int width, int height, int y, int itemHeight, DropdownLayer dropdowns) {
         super(minecraft, width, height, y, itemHeight);
+        this.dropdowns = dropdowns;
         this.centerListVertically = false;
         this.backButton.active = false;
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY) && !this.dropdowns.isMouseOver(mouseX, mouseY);
     }
 
     @Override
@@ -280,6 +295,8 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         public final List<Component> bages;
         private final boolean descriptionBlank;
         private final boolean hasSubtext;
+        private final Component authorLine;
+        private final Supplier<MoreButton> more = Suppliers.memoize(() -> new MoreButton(dropdowns, this::addActions));
 
         public ListEntry(@NotNull Component name, Component description, List<Component> bages) {
             this(name, description, CommonComponents.EMPTY, bages);
@@ -292,6 +309,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             this.bages = bages;
             this.descriptionBlank = StringUtils.isBlank(description.getString()); // description is final; avoid rebuilding the string every frame
             this.hasSubtext = !author.getString().isEmpty(); // author is final; avoid re-rendering the string every frame
+            this.authorLine = authorLine(author);
         }
 
         @Override
@@ -300,7 +318,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             graphics.enableScissor(getX() - 1, getY() - 1, maxX, getY() + getHeight() + 1);
             if (hovered) {
                 graphics.requestCursor(isFocused() ? CursorType.DEFAULT : CursorTypes.POINTING_HAND);
-                graphics.fill(getContentX() - 1, getContentY() - 1, maxX, getContentBottom() + 1, ARGB.color(128, 66, 66, 66));
+                graphics.fill(getContentX() - 1, getContentY() - 1, maxX, getContentBottom() + 1, HoverFill.ROW);
             }
             int lineHeight = minecraft.font.lineHeight;
             int top = getContentY() + contentShift(); // Vertically center the whole text block within the row.
@@ -310,10 +328,56 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             graphics.textRenderer(GuiGraphicsExtractor.HoveredTextEffects.NONE).acceptScrolling(this.name, getContentX() + START_OFFSET, getContentX() + START_OFFSET, maxX - badgeWidth, top, top + lineHeight);
             graphics.text(minecraft.font, this.description, getContentX() + START_OFFSET, top + DESCRIPTION_Y, -8355712);
             extractAdditionalContent(graphics, mouseX, mouseY, hovered, a);
+            extractMore(graphics, maxX, mouseX, mouseY, a);
             graphics.disableScissor();
         }
 
         protected abstract void extractAdditionalContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta);
+
+        private void extractMore(GuiGraphicsExtractor graphics, int right, int mouseX, int mouseY, float a) {
+            if (!hasActions()) return;
+            MoreButton more = this.more.get();
+            more.setPosition(right - MoreButton.SIZE, getContentYMiddle() - MoreButton.SIZE / 2);
+            more.extractRenderState(graphics, mouseX, mouseY, a);
+        }
+
+        protected @Nullable Path localPath() {
+            return null;
+        }
+
+        protected boolean hasActions() {
+            return localPath() != null;
+        }
+
+        protected void addActions(AppDropdownMenu.MenuScope menu) {
+            menu.group(this::addReveal);
+        }
+
+        protected void addLinkActions(AppDropdownMenu.MenuScope menu, URI link, Supplier<ShareScreen.Icon> icon) {
+            menu.group(group -> addAction(group, ShareScreen.SHARE, () -> minecraft.gui.setScreen(new ShareScreen(minecraft.gui.screen(), this.name, this.author, link, icon.get()))));
+            menu.group(group -> {
+                addAction(group, CommonComponents.GUI_OPEN_IN_BROWSER, () -> Blaze3D.openUri(link));
+                addReveal(group);
+            });
+        }
+
+        private void addReveal(AppDropdownMenu.GroupScope group) {
+            Path path = localPath();
+            if (path != null) addAction(group, PlatformTools.REVEAL, () -> PlatformTools.reveal(path));
+        }
+
+        private void addAction(AppDropdownMenu.GroupScope group, Component text, Runnable action) {
+            group.item(text, () -> {
+                this.more.get().closeMenu();
+                action.run();
+            });
+        }
+
+        @Override
+        public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean doubleClick) {
+            if (hasActions() && this.more.get().mouseClicked(event, doubleClick)) return false; // Clicked, but neither focused nor selected
+            return super.mouseClicked(event, doubleClick);
+        }
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
@@ -363,11 +427,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         protected void extractAuthor(GuiGraphicsExtractor graphics) {
             if (!hasSubtext()) return;
 
-            Component text = Component.translatable("emotecraft.emote.author")
-                    .withStyle(ChatFormatting.GOLD)
-                    .append(this.author);
-
-            graphics.text(minecraft.font, text, getContentX() + START_OFFSET, getContentY() + contentShift() + subtextY(), -8355712);
+            graphics.text(minecraft.font, this.authorLine, getContentX() + START_OFFSET, getContentY() + contentShift() + subtextY(), -8355712);
         }
 
         public boolean matches(String string) {
@@ -495,6 +555,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         protected final SequencedMap<Object, ListEntry> entries = new LinkedHashMap<>();
         private final Supplier<List<Component>> badges = Suppliers.memoize(() -> List.of(Component.translatable("emotecraft.folder.emotes", countEmotes()).withStyle(ChatFormatting.GRAY)));
+        private final Supplier<Path> localPath = Suppliers.memoize(() -> {
+            for (ListEntry entry : this.entries.values()) {
+                Path path = entry.localPath();
+                if (path != null) return path.getParent();
+            }
+            return null;
+        });
         private FolderEntry next;
 
         private FolderEntry(Object obj) {
@@ -507,6 +574,11 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
         public FolderEntry(@NotNull Component name, @NotNull Component description, Component author) {
             super(name, description, author, Collections.emptyList());
+        }
+
+        @Override
+        protected @Nullable Path localPath() {
+            return this.localPath.get();
         }
 
         @Override
@@ -650,6 +722,10 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
 
     public void setCompactMode(boolean compactMode) {
         this.compactMode = compactMode;
+    }
+
+    public static MutableComponent authorLine(Component author) {
+        return Component.translatable("emotecraft.emote.author").withStyle(ChatFormatting.GOLD).append(author);
     }
 
     public static MutableComponent appendScreenPath(FolderEntry folder, MutableComponent component) {

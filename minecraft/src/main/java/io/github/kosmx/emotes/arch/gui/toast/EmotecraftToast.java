@@ -1,10 +1,7 @@
 package io.github.kosmx.emotes.arch.gui.toast;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.kosmx.emotes.arch.screen.utils.EmotecraftTexture;
 import io.github.kosmx.emotes.arch.screen.utils.WidgetOutliner;
 import io.github.kosmx.emotes.mc.McUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.SystemToast;
@@ -24,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A toast on the mod's own panel — a tiled {@link EmotecraftTexture#MENU_LIST_BACKGROUND} behind
- * {@link WidgetOutliner}'s separators — with an icon on the left and the text beside it.
+ * A toast on the mod's own panel ({@link WidgetOutliner#extractPanel}), with an icon on the left and the text beside it.
  */
 public class EmotecraftToast implements Toast {
     private static final Identifier MOD_ICON = McUtils.newIdentifier("textures/emotecraft_mod_logo.png");
@@ -133,9 +129,7 @@ public class EmotecraftToast implements Toast {
 
     @Override
     public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, @NonNull Font font, long fullyVisibleForMs) {
-        Identifier background = EmotecraftTexture.MENU_LIST_BACKGROUND.identifier(Minecraft.getInstance().level != null);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, background, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
-        WidgetOutliner.extractOutline(graphics, 0, 0, this.width, this.height, -1);
+        WidgetOutliner.extractPanel(graphics, 0, 0, this.width, this.height, 1.0F);
 
         // Source and texture size are equal, so the icon maps whole onto the square whatever its resolution.
         graphics.blit(RenderPipelines.GUI_TEXTURED, this.icon, PADDING, PADDING, 0.0F, 0.0F,
