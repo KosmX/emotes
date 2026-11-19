@@ -1,7 +1,6 @@
 package io.github.kosmx.emotes.arch.gui.widgets;
 
 import com.google.common.base.Suppliers;
-import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.cursor.CursorType;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.zigythebird.playeranimcore.animation.Animation;
@@ -46,7 +45,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
+public abstract class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEntry> {
     private static final List<Component> LAST_OPENED_PATH = new CopyOnWriteArrayList<>();
     private static final long SCROLL_STOP_DELAY = 400L; // ms the list has to stay still to count as stopped
 
@@ -78,6 +77,14 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return super.isMouseOver(mouseX, mouseY) && !this.dropdowns.isMouseOver(mouseX, mouseY);
+    }
+
+    protected abstract boolean playsOnPress();
+
+    protected abstract void pressWithoutSound(EmoteLikeEntry entry);
+
+    public int getScrollbarRight() {
+        return scrollBarX() + scrollbarWidth();
     }
 
     @Override
@@ -296,7 +303,7 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         private final boolean descriptionBlank;
         private final boolean hasSubtext;
         private final Component authorLine;
-        private final Supplier<MoreButton> more = Suppliers.memoize(() -> new MoreButton(dropdowns, this::addActions));
+        private final Supplier<MoreButton> more = Suppliers.memoize(() -> new MoreButton(dropdowns, this::addMenu));
 
         public ListEntry(@NotNull Component name, Component description, List<Component> bages) {
             this(name, description, CommonComponents.EMPTY, bages);
@@ -349,28 +356,12 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
             return localPath() != null;
         }
 
-        protected void addActions(AppDropdownMenu.MenuScope menu) {
-            menu.group(this::addReveal);
+        private void addMenu(AppDropdownMenu.MenuScope menu) {
+            addActions(new ItemActions(menu, this.name, this.author, () -> this.more.get().closeMenu()));
         }
 
-        protected void addLinkActions(AppDropdownMenu.MenuScope menu, URI link, Supplier<ShareScreen.Icon> icon) {
-            menu.group(group -> addAction(group, ShareScreen.SHARE, () -> minecraft.gui.setScreen(new ShareScreen(minecraft.gui.screen(), this.name, this.author, link, icon.get()))));
-            menu.group(group -> {
-                addAction(group, CommonComponents.GUI_OPEN_IN_BROWSER, () -> Blaze3D.openUri(link));
-                addReveal(group);
-            });
-        }
-
-        private void addReveal(AppDropdownMenu.GroupScope group) {
-            Path path = localPath();
-            if (path != null) addAction(group, PlatformTools.REVEAL, () -> PlatformTools.reveal(path));
-        }
-
-        private void addAction(AppDropdownMenu.GroupScope group, Component text, Runnable action) {
-            group.item(text, () -> {
-                this.more.get().closeMenu();
-                action.run();
-            });
+        protected void addActions(ItemActions actions) {
+            actions.addReveal(localPath());
         }
 
         @Override
@@ -511,8 +502,13 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
     }
 
     public abstract class EmoteLikeEntry extends ListEntry {
-        public EmoteLikeEntry(@NotNull Component name, Component description, Component author, List<Component> bages) {
+        private final boolean hasSound;
+        private final @Nullable URI page;
+
+        public EmoteLikeEntry(@NotNull Component name, Component description, Component author, List<Component> bages, boolean hasSound, @Nullable URI page) {
             super(name, description, author, bages);
+            this.hasSound = hasSound;
+            this.page = page;
         }
 
         @Override
@@ -521,6 +517,22 @@ public class EmoteListWidget extends ObjectSelectionList<EmoteListWidget.ListEnt
         }
 
         public abstract CompletableFuture<Animation> getEmote();
+
+        protected abstract ShareScreen.Icon icon();
+
+        @Override
+        protected boolean hasActions() {
+            return canPlayWithoutSound() || this.page != null || super.hasActions();
+        }
+
+        @Override
+        protected void addActions(ItemActions actions) {
+            actions.addEmote(canPlayWithoutSound() ? () -> pressWithoutSound(this) : null, this.page, this::icon, localPath());
+        }
+
+        private boolean canPlayWithoutSound() {
+            return this.hasSound && playsOnPress();
+        }
 
         @Override
         public boolean matches(String string) {

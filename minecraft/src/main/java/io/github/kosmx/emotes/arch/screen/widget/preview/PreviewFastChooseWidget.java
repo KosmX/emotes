@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.widget.preview;
 
 import com.mojang.authlib.GameProfile;
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.dropdown.DropdownLayer;
 import io.github.kosmx.emotes.arch.gui.widgets.PlayerPreview;
 import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
@@ -17,8 +18,8 @@ public class PreviewFastChooseWidget extends AbstractFastChooseWidget {
     private final boolean animated;
     private float animTime = 1.0F;
 
-    public PreviewFastChooseWidget(FastChooseController controller, boolean animated, int x, int y, int size) {
-        super(controller, x, y, size, CommonComponents.EMPTY);
+    public PreviewFastChooseWidget(FastChooseController controller, DropdownLayer dropdowns, boolean animated, int x, int y, int size) {
+        super(controller, dropdowns, x, y, size, CommonComponents.EMPTY);
         this.animated = animated;
 
         GameProfile profile = Minecraft.getInstance().getGameProfile();

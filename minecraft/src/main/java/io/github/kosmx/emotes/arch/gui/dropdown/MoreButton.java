@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public final class MoreButton extends AbstractButton {
     public static final int SIZE = 12;
-    private static final Component DOTS = Component.literal("⋮");
+    public static final Component DOTS = Component.literal("⋮");
 
     private final DropdownLayer layer;
     private final AppDropdownMenu menu;

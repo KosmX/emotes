@@ -1,8 +1,14 @@
 package io.github.kosmx.emotes.arch.screen.ingame;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.zigythebird.playeranim.util.ClientUtil;
+import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
+import io.github.kosmx.emotes.arch.gui.dropdown.AppDropdownMenu;
+import io.github.kosmx.emotes.arch.gui.dropdown.DropdownLayer;
+import io.github.kosmx.emotes.arch.gui.widgets.GuideWidget;
+import io.github.kosmx.emotes.arch.gui.widgets.ItemActions;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.arch.online.OnlineEmotes;
 import io.github.kosmx.emotes.arch.online.OnlineNetworkInstance;
@@ -10,15 +16,16 @@ import io.github.kosmx.emotes.arch.screen.widget.AbstractFastChooseWidget;
 import io.github.kosmx.emotes.arch.screen.widget.FastChooseController;
 import io.github.kosmx.emotes.arch.screen.widget.IChooseElement;
 import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget;
+import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.main.config.CloseWheel;
 import io.github.kosmx.emotes.main.network.ClientPacketManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
@@ -28,9 +35,13 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 import java.util.OptionalInt;
 
 public class FastMenuScreen extends Screen implements FastChooseController {
@@ -41,13 +52,18 @@ public class FastMenuScreen extends Screen implements FastChooseController {
     private static final Component WARN_ONLY_PROXY = Component.translatable("emotecraft.only_proxy");
     private static final Component WARN_ONLY_ONLINE = Component.translatable("emotecraft.only_online");
     private static final Component RECONNECT_ONLINE = Component.translatable("emotecraft.online.reconnect");
+    private static final Component ACTIONS_GUIDE = Component.translatable("emotecraft.guide.wheel");
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 0, HeaderAndFooterLayout.DEFAULT_HEADER_AND_FOOTER_HEIGHT);
     private final FrameLayout contents = this.layout.addToContents(new FrameLayout());
+    private final DropdownLayer dropdowns = new DropdownLayer();
     protected final Screen parent;
 
     protected AbstractFastChooseWidget fastMenu;
     private Button reconnectOnline;
+    private GuideWidget guide;
+    @Nullable
+    private AppDropdownMenu menu;
 
     public FastMenuScreen(Screen parent) {
         super(FastMenuScreen.TITLE);
@@ -74,7 +90,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
             this.layout.addTitleHeader(FastMenuScreen.WARN_NO_SERVER, this.font);
         }
 
-        this.fastMenu = this.contents.addChild(new PreviewFastChooseWidget(this, true, 0, 0, 512));
+        this.fastMenu = this.contents.addChild(new PreviewFastChooseWidget(this, this.dropdowns, true, 0, 0, 512));
 
         LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
         if (PlatformTools.getConfig().onlineDebug.get()) {
@@ -94,6 +110,7 @@ public class FastMenuScreen extends Screen implements FastChooseController {
         );
 
         this.layout.visitWidgets(this::addRenderableWidget);
+        this.guide = addRenderableWidget(new GuideWidget(ACTIONS_GUIDE, this.font, Button.SMALL_WIDTH * 2)); // Not in the layout, it is placed right of the wheel once that is arranged
         repositionElements();
     }
 
@@ -105,6 +122,25 @@ public class FastMenuScreen extends Screen implements FastChooseController {
         }
         this.contents.setMinHeight(contentHeight); // Fills the area between header and footer, so the frame centers the wheel in it
         this.layout.arrangeElements();
+        if (this.guide != null && this.fastMenu != null) {
+            this.guide.centerIn(this.fastMenu.getRight(), this.layout.getHeaderHeight(), this.width, this.layout.getHeaderHeight() + contentHeight);
+        }
+    }
+
+    @Override
+    public void extractRenderState(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractRenderState(graphics, mouseX, mouseY, a);
+        this.dropdowns.extractRenderState(graphics, mouseX, mouseY, a);
+    }
+
+    @Override
+    protected void updateNarratedWidget(@NonNull NarrationElementOutput output) {
+        if (!this.dropdowns.updateNarration(output)) super.updateNarratedWidget(output);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        return this.dropdowns.mouseScrolled(mouseX, mouseY, scrollX, scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override
@@ -120,6 +156,9 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     public boolean keyPressed(@NonNull KeyEvent keyEvent) {
+        if (this.dropdowns.keyPressed(keyEvent)) {
+            return true;
+        }
         if (supportsKeyboardNavigation()) {
             OptionalInt intKey = InputConstants.getKey(keyEvent).getNumericKeyValue();
             if (intKey.isPresent()) {
@@ -150,6 +189,9 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean bl) {
+        if (this.dropdowns.mouseClicked(event, bl)) {
+            return true;
+        }
         if (PlatformTools.getConfig().closeWheelType.get() == CloseWheel.PRESS && EmotecraftClientMod.OPEN_MENU_KEY.matchesMouse(event)) {
             return onToggleKey(event);
         }
@@ -202,17 +244,40 @@ public class FastMenuScreen extends Screen implements FastChooseController {
 
     @Override
     public boolean isValidClickButton(MouseButtonInfo info) {
-        return info.button() == InputConstants.MOUSE_BUTTON_LEFT;
+        return info.button() == InputConstants.MOUSE_BUTTON_LEFT || info.button() == InputConstants.MOUSE_BUTTON_RIGHT;
     }
 
     @Override
     public boolean onClick(IChooseElement element, InputWithModifiers event, boolean unused) {
-        if(element.getEmote() != null){
-            boolean bl = element.getEmote().playEmote();
-            if (bl) Minecraft.getInstance().gui.setScreen(null);
-            return bl;
-        }
-        return false;
+        EmoteHolder emote = element.getEmote();
+        if (emote == null) return false;
+        if (event.input() == InputConstants.MOUSE_BUTTON_RIGHT) return openMenu(element, emote);
+        return play(emote.emote);
+    }
+
+    private boolean play(Animation emote) {
+        boolean played = EmoteHolder.playEmote(ClientUtil.getClientPlayer(), emote);
+        if (played) this.minecraft.gui.setScreen(null);
+        return played;
+    }
+
+    private boolean openMenu(IChooseElement element, EmoteHolder emote) {
+        // The bound copy keeps no file name, and registering its icon would replace the loaded one's, which has the same id
+        EmoteHolder loaded = Objects.requireNonNullElse(EmoteHolder.getEmoteFromUuid(emote.getUuid()), emote);
+        Runnable playWithoutSound = EmoteHolder.hasSound(emote.emote) ? () -> play(EmoteHolder.withoutSound(emote.emote)) : null;
+        URI page = loaded.page();
+        Path file = loaded.file();
+        if (playWithoutSound == null && page == null && file == null) return false;
+
+        this.menu = new AppDropdownMenu(this.dropdowns, element::getRectangle, this::closeMenu, scope ->
+                new ItemActions(scope, emote.name, emote.author, this::closeMenu).addEmote(playWithoutSound, page, () -> loaded.icon(element.getRectangle()), file)
+        );
+        this.menu.setExpanded(true);
+        return true;
+    }
+
+    private void closeMenu() {
+        if (this.menu != null) this.menu.setExpanded(false);
     }
 
     @Override

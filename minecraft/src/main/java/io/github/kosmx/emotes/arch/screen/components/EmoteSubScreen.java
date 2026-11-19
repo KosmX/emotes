@@ -3,6 +3,7 @@ package io.github.kosmx.emotes.arch.screen.components;
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.dropdown.DropdownLayer;
+import io.github.kosmx.emotes.arch.gui.dropdown.MoreButton;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
 import io.github.kosmx.emotes.arch.gui.widgets.search.ISearchEngine;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
@@ -44,6 +45,8 @@ import java.util.stream.Stream;
  * Use to create your list of emotes. (dima_dencep uses it)
  */
 public abstract class EmoteSubScreen extends PreviewScreen {
+    protected static final Component ACTIONS_GUIDE = Component.translatable("emotecraft.guide.list", MoreButton.DOTS);
+
     protected final boolean reloadOnOpen;
     protected final ISearchEngine searchEngine;
     protected final DropdownLayer dropdowns = new DropdownLayer();
@@ -95,7 +98,18 @@ public abstract class EmoteSubScreen extends PreviewScreen {
             @Override
             public void setSelected(@Nullable EmoteListWidget.ListEntry entry) {
                 super.setSelected(entry);
-                onPressed(entry);
+                onPressed(entry, true);
+            }
+
+            @Override
+            protected boolean playsOnPress() {
+                return EmoteSubScreen.this.playsOnPress();
+            }
+
+            @Override
+            protected void pressWithoutSound(EmoteLikeEntry entry) {
+                super.setSelected(entry);
+                onPressed(entry, false);
             }
 
             @Override
@@ -148,7 +162,9 @@ public abstract class EmoteSubScreen extends PreviewScreen {
         ).width(200).build());
     }
 
-    protected abstract void onPressed(@Nullable EmoteListWidget.ListEntry selected);
+    protected abstract void onPressed(@Nullable EmoteListWidget.ListEntry selected, boolean withSound);
+
+    protected abstract boolean playsOnPress();
 
     @Override
     protected void repositionElements() {

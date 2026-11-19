@@ -2,8 +2,8 @@ package io.github.kosmx.emotes.arch.library;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import io.github.kosmx.emotes.PlatformTools;
-import io.github.kosmx.emotes.arch.gui.dropdown.AppDropdownMenu;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.gui.widgets.ItemActions;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
 import io.github.kosmx.emotes.arch.library.modals.ShareScreen;
 import io.github.kosmx.emotes.common.CommonData;
@@ -291,8 +291,8 @@ public final class LibraryFolderEntry extends PagedFolderEntry<GameLibraryItem> 
         }
 
         @Override
-        protected void addActions(AppDropdownMenu.MenuScope menu) {
-            addLinkActions(menu, WebsiteLinks.WEBSITE.resolve("bundle/" + this.info.getId()), this::icon);
+        protected void addActions(ItemActions actions) {
+            actions.addLinks(WebsiteLinks.WEBSITE.resolve("bundle/" + this.info.getId()), this::icon, localPath());
         }
 
         private ShareScreen.Icon icon() {
@@ -382,7 +382,9 @@ public final class LibraryFolderEntry extends PagedFolderEntry<GameLibraryItem> 
                     McUtils.fromJson(info.getName()),
                     McUtils.fromJson(info.getDescription()),
                     McUtils.fromJson(info.getAuthor()),
-                    EmoteHolder.computeBages(info.getTags())
+                    EmoteHolder.computeBages(info.getTags()),
+                    info.getHasSound(),
+                    WebsiteLinks.WEBSITE.resolve("emote/" + info.getId())
             );
 
             this.info = info;
@@ -409,8 +411,8 @@ public final class LibraryFolderEntry extends PagedFolderEntry<GameLibraryItem> 
         }
 
         @Override
-        protected void addActions(AppDropdownMenu.MenuScope menu) {
-            addLinkActions(menu, WebsiteLinks.WEBSITE.resolve("emote/" + this.info.getId()), () -> icons.icon(this.info, getContentX(), getContentY()));
+        protected ShareScreen.Icon icon() {
+            return icons.icon(this.info, getContentX(), getContentY());
         }
 
         @Override
