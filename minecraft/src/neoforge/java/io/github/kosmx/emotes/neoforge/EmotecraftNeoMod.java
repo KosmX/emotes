@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.neoforge;
 
 import io.github.kosmx.emotes.mc.ServerCommands;
+import io.github.kosmx.emotes.mc.WebsiteLinks;
 import io.github.kosmx.emotes.common.CommonData;
 import io.github.kosmx.emotes.main.EmotecraftMod;
 import net.neoforged.api.distmarker.Dist;
@@ -8,6 +9,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @Mod(CommonData.MOD_ID)
@@ -26,5 +28,10 @@ public class EmotecraftNeoMod extends EmotecraftMod {
     @SubscribeEvent
     public void onStartTracking(PlayerEvent.StartTracking event) {
         super.onStartTracking(event.getTarget(), event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onServerChat(ServerChatEvent event) {
+        event.setMessage(WebsiteLinks.decorate(event.getMessage()));
     }
 }

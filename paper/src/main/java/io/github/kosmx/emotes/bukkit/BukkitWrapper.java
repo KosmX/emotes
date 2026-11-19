@@ -29,7 +29,6 @@ public final class BukkitWrapper extends JavaPlugin implements ChannelInitialize
     public final static String EMOTE_PACKET = CommonData.getIDAsString(CommonData.playEmoteID);
 
     @Override
-    @SuppressWarnings("UnstableApiUsage")
     public void onLoad() {
         try { // Trying to increase the packet limit since the paper server is shit and severely limited
             StreamCodecUtils.replaceFallback(StreamCodecUtils.getThis(ServerboundCustomPayloadPacket.STREAM_CODEC),
@@ -61,6 +60,7 @@ public final class BukkitWrapper extends JavaPlugin implements ChannelInitialize
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, BukkitWrapper.EMOTE_PACKET);
         Bukkit.getMessenger().registerIncomingPluginChannel(this, BukkitWrapper.EMOTE_PACKET, ServerSideEmotePlay.getInstance());
         getServer().getPluginManager().registerEvents(ServerSideEmotePlay.getInstance(), this);
+        getServer().getPluginManager().registerEvents(new WebsiteLinkDecorator(), this);
         boolean suppressProxyWarning = Serializer.getConfig() instanceof PaperConfig paperConfig && paperConfig.suppressProxyWarning.get();
         if (!suppressProxyWarning && Bukkit.getServerConfig().isProxyEnabled()) {
             CommonData.LOGGER.error("*************************************************************************************");

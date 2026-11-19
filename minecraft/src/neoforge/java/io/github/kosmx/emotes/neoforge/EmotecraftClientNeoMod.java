@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.neoforge;
 
 import io.github.kosmx.emotes.arch.ClientCommands;
 import io.github.kosmx.emotes.arch.EmotecraftClientMod;
+import io.github.kosmx.emotes.arch.gui.blur.ModalBlur;
 import io.github.kosmx.emotes.arch.network.client.ClientNetwork;
 import io.github.kosmx.emotes.arch.online.OnlineEmotes;
 import io.github.kosmx.emotes.arch.online.OnlineNetworkInstance;
@@ -17,6 +18,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -41,6 +43,7 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
         NeoForge.EVENT_BUS.addListener(this::onEntityLeaveLevel);
         NeoForge.EVENT_BUS.addListener(this::onRegisterClientCommands);
         modEventBus.addListener(this::onRegisterKeyMappings);
+        modEventBus.addListener(this::onRegisterRenderPipelines);
     }
 
     @SubscribeEvent
@@ -84,6 +87,10 @@ public class EmotecraftClientNeoMod extends EmotecraftClientMod {
     public void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(OPEN_MENU_KEY);
         event.register(STOP_EMOTE_KEY);
+    }
+
+    public void onRegisterRenderPipelines(RegisterRenderPipelinesEvent event) {
+        event.registerPipeline(ModalBlur.PIPELINE);
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package io.github.kosmx.emotes.main;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,14 +11,20 @@ import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.api.proxy.INetworkInstance;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.library.EmoteLibrary;
+import io.github.kosmx.emotes.arch.library.modals.ShareScreen;
 import io.github.kosmx.emotes.common.CommonData;
+import io.github.kosmx.emotes.common.network.objects.SongPacket;
+import io.github.kosmx.emotes.common.opus.OpusSound;
 import io.github.kosmx.emotes.common.tools.MathHelper;
 import io.github.kosmx.emotes.common.tools.UUIDMap;
 import io.github.kosmx.emotes.main.network.ClientEmotePlay;
 import io.github.kosmx.emotes.mc.McUtils;
 import io.github.kosmx.emotes.server.serializer.EmoteSerializer;
+import io.github.kosmx.emotes.server.services.InstanceService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -31,10 +38,14 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.emotecraftlibrary.sdk.EmoteLibraryClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,6 +58,7 @@ import java.util.stream.Collectors;
  * Wrapper class to store an emote and create renderable texts + some utils
  */
 public class EmoteHolder implements Supplier<UUID> {
+    private static final int ICON_TEXTURE_SIZE = 256;
 
     public final Animation emote;
     public final Component name;
@@ -67,6 +79,7 @@ public class EmoteHolder implements Supplier<UUID> {
      */
     @Nullable
     private INetworkInstance fromInstance = null;
+    private final Supplier<Path> file = Suppliers.memoize(this::findFile);
 
     /**
      * Create cache from emote data
@@ -161,11 +174,43 @@ public class EmoteHolder implements Supplier<UUID> {
         this.iconIdentifier = null;
     }
 
+    public ShareScreen.Icon icon(ScreenRectangle bounds) {
+        return new ShareScreen.Icon(bounds, getIconIdentifier(), ICON_TEXTURE_SIZE);
+    }
+
+    public @Nullable Path file() {
+        return this.file.get();
+    }
+
+    private @Nullable Path findFile() {
+        ExtraAnimationData data = this.emote.data();
+        if (!(data.getRaw(EmoteSerializer.FILENAME_KEY) instanceof String fileName)) return null;
+        Path folder = InstanceService.INSTANCE.getExternalEmoteDir();
+        if (data.getRaw(EmoteSerializer.FOLDER_PATH_KEY) instanceof String folderPath) folder = folder.resolve(folderPath);
+        Path file = folder.resolve(fileName);
+        return Files.isRegularFile(file) ? file : null; // One from emotes/server misses: its folder path starts there
+    }
+
+    public @Nullable URI page() {
+        return EmoteLibraryClient.isLibraryEmote(getUuid()) ? EmoteLibrary.emotePage(getUuid()) : null;
+    }
+
     /**
      * @return Playable EmotePlayer
      */
     public Animation getEmote() {
         return emote;
+    }
+
+    public static boolean hasSound(Animation emote) {
+        return emote.data().getRaw(SongPacket.OPUS_KEY) instanceof OpusSound sound && !sound.failed();
+    }
+
+    public static Animation withoutSound(Animation emote) {
+        ExtraAnimationData data = emote.data().copy();
+        data.data().remove(SongPacket.OPUS_KEY);
+        data.data().remove(SongPacket.NBS_KEY); // Clients too old for Opus still play the .nbs
+        return new Animation(data, emote.length(), emote.loopType(), emote.boneAnimations(), emote.keyFrames(), emote.bones(), emote.parents());
     }
 
     public static EmoteHolder getEmoteFromUuid(UUID uuid) {
@@ -295,11 +340,23 @@ public class EmoteHolder implements Supplier<UUID> {
     }
 
     public final static class EmoteHolderEntry extends EmoteListWidget.EmoteLikeEntry {
+        private static final int ICON_SIZE = 32;
+
         public final EmoteHolder holder;
 
         public EmoteHolderEntry(EmoteListWidget widget, @NotNull EmoteHolder holder) {
-            widget.super(holder.name, holder.description, holder.author, holder.bages);
+            widget.super(holder.name, holder.description, holder.author, holder.bages, hasSound(holder.emote), holder.page());
             this.holder = holder;
+        }
+
+        @Override
+        protected @Nullable Path localPath() {
+            return this.holder.file();
+        }
+
+        @Override
+        protected ShareScreen.Icon icon() {
+            return this.holder.icon(new ScreenRectangle(getContentX(), getContentY(), ICON_SIZE, ICON_SIZE));
         }
 
         @Override
@@ -308,7 +365,7 @@ public class EmoteHolder implements Supplier<UUID> {
 
             Identifier texture = this.holder.getIconIdentifier();
             if (texture != null) {
-                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, 32, 32, 256, 256, 256, 256);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, getContentX(), getContentY(), 0.0F, 0.0F, ICON_SIZE, ICON_SIZE, ICON_TEXTURE_SIZE, ICON_TEXTURE_SIZE, ICON_TEXTURE_SIZE, ICON_TEXTURE_SIZE);
             }
         }
 

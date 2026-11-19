@@ -1,12 +1,14 @@
 package io.github.kosmx.emotes.fabric;
 
 import io.github.kosmx.emotes.mc.ServerCommands;
+import io.github.kosmx.emotes.mc.WebsiteLinks;
 import io.github.kosmx.emotes.fabric.network.server.ServerNetworkStuff;
 import io.github.kosmx.emotes.main.EmotecraftMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
@@ -23,5 +25,6 @@ public class EmotecraftFabricMod extends EmotecraftMod implements ModInitializer
         CommandRegistrationCallback.EVENT.register(ServerCommands::register);
         EntityTrackingEvents.START_TRACKING.register(this::onStartTracking);
         ServerLifecycleEvents.SERVER_STARTING.register(server -> SERVER_INSTANCE = server);
+        ServerMessageDecoratorEvent.EVENT.register(ServerMessageDecoratorEvent.STYLING_PHASE, (_, message) -> WebsiteLinks.decorate(message));
     }
 }

@@ -12,6 +12,7 @@ accessible method net/minecraft/client/gui/components/AbstractSelectionList clea
 accessible field net/minecraft/client/gui/components/toasts/SystemToast MAX_LINE_SIZE I
 accessible field net/minecraft/client/gui/components/toasts/SystemToast LINE_SPACING I
 accessible field net/minecraft/client/gui/components/toasts/ToastManager SLOT_COUNT I
+accessible method net/minecraft/client/renderer/RenderPipelines register (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;)Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;
 
 # EmotecraftLibrary
 accessible field net/minecraft/client/resources/SkinManager skinTextureDownloader Lnet/minecraft/client/renderer/texture/SkinTextureDownloader;

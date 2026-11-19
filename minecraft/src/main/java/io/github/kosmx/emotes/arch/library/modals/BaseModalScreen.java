@@ -1,13 +1,13 @@
 package io.github.kosmx.emotes.arch.library.modals;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
+import io.github.kosmx.emotes.mc.WebsiteLinks;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.friends.FriendsOverlayScreen;
@@ -24,6 +24,7 @@ import java.util.Optional;
 public abstract class BaseModalScreen extends Screen {
     protected final @Nullable Screen backgroundScreen;
     private @Nullable LinearLayout layout;
+    private ScreenRectangle window = ScreenRectangle.empty();
 
     protected BaseModalScreen(Component title, @Nullable Screen backgroundScreen) {
         super(title);
@@ -100,6 +101,11 @@ public abstract class BaseModalScreen extends Screen {
     private void arrangeLayout() {
         this.layout.arrangeElements();
         FrameLayout.alignInRectangle(this.layout, this.getRectangle(), 0.5F, 0.5F);
+        this.window = new ScreenRectangle(this.layout.getX() - 8, this.layout.getY() - 8, this.layout.getWidth() + 16, this.layout.getHeight() + 16 + 1);
+    }
+
+    protected ScreenRectangle window() {
+        return this.window;
     }
 
     @Override
@@ -113,24 +119,27 @@ public abstract class BaseModalScreen extends Screen {
         } else {
             super.extractBackground(graphics, mouseX, mouseY, a);
         }
+    }
 
-        graphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
-                FriendsOverlayScreen.BACKGROUND_SPRITE,
-                this.layout.getX() - 8,
-                this.layout.getY() - 8,
-                this.layout.getWidth() + 16,
-                this.layout.getHeight() + 16 + 1
-        );
+    @Override
+    public void extractRenderState(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
+        extractWindow(graphics, mouseX, mouseY, a);
+    }
+
+    protected void extractWindow(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
+        float opacity = opacity();
+        if (opacity < 1.0F) fadeWidgets(opacity); // It allocates an iterator, which only a fading window needs
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FriendsOverlayScreen.BACKGROUND_SPRITE, this.window.left(), this.window.top(), this.window.width(), this.window.height(), opacity);
+        super.extractRenderState(graphics, mouseX, mouseY, a);
+    }
+
+    protected float opacity() {
+        return 1.0F;
     }
 
     @Override
     public boolean mouseClicked(final MouseButtonEvent event, final boolean doubleClick) {
-        int panelLeft = this.layout.getX() - 8;
-        int panelRight = this.layout.getX() + this.layout.getWidth() + 8;
-        int panelTop = this.layout.getY();
-        int panelBottom = this.layout.getY() + this.layout.getHeight() + 16;
-        if (!(event.x() < panelLeft) && !(event.x() > panelRight) && !(event.y() < panelTop) && !(event.y() > panelBottom)) {
+        if (this.window.containsPoint((int) event.x(), (int) event.y())) {
             return super.mouseClicked(event, doubleClick);
         }
 
@@ -154,9 +163,8 @@ public abstract class BaseModalScreen extends Screen {
         return this.backgroundScreen != null && this.backgroundScreen.isPauseScreen(); // Pauses as the screen under it does
     }
 
-    /** @return whether this privacy screen is the one currently displayed, so a background screen can skip blurring under it. */
-    public static boolean isShowing(Minecraft minecraft) {
-        return minecraft.gui.screen() instanceof BaseModalScreen;
+    public float blurProgress() {
+        return 1.0F;
     }
 
     /** @return the screen {@code screen} is drawn over, if it's a modal */
@@ -165,10 +173,6 @@ public abstract class BaseModalScreen extends Screen {
     }
 
     protected static Component link(String key, URI uri) {
-        return Component.translatable(key).withStyle(style -> style
-                .withUnderlined(true)
-                .withColor(ChatFormatting.BLUE)
-                .withClickEvent(new ClickEvent.OpenUrl(uri))
-        );
+        return WebsiteLinks.link(Component.translatable(key), uri);
     }
 }

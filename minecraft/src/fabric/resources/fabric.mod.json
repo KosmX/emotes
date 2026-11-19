@@ -40,6 +40,7 @@
     "fabric-networking-api-v1": "*",
     "fabric-key-mapping-api-v1": "*",
     "fabric-lifecycle-events-v1": "*",
+    "fabric-message-api-v1": "*",
     "fabric-rendering-v1": ">=12.5.1+fbe231d52c",
     "fabric-sound-api-v1": "*",
     "minecraft": ">=26.3",
