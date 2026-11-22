@@ -12,7 +12,12 @@ import org.spongepowered.asm.mixin.injection.At;
 public class SoundEngineMixin {
     // Only the pool choice: streaming has 8 channels shared with music, and ours streams out of memory
     @ModifyExpressionValue(
-            method = "play",
+            method = {
+                    "play",
+
+                    // NeoForge https://github.com/neoforged/NeoForge/blob/d90c085/patches/net/minecraft/client/sounds/SoundEngine.java.patch#L15
+                    "playWithoutEvent"
+            },
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/resources/sounds/Sound;shouldStream()Z",
