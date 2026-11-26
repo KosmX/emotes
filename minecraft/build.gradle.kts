@@ -253,6 +253,7 @@ val optimizeJar = tasks.register<OptimizeJarsTask>("optimizeJar") {
     output.set(layout.buildDirectory.file("libs/${project["archives_base_name"]}-for-MC${project["minecraft_version"]}-${version}.jar"))
 
     sourceFileStriping.enabled = true
+    lvtStriping.enabled = true
 
     png.compressionLevel.set(9)
     png.compressorIterations.set(32)
