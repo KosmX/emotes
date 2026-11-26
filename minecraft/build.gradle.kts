@@ -9,9 +9,6 @@ plugins {
 }
 
 sourceSets {
-    main { // Fix resources
-        resources.srcDir(project(":emotesAssets").file("src/main/resources"))
-    }
     create("fabric")
     create("neoforge")
 }
@@ -47,7 +44,6 @@ unimined.minecraft(sourceSets.getByName("neoforge")) {
 
     neoForge {
         loader("net.neoforged:neoforge:${project["neoforge_version"]}:universal")
-        mixinConfig("emotecraft-arch.mixins.json", "emotecraft-neo.mixins.json")
 
         accessTransformer(provider {
             val transformed = file("src/main/resources/emotes.classtweaker").readText()
@@ -190,6 +186,10 @@ listOf("processResources", "processFabricResources", "processNeoforgeResources")
             expand("version" to version, "description" to project["mod_description"])
         }
     }
+}
+
+tasks.processResources { // Fix resources
+    from(project(":emotesAssets").tasks.named("processResources"))
 }
 
 tasks.shadowJar {
