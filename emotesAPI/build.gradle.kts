@@ -20,6 +20,12 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.jar {
+    manifest {
+        attributes("FMLModType" to "GAMELIBRARY")
+    }
+}
+
 //-------- publishing --------
 
 java {

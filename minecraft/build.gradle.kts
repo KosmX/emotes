@@ -62,7 +62,6 @@ unimined.minecraft(sourceSets.getByName("neoforge")) {
 
     neoForge {
         loader("net.neoforged:neoforge:${project["neoforge_version"]}:universal")
-        mixinConfig("emotecraft-arch.mixins.json", "emotecraft-neo.mixins.json")
 
         accessTransformer(provider {
             val transformed = file("src/main/resources/emotes.classtweaker").readText()
