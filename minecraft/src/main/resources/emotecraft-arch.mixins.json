@@ -16,7 +16,10 @@
     "KeyEventMixin",
     "LivingEntityRendererMixin",
     "PlayerMixin",
-    "SoundEngineMixin"
+    "SoundEngineMixin",
+    "blur.GuiRendererMixin",
+    "blur.GuiRenderStateMixin",
+    "chat.ChatListenerMixin"
   ],
   "server": [],
   "injectors": {

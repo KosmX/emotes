@@ -1,6 +1,7 @@
 package io.github.kosmx.emotes.arch.screen.widget;
 
 import io.github.kosmx.emotes.PlatformTools;
+import io.github.kosmx.emotes.arch.gui.dropdown.DropdownLayer;
 import io.github.kosmx.emotes.arch.screen.utils.PageButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
@@ -28,6 +29,7 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
     private final List<IChooseElement> chooseElements = new ArrayList<>();
 
     public final FastChooseController controller;
+    public final DropdownLayer dropdowns;
 
     @Nullable
     private GuiEventListener focused;
@@ -38,9 +40,10 @@ public abstract class AbstractFastChooseWidget extends AbstractWidget implements
 
     private static int currentPage;
 
-    protected AbstractFastChooseWidget(FastChooseController controller, int x, int y, int size, Component message) {
+    protected AbstractFastChooseWidget(FastChooseController controller, DropdownLayer dropdowns, int x, int y, int size, Component message) {
         super(x, y, size, size, message);
         this.controller = controller;
+        this.dropdowns = dropdowns;
 
         this.elements.add(this.forwardButton);
         this.elements.add(this.backButton);

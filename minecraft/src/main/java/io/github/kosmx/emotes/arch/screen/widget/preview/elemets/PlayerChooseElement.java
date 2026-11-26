@@ -60,6 +60,7 @@ public abstract class PlayerChooseElement extends PlayerPreview implements IChoo
 
     @Override
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        this.isHovered &= !this.parent.dropdowns.isMouseOver(mouseX, mouseY); // The shown menu covers it there
         boolean doHoverPart = this.parent.controller.doHoverPart(this);
 
         float progress = this.parent instanceof PreviewFastChooseWidget widget ? widget.getAnimTime() : 0.0F;

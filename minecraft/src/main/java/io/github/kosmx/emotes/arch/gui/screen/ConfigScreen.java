@@ -5,7 +5,6 @@ import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.library.modals.AcceptPrivacyScreen;
 import io.github.kosmx.emotes.arch.library.LibraryNotifications;
 import io.github.kosmx.emotes.arch.library.LibraryStatus;
-import io.github.kosmx.emotes.arch.library.modals.BaseModalScreen;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.ExportMenu;
 import io.github.kosmx.emotes.common.CommonData;
@@ -15,7 +14,6 @@ import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -159,12 +157,6 @@ public class ConfigScreen extends OptionsSubScreen {
                 entry.get(),
                 onValueUpdate
         ));
-    }
-
-    @Override
-    protected void extractBlurredBackground(@NonNull GuiGraphicsExtractor graphics) {
-        if (BaseModalScreen.isShowing(this.minecraft)) return;
-        super.extractBlurredBackground(graphics);
     }
 
     private void resetAll(boolean bl) {

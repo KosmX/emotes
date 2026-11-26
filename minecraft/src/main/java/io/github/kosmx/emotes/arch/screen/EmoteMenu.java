@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.kosmx.emotes.PlatformTools;
 import io.github.kosmx.emotes.arch.gui.screen.ConfigScreen;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.gui.widgets.GuideWidget;
 import io.github.kosmx.emotes.arch.library.LibraryModals;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
 import io.github.kosmx.emotes.arch.screen.utils.KeyBindUtils;
@@ -14,8 +15,6 @@ import io.github.kosmx.emotes.arch.screen.widget.preview.PreviewFastChooseWidget
 import io.github.kosmx.emotes.main.EmoteHolder;
 import io.github.kosmx.emotes.server.config.Serializer;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.MultiLineTextWidget;
-import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
@@ -43,11 +42,15 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
             .append(CommonComponents.SPACE)
             .append(Component.translatable("emotecraft.options.fastmenu3"));
 
+    private static final int KEYS_WIDTH = 2 * Button.SMALL_WIDTH + Button.DEFAULT_SPACING;
+
     private long activeKeyTime;
     private Button setKeyButton;
     private Button keyBindsButton;
 
     protected AbstractFastChooseWidget fastChoose;
+    private GuideWidget actionsGuide;
+    private GuideWidget fastMenuGuide;
 
     public EmoteMenu(Screen parent) {
         super(EmoteMenu.TITLE, true, parent);
@@ -64,41 +67,35 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
         }
         linearLayout.addChild(this.list, LayoutSettings::alignVerticallyBottom);
 
-        GridLayout gridLayout = linearLayout.addChild(new GridLayout());
-        gridLayout.defaultCellSetting().padding(4, Button.DEFAULT_SPACING / 3, 4, 0);
-        GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(2);
+        LinearLayout column = linearLayout.addChild(LinearLayout.vertical().spacing(Button.DEFAULT_SPACING));
+        column.addChild(new GuideWidget(KEYBIND, this.font, KEYS_WIDTH));
 
-        rowHelper.addChild(new MultiLineTextWidget(KEYBIND, this.font).setMaxWidth(
-                Button.SMALL_WIDTH * 2
-        ), 2);
-
-        this.setKeyButton = rowHelper.addChild(Button.builder(InputConstants.UNKNOWN.getDisplayName(), _ -> {
+        LinearLayout keys = column.addChild(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
+        this.setKeyButton = keys.addChild(Button.builder(InputConstants.UNKNOWN.getDisplayName(), _ -> {
             if (this.list != null && this.list.getSelected() != null) {
                 setActiveKeyTime(200);
             }
         }).width(Button.SMALL_WIDTH).build());
         this.setKeyButton.active = false;
 
-        this.keyBindsButton = rowHelper.addChild(Button.builder(KEYBINDS, _ -> this.minecraft.gui.setScreen(new KeyBindsMenu(this)))
+        this.keyBindsButton = keys.addChild(Button.builder(KEYBINDS, _ -> this.minecraft.gui.setScreen(new KeyBindsMenu(this)))
                 .width(Button.SMALL_WIDTH)
                 .build()
         );
 
-        rowHelper.addChild(new MultiLineTextWidget(FASTMENU, this.font).setMaxWidth(
-                Button.SMALL_WIDTH * 2
-        ), 2, gridLayout.newCellSettings().paddingTop(Button.DEFAULT_SPACING));
+        LinearLayout wheelRow = column.addChild(LinearLayout.horizontal().spacing(Button.DEFAULT_SPACING));
+        this.fastChoose = wheelRow.addChild(new PreviewFastChooseWidget(this, this.dropdowns, false, 0, 0, 256));
+        LinearLayout guides = wheelRow.addChild(LinearLayout.vertical().spacing(Button.DEFAULT_SPACING), LayoutSettings::alignVerticallyMiddle);
+        this.actionsGuide = guides.addChild(new GuideWidget(ACTIONS_GUIDE, this.font, Button.DEFAULT_WIDTH));
+        this.fastMenuGuide = guides.addChild(new GuideWidget(FASTMENU, this.font, Button.DEFAULT_WIDTH));
 
-        this.fastChoose = rowHelper.addChild(new PreviewFastChooseWidget(this, false, 0, 0, 256), 2,
-                rowHelper.newCellSettings().alignHorizontallyCenter().paddingTop(Button.DEFAULT_SPACING / 2)
-        );
-
-        if (this.list != null) onPressed(this.list.getSelected()); // Initial state of the buttons
+        if (this.list != null) updateButtons(this.list.getSelected()); // Initial state of the buttons
     }
 
     @Override
     public void added() {
         super.added();
-        if (this.list != null) onPressed(this.list.getSelected()); // Binds may have changed on the key binds screen, init is not called again
+        if (this.list != null) updateButtons(this.list.getSelected()); // Binds may have changed on the key binds screen, init is not called again
     }
 
     @Override
@@ -128,14 +125,27 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
 
     @Override
     protected void repositionElements() {
-        if (this.fastChoose != null) {
+        if (this.fastChoose != null && this.list != null) {
             this.fastChoose.setSize(Math.min(Math.round(Math.min(this.width / 2.5F, this.height / 2.3F)), 256));
+            this.list.updateSize(this.width, this.layout); // The room beside the wheel depends on it; super sizes it too, but only after the guides must be narrowed
+            int room = this.width - this.list.getWidth() - this.fastChoose.getWidth() - 4 * Button.DEFAULT_SPACING; // The layout's two gaps, and a margin at each screen edge
+            this.actionsGuide.narrowTo(room);
+            this.fastMenuGuide.narrowTo(room);
         }
         super.repositionElements();
     }
 
     @Override
-    protected void onPressed(EmoteListWidget.ListEntry selected) {
+    protected void onPressed(EmoteListWidget.ListEntry selected, boolean withSound) {
+        updateButtons(selected);
+    }
+
+    @Override
+    protected boolean playsOnPress() {
+        return false;
+    }
+
+    private void updateButtons(EmoteListWidget.ListEntry selected) {
         if (this.keyBindsButton == null) return;
 
         this.setKeyButton.active = selected instanceof EmoteListWidget.EmoteLikeEntry;
@@ -149,7 +159,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
     /** Starts or stops waiting for a key, and shows that on the key button. */
     private void setActiveKeyTime(long activeKeyTime) {
         this.activeKeyTime = activeKeyTime;
-        if (this.list != null) onPressed(this.list.getSelected());
+        if (this.list != null) updateButtons(this.list.getSelected());
     }
 
     @Override
@@ -183,7 +193,7 @@ public class EmoteMenu extends EmoteSubScreen implements FastChooseController {
                 return;
             }
             KeyBindUtils.bind(this, new EmoteHolder(animation), key, () -> {
-                if (this.list != null) onPressed(this.list.getSelected());
+                if (this.list != null) updateButtons(this.list.getSelected());
             });
         }, this.minecraft);
         return true;

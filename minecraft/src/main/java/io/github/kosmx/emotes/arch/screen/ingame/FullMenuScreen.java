@@ -2,6 +2,7 @@ package io.github.kosmx.emotes.arch.screen.ingame;
 
 import com.zigythebird.playeranim.util.ClientUtil;
 import io.github.kosmx.emotes.arch.gui.widgets.EmoteListWidget;
+import io.github.kosmx.emotes.arch.gui.widgets.GuideWidget;
 import io.github.kosmx.emotes.arch.library.LibraryModals;
 import io.github.kosmx.emotes.arch.screen.EmoteMenu;
 import io.github.kosmx.emotes.arch.screen.components.EmoteSubScreen;
@@ -15,11 +16,15 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 public class FullMenuScreen extends EmoteSubScreen {
     protected static final Component TITLE = Component.translatable("emotecraft.emotelist");
     protected static final Component CONFIG = Component.translatable("emotecraft.config");
+
+    @Nullable
+    private GuideWidget guide;
 
     public FullMenuScreen(Screen parent) {
         super(TITLE, false, parent);
@@ -28,6 +33,15 @@ public class FullMenuScreen extends EmoteSubScreen {
     @Override
     protected void addOptions() {
         this.list.setEmotes(EmoteHolder.list, false);
+    }
+
+    @Override
+    protected void init() {
+        if (this.guide == null) {
+            this.guide = new GuideWidget(ACTIONS_GUIDE, this.font, Button.SMALL_WIDTH * 2);
+        }
+        super.init();
+        addRenderableWidget(this.guide); // After the list, whose background runs under it; not in the layout, it is placed right of the list
     }
 
     @Override
@@ -45,7 +59,15 @@ public class FullMenuScreen extends EmoteSubScreen {
     }
 
     @Override
-    protected void onPressed(EmoteListWidget.ListEntry selected) {
+    protected void repositionElements() {
+        super.repositionElements();
+        if (this.guide != null && this.list != null) {
+            this.guide.centerIn(this.list.getScrollbarRight(), this.layout.getHeaderHeight(), this.width, this.layout.getHeaderHeight() + this.layout.getContentHeight());
+        }
+    }
+
+    @Override
+    protected void onPressed(EmoteListWidget.ListEntry selected, boolean withSound) {
         if (selected instanceof EmoteListWidget.EmoteLikeEntry entry) {
             entry.getEmote().whenCompleteAsync((animation, throwable) -> {
                 if (throwable != null) {
@@ -53,10 +75,15 @@ public class FullMenuScreen extends EmoteSubScreen {
                     CommonData.LOGGER.error("Failed to load emote!", throwable);
                     return;
                 }
-                EmoteHolder.playEmote(ClientUtil.getClientPlayer(), animation);
+                EmoteHolder.playEmote(ClientUtil.getClientPlayer(), withSound ? animation : EmoteHolder.withoutSound(animation));
             }, this.minecraft);
             if (this.lastScreen instanceof FastMenuScreen fast) this.lastScreen = fast.parent;
         }
+    }
+
+    @Override
+    protected boolean playsOnPress() {
+        return true;
     }
 
     @Override

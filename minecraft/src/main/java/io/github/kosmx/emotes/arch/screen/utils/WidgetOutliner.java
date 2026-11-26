@@ -5,8 +5,19 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 
 public class WidgetOutliner {
+    public static final int REACH = 1; // The separators cover this much on both sides of an edge
+    private static final float PANEL_OPACITY = 0.71F;
+
+    /** An outlined panel on vanilla's text background. */
+    public static void extractPanel(GuiGraphicsExtractor graphics, int x, int y, int width, int height, float alpha) {
+        int background = Minecraft.getInstance().options.getBackgroundColor(PANEL_OPACITY);
+        graphics.fill(x + REACH, y + REACH, x + width - REACH, y + height - REACH, ARGB.multiplyAlpha(background, alpha));
+        extractOutline(graphics, x, y, width, height, ARGB.white(alpha));
+    }
+
     public static void extractOutline(GuiGraphicsExtractor graphics, LayoutElement element, int color) {
         extractOutline(graphics, element.getX(), element.getY(), element.getWidth(), element.getHeight(), color);
     }

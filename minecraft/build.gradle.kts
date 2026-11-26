@@ -158,6 +158,7 @@ dependencies {
     "fabricImplementation"(fabricApi.fabricModule("fabric-networking-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-key-mapping-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-lifecycle-events-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
+    "fabricImplementation"(fabricApi.fabricModule("fabric-message-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-rendering-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-sound-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
     "fabricImplementation"(fabricApi.fabricModule("fabric-permission-api-v1", project["fabric_api_version"])) { fabricPomCompile(this) }
