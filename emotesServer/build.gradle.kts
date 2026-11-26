@@ -14,6 +14,12 @@ java {
     withSourcesJar()
 }
 
+tasks.jar {
+    manifest {
+        attributes("FMLModType" to "GAMELIBRARY")
+    }
+}
+
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {

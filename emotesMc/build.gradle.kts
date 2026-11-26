@@ -41,6 +41,9 @@ java {
 
 tasks.jar {
     archiveClassifier = ""
+    manifest {
+        attributes("FMLModType" to "GAMELIBRARY")
+    }
 }
 
 publishing {
