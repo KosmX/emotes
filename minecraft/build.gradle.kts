@@ -1,6 +1,5 @@
 import io.github.p03w.machete.tasks.OptimizeJarsTask
 import me.modmuss50.mpp.ReleaseType
-import xyz.wagyourtail.unimined.api.minecraft.MinecraftConfig
 
 plugins {
     id("xyz.wagyourtail.unimined")
@@ -9,24 +8,12 @@ plugins {
     id("org.redlance.dima_dencep.gradle.machete") version "2.0.0"
 }
 
-// TODO remove once https://github.com/unimined/Unimined/pull/215 is merged
-fun MinecraftConfig.includeRenderPearl() {
-    val field = MinecraftConfig::class.java.getDeclaredField("includeGlobs")
-    field.isAccessible = true
-    @Suppress("UNCHECKED_CAST")
-    val globs = field.get(this) as List<String>
-    if ("com/mojang/renderpearl/**" !in globs) {
-        field.set(this, globs + "com/mojang/renderpearl/**")
-    }
-}
-
 sourceSets {
     create("fabric")
     create("neoforge")
 }
 
 unimined.minecraft(sourceSets.main.get()) {
-    includeRenderPearl()
     version(project["minecraft_version"])
 
     fabric {
@@ -43,7 +30,6 @@ unimined.minecraft(sourceSets.main.get()) {
 }
 
 unimined.minecraft(sourceSets.getByName("fabric")) {
-    includeRenderPearl()
     combineWith(sourceSets.main.get())
 
     fabric {
@@ -54,7 +40,6 @@ unimined.minecraft(sourceSets.getByName("fabric")) {
 }
 
 unimined.minecraft(sourceSets.getByName("neoforge")) {
-    includeRenderPearl()
     combineWith(sourceSets.main.get())
 
     neoForge {
