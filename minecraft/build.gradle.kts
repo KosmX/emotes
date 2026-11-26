@@ -9,9 +9,6 @@ plugins {
 }
 
 sourceSets {
-    main { // Fix resources
-        resources.srcDir(project(":emotesAssets").file("src/main/resources"))
-    }
     create("fabric")
     create("neoforge")
 }
@@ -171,6 +168,10 @@ listOf("processResources", "processFabricResources", "processNeoforgeResources")
             expand("version" to version, "description" to mod_description)
         }
     }
+}
+
+tasks.processResources { // Fix resources
+    from(project(":emotesAssets").tasks.named("processResources"))
 }
 
 tasks.shadowJar {
